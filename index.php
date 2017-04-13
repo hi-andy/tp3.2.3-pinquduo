@@ -29,9 +29,9 @@ define('TPSHOP_CACHE_TIME',86400); // TPshop 缓存时间
 define('SITE_URL','http://'.$_SERVER['HTTP_HOST']); // 网站域名
 define('HTML_PATH','./Application/Runtime/Html/');
 //redis 服务器IP、密码、失效时间 20170411 simon
-define("REDISIP", "127.0.0.1");
+define("REDISIP", "r-uf634d79ab146d84.redis.rds.aliyuncs.com");
 define("PORT", 6379);
-define("REDISPASS", "");
+define("REDISPASS", "Wang1314");
 define("REDISTIME", 300);
 //静态缓存文件目录，HTML_PATH可任意设置，此处设为当前项目下新建的html目录
 // 引入ThinkPHP入口文件

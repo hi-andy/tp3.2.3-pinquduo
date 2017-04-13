@@ -26,6 +26,7 @@ class UserController extends BaseController {
      * 第三方登录
      */
     public function thirdLogin(){
+        $map['jopenid'] = I('jopenid','');
         $map['openid'] = I('openid','');
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');
@@ -283,10 +284,12 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         I('invitation_num') && $invitation_num = strtolower(I('invitation_num'));//统一大小写
+        $rdsname = "getPromDetail".$order_id.$user_id.$page.$pagesize.$invitation_num;
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
         if(empty($user_id))
         {
+            //if(empty(redis($rdsname))){//判断是否有缓存
             $json = array('status'=>-1,'msg'=>'非法数据');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
@@ -668,18 +671,22 @@ class UserController extends BaseController {
         $id = I('order_id');
         $user_id = I('user_id',0);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        $data = $this->userLogic->cancel_order($user_id,$id);
+        $json = $data;
+        $returnjson = $json;
         if(!$user_id > 0 || !$id > 0)
         {
             $json = array('status'=>-1,'msg'=>'参数有误','result'=>'');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
-            exit(json_encode($json));
+            $returnjson = json_encode($json);
         }
-        $data = $this->userLogic->cancel_order($user_id,$id);
-        $json = $data;
         if(!empty($ajax_get))
             $this->getJsonp($json);
-        exit(json_encode($json));
+
+        $rdsname = "getUserOrderList".$user_id."*";
+        redisdelall($rdsname);//根据类型删除用户订单缓存
+        exit(json_encode($returnjson));
     }
 
     /**
@@ -1215,7 +1222,7 @@ class UserController extends BaseController {
             $all = $this->listPageData($count, $all);
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-            redis($rdsname, serialize($json), 60);//存入缓存
+            redis($rdsname, serialize($json), 60);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
