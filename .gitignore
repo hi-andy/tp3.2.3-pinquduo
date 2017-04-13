@@ -7,3 +7,4 @@ Application/Runtime/
 Application/Api/Controller/notify_url.log
 Public/upload/goods/
 Uploads/
+.DS_Store
