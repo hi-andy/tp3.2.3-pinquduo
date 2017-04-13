@@ -29,7 +29,11 @@ define('TPSHOP_CACHE_TIME',86400); // TPshop 缓存时间
 define('SITE_URL','http://'.$_SERVER['HTTP_HOST']); // 网站域名
 define('HTML_PATH','./Application/Runtime/Html/');
 //redis 服务器IP、密码、失效时间 20170411 simon
+<<<<<<< HEAD
 define("REDISIP", "r-uf634d79ab146d84.redis.rds.aliyuncs.com");
+=======
+define("REDISIP", "localhost");
+>>>>>>> 3276873cf40c51bd27070a4759c03325565a232f
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");
 define("REDISTIME", 300);
