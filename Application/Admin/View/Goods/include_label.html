@@ -1,0 +1,247 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>输入框回车添加标签代码_js代码网</title>
+	<meta name="keywords" content="标签输入,输入标签插件,回车添加标签,tag标签,jquery标签输入,jquery标签插件,添加标签代码,tag代码,表单代码,表单验证代码,表单提示代码,js提交表单,js按钮代码" />
+	<meta name="description" content="jQuery实现输入框回车添加标签代码，可以在输入框输入关键词后回车键入标签，也可以选择预设的标签，选择后的标签会显示在输入框的上方，也可以删除，支持过滤重复标签。" />
+<body>
+<style type="text/css">
+	.label{margin:0;padding:0;list-style-type:none;outline:none;}
+	a,img{border:0;}
+	em{font-style:normal;}
+
+	a,a:visited{text-decoration:none;}
+	a:hover{color:palevioletred!important;text-decoration:none;}/* 鼠标经过便时标签字体的颜色 */
+
+	.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}
+	.clearfix{display:inline-table;}/* Hides from IE-mac */
+	.clearfix{display:block;}/* End hide from IE-mac */
+	*+html min-height:1%;
+	/* Form input */
+
+
+	.FancyForm label{
+		position:absolute;z-index:2;top:7px;left:13px;display:block;color:#BCBCBC;cursor:text;
+		-moz-user-select:none;
+		-webkit-user-select:none;
+		-moz-transition:all .16s ease-in-out;
+		-webkit-transition:all .16s ease-in-out;
+	}
+
+	/* tag */
+	.default-tag a,.default-tag a span,.plus-tag a,.plus-tag a em{background:url(http://www.jsdaima.com/Upload/1416064049/tagbg.png) no-repeat;}
+	/* .tagbtn a 标签常态的颜色 */
+	.tagbtn a{color:green;display:block;float:left;height:22px;line-height:22px;overflow:hidden;margin:0 10px 10px 0;padding:0 10px 0 5px;white-space:nowrap;}
+	.tagbtn2 a{color:rebeccapurple;display:block;float:left;height:22px;line-height:22px;overflow:hidden;margin:0 10px 10px 0;padding:0 10px 0 5px;white-space:nowrap;}
+	.tagbtn3 a{color:red;display:block;float:left;height:22px;line-height:22px;overflow:hidden;margin:0 10px 10px 0;padding:0 10px 0 5px;white-space:nowrap;}
+	/* default-tag */
+	.default-tag{padding:16px 0 0 0;}
+	.default-tag a{background-position:100% 0;}
+	.default-tag a:hover{background-position:100% -22px;}
+	.default-tag a span{padding:0 0 0 11px;background-position:0 -60px;}
+	.default-tag a:hover span{background-position:0 -98px;}
+	.default-tag a.selected{opacity:0.6;filter:alpha(opacity=60);}
+	.default-tag a.selected:hover{background-position:100% 0;cursor:default;}
+	.default-tag a.selected:hover span{background-position:0 -60px;}
+	/* 标签样式	*/
+	.plus-tag{padding:0 0 10px 0;}
+	.plus-tag a{background-position:100% -22px; }
+	/*.plus-tag a span{float:left;}!* 选中的便签字体 *!*/
+	.plus-tag a em{display:block;float:left;margin:5px 0 0 8px;width:13px;height:13px;overflow:hidden;background-position:-165px -100px;cursor:pointer;}
+	.plus-tag a:hover em{background-position:-168px -64px;}
+</style>
+    <div class="label">
+
+	<div class="plus-tag tagbtn3 clearfix" id="myTags">
+		<a value="-1" title="js代码网" href="javascript:void(0);"><span>js代码网</span><em></em></a>
+	</div>
+
+
+	<!--plus-tag-add end-->
+	<div id="mycard-plus" style=";margin-left: 50px">
+		<div class="default-tag tagbtn2">
+			<div class="clearfix">
+				<a value="-1" title="js代码网" href="javascript:void(0);"><span style="float:left;">js代码网</span><em></em></a>
+			</div>
+			<div class="clearfix" >
+				<a id="1" value="-1" title="1" href="javascript:void(0);" ><span>js代码网</span><em></em></a>
+				<a id="2" value="-1" title="2" href="javascript:void(0);"><span>移动互联网</span><em></em></a>
+				<a id="3" value="-1" title="3" href="javascript:void(0);"><span>it</span><em></em></a>
+				<a id="4" value="-1" title="5" href="javascript:void(0);"><span>电子商务</span><em></em></a>
+			</div>
+		</div>
+	</div>
+	<!--mycard-plus end-->
+    </div>
+
+
+
+<script type="text/javascript" src="http://www.jsdaima.com/Public/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+	var FancyForm=function(){
+		return{
+			inputs:".FancyForm input, .FancyForm textarea",
+			setup:function(){
+				var a=this;
+				this.inputs=$(this.inputs);
+				a.inputs.each(function(){
+					var c=$(this);
+					a.checkVal(c)
+				});
+				a.inputs.live("keyup blur",function(){
+					var c=$(this);
+					a.checkVal(c);
+				});
+			},checkVal:function(a){
+				a.val().length>0?a.parent("li").addClass("val"):a.parent("li").removeClass("val")
+			}
+		}
+	}();
+</script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		FancyForm.setup();
+	});
+</script>
+<script type="text/javascript">
+	var searchAjax=function(){};
+	var G_tocard_maxTips=30;
+
+	$(function(){(
+			function(){
+				var a=$(".plus-tag");
+				$("a em",a).live("click",function(){
+					var c=$(this).parents("a"),b=c.attr("title"),d=c.attr("value");
+					delTips(b,d)
+				});
+				hasTips=function(b){
+					var d=$("a",a),c=false;
+					d.each(function(){
+						if($(this).attr("title")==b){
+							c=true;
+							return false
+						}
+					});
+					return c
+				};
+
+				isMaxTips=function(){
+					return
+					$("a",a).length>=G_tocard_maxTips
+				};
+
+				setTips=function(c,d){
+					if(hasTips(c)){
+						return false
+					}if(isMaxTips()){
+						alert("最多添加"+G_tocard_maxTips+"个标签！");
+						return false
+					}
+					var b=d?'value="'+d+'"':"";
+					a.append($("<a "+b+' title="'+c+'" href="javascript:void(0);" ><span>'+c+"</span><em></em></a>"));
+					searchAjax(c,d,true);
+					return true
+				};
+
+				delTips=function(b,c){
+					if(!hasTips(b)){
+						return false
+					}
+					$("a",a).each(function(){
+						var d=$(this);
+						if(d.attr("title")==b){
+							d.remove();
+							return false
+						}
+					});
+					searchAjax(b,c,false);
+					return true
+				};
+
+				getTips=function(){
+					var b=[];
+					$("a",a).each(function(){
+						b.push($(this).attr("title"))
+					});
+					return b
+				};
+
+				getTipsId=function(){
+					var b=[];
+					$("a",a).each(function(){
+						b.push($(this).attr("value"))
+					});
+					return b
+				};
+
+				getTipsIdAndTag=function(){
+					var b=[];
+					$("a",a).each(function(){
+						b.push($(this).attr("value")+"##"+$(this).attr("title"))
+					});
+					return b
+				}
+			}
+
+	)()});
+</script>
+<script type="text/javascript">
+	// 更新选中标签标签
+	$(function(){
+		setSelectTips();
+		$('.plus-tag').append($('.plus-tag a'));
+	});
+	var searchAjax = function(name, id, isAdd){
+		setSelectTips();
+	};
+	// 搜索
+	(function(){
+		var $b = $('.plus-tag-add button'),$i = $('.plus-tag-add input');
+		$i.keyup(function(e){
+			if(e.keyCode == 13){
+				$b.click();
+			}
+		});
+		$b.click(function(){
+			var name = $i.val().toLowerCase();
+			if(name != '') setTips(name,-1);
+			$i.val('');
+			$i.select();
+		});
+	})();
+	// 推荐标签
+	(function(){
+
+		$('.default-tag a').live('click', function(){
+			var $this = $(this),
+					name = $this.attr('title'),/* 选中后显示的值 */
+					id = $this.attr('value');
+			setTips(name, id);
+		});
+		// 更新高亮显示
+		setSelectTips = function(){
+			var arrName = getTips();
+			if(arrName.length){
+				$('#myTags').show();
+			}else{
+				$('#myTags').hide();
+			}
+			$('.default-tag a').removeClass('selected');
+			$.each(arrName, function(index,name){
+				$('.default-tag a').each(function(){
+					var $this = $(this);
+					if($this.attr('title') == name){
+						$this.addClass('selected');
+						return false;
+					}
+				})
+			});
+		}
+
+	})();
+</script>
+</body>
+</html>

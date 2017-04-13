@@ -1,0 +1,147 @@
+<include file="Public/min-header"/>
+<!--公共js 代码 --><script src="__PUBLIC__/js/common.js" charset="utf-8" type="text/javascript"></script><!--公共js end代码 -->
+
+<link href="__PUBLIC__/js/uploadify/uploadify.css" rel="stylesheet" type="text/css">
+<div class="wrapper">
+	<include file="Public/breadcrumb"/>
+	<section class="content">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="box">
+					<div class="box-header">
+						<h3 class="box-title">增加版本信息</h3>
+					</div>
+					<!-- /.box-header -->
+					<form action="{:U('Version/addVersion')}" method="post" class="form-horizontal" id="category_form">
+						<div class="box-body">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">版本号:</label>
+								<div class="col-sm-6">
+									<input type="text" placeholder="版本号" class="form-control large" name="version" value="">
+									<input type="hidden" id="sessionid" value="{$Think.session.ADMIN_ID}"  />
+								</div>
+							</div>
+						</div>
+						<div class="box-body">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">版本信息:</label>
+								<div class="col-sm-6">
+									<input type="text" placeholder="版本信息" class="form-control large" name="message" value="">
+								</div>
+							</div>
+						</div>
+						<!--<div class="form-group">-->
+							<!--<label class="control-label col-sm-2">导航显示</label>-->
+
+							<!--<div class="col-sm-10">-->
+								<!--<label>-->
+									<!--<if condition="($goods_category_info[is_show] eq 1) or ($goods_category_info[is_show] eq NULL)">-->
+										<!--<input checked="checked" type="radio" name="is_show" value="1"> 是-->
+										<!--<input type="radio" name="is_show" value="0"> 否-->
+										<!--<else/>-->
+										<!--<input type="radio" name="is_show" value="1"> 是-->
+										<!--<input checked="checked" type="radio" name="is_show" value="0"> 否-->
+									<!--</if>-->
+								<!--</label>-->
+							<!--</div>-->
+						<!--</div>-->
+						<div class="form-group">
+
+								<div class="form-group">
+									<label class="control-label col-sm-2">上传文件:</label>
+									<div class="col-sm-10">
+										<input id="faile_upload" type="file" multiple="true">
+										<span id="loading"  style="display: none"></span>
+										<input type="hidden" id="file" name="file" value="">
+										<input type="hidden" name="filename" id="filename" value="" >
+										<div id="some_file_queue"></div>
+									</div>
+								</div>
+						</div>
+						<div class="box-footer">
+							<!--<input type="hidden" name="id" value="{$goods_category_info.id}">-->
+							<button type="reset" class="btn btn-primary pull-left"><i class="icon-ok"></i>重填  </button>
+							<button type="button" id="submit_version" class="btn btn-primary pull-right"><i class="icon-ok"></i>提交  </button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/uploadify/jquery.uploadify.min.js"></script>
+<script src="__PUBLIC__/js/layer/layer-min.js"></script><!-- 弹窗js 参考文档 http://layer.layui.com/-->
+<script type="text/javascript">
+	$(function() {
+		$('#faile_upload').uploadify({
+			'swf': '__PUBLIC__/js/uploadify/uploadify.swf',
+			'uploader': '/Admin/Uploadify/uploadfile',
+			'buttonText': '文件上传',
+			'formData': {'sessionid': $("#sessionid").val()},
+			'sizeLimit': '31457280',
+			'fileTypeDesc': '请选择apk文件',
+			'fileTypeExts': '*.txt;*.apk',//可上传的文件类型
+			'queueID': 'some_file_queue',
+			'onUploadStart': function (file) {
+
+			},
+			'onUploadSuccess': function (file, data, response) {
+				data = jQuery.parseJSON(data);
+				data = data.data;
+				console.log(data);
+				if (!data.src) {
+					alert('图片' + fileObj.name + '操作失败');
+					return false;
+				} else {
+					$("#loading").show();
+					$("#loading").html('上传成功 ' + data.name);
+					$("#file").val(data.src);
+					$("#filename").val(data.name);
+					return true;
+				}
+			},
+			'onUploadError': function (file, errorCode, errorMsg, errorString) {
+				alert(file.name + ' 上传失败。详细信息: ' + errorString);
+			}
+		});
+	});
+
+	$("#submit_version").click(function(){
+		var version =  $("[name='version']").val(),
+			message = $("[name='message']").val(),
+			file = $("[name='file']").val(),
+			filename = $("[name='filename']").val();
+
+		var msg = '';
+		var is_true = true;
+		if(!version){
+			msg += "请输入版本号<br>";
+			is_true = false;
+		}
+		if(!message){
+			msg += "请输入版本信息<br>";
+			is_true = false;
+		}
+//		if(!file){
+//			msg += "请上传APK文件";
+//			is_true = false;
+//		}
+
+		if(is_true == false){
+			layer.alert(msg);
+			return false;
+		}
+
+		$.ajax({
+			type : 'POST',
+			url : '/Admin/Version/addVersion',
+			data : {'version':version,'message':message,'file':file,'filename':filename},
+			dataType : 'json',
+			success:function(res){
+				layer.alert(res);
+			}
+		})
+	});
+</script>
+</body>
+</html>

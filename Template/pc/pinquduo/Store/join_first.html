@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>拼趣多官网-让你享受高级的购物方式</title>     <meta name="keywords" content="拼趣多、拼趣多官网、网购平台、网上购物、商家入驻、一元抢购、购物商场、时尚购物、一元夺宝、淘宝众筹、拼团网">     <meta name="Description" content="拼趣多以实惠的价格、优质的服务和真品让用户体验更舒心。全新的购物新模式从此开始，购物不再是一个人的搜索，通过朋友、家人、同事等之间彼此分享拼团购物的娱乐方式，让购物更加高效、优质、乐趣无穷。">
+    <meta name="baidu-site-verification" content="BmlHPN4dIL" />
+    <link rel="stylesheet" href="__STATIC__/css/base.css" />
+	<link rel="shortcut icon" href="__PUBLIC__/images/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="__STATIC__/css/page.css" />
+    <script src="__STATIC__/js/jquery-1.9.1.min.js"></script>
+    <script src="__STATIC__/js/ui.js"></script>
+	<link rel="stylesheet" href="__STATIC__/css/main.css" />
+</head>
+<body>
+
+<div class="wrapper">
+    <include file="Public/header" />
+
+    <div class="main">
+        <div class="top-line"></div>
+        <div class="section join-pqd"></div>
+	    <div class="section ">
+		    <img src="__STATIC__/images/To_apply_for.png">
+	    </div>
+        <div class="section">
+            <div class="join-hall-container clearfix">
+                <div class="item fl">
+                    <p class="title fs24">个人入驻</p>
+                    <p class="mt10 fs14 gray1">适合个人、个体户入驻，提供身份证即可入驻</p>
+                    <div class="item-body">
+
+                    </div>
+                    <div>
+                        <a href="/Home/Store/join_second_person" class="btn fs18">马上入驻</a>
+                    </div>
+                </div>
+                <div class="item fr">
+                    <p class="title fs24">企业入驻</p>
+                    <p class="mt10 fs14 gray1">适合公司/企业入驻，提供营业执照等资料即可入驻</p>
+                    <div class="item-body">
+                        <div class="mt10">
+									<span class="radio-item checked" data-id="1">
+										<span class="radiobox"></span>
+										<span class="name fs16"><strong>旗舰店</strong></span>
+									</span>
+									<span class="radio-item" data-id="2">
+										<span class="radiobox"></span>
+										<span class="name fs16"><strong>专卖店</strong></span>
+									</span>
+									<span class="radio-item" data-id="3">
+										<span class="radiobox"></span>
+										<span class="name fs16"><strong>专营店</strong></span>
+									</span>
+									<span class="radio-item" data-id="4">
+										<span class="radiobox"></span>
+										<span class="name fs16"><strong>普通店</strong></span>
+									</span>
+                            <script>
+                                $(".radio-item").click(function(){
+                                    var id=$(this).data().id;
+                                    $(".radio-item").removeClass('checked');
+                                    $(this).addClass('checked');
+                                    $("#click_company").attr('href',"/Home/Store/join_second_company?store_type="+id);
+
+                                });
+                            </script>
+                            <p class="mt10 tr fs14" ><a class="gray1 underline mr25" id="ClickMe">店铺类型说明</a></p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="/Home/Store/join_second_company?store_type=1" id="click_company" class="btn fs18">马上入驻</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <include file="Public/footer" />
+</div>
+
+<div id="code" style="width: 750px;height: 600px;">
+	<div class="close1" style="width:750px;"><a href="javascript:void(0)" id="closebt"><img src="__STATIC__/images/close.gif"></a></div>
+	<div class="goodtxt">
+		<img src="__STATIC__/images/xq1.jpg" width="685" height="507">
+	</div>
+</div>
+
+<script type="text/javascript">
+</script>
+<script>
+	$(function() {
+		//alert($(window).height());
+		$('#ClickMe').click(function() {
+			$('#code').center();
+			$('#goodcover').show();
+			$('#code').fadeIn();
+		});
+		$('#closebt').click(function() {
+			$('#code').hide();
+			$('#goodcover').hide();
+		});
+		$('#goodcover').click(function() {
+			$('#code').hide();
+			$('#goodcover').hide();
+		});
+		/*var val=$(window).height();
+		 var codeheight=$("#code").height();
+		 var topheight=(val-codeheight)/2;
+		 $('#code').css('top',topheight);*/
+		jQuery.fn.center = function(loaded) {
+			var obj = this;
+			body_width = parseInt($(window).width());
+			body_height = parseInt($(window).height());
+			block_width = parseInt(obj.width());
+			block_height = parseInt(obj.height());
+
+			left_position = parseInt((body_width / 2) - (block_width / 2) + $(window).scrollLeft());
+			if (body_width < block_width) {
+				left_position = 0 + $(window).scrollLeft();
+			};
+
+			top_position = parseInt((body_height / 2) - (block_height / 2) + $(window).scrollTop());
+			if (body_height < block_height) {
+				top_position = 0 + $(window).scrollTop();
+			};
+
+			if (!loaded) {
+
+				obj.css({
+					'position': 'absolute'
+				});
+				obj.css({
+					'top': ($(window).height() - $('#code').height()) * 0.5,
+					'left': left_position
+				});
+				$(window).bind('resize', function() {
+					obj.center(!loaded);
+				});
+				$(window).bind('scroll', function() {
+					obj.center(!loaded);
+				});
+
+			} else {
+				obj.stop();
+				obj.css({
+					'position': 'absolute'
+				});
+				obj.animate({
+					'top': top_position
+				}, 200, 'linear');
+			}
+		}
+
+	})
+</script>
+
+</body>
+</html>
+
+

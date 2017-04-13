@@ -1,0 +1,98 @@
+.label{margin:0;padding:0;list-style-type:none;outline:none;}
+a,img{border:0;}
+em{font-style:normal;}
+
+a,a:visited{color:#5e5e5e;text-decoration:none;}
+a:hover{color:#3366cc!important;text-decoration:none;}
+
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}
+.clearfix{display:inline-table;}/* Hides from IE-mac */
+
+.clearfix{display:block;}/* End hide from IE-mac */
+*+html min-height:1%;
+/* Form input */
+.Form li{font-size:21px;font-weight:300}
+.Form input[type=text],.Form input[type=password],.Form textarea{
+	display:inline-block;padding:6px 12px;font-size:18px;font-weight:300;line-height:1.4;color:#221919;background:#fff;border:1px solid #a4a2a2;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-ms-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	border-radius:6px;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	box-shadow:inset 0 1px rgba(34,25,25,.15),0 1px rgba(255,255,255,.8);
+	-moz-box-shadow:inset 0 1px rgba(34,25,25,.15),0 1px rgba(255,255,255,.8);
+	-webkit-box-shadow:inset 0 1px rgba(34,25,25,.15),0 1px rgba(255,255,255,.8);
+	-webkit-transition:all .08s ease-in-out;
+	-moz-transition:all .08s ease-in-out;
+}
+
+.Form label{display:inline-block;line-height:1.4em;font-size:18px}
+.Form input[type=text]:focus,.Form input[type=password]:focus,.Form textarea:focus{
+	border-color:#006499;
+	box-shadow:0 1px rgba(34, 25, 25, 0.15) inset, 0 1px rgba(255, 255, 255, 0.8), 0 0 14px rgba(82, 162, 235, 0.35);
+	-moz-box-shadow:0 1px rgba(34, 25, 25, 0.15) inset, 0 1px rgba(255, 255, 255, 0.8), 0 0 14px rgba(82, 162, 235, 0.35);
+	-webkit-box-shadow:0 1px rgba(34, 25, 25, 0.15) inset, 0 1px rgba(255, 255, 255, 0.8), 0 0 14px rgba(82, 162, 235, 0.35);
+}
+
+.FancyForm input[type=text],.FancyForm input[type=password],.FancyForm textarea{
+	position:relative;z-index:3;display:block;width:100%;background:transparent;border:1px solid #a4a2a2;
+	border-radius:6px;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	box-shadow:inset 0 1px rgba(34,25,25,.15),0 1px rgba(255,255,255,.8);
+	-moz-box-shadow:inset 0 1px rgba(34,25,25,.15),0 1px rgba(255,255,255,.8);
+	-webkit-box-shadow:inset 0 1px rgba(34,25,25,.15),0 1px rgba(255,255,255,.8);
+	-webkit-transition:all .08s ease-in-out;
+	-moz-transition:all .08s ease-in-out;
+}
+
+.FancyForm label{
+	position:absolute;z-index:2;top:7px;left:13px;display:block;color:#BCBCBC;cursor:text;
+	-moz-user-select:none;
+	-webkit-user-select:none;
+	-moz-transition:all .16s ease-in-out;
+	-webkit-transition:all .16s ease-in-out;
+}
+.FancyForm .fff{
+	position:absolute;z-index:1;top:0;right:0;left:3px;bottom:0;background-color:#fff;
+	border-radius:8px;
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;
+}
+.FancyForm .val label{left:-9999px;opacity:0!important;filter:alpha(opacity="0")!important;}
+/* Button base */
+.Button{
+	position:relative;
+	display:inline-block;
+	padding:.45em .825em .45em;
+	text-align:center;
+	line-height:1em;
+	border:1px solid transparent;
+	cursor:pointer;
+	border-radius:.3em;
+	background:#39F;
+	color:#fff;
+}
+/* tag */
+.default-tag a,.default-tag a span,.plus-tag a,.plus-tag a em{background:url(http://www.jsdaima.com/Upload/1416064049/tagbg.png) no-repeat;}
+/* .tagbtn a 标签常态的颜色 */
+.tagbtn a{color: #e4871f;display:block;float:left;height:22px;line-height:22px;overflow:hidden;margin:0 10px 10px 0;padding:0 10px 0 5px;white-space:nowrap;}
+.tagbtn3 a{color:#D3166C;display:block;float:left;height:22px;line-height:22px;overflow:hidden;margin:0 10px 10px 0;padding:0 10px 0 5px;white-space:nowrap;}
+.tagbtn2 a{color:#0B8FB9;display:block;float:left;height:22px;line-height:22px;overflow:hidden;margin:0 10px 10px 0;padding:0 10px 0 5px;white-space:nowrap;}
+/* default-tag */
+.default-tag{padding:16px 0 0 0;}
+.default-tag a{background-position:100% 0;}
+.default-tag a:hover{background-position:100% -22px;}
+.default-tag a span{padding:0 0 0 11px;background-position:0 -60px;}
+.default-tag a:hover span{background-position:0 -98px;}
+.default-tag a.selected{opacity:0.6;filter:alpha(opacity=60);}
+.default-tag a.selected:hover{background-position:100% 0;cursor:default;}
+.default-tag a.selected:hover span{background-position:0 -60px;}
+/* 标签样式	*/
+.plus-tag{padding:0 0 10px 0;}
+.plus-tag a{background-position:100% -22px; }
+.plus-tag a span{float:left;}/* 选中的便签字体 */
+.plus-tag a em{display:block;float:left;margin:5px 0 0 8px;width:13px;height:13px;overflow:hidden;background-position:-165px -100px;cursor:pointer;}
+.plus-tag a:hover em{background-position:-168px -64px;}

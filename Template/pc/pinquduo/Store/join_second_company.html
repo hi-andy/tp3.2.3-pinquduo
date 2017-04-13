@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>拼趣多官网-让你享受高级的购物方式</title>     <meta name="keywords" content="拼趣多、拼趣多官网、网购平台、网上购物、商家入驻、一元抢购、购物商场、时尚购物、一元夺宝、淘宝众筹、拼团网">     <meta name="Description" content="拼趣多以实惠的价格、优质的服务和真品让用户体验更舒心。全新的购物新模式从此开始，购物不再是一个人的搜索，通过朋友、家人、同事等之间彼此分享拼团购物的娱乐方式，让购物更加高效、优质、乐趣无穷。">
+    <meta name="baidu-site-verification" content="BmlHPN4dIL" />
+    <link rel="stylesheet" href="__STATIC__/css/base.css" />
+    <link rel="stylesheet" href="__STATIC__/css/page.css" />
+    <link rel="shortcut icon" href="__PUBLIC__/images/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/css/pikaday.css"/>
+    <script type="text/javascript" src="__STATIC__/js/pikaday.min.js"></script>
+    <script src="__STATIC__/js/jquery-1.9.1.min.js"></script>
+    <script src="__STATIC__/js/ui.js"></script>
+    <script src="__STATIC__/layer/layer/layer.js"></script>
+    <script src="__PUBLIC__/js/common.js" charset="utf-8" type="text/javascript"></script>
+    <script src="__STATIC__/js/jquery.cookie.js"></script>
+</head>
+<body>
+
+<div class="wrapper">
+    <include file="Public/header" />
+
+    <div class="main">
+        <div class="top-line"></div>
+        <div class="section">
+            <div class="information-container tl">
+                <div class="progress-box fs14">
+							<span class="item current">
+								<span class="num">01</span>
+								<span class="title">个人/企业信息填写</span>
+							</span>
+							<span class="item">
+								<span class="line"></span>
+								<span class="num">02</span>
+								<span class="title">店铺信息填写</span>
+							</span>
+							<span class="item">
+								<span class="line"></span>
+								<span class="num">03</span>
+								<span class="title">申请成功</span>
+							</span>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <p class="title fs16">企业信息</p>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group mt30 shop fs14">
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>企业法人姓名</span>
+                                <div class="item-body">
+											<span class="input-box block" style="width:500px;">
+												<input type="text" placeholder="请输入企业法人姓名" name="company_user_name" maxlength="40">
+											</span>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>法人邮箱</span>
+                                <div class="item-body">
+									<span class="input-box block" style="width:310px;">
+										<input type="text" placeholder="请输入店主邮箱" name="show_ower_mail">
+									</span>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>法人手机号</span>
+                                <div class="item-body">
+									<span class="input-box block" style="width:310px;">
+										<input type="text" placeholder="请输入店主手机号" name="show_ower_mobile" maxlength="11">
+									</span>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>重复法人手机号</span>
+                                <div class="item-body">
+									<span class="input-box block" style="width:310px;">
+										<input type="text" placeholder="请再次输入店主手机号" name="show_ower_mobile_recon" maxlength="11">
+									</span>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>身份证号</span>
+                                <div class="item-body">
+											<span class="input-box block" style="width:500px;">
+												<input type="text" placeholder="请输入企业法人的证件号（身份证、护照、军官证等均可）" name="show_ower_idcard" maxlength="20" >
+											</span>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                    <div class="intro mt10 fs12">
+                                        <p class="red">注：请确认您的身份证号码填写无误，该身份证号必须与您上传的身份证照片一致</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>公司名称</span>
+                                <div class="item-body">
+											<span class="input-box block" style="width:500px;">
+												<input type="text" placeholder="请输入公司名称" name="company_name">
+											</span>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>营业执照注册号</span>
+                                <div class="item-body">
+                                    <div class="clearfix">
+												<span class="input-box block fl" style="width:440px;">
+													<input type="text" placeholder="请输入营业执照注册号" name="company_regiter_num" maxlength="20">
+												</span>
+                                        <a href="__STATIC__/images/营业执照注册号.jpg" target="_blank" class="btn ml10">示例</a>
+                                    </div>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>组织机构代码</span>
+                                <div class="item-body">
+                                    <div class="clearfix">
+												<span class="input-box block fl" style="width:440px;">
+													<input type="text" placeholder="请输入组织机构代码" name="company_organ_code" maxlength="20">
+												</span>
+                                        <a href="__STATIC__/images/组织机构代码.jpg" target="_blank" class="btn ml10">示例</a>
+                                    </div>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>纳税人识别码</span>
+                                <div class="item-body">
+                                    <div class="clearfix">
+												<span class="input-box block fl" style="width:440px;">
+													<input type="text" placeholder="请输入纳税人识别码" name="company_identi_code" maxlength="20">
+												</span>
+                                        <a href="__STATIC__/images/纳税人识别码.jpg" target="_blank" class="btn ml10">示例</a>
+                                    </div>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt10 clearfix">
+                                <span class="title mt10 mr20 w9em tr">统一社会信用代码</span>
+                                <div class="item-body">
+                                    <div class="clearfix">
+												<span class="input-box block fl" style="width:440px;">
+													<input type="text" placeholder="请输入统一社会信用代码" name="company_credit_code" maxlength="20">
+												</span>
+                                        <a href="__STATIC__/images/统一社会信用代码.jpg" target="_blank" class="btn ml10">示例</a>
+                                    </div>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                    <div class="intro mt10 fs12">
+                                        <p class="red">注：三证合一的营业执照，请全部填写统一社会信用代码，非三证合一的营业执照在统一
+                                            社会信用代码处填写营业执照注册号，请根据您的营业执照类型一次填写。</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="item mt10 clearfix">
+                                <span class="title mr20 w8em tr">&nbsp;</span>
+                                <div class="item-body">
+                                    <span class="radio-item mr10 checked" data-is_haitao="0">
+										<span class="radiobox"></span>
+										<span class="name mt2 fs14"><strong>非海淘</strong></span>
+									</span>
+									<span class="radio-item" data-is_haitao="1">
+										<span class="radiobox"></span>
+										<span class="name mt2 fs14"><strong>海淘</strong></span>
+                                    <input type="hidden" name="is_haitao" value="0" id="is_haitao">
+                                    <script>
+                                        $(".radio-item").click(function(){
+                                            $(".radio-item").removeClass('checked');
+                                            $(this).addClass('checked');
+                                            $("#is_haitao").val($(this).data().is_haitao);
+                                        });
+                                    </script>
+                                    <br>
+                                    <br>
+                                    <p style="color: #999;">1、海淘类店铺可销售进口、直邮、直供类海外商品，非海淘类店铺可销售进口、国内商品。</p>
+                                    <p style="color: #999;">2、店铺性质会影响到后期可售商品的类型及经营范围，具体可见［常见问题答疑］。</p>
+                                    <p style="color: #999;">3、目前只允许企业店铺经营酒类，个人店铺不可经营酒类。</p>
+                                    <p style="color: #999;">4、每个手机号只能申请一个店铺。</p>
+                                    <p style="color: #999;">5、每个身份证只能提交三个店铺，否则提交失败。</p>
+                                    </font>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="panel">
+                    <div class="panel-header">
+                        <p class="title fs16">
+                            店铺管理人基本信息
+                            <span class="fs12 gray1">( 注：上传的相片，横图长宽像素最大为1000*700，竖图长宽像素最大为1000*1400，图片大小在5M以内)</span>
+                        </p>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group fs14">
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:50%;">
+                                    <span class="title mr20 tr w8em"><em class="red">*</em>身份证正面</span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <img src="__STATIC__/images/pt.jpg" id="idcart_img_1" alt="" class="show-pic" style="display:none;">
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_back_idcart_1');">
+                                                         <input type="hidden" id="idcard_img_input_1" name="idcard_img_1">
+													</span>
+                                            <script>
+                                                function call_back_idcart_1(fileurl){
+                                                    $("#idcard_img_input_1").val(fileurl);
+                                                    $("#idcart_img_1").attr('src',fileurl);
+                                                    $("#idcart_img_1").show();
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:none;">
+                                            <p class="red">填写错误提示！！！！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item mt30 fr" style="width:50%;">
+                                    <span class="title mr20 tr w8em"><em class="red">*</em>身份证反面</span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <img src="__STATIC__/images/pt.jpg" id="idcart_img_2" alt="" class="show-pic" style="display:none;">
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_back_idcart_2');">
+                                                         <input type="hidden" id="idcard_img_input_2" name="idcard_img_2">
+													</span>
+                                            <script>
+                                                function call_back_idcart_2(fileurl){
+                                                    $("#idcard_img_input_2").val(fileurl);
+                                                    $("#idcart_img_2").attr('src',fileurl);
+                                                    $("#idcart_img_2").show();
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:none;">
+                                            <p class="red">填写错误提示！！！！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item mt20 clearfix">
+                                <span class="title mt10 mr20 w8em tr"><em class="red">*</em>身份证有效期</span>
+                                <div class="item-body">
+											<span class="input-box" style="width:150px;">
+												<input type="text" placeholder="请选择时间" id="start-day" name="idcard_starttime">
+											</span>
+                                    <span class="pad15 lh36">至</span>
+											<span class="input-box" style="width:150px;">
+												<input type="text" placeholder="请选择时间" id="end-day" name="idcard_endtime">
+											</span>
+                                    <div class="hint" style="display:none;">
+                                        <p class="red">填写错误提示！！！！</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:55%;">
+                                    <span class="title mr20 tr w8em"><em class="red">*</em>手持身份证头部照片</span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <img src="__STATIC__/images/pt.jpg" id="idcart_img_3" alt="" class="show-pic" style="display:none;">
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_back_idcart_3');">
+                                                         <input type="hidden" id="idcard_img_input_3" name="idcard_img_3">
+													</span>
+                                            <script>
+                                                function call_back_idcart_3(fileurl){
+                                                    $("#idcard_img_input_3").val(fileurl);
+                                                    $("#idcart_img_3").attr('src',fileurl);
+                                                    $("#idcart_img_3").show();
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:none;">
+                                            <p class="red">填写错误提示！！！！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt30 fr" style="width:45%;">
+                                    <dl class="pic-text clearfix">
+                                        <dt class="fl"><strong>示例&nbsp;&nbsp;</strong></dt>
+                                        <dt class="pic fl mr10 pad5" style="border:1px solid #eeeeee;">
+                                            <img src="__STATIC__/images/pt.jpg" width="90" height="90" alt="">
+                                        </dt>
+                                        <dd class="text fs12 lh20 gray1">
+                                            <p>1.请手持本人身份证</p>
+                                            <p>2.照片需免冠，建议素颜</p>
+                                            <p>3.必须看清证件号码且证件号码不能被遮挡</p>
+                                            <p>4.照片必须支持jpg、png格式</p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="panel">
+                    <div class="panel-header">
+                        <p class="title fs16">
+                            企业信息图片
+                            <span class="fs12 gray1">( 注：上传的相片，横图长宽像素最大为1000*700，竖图长宽像素最大为1000*1400，图片大小在5M以内)</span>
+                        </p>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group fs14">
+
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:100%;">
+                                    <span class="title mr20 tr w8em">
+                                        <em class="red">*</em>营业执照
+                                        <br>
+
+                                    </span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <div id="yyzz_img">
+
+                                            </div>
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_yyzz_zm');">
+													</span>
+                                            <script>
+                                                function call_yyzz_zm(fileurl){
+                                                    var zm_img="<div style='position:relative;overflow:hidden;width:120px;float:left;margin-right: 10px;' id='"+fileurl+"'><a href='javascript:void(0)' onclick='$(this).parent().remove();' class='dellimage' style='color:#F00'>删除</a><img src='"+fileurl+"'" +"style='max-height:120px;max-width:120px;'/></img>" +"<input type='hidden' name='yyzz_img' value='"+fileurl+"'> </div>";
+                                                    $("#yyzz_img").html(zm_img);
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:none;">
+                                            <p class="red">填写错误提示！！！！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:100%;">
+                                    <span class="title mr20 tr w8em">
+                                       组织架构
+                                    </span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <div id="zzjg_img">
+
+                                            </div>
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_zzjg_zm');">
+													</span>
+                                            <script>
+                                                function call_zzjg_zm(fileurl){
+                                                    var zm_img="<div style='position:relative;overflow:hidden;width:120px;float:left;margin-right: 10px;' id='"+fileurl+"'><a href='javascript:void(0)' onclick='$(this).parent().remove();' class='dellimage' style='color:#F00'>删除</a><img src='"+fileurl+"'" +"style='max-height:120px;max-width:120px;'/></img>" +"<input type='hidden' name='zzjg_img' value='"+fileurl+"'> </div>";
+                                                    $("#zzjg_img").html(zm_img);
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:none;">
+                                            <p class="red">填写错误提示！！！！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:100%;">
+                                    <span class="title mr20 tr w8em">
+                                       统一社会信用图片
+                                    </span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <div id="shxy_img">
+
+                                            </div>
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_shxy_zm');">
+													</span>
+                                            <script>
+                                                function call_shxy_zm(fileurl){
+                                                    var zm_img="<div style='position:relative;overflow:hidden;width:120px;float:left;margin-right: 10px;' id='"+fileurl+"'><a href='javascript:void(0)' onclick='$(this).parent().remove();' class='dellimage' style='color:#F00'>删除</a><img src='"+fileurl+"'" +"style='max-height:120px;max-width:120px;'/></img>" +"<input type='hidden' name='shxy_img' value='"+fileurl+"'> </div>";
+                                                    $("#shxy_img").html(zm_img);
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:none;">
+                                            <p class="red">填写错误提示！！！！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:100%;">
+                                    <span class="title mr20 tr w8em">
+                                        <if condition="$store_type eq 1"><em class="red">*</em></if>
+                                        <if condition="$store_type eq 2"><em class="red">*</em></if>
+                                        商标注册证明
+                                        <br>
+
+                                    </span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <div id="zm_img">
+
+                                            </div>
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_back_zm');">
+													</span>
+                                            <script>
+                                                function call_back_zm(fileurl){
+                                                    var zm_img="<div style='position:relative;overflow:hidden;width:120px;float:left;margin-right: 10px;' id='"+fileurl+"'><a href='javascript:void(0)' onclick='$(this).parent().remove();' class='dellimage' style='color:#F00'>删除</a><img src='"+fileurl+"'" +"style='max-height:120px;max-width:120px;'/></img>" +"<input type='hidden' name='zm_img[]' value='"+fileurl+"'> </div>";
+                                                    $("#zm_img").append(zm_img);
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:none;">
+                                            <p class="red">填写错误提示！！！！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:100%;">
+                                    <span class="title mr20 tr w8em">
+                                         <if condition="$store_type eq 1"><em class="red">*</em></if>
+                                        <if condition="$store_type eq 2"><em class="red">*</em></if>
+                                        品牌授权证明
+                                    </span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <div id="ppsq_img">
+
+                                            </div>
+                                            <!--上传后缩略图 end-->
+                                            <span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_back_ppsq');">
+											</span>
+                                            <script>
+                                                function call_back_ppsq(fileurl){
+                                                    var zm_img="<div style='position:relative;overflow:hidden;width:120px;float:left;margin-right: 10px;' id='"+fileurl+"'><a href='javascript:void(0)' onclick='$(this).parent().remove();' class='dellimage' style='color:#F00'>删除</a><img src='"+fileurl+"'" +"style='max-height:120px;max-width:120px;'/></img>" +"<input type='hidden' name='ppsq_img[]' value='"+fileurl+"'> </div>";
+                                                    $("#ppsq_img").append(zm_img);
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:block;">
+                                            <p class="red">(最多不超过13张) “店铺名包含“旗舰、专卖、专营”，商家必须上传品牌授权或独占授权证明，需授权店铺从属人在拼趣多经营该品牌产品。”</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div class="item mt30 fl" style="width:100%;">
+                                    <span class="title mr20 tr w8em">
+                                        <if condition="$store_type eq 1"><em class="red">*</em></if>
+                                        <if condition="$store_type eq 2"><em class="red">*</em></if>
+                                        质检报告</span>
+                                    <div class="item-body">
+                                        <div>
+                                            <!--上传后缩略图 start-->
+                                            <div id="zjbg_img">
+
+                                            </div>
+                                            <!--上传后缩略图 end-->
+													<span class="file-box" onclick="GetUploadify(1,'','idcardImg','call_back_zjbg_img');">
+													</span>
+                                            <script>
+                                                function call_back_zjbg_img(fileurl){
+                                                    var zm_img="<div style='position:relative;overflow:hidden;width:120px;float:left;margin-right: 10px;' id='"+fileurl+"'><a href='javascript:void(0)' onclick='$(this).parent().remove();' class='dellimage' style='color:#F00'>删除</a><img src='"+fileurl+"'" +"style='max-height:120px;max-width:120px;'/></img>" +"<input type='hidden' name='zjbg_img[]' value='"+fileurl+"'> </div>";
+                                                    $("#zjbg_img").append(zm_img);
+                                                }
+                                            </script>
+                                        </div>
+                                        <div class="hint" style="display:block;">
+                                            <p class="red">(最多不超过13张)
+                                                注：
+
+                                                1、海淘类商家，经营食品及酒类者需在质检报告处上传食品流通许可证
+
+                                                2、目前只允许企业店铺经营酒类，需在质检报告处上传以下任一证件：酒类流通许可证（酒类流通登记备案）</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footing">
+                                <div class="fs16 mt15 tc">
+                                    <input type="hidden" name="store_type" value="{$store_type}">
+                                    <input class="btn" id="submit_info"  value="下一步">
+                                    <input type="reset" value="重填" class="btn reset">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <include file="Public/footer" />
+</div>
+
+<script type="text/javascript">
+    $("#submit_info").click(function () {
+        var store_type = $("[name='store_type']").val();
+            company_user_name = $("[name='company_user_name']").val(),
+            show_ower_idcard = $("[name='show_ower_idcard']").val(),
+            show_ower_mail = $("[name='show_ower_mail']").val(),
+            show_ower_mobile = $("[name='show_ower_mobile']").val(),
+            show_ower_mobile_recon = $("[name='show_ower_mobile_recon']").val(),
+            company_name = $("[name='company_name']").val(),
+            yyzz_img = $("[name='yyzz_img']").val(),
+            zzjg_img = $("[name='zzjg_img']").val(),
+            shxy_img = $("[name='shxy_img']").val(),
+            company_regiter_num = $("[name='company_regiter_num']").val(),
+            company_organ_code = $("[name='company_organ_code']").val(),
+            company_identi_code = $("[name='company_identi_code']").val(),
+            company_credit_code = $("[name='company_credit_code']").val(),
+            is_haitao = $("[name='is_haitao']").val(),
+            idcard_img_1 = $("[name='idcard_img_1']").val(),
+            idcard_img_2 = $("[name='idcard_img_2']").val(),
+            idcard_img_3 = $("[name='idcard_img_3']").val();
+
+        var zm_imgs = [];
+        $("input[name='zm_img[]']").each(function(i){
+              zm_imgs.push($(this).val());
+
+        });
+
+        var ppsq_imgs = [];
+        $("input[name='ppsq_img[]']").each(function(i){
+            ppsq_imgs.push($(this).val());
+        });
+
+        var zjbg_imgs = [];
+        $("input[name='zjbg_img[]']").each(function(i){
+            zjbg_imgs.push($(this).val());
+        });
+
+        var msg = "";
+        var is_true = true;
+
+        if(!company_user_name){
+            msg += '请输入企业法人姓名<br>';
+            is_true = false;
+        }
+        if(!show_ower_mail){
+            msg += "请输入法人邮箱<br>";
+            is_ture = false;
+        } else {
+            var email_reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+
+            if(!email_reg.test(show_ower_mail)){
+                msg += "邮箱格式不正确<br>";
+                is_ture = false;
+            }
+        }
+
+        if(!show_ower_mobile){
+            msg += "请输入法人手机<br>";
+            is_ture = false;
+        } else {
+            var mobile_reg = /^((1[3,5,8][0-9])|(14[5,7])|(17[0,1,6,7,8]))\d{8}$/;
+
+            if(!mobile_reg.test(show_ower_mobile)){
+                msg += "手机格式不正确<br>";
+                is_ture = false;
+            }
+        }
+        if(!show_ower_mobile_recon){
+            msg += "请重复输入法人手机号<br>";
+            is_ture = false;
+        }
+        if(show_ower_mobile_recon!=show_ower_mobile){
+            msg += "两次输入的手机号不一致<br>";
+            is_ture = false;
+        }
+        if(!show_ower_idcard){
+            msg += '请输入法人身份证号<br>';
+            is_true = false;
+        } else {
+            if(show_ower_idcard.length!=18){
+                msg += '请输入18位的身份证号码<br>';
+                is_true = false;
+            }
+        }
+        if(!company_name){
+            msg += '请输入公司名称<br>';
+            is_true = false;
+        }
+        if(!company_regiter_num){
+            msg += '请输入营业执照注册号<br>';
+            is_true = false;
+        }
+        if(!company_organ_code){
+            msg += '请输入组织机构代码<br>';
+            is_true = false;
+        }
+        if(!company_identi_code){
+            msg += '请输入纳税人识别码<br>';
+            is_true = false;
+        }if(!company_credit_code){
+            msg += '请输入统一社会信用代码<br>';
+            is_true = false;
+        }
+        if(!idcard_img_1){
+            msg += "请上传店主身份证正面照<br>";
+            is_ture = false;
+        }
+        if(!idcard_img_2){
+            msg += "请上传店主身份证反面照<br>";
+            is_ture = false;
+        }
+        if(!idcard_img_3){
+            msg += "请上传店主身份证手持身份证头部照片<br>";
+            is_ture = false;
+        }
+        if(store_type ==1 && store_type ==2){
+            if(zm_imgs.length==0){
+                msg += '请上传商标注册证明<br>';
+                is_true = false;
+            }
+        }
+
+        if(store_type == 1 || store_type == 2){
+            if(ppsq_imgs.length==0){
+                msg += '请上传品牌授权证明<br>';
+                is_true = false;
+            }
+        }
+
+        if(store_type == 1 || store_type == 2){
+            if(zjbg_imgs.length==0){
+                msg += '请上传质检报告<br>';
+                is_true = false;
+            }
+        }
+
+        if(!yyzz_img){
+            msg += '请上传营业执照<br>';
+            is_true = false;
+        }
+
+        if(is_true == false){
+            layer.alert(msg);
+            return false;
+        }
+
+        var index = layer.load(1, {
+            shade: [0.1,'#000']
+        });
+
+        var data = {'store_from':1,'company_user_name':company_user_name,'show_ower_mail':show_ower_mail,'is_haitao':is_haitao,
+            'show_ower_mobile':show_ower_mobile,'show_ower_idcard':show_ower_idcard,'company_name':company_name,
+            'company_regiter_num':company_regiter_num,'company_organ_code':company_organ_code,'company_identi_code':company_identi_code
+            ,'company_credit_code':company_credit_code,'store_type':store_type,'idcard_img_1':idcard_img_1,'idcard_img_2':idcard_img_2,
+            'idcard_img_3':idcard_img_3,'sbzm_imgs':zm_imgs,'ppsq_imgs':ppsq_imgs,'zjbg_imgs':zjbg_imgs,
+            'yyzz_img':yyzz_img,'zzjg_img':zzjg_img,'shxy_img':shxy_img};
+        var res = $(data).stringify();
+
+        $.cookie('first_data', res, { expires: 7 });
+        location.href='/Home/Store/fill_store_info';
+
+        /*
+        $.ajax({
+            type : 'POST',
+            url : '/Home/Store/join_second_company_post',
+            data : data,
+            dataType : 'JSON',
+            success : function(res){
+                if(res.status == 1){
+                        layer.close(index);
+                        location.href='/Home/Store/fill_store_info/store_id/'+res.store_id;
+                }else{
+                    layer.msg(res.msg);
+                    layer.close(index);
+                    return false;
+                }
+            }
+        });
+        */
+    })
+
+    //日期选择
+    var picker_start = new Pikaday(
+            {
+                field: document.getElementById('start-day'),
+                firstDay: 1,
+                minDate: new Date('1900-01-01'),
+                maxDate: new Date('2100-12-31'),
+                yearRange: [1900,2100]
+            });
+
+    var picker_end = new Pikaday(
+            {
+                field: document.getElementById('end-day'),
+                firstDay: 1,
+                minDate: new Date('1900-01-01'),
+                maxDate: new Date('2100-12-31'),
+                yearRange: [1900,2100]
+            });
+
+    $.fn.stringify = function() {
+        return JSON.stringify(this);
+    }
+
+</script>
+
+</body>
+</html>
+
+

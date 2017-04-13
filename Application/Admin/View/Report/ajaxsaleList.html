@@ -1,0 +1,43 @@
+
+<form method="post" enctype="multipart/form-data" target="_blank" id="form-order">
+	<div class="table-responsive">
+		<table id="list-table" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+			<thead>
+			<tr role="row">
+				<th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending">ID</th>
+				<th class="sorting" tabindex="0" aria-controls="example1" >商品名称</th>
+				<th class="sorting" tabindex="0" aria-controls="example1" >订单号</th>
+				<th class="sorting" tabindex="0" aria-controls="example1" >数量</th>
+				<th class="sorting" tabindex="0" aria-controls="example1" >售价</th>
+				<th class="sorting" tabindex="0" aria-controls="example1" >订单状态</th>
+				<th class="sorting" tabindex="0" aria-controls="example1" >出售日期</th>
+			</tr>
+			</thead>
+			<tbody>
+			<foreach name="list" item="vo" key="k" >
+				<tr role="row" align="center">
+					<td>{$vo.order_id}</td>
+					<td>{$vo.goods_name}</td>
+					<td>{$vo.order_sn}</td>
+					<td>{$vo.num}</td>
+					<td>{$vo.goods_price}</td>
+					<td>{$order_type[$vo[order_type]]}</td>
+					<td>{$vo.add_time|date="Y-m-d",###}</td>
+				</tr>
+			</foreach>
+			</tbody>
+			<tfoot>
+			</tfoot>
+		</table>
+	</div>
+</form>
+<div class="row">
+	<div class="col-sm-6 text-left"></div>
+	<div class="col-sm-6 text-right">{$page}</div>
+</div>
+<script>
+	$(".pagination  a").click(function(){
+		var page = $(this).data('p');
+		ajax_get_table('search-form2',page);
+	});
+</script>

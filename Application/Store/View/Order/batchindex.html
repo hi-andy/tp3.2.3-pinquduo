@@ -1,0 +1,81 @@
+<include file="Public/min-header"/>
+<link href="__PUBLIC__/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
+<script src="__PUBLIC__/plugins/daterangepicker/moment.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+    <style>#search-form > .form-group{margin-left: 10px;}
+    .file-box{ position:relative;width:340px}
+    .txt{ height:22px; border:1px solid #3c8dbd; width:180px;}
+    .btns{ background-color:#3c8dbd; border:none; height:24px; width:70px; color: #fff; line-height: 24px; text-align: center; border-radius: 10px;}
+    .file{ top:0; right:80px; height:24px;width:260px }
+
+    </style>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-list"></i> 批量发货</h3>
+                </div>
+                <div class="panel-body">
+
+                    <table class="table table-bordered">
+                        <tbody>
+
+                        <tr>
+                            <td class="text-center" style="font-size: 18px;" colspan="2">先下载批量导入的Excel表格，然后将相应的数据填写进去后点击批量导入即可<a href="http://pinquduo.cn/Uploads/upfile/Excel/批量发货模板.xlsx">【模板下载】</a></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center"><form class="text-center" method="post" action="{:U('Store/Order/batchdelivery')}" enctype="multipart/form-data">
+                                <div style="margin-left: 45%;"><input class="file" style="margin-top: 1%;" type="file" name="file_stu" /></div>
+                                <input type="submit" style="margin-top: 1%;" class="btns"  value="导入" />
+                            </form></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+
+</body>
+<script>
+    $("#submit_withdrawal").click(function () {
+        var file_stu = $("[name='file_stu']").val()
+
+        var msg = "";
+        var is_true = true;
+
+        if(!file_stu){
+            msg += "请选择批量发货的表格<br>";
+            is_true = false;
+        }
+
+        if(is_true == false){
+            layer.alert(msg);
+            return false;
+        }
+        $.ajax({
+            type : 'POST',
+            url : '/Store/Order/batchdelivery',
+            data : {'file_stu':file_stu},
+            dataType : 'JSON',
+            success : function(res){
+                if(res.status){
+                    layer.alert(res.msg,function(){
+                        location.href="/Store/Order/batchindex";
+                    });
+                }else{
+                    layer.msg(res.msg);
+                }
+            }
+        });
+    });
+</script>
+
+</html>

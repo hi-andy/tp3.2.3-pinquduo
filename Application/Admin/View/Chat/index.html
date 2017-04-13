@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+    <title>客服中心</title>
+    <!--sdk-->
+    <script src='__PUBLIC__/Chat/sdk/dist/strophe.js'></script>
+    <script src='__PUBLIC__/Chat/sdk/dist/websdk-1.1.2.js'></script>
+
+    <!--config-->
+    <script src="__PUBLIC__/Chat/javascript/dist/webim.config.js"></script>
+
+    <!--[if lte IE 9]>
+    <script src="__PUBLIC__/Chat/javascript/dist/swfupload/swfupload.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <section id='main' class='w100'>
+        <div id='demo'></div>
+        <div id='components'></div>
+    </section>
+</body>
+</html>
+<!--demo javascript-->
+<script>
+    var options = {
+        apiUrl:  "http://a1.easemob.com",
+        user: '{$username}',
+        //accessToken: '13543390771',
+        pwd: "{$password}",
+        appKey:"1165160929115391#pqd"
+    };
+</script>
+<script src="__PUBLIC__/Chat/javascript/dist/demo.js"></script>

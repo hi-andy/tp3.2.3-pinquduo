@@ -1,0 +1,63 @@
+<include file="Public/min-header"/>  
+<!--公共js 代码 --><script src="__PUBLIC__/js/common.js" charset="utf-8" type="text/javascript"></script><!--公共js end代码 -->
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+		<section class="content">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">增加分类</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <form action="{:U('Goods/addEditLabel')}" method="post" class="form-horizontal" id="label_form">
+                        <div class="box-body">                         
+                                <div class="form-group">
+                                     <label class="col-sm-2 control-label">标签名称</label>
+                                     <div class="col-sm-6">
+                                        <input type="text" placeholder="名称" class="form-control large" name="name" value="{$goods_label_info.name}">
+                                        <span class="help-inline" style="color:#F00; display:none;" id="err_name"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label0 class="control-label col-sm-2">上级分类</label0>
+
+                                    <div class="col-sm-3">
+                                        <select name="parent_id" id="parent_id"  class="small form-control">
+	                                        <option value="0">顶级分类</option>
+                                            <foreach name="cat_list" item="v" >                                            
+                                                <option value="{$v[id]}">{$v[name]}</option>
+                                            </foreach>                                            
+										</select>
+                                    </div>
+                                </div>
+				<div class="form-group">
+				  <div class="form-group">
+
+                        <div class="box-footer">                        	
+                            <input type="hidden" name="id" value="{$goods_category_info.id}">                           
+                        	<button type="reset" class="btn btn-primary pull-left"><i class="icon-ok"></i>重填  </button>                       	                 
+                            <button type="button" onclick="ajax_submit_form('label_form','{:U('Goods/addEditLabel?is_ajax=1')}');" class="btn btn-primary pull-right"><i class="icon-ok"></i>提交  </button>
+                        </div>
+                   </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+</div>
+<script>  
+    
+/** 以下是编辑时默认选中某个商品分类*/
+$(document).ready(function(){
+	<if condition="$level_cat['2'] gt 0">	
+		 // 如果当前是二级分类就让一级父id默认选中
+		 $("#parent_id").val('{$level_cat[1]}');
+	</if>
+
+});
+ 
+</script>
+   
+</body>
+</html>

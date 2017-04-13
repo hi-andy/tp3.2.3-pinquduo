@@ -1,0 +1,164 @@
+<include file="Public/min-header" />
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+    <section class="content ">
+        <!-- Main content -->
+        <div class="container-fluid">
+            <div class="pull-right">
+
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-list"></i> 修改密码</h3>
+                </div>
+                <div class="panel-body ">
+                    <!--表单数据-->
+                    <form method="post" id="adminHandle" action="{:U('Admin/adminHandle')}">                    
+                        <!--通用信息-->
+                    <div class="tab-content col-md-10">                 	  
+                        <div class="tab-pane active" id="tab_tongyong">                           
+                            <table class="table table-bordered">
+                                <tbody>
+                                <tr>
+                                    <td class="col-sm-2">店铺名称：
+	                                    <br>
+	                                    <span style="color: red">只能修改一次哦，亲谨慎考虑</span>
+                                    </td>
+                                    <td class="col-sm-8" style="float: left">
+                                        <input type="text" class="form-control" style="width: 350px;" name="store_name" value="{$info.store_name}" ><td> <button class="btn btn-primary" id="submit_withdrawal" title="" data-toggle="tooltip" type="button" data-original-title="保存">更改商户名</button></td>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>上传LOGO:</td>
+                                    <td colspan="2">
+                                        <input type="button" value="上传图片"  onclick="GetUploadify(1,'','goods','call_back');"/>
+                                        <input type="hidden" class="input-sm"  name="store_logo" id="store_logo" value="{$goodsInfo.original_img}"/>
+                                        &nbsp;&nbsp;
+                                        <a target="_blank" href="{$info.store_logo}" id="original_img2">
+                                            <img width="50" height="100px" id="original_img3" src="{$info.store_logo}" style="max-height: 100px;width: 100px;">
+                                        </a>
+                                        <script>
+                                            function call_back(fileurl_tmp ){
+                                                $("#store_logo").val(fileurl_tmp);
+                                                $("#original_img").val(fileurl_tmp);
+                                                $("#original_img2").attr('href', fileurl_tmp);
+                                                $("#original_img3").attr('src',fileurl_tmp);
+                                            }
+                                        </script>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Email地址：</td>
+                                    <td colspan="2">
+                         				<input type="text" class="form-control" name="email" value="{$info.email}" >
+                                    </td>
+                                </tr>  
+                                <tr>
+                                    <td>登录密码：</td>
+                                    <td colspan="2">
+                               			<input type="password" class="form-control" name="password" value="{$info.password}" >
+                                    </td>
+                                </tr>
+                                <tr>
+	                                <td>确认密码：</td>
+	                                <td colspan="2">
+		                                <input type="password" class="form-control" name="password2" value="" placeholder="当您需要修改密码的时候请在这重复输入您的登录密码">
+	                                </td>
+                                </tr>
+                                <tr>
+	                                <td>保证金：</td>
+	                                <td colspan="2">
+		                                <input type="text" disabled="disabled" class="form-control" name="margin" value="￥{$info.margin}" >
+	                                </td>
+                                </tr>
+                                <tr>
+	                                <td>支付宝流水订单号：</td>
+	                                <td colspan="2">
+		                                <input type="text" disabled="disabled" class="form-control" name="trade_no" value="{$info.trade_no}" >
+	                                </td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                	<tr>
+                                	<td><input type="hidden" name="act" value="{$act}">
+                                		<input type="hidden" name="id" value="{$info.id}">
+                                	</td>
+                                	<td colspan="2" class="text-right"><input class="btn btn-primary" type="button" onclick="adsubmit()" value="保存"></td></tr>
+                                </tfoot>                               
+                                </table>
+                        </div>                           
+                    </div>              
+			    	</form><!--表单数据-->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+function adsubmit(){
+    var password = $('input[name=password]').val();
+	var password2 = $('input[name=password2]').val();
+	if($('input[name=user_name]').val() == ''){
+		layer.msg('商户名不能为空！', {icon: 2,time: 1000});   //alert('少年，用户名不能为空！');
+		return false;
+	}
+	if($('input[name=email]').val() == ''){
+		layer.msg('邮箱不能为空！', {icon: 2,time: 1000});//alert('少年，邮箱不能为空！');
+		return false;
+	}
+	if(password == ''){
+		layer.msg('密码不能为空！', {icon: 2,time: 1000});//alert('少年，密码不能为空！');
+		return false;
+	}
+	if(password2 != '')
+	{
+		if(password != password2)
+		{
+			layer.msg('两次密码不一致！', {icon: 2,time: 1000});//alert('少年，密码不能为空！');
+			return false;
+		}
+	}
+    if(password.length < 6 ){
+        layer.msg('密码字符串必须大于6位！', {icon: 2,time: 1000});//alert('少年，密码不能为空！');
+        return false;
+    }
+	$('#adminHandle').submit();
+}
+</script>
+
+<script>
+	$("#submit_withdrawal").click(function () {
+		var store_name = $("[name='store_name']").val()
+
+		var msg = "";
+		var is_true = true;
+
+		if(!store_name){
+			msg += "请输入商户的名字<br>";
+			is_true = false;
+		}
+
+		if(is_true == false){
+			layer.alert(msg);
+			return false;
+		}
+		$.ajax({
+			type : 'POST',
+			url : '/Store/Admin/changename',
+			data : {'store_name':store_name},
+			dataType : 'JSON',
+			success : function(res){
+				if(res.status){
+					layer.alert(res.msg,function(){
+						location.href="/Store/Admin/admin_info/store_id/"+{$_SESSION['merchant_id']};
+					});
+				}else{
+					layer.msg(res.msg);
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>

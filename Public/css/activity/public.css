@@ -1,0 +1,54 @@
+@charset "utf-8";
+html{min-height:100%;background:#FFF;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;font-size: 62.5%;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;-webkit-tap-highlight-color:rgba(0,0,0,0)}body{min-width:320px;max-width:750px;min-height:100%;line-height:1.4;margin:0 auto;font:14px/1.4"Helvetica Neue", Helvetica, STHeiTi, sans-serif, tahoma, arial, \5b8b\4f53;color:#444}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;margin:0;padding:0}audio,canvas,video{display:inline-block;*display:inline;*zoom:1}input:focus,a:focus{outline:none}fieldset,img{border:0}address,caption,cite,code,dfn,em,strong,th,var,i{font-style:normal;font-weight:normal}ol,ul{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}:root sub,:root sup{vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}button,input,textarea,select{font-family:tahoma, arial, simsun, sans-serif;font-size:inherit;font-weight:inherit;line-height:1.5;vertical-align:middle}button,input,textarea,select{*font-size:100%}textarea{resize:none}table{border-collapse:collapse;border-spacing:0}th{text-align:inherit}a{vertical-align:baseline;color:#444;}a:hover{text-decoration:none}ins,a{text-decoration:none}del{text-decoration:line-through}.clear{display:block;float:none;clear:both;overflow:hidden;visibility:hidden;width:0;height:0;background:none;border:0;font-size:0}.cfix:before,.cfix:after{content:"";display:table}.cfix:after{clear:both}.cfix{*zoom:1}.fl{float:left;display:inline}.fr{float:right;display:inline}.dib-wrap{font-size:0;letter-spacing:-.31em;*letter-spacing:normal}.dib-wrap .dib{font-size:12px;letter-spacing:normal;word-spacing:normal;vertical-align:top}.dib{display:inline-block;*display:inline;*zoom:1}.hide{display:none}
+
+a img {vertical-align: middle;}
+
+/* nav */
+.mod-list-fl:before, .mod-list-fl:after {content:""; display:table;}
+.mod-list-fl:after {clear:both;}
+.mod-list-fl {zoom:1;}
+.mod-list-fl li {float:left;}
+
+.mod-box {display:-moz-box; display:-webkit-box; display:box;}
+.box-flex {-moz-box-flex:1; -webkit-box-flex:1; -ms-flex:1; box-flex:1;}
+
+/* seckill */
+.seckill .banner{display: block;}
+
+.cg-nav-list.fixed{position: fixed;top:0;left: 0;z-index:9999;width: 100%;}
+.cg-nav-list a{display: block;padding:5px 0;width: 25%;background-color: #ff5f73;color: #fff; text-align: center;}
+.cg-nav-list a.active{background-color: #ff808f;color: #bf0719;}
+.cg-nav-list b{display: block;}
+
+.item-list{display:none;margin-top:3px;padding:3% 2%;background-color: #e02443;font-family: '微软雅黑';}
+.item-list.on{display: block;}
+.item-list li{margin-bottom:2%;width: 49%;background-color: #fff;}
+.item-list .img{position:relative;}
+.item-list li:nth-child(odd){float: left;;}
+.item-list li:nth-child(even){float: right;}
+.item-list .info{padding: 1% 2% 3% 2%;font-size: 12px;}
+.item-list h3{height:36px;line-height:18px;color: #000;font-weight: bold;overflow : hidden;}
+.item-list h4{margin-top: 4px;color: #f03232;}
+.item-list h4 i{margin:0 2px;font-size: 2.2rem;}
+.item-list h4 del{color: #858484;}
+.item-list span{display: inline-block;float: right;}
+.item-list span.go{margin-right:6%;width: 32px;height: 32px;background: url(../images/go.gif) no-repeat center center;background-size: 100%;}
+.item-list span.more{padding:0 5px;font-size:12px;background-color: #ff012b;border-radius: 5px;color: #fff;-webkit-transform: translateY(47%);transform: translateY(47%);}
+
+
+.align-vertical{display: -webkit-box;-webkit-box-orient:vertical;-webkit-box-pack: center;-webkit-box-align: center;display: box;box-orient:vertical;box-pack: center;box-align: center;}
+
+.mask{position:absolute;top:0;left:0;width:100%;height:100%;background: rgba(0, 0, 0, 0.5);}
+.mask .align-vertical{width: 45%;height: 45%;border-radius:100%;background: rgba(0, 0, 0, 0.65);color: #fff;text-align: center;font-size: 20px;}
+
+
+
+
+
+
+
+
+
+
+
+
