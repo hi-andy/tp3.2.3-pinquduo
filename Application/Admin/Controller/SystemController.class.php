@@ -66,6 +66,9 @@ class SystemController extends BaseController{
             } else {
                 $this->error('视频名称重复！');
             }
+
+			//$_POST["ip"]=get_client_ip();
+
 		}
 	}
 

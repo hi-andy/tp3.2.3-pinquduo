@@ -783,11 +783,12 @@ class GoodsController extends BaseController {
 				$json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
 				if (!empty($ajax_get))
 					$this->getJsonp($json);
-			exit(json_encode($json));
+                $returnjson = json_encode($json);
 		}
 		//参团购物
 		if($type == 0)
 		{
+            $returnjson = $this->joinGroupBuy($parameter);
 			$result = M('group_buy')->where("`order_id` = $order_id")->find();
 			if($result['end_time']<time())
 			{
@@ -796,7 +797,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 			//为我点赞只允许每个人参团一次
 			if($result['is_raise']==1)
@@ -810,7 +811,7 @@ class GoodsController extends BaseController {
                         echo "<script> alert('".$json['msg']."') </script>";
                         exit;
                     }
-					exit(json_encode($json));
+                    $returnjson = json_encode($json);
 				}
 			}
 			//每个团的最后一个人直接将订单锁住防止出现错误
@@ -825,7 +826,7 @@ class GoodsController extends BaseController {
                         echo "<script> alert('".$json['msg']."') </script>";
                         exit;
                     }
-					exit(json_encode($json));
+                    $returnjson = json_encode($json);
 				}
 			}elseif($num==$result['goods_num']){
 				$json =array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
@@ -833,7 +834,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 			//判断该用户是否参团了
 			$self = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=1')->find();
@@ -844,7 +845,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 			//判断用户是否已经生成未付款订单
 			$on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=0 and `is_cancel`=0' )->find();
@@ -855,7 +856,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 			$num2 = M('group_buy')->where('`id`='.$result['id'].' `mark` = '.$order_id.' and `is_pay`=1')->count();
 			if($num2==$result['goods_num'])
@@ -865,24 +866,23 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
-
-			$this->joinGroupBuy($parameter);
 		}
 		else if($type == 1)	//开团
 		{
 			//统计数量
 
-			$this->openGroup($parameter);
+            $returnjson = $this->openGroup($parameter);
 		}
 		//自己买
 		else if($type == 2)
 		{
-			$this->buyBymyself($parameter);
+            $returnjson = $this->buyBymyself($parameter);
 		}
-        $rdsname = "getUserOrderList".$user_id.$type;
+        $rdsname = "getUserOrderList".$user_id."*";
         redisdelall($rdsname);//根据类型删除用户订单缓存
+        exit($returnjson);
 	}
 
 	/**
@@ -1056,7 +1056,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 			//优惠卷(有就使用··不然就直接跳过)
 			if(!empty(I('coupon_id'))) {
@@ -1070,7 +1070,7 @@ class GoodsController extends BaseController {
                         echo "<script> alert('".$json['msg']."') </script>";
                         exit;
                     }
-					exit(json_encode($json));
+                    $returnjson = json_encode($json);
 				}
 			}
 
@@ -1101,7 +1101,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}else{
 				M()->rollback();//有数据库操作不成功时进行数据回滚
 				$json = array('status'=>-1,'msg'=>'参团失败');
@@ -1109,7 +1109,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 		}
 	}
@@ -1307,7 +1307,7 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			exit(json_encode($json));
+            $returnjson = json_encode($json);
 		}
 
 		//优惠卷(有就使用··不然就直接跳过)
@@ -1324,7 +1324,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 		}
 		$res = M('group_buy')->where("`id` = $group_buy")->data(array('order_id'=>$o_id))->save();
@@ -1356,7 +1356,7 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			exit(json_encode($json));
+            $returnjson = json_encode($json);
 		}else{
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'开团失败');
@@ -1366,8 +1366,9 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			exit(json_encode($json));
+            $returnjson = json_encode($json);
 		}
+		return $returnjson;
 	}
 
 	/**
@@ -1456,7 +1457,7 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			exit(json_encode($json));
+            $returnjson = json_encode($json);
 		}
 		//在商品规格订单表加一条数据
 		$spec_data['order_id'] = $o_id;
@@ -1488,7 +1489,7 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			exit(json_encode($json));
+            $returnjson = json_encode($json);
 		}
 		//优惠卷(有就使用··不然就直接跳过)
 		if(!empty(I('coupon_id'))) {
@@ -1504,7 +1505,7 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				exit(json_encode($json));
+                $returnjson = json_encode($json);
 			}
 		}
 		if(!empty($o_id))
@@ -1537,7 +1538,7 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			exit(json_encode($json));
+            $returnjson = json_encode($json);
 		}else{
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'购买失败');
@@ -1547,8 +1548,9 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			exit(json_encode($json));
+            $returnjson = json_encode($json);
 		}
+		return $returnjson;
 	}
 
 	//获取小数点后面的长度

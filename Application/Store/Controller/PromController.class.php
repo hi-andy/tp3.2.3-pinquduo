@@ -34,7 +34,6 @@ class PromController extends BaseController {
 		{
 			$this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
 		}
-		session('merchant_id',$haitao['storeid']);
 	}
 
 	/*
@@ -437,16 +436,8 @@ class PromController extends BaseController {
 		$order = $orderLogic->getOrderInfo($order_id);
 		$this->editable($order);
 		if(IS_POST){
-//			$admin_id = session('admin_id');
-//			if(empty($admin_id)){
-//				$this->error('非法操作');
-//				exit;
-//			}
-
 			$update['coupon_price'] = I('post.discount');
 			$update['shipping_price'] = I('post.shipping_price');
-//			$setInc = M('order')->where('`order_id`='.$order_id)->setInc('coupon_price',$data['coupon_price']);
-//			$setInc2 = M('order')->where('`order_id`='.$order_id)->setInc('shipping_price',$data['shipping_price']);
 			$update['order_amount'] = $order['total_amount'] + $update['shipping_price'] - $update['coupon_price'];
 			$row = M('order')->where(array('order_id'=>$order_id))->save($update);
 
@@ -695,20 +686,6 @@ class PromController extends BaseController {
 			$data['remark'] = I('remark');
 			$note ="退换货:{$type_msg[$data['type']]}, 状态:{$status_msg[$data['status']]},处理备注：{$data['remark']}";
 			$result = M('return_goods')->where("id= $id")->save($data);
-//			if($result)
-//			{
-//				$type = empty($data['type']) ? 2 : 3;
-//				$where = " order_id = ".$return_goods['order_id']." and goods_id=".$return_goods['goods_id'];
-//				M('order_goods')->where($where)->save(array('is_send'=>$type));//更改商品状态
-//				$promLogic = new PromLogic();
-//				$status = array();
-//				$status[1]='已确认';
-//				$status[2]='处理中';
-//				$status[3]='已完成';
-//				$log = $promLogic->orderActionLog($return_goods[order_id],$status[$data['status']],$note);
-//				$this->success('修改成功!');
-//				exit;
-//			}
 		}
 		$this->assign('id',$id); // 用户
 		$this->assign('user',$user); // 用户

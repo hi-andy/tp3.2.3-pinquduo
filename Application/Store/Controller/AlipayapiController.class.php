@@ -7,19 +7,106 @@ namespace Store\Controller;
 
 class AlipayapiController extends BaseController {
 
+//	/**
+//	 * 支付结果返回
+//	 */
+//	public function notify() {
+//		$apitype = I('get.apitype');
+//
+//		$pay = new \Think\Pay($apitype, C('payment.' . $apitype));
+//		if (IS_POST && !empty($_POST)) {
+//			$notify = $_POST;
+//		} elseif (IS_GET && !empty($_GET)) {
+//			$notify = $_GET;
+//			unset($notify['method']);
+//			unset($notify['apitype']);
+//		} else {
+//			exit('Access Denied');
+//		}
+//		//验证
+//		if ($pay->verifyNotify($notify)) {
+//			//获取订单信息
+//			$info = $pay->getInfo();
+//
+//			if ($info['status']) {
+//				$payinfo = M("Pay")->field(true)->where(array('out_trade_no' => $info['out_trade_no']))->find();
+//				if ($payinfo['status'] == 0 && $payinfo['callback']) {
+//					session("pay_verify", true);
+//					$check = R($payinfo['callback'], array('money' => $payinfo['money'], 'param' => unserialize($payinfo['param'])));
+//					if ($check !== false) {
+//						M("Pay")->where(array('out_trade_no' => $info['out_trade_no']))->setField(array('update_time' => time(), 'status' => 1));
+//					}
+//				}
+//				if (I('get.method') == "return") {
+//					redirect($payinfo['url']);
+//				} else {
+//					$pay->notifySuccess();
+//				}
+//			} else {
+//				$this->error("支付失败！");
+//			}
+//		} else {
+//			E("Access Denied");
+//		}
+//	}
+//
+//	public function index() {
+//		if (IS_POST) {
+//			//页面上通过表单选择在线支付类型，支付宝为alipay 财付通为tenpay
+//			$paytype = I('post.paytype');
+//
+//			$pay = new \Think\Pay($paytype, C('payment.' . $paytype));
+//			$order_no = $pay->createOrderNo();
+//			$vo = new \Think\Pay\PayVo();
+//			$vo->setBody("商品描述")
+//				->setFee(I('post.money')) //支付金额
+//				->setOrderNo($order_no)
+//				->setTitle("巨树村")
+//				->setCallback("Store/Index/pay")
+//				->setUrl(U("Store/Index/index"))
+//				->setParam(array('order_id' => "goods1业务订单号"));
+//			echo $pay->buildRequestForm($vo);
+//		} else {
+//			//在此之前goods1的业务订单已经生成，状态为等待支付
+//			$this->display();
+//		}
+//	}
+//
+//	/**
+//	 * 订单支付成功
+//	 * @param type $money
+//	 * @param type $param
+//	 */
+//	public function pay($money, $param) {
+//		if (session("pay_verify") == true) {
+//			session("pay_verify", null);
+//			//处理goods1业务订单、改名good1业务订单状态
+//			$data['is_pay'] = 1;
+//			$data['notify_time'] = $param['notify_time'];
+//			$data['margin_order'] = $param['out_trade_no'];
+//			$data['margin'] = $param['total_fee'];
+//			$data['buyer_email'] = $param['buyer_email'];
+//			$data['trade_no'] = $param['trade_no'];
+//			$store_id=M('merchant')->where('store_name ='."'".$param['subject']."'")->getField('id');
+//			M('store_detail')->where('storeid='.$store_id)->data($data)->save();
+//		} else {
+//			E("Access Denied");
+//		}
+//	}
 
 	public function _initialize() {
 		vendor('Alipay.Corefunction');
-		vendor('Alipay.Rsa');
-		vendor('Alipay.Notify');
-		vendor('Alipay.Asubmit');
-		vendor('Alipay.AlipaySubmit');
+		vendor('Alipay.Rsafunction');
+		vendor('Alipay.alipay_notify');
+		vendor('Alipay.alipay_submit');
+//		vendor('Alipay.AlipaySubmit');
 		if(empty($_SESSION['merchant_id']))
 		{
 			session_unset();
 			session_destroy();
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
+		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->field('is_pay')->find();
 	}
 
 	function pay_money()
@@ -70,11 +157,7 @@ class AlipayapiController extends BaseController {
 		 *****************************************************/
 		//这里我们通过TP的C函数把配置项参数读出，赋给$alipay_config；
 		$alipay_config=C('alipay_config');
-		vendor('Alipay.Corefunction');
-		vendor('Alipay.Rsa');
-		vendor('Alipay.Notify');
-		vendor('Alipay.Asubmit');
-		vendor('Alipay.AlipaySubmit');
+
 		/**************************请求参数**************************/
 
 		$payment_type = "1"; //支付类型 //必填，不能修改
@@ -128,12 +211,15 @@ class AlipayapiController extends BaseController {
 		/*
 		同理去掉以下两句代码；
 		*/
-		vendor('Alipay.Anotify');
 		//这里还是通过C函数来读取配置项，赋值给$alipay_config
 		$alipay_config=C('alipay_config');
 		//计算得出通知验证结果
-		$alipayNotify = new \AlipayNotify($alipay_config);
-		$verify_result = $alipayNotify->verifyNotify();
+//		$alipayNotify = new \AlipayNotify($alipay_config);
+//		$verify_result = $alipayNotify->verifyNotify();
+		$file = '/Public/log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
+		$content = "回调开始"; //要写入的内容
+		file_put_contents($file, $content,FILE_APPEND);//写入文件
+		M('store_detail')->where('storeid = 2')->save(array('is_pay'=>2));
 		if(1) {//验证成功
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//请在这里加上商户的业务逻辑程序代
@@ -157,7 +243,7 @@ class AlipayapiController extends BaseController {
 				"notify_time"   => $notify_time,  //通知的发送时间。
 				"buyer_email"   => $buyer_email,  //买家支付宝帐号；
 			);
-			$file = './log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
+			$file = '/Public/log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
 			$content = "$out_trade_no ··· $trade_no ··· $trade_status"; //要写入的内容
 			file_put_contents($file, $content,FILE_APPEND);//写入文件
 			M('store_detail')->where('storeid = 2')->save(array('is_pay'=>3));
@@ -197,7 +283,7 @@ class AlipayapiController extends BaseController {
 		else {
 			//验证失败
 			echo "fail";
-			$file = './log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
+			$file = '/Public/log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
 			$content = "失败"; //要写入的内容
 			file_put_contents($file, $content,FILE_APPEND);//写入文件
 			M('store_detail')->where('storeid = 2')->save(array('is_pay'=>4));
@@ -288,91 +374,4 @@ class AlipayapiController extends BaseController {
 		$store_id=M('merchant')->where('store_name ='."'".$parameter['subject']."'")->getField('id');
 		M('store_detail')->where('storeid='.$store_id)->data($data)->save();
 	}
-
-	//	/**
-//	 * 支付结果返回
-//	 */
-//	public function notify() {
-//		$apitype = I('get.apitype');
-//
-//		$pay = new \Think\Pay($apitype, C('payment.' . $apitype));
-//		if (IS_POST && !empty($_POST)) {
-//			$notify = $_POST;
-//		} elseif (IS_GET && !empty($_GET)) {
-//			$notify = $_GET;
-//			unset($notify['method']);
-//			unset($notify['apitype']);
-//		} else {
-//			exit('Access Denied');
-//		}
-//		//验证
-//		if ($pay->verifyNotify($notify)) {
-//			//获取订单信息
-//			$info = $pay->getInfo();
-//
-//			if ($info['status']) {
-//				$payinfo = M("Pay")->field(true)->where(array('out_trade_no' => $info['out_trade_no']))->find();
-//				if ($payinfo['status'] == 0 && $payinfo['callback']) {
-//					session("pay_verify", true);
-//					$check = R($payinfo['callback'], array('money' => $payinfo['money'], 'param' => unserialize($payinfo['param'])));
-//					if ($check !== false) {
-//						M("Pay")->where(array('out_trade_no' => $info['out_trade_no']))->setField(array('update_time' => time(), 'status' => 1));
-//					}
-//				}
-//				if (I('get.method') == "return") {
-//					redirect($payinfo['url']);
-//				} else {
-//					$pay->notifySuccess();
-//				}
-//			} else {
-//				$this->error("支付失败！");
-//			}
-//		} else {
-//			E("Access Denied");
-//		}
-//	}
-//
-//	public function index() {
-//		if (IS_POST) {
-//			//页面上通过表单选择在线支付类型，支付宝为alipay 财付通为tenpay
-//			$paytype = I('post.paytype');
-//
-//			$pay = new \Think\Pay($paytype, C('payment.' . $paytype));
-//			$order_no = $pay->createOrderNo();
-//			$vo = new \Think\Pay\PayVo();
-//			$vo->setBody("商品描述")
-//				->setFee(I('post.money')) //支付金额
-//				->setOrderNo($order_no)
-//				->setTitle("巨树村")
-//				->setCallback("Store/Index/pay")
-//				->setUrl(U("Store/Index/index"))
-//				->setParam(array('order_id' => "goods1业务订单号"));
-//			echo $pay->buildRequestForm($vo);
-//		} else {
-//			//在此之前goods1的业务订单已经生成，状态为等待支付
-//			$this->display();
-//		}
-//	}
-//
-//	/**
-//	 * 订单支付成功
-//	 * @param type $money
-//	 * @param type $param
-//	 */
-//	public function pay($money, $param) {
-//		if (session("pay_verify") == true) {
-//			session("pay_verify", null);
-//			//处理goods1业务订单、改名good1业务订单状态
-//			$data['is_pay'] = 1;
-//			$data['notify_time'] = $param['notify_time'];
-//			$data['margin_order'] = $param['out_trade_no'];
-//			$data['margin'] = $param['total_fee'];
-//			$data['buyer_email'] = $param['buyer_email'];
-//			$data['trade_no'] = $param['trade_no'];
-//			$store_id=M('merchant')->where('store_name ='."'".$param['subject']."'")->getField('id');
-//			M('store_detail')->where('storeid='.$store_id)->data($data)->save();
-//		} else {
-//			E("Access Denied");
-//		}
-//	}
 }

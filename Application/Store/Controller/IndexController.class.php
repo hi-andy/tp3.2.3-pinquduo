@@ -153,13 +153,11 @@ class IndexController extends BaseController {
 			session_destroy();
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
-		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->field('storeid,is_pay')->find();
-		session('merchant_id',$haitao['storeid']);
 	}
 
 	function pay_money()
 	{
-			$store_id = $_SESSION['merchant_id'];
+		$store_id = $_SESSION['merchant_id'];
 		$detail = M('store_detail')->where('storeid = '.$store_id)->find();
 		$store_name = M('merchant')->where('id = '.$store_id)->find();
 		if($detail['store_from']==1)

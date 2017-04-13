@@ -35,7 +35,6 @@ class ReportController extends BaseController{
 		{
 			$this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
 		}
-		session('merchant_id',$haitao['storeid']);
 	}
 	
 	public function index(){

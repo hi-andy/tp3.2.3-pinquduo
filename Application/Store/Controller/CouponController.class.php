@@ -15,12 +15,9 @@ class CouponController extends BaseController {
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
 		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
-		if($haitao['is_pay']==0)
-		{
-			$this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
+		if($haitao['is_pay']==0) {
+			$this->error("尚未缴纳保证金，现在前往缴纳", U('Store/Index/pay_money'));
 		}
-		session('merchant_id',$haitao['storeid']);
-
 	}
 	/**----------------------------------------------*/
 	/*                优惠券控制器                  */
