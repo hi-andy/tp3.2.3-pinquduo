@@ -27,7 +27,8 @@ class ActivityController extends Controller {
 		$times[3]['choose'] = 0;
 		$times[4]['time'] = '24:00';
 
-		
+
+
 
 		for($i=0;$i<4;$i++)
 		{
