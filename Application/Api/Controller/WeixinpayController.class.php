@@ -18,7 +18,7 @@ class WeixinpayController extends BaseController {
     /**
      * 微信生成预支付订单
      */
-    public function addwxorder($order_sn="")
+    public function addwxorder($order_sn="", $time_expire=30)
     {
         vendor('WxPay.WxPayPubHelper.WxPayPubHelper');
         vendor('WxPay.WxPayPubHelper.log_');
@@ -46,7 +46,7 @@ class WeixinpayController extends BaseController {
 		$unifiedOrder->setParameter ("trade_type","APP"); // 交易类型
 		$unifiedOrder->setParameter ( "body", '商品支付' ); // 商品描述
 		$unifiedOrder->setParameter ( "time_start", date ( "YmdHis" ) ); // 交易起始时间
-		$unifiedOrder->setParameter ( "time_expire", date ( "YmdHis", time () + 600 ) ); // 交易结束时间
+		$unifiedOrder->setParameter ( "time_expire", date ( "YmdHis", time () + $time_expire ) ); // 交易结束时间
 		$unifiedOrder->setParameter ( "product_id", $ordernum ); // 商品ID
 		$result = $unifiedOrder->getResult();
 
@@ -82,7 +82,7 @@ class WeixinpayController extends BaseController {
         }
     }
 
-    function getJSAPI($order){
+    function getJSAPI($order, $time_expire=30){
         header("Access-Control-Allow-Origin:*");
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
@@ -105,7 +105,7 @@ class WeixinpayController extends BaseController {
         $input->SetOut_trade_no($order['order_sn']);
         $input->SetTotal_fee($order['order_amount']*100);
         $input->SetTime_start(date("YmdHis"));
-        $input->SetTime_expire(date("YmdHis", time() + 600));
+        $input->SetTime_expire(date("YmdHis", time() + $time_expire));
         $input->SetGoods_tag("tp_wx_pay");
         $input->SetNotify_url(C('HTTP_URL').'/Api/Weixinpay/js_endpay');
         if($_REQUEST['is_mobile_browser']==1){
