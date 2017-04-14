@@ -49,7 +49,7 @@ class ActivityController extends Controller {
 		$this->assign('time',$times);
 
 		$goodsList = D('goods')->field('market_price')->where('is_special=7')->select();
-print_r($goodsList);
+//print_r($goodsList);
 
 		$this->display();
 	}
