@@ -8,20 +8,22 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-    $redis = new Redis();
-    $redis->connect(REDISIP, PORT);
-    $redis->auth(REDISPASS);
-    if($del==true){
-        $redis->delete($key);
-    }
-    if($value){
-        if($time){
-            $redis->setex($key, $time, $value);
-        } else {
-            $redis->set($key, $value);
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($del == true) {
+            $redis->delete($key);
         }
-    } else {
-        return $redis->get($key);
+        if ($value) {
+            if ($time) {
+                $redis->setex($key, $time, $value);
+            } else {
+                $redis->set($key, $value);
+            }
+        } else {
+            return $redis->get($key);
+        }
     }
 }
 
@@ -31,13 +33,15 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
-    $redis = new Redis();
-    $redis->connect(REDISIP, PORT);
-    $redis->auth(REDISPASS);
-    if ($key && $value) {
-        $redis->rpush($key, $value);
-    } else {
-        return $redis->lpop($key);
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($key && $value) {
+            $redis->rpush($key, $value);
+        } else {
+            return $redis->lpop($key);
+        }
     }
 }
 
@@ -46,14 +50,16 @@ function redislist($key, $value=null){
  * @param $key
  */
 function redisdelall($key){
-    $redis = new Redis();
-    $redis->connect(REDISIP, PORT);
-    $redis->auth(REDISPASS);
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
 
-    $match = $key;
-    $count = 1000;
-    while ($keys = $redis->scan($it, $match, $count)) {
-        $redis->del($keys);
+        $match = $key;
+        $count = 1000;
+        while ($keys = $redis->scan($it, $match, $count)) {
+            $redis->del($keys);
+        }
     }
 }
 /**
