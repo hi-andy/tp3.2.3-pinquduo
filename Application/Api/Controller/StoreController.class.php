@@ -54,7 +54,7 @@ class StoreController extends BaseController{
 
 		foreach($goods as &$v)
 		{
-			$v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+			$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
 		}
 
 		$data = $this->listPageData($count,$goods);

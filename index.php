@@ -28,12 +28,6 @@ define('UPLOAD_PATH','Public/upload/'); // 编辑器图片上传路径
 define('TPSHOP_CACHE_TIME',86400); // TPshop 缓存时间
 define('SITE_URL','http://'.$_SERVER['HTTP_HOST']); // 网站域名
 define('HTML_PATH','./Application/Runtime/Html/');
-//redis 开关、服务器IP、密码、失效时间 20170411 simon
-define("REDIS_SWITCH", true); //true、false
-define("REDISIP", "127.0.0.1");
-define("PORT", 6379);
-define("REDISPASS", "");
-define("REDISTIME", 300);
 //静态缓存文件目录，HTML_PATH可任意设置，此处设为当前项目下新建的html目录
 // 引入ThinkPHP入口文件
 require './ThinkPHP/ThinkPHP.php';

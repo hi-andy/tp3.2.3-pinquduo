@@ -363,7 +363,7 @@ class IndexController extends BaseController {
             $goods = M('goods')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->order(' sales desc ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom')->page($page, $pagesize)->select();
 
             foreach ($goods as &$v) {
-                $v['original_img'] = C('HTTP_URL') . goods_thum_images($v['goods_id'], 400, 400);
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
             }
 
             $data = $this->listPageData($count, $goods);
@@ -542,7 +542,7 @@ class IndexController extends BaseController {
 
         foreach($goods as &$v)
         {
-            $v['original_img'] =  C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+            $v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
         }
         $data = $this->listPageData($count,$goods);
         return $data;
@@ -684,7 +684,7 @@ class IndexController extends BaseController {
             $count = M('goods')->where('`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
             $goods = M('goods')->where('`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
             foreach ($goods as &$v) {
-                $v['original_img'] = C('HTTP_URL') . goods_thum_images($v['goods_id'], 400, 400);
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
             }
             $data = $this->listPageData($count, $goods);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
@@ -708,7 +708,7 @@ class IndexController extends BaseController {
         $goods = M('goods')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
         foreach($goods as &$v)
         {
-            $v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
         }
         $data = $this->listPageData($count,$goods);
         $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
@@ -727,7 +727,7 @@ class IndexController extends BaseController {
         $goods = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
         foreach($goods as &$v)
         {
-            $v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
         }
         $data = $this->listPageData($count,$goods);
         $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);

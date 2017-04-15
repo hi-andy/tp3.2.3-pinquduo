@@ -715,3 +715,13 @@ function exportExcel($data=[], $title=[], $filename='report'){
         echo implode("\n",$data);
     }
 }
+
+//转换图片地址
+function TransformationImgurl($url) {
+    if (strstr($url, "http") !== false) {
+
+    } else {
+        $url = C('HTTP_URL').$url;
+    }
+    return $url;
+}

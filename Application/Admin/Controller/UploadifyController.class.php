@@ -26,6 +26,7 @@ class UploadifyController extends BaseController{
               删除上传的图片
      */
     public function delupload(){
+        /**
         $action=isset($_GET['action']) ? $_GET['action'] : null;
         $filename= isset($_GET['filename']) ? $_GET['filename'] : null;
         $filename= str_replace('../','',$filename);
@@ -45,6 +46,13 @@ class UploadifyController extends BaseController{
             unlink($filename);
             exit;
         }
+        */
+
+        //删除七牛云图片
+        $filename= isset($_GET['filename']) ? $_GET['filename'] : null;
+        $key = str_replace(CDN."/", "", $filename);
+        $qiniu = new QiniuController();
+        $qiniu->delete("imgbucket", $key);
     }
 
     /**
@@ -70,6 +78,7 @@ class UploadifyController extends BaseController{
             $returnData=array('src'=>'/'.C("UPLOADPATH") .'file/'.$src,'name'=>$result['Filedata']['name']);
             $this->ajaxReturn(array('status'=>0,'msg'=>'上传成功','data'=>$returnData));
         }
+        //echo "<script language=javascript>alert('".json_encode($result)."');</script>";
     }
 
 }
