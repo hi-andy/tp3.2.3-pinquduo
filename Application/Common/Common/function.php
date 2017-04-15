@@ -719,9 +719,8 @@ function exportExcel($data=[], $title=[], $filename='report'){
 //转换图片地址
 function TransformationImgurl($url) {
     if (strstr($url, "http") !== false) {
-
+        return $url;
     } else {
-        $url = C('HTTP_URL').$url;
+        return C('HTTP_URL').$url;
     }
-    return $url;
 }

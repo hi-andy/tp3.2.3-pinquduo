@@ -469,8 +469,8 @@ class GoodsController extends BaseController {
 
 		foreach ($banner as &$v) {
 			//TODO 缩略图处理
-			$v['small'] = C('HTTP_URL').$v['image_url'];
-			$v['origin'] =C('HTTP_URL').$v['image_url'];
+			$v['small'] = TransformationImgurl($v['image_url']);
+			$v['origin'] = TransformationImgurl($v['image_url']);
 			unset($v['image_url']);
 		}
 
