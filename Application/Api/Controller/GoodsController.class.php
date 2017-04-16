@@ -315,7 +315,7 @@ class GoodsController extends BaseController {
 
         $goods['goods_content'] = str_replace('/Public/upload/', $http."/Public/upload/", $goods['goods_content']);
         $goods['goods_content'] = htmlspecialchars_decode($goods['goods_content']);
-        $goods['original_img'] = $http.$goods['original_img'];
+        $goods['original_img'] = TransformationImgurl($goods['original_img']);
         $return['goods'] = $goods;
         $return['spec_goods_price']  = M('spec_goods_price')->where("goods_id = $goods_id")->getField("key,price,store_count"); // 规格 对应 价格 库存表
         $return['gallery'] = M('goods_images')->field('image_url')->where(array('goods_id'=>$goods_id))->select();
@@ -376,7 +376,7 @@ class GoodsController extends BaseController {
         $goods_id = I('goods_id');
         $width = I('width');
         $height = I('height');
-        $img_url = SITE_URL.goods_thum_images($goods_id,$width,$height);
+        $img_url = goods_thum_images($goods_id,$width,$height);
         $image = file_get_contents($img_url);  //假设当前文件夹已有图片001.jpg
         header('Content-type: image/jpg');
         exit($image);
@@ -469,8 +469,8 @@ class GoodsController extends BaseController {
 
 		foreach ($banner as &$v) {
 			//TODO 缩略图处理
-			$v['small'] = C('HTTP_URL').$v['image_url'];
-			$v['origin'] =C('HTTP_URL').$v['image_url'];
+			$v['small'] = TransformationImgurl($v['image_url']);
+			$v['origin'] = TransformationImgurl($v['image_url']);
 			unset($v['image_url']);
 		}
 
@@ -480,7 +480,7 @@ class GoodsController extends BaseController {
 		}
 		$details = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
 
-		//商品详情
+            //商品详情
 		$goods['goods_id'] = $details['goods_id'];
 		$goods['goods_name'] = $details['goods_name'];
 		$goods['market_price'] = $details['market_price'];
@@ -498,7 +498,7 @@ class GoodsController extends BaseController {
 		$goods['store'] = $store;
 		$goods['is_special'] = $details['is_special'];
 		$goods['goods_content'] = $details['goods_content'];
-		$goods['original_img'] = C('HTTP_URL').$details['original_img'];
+		$goods['original_img'] = TransformationImgurl($details['original_img']);
 
 		if(file_exists('Public/upload/fenxiang/'.$goods_id.'_'.$details['store_id'].'.jpg')){
 			$goods['fenxiang_url'] = C('HTTP_URL').'/Public/upload/fenxiang/'.$goods_id.'_'.$details['store_id'].'.jpg';
@@ -507,7 +507,7 @@ class GoodsController extends BaseController {
 		}elseif(file_exists('Public/upload/fenxiang/'.$goods_id.'_'.$details['store_id'].'.gif')){
 			$goods['fenxiang_url'] = C('HTTP_URL').'/Public/upload/fenxiang/'.$goods_id.'_'.$details['store_id'].'.gif';
 		}else{
-			$goods_pic_url = C('HTTP_URL').goods_thum_images($details['goods_id'],400,400);
+			$goods_pic_url = goods_thum_images($details['goods_id'],400,400);
 			$pin = $this->fenxiangLOGO($goods_pic_url,$details['goods_id'],$details['store_id']);
 			$goods['fenxiang_url'] = C('HTTP_URL').$pin;
 		}
@@ -1673,7 +1673,7 @@ class GoodsController extends BaseController {
 		$store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
 
 		$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
-		$goods['original_img'] = C('HTTP_URL').goods_thum_images($goods['goods_id'],400,400);
+		$goods['original_img'] = goods_thum_images($goods['goods_id'],400,400);
 		$goods['store'] = M('merchant')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
 		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
 
@@ -1796,7 +1796,7 @@ class GoodsController extends BaseController {
 
 		foreach($goods as &$v)
 		{
-			$v['original_img'] =  C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
 		}
 
 		$data = $this->listPageData($count,$goods);
@@ -1850,7 +1850,7 @@ class GoodsController extends BaseController {
 
 		foreach($goods as &$v)
 		{
-			$v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+			$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
 		}
 		$data = $this->listPageData($count,$goods);
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -1906,7 +1906,7 @@ class GoodsController extends BaseController {
 					$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
 					foreach($goods as &$v)
 					{
-						$v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+						$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
 					}
 					$data = $this->listPageData($count,$goods);
 					return $data;
@@ -1915,7 +1915,7 @@ class GoodsController extends BaseController {
 					$goods = M('goods')->where('`show_type`=0 and `cat_id`='.$id.' and is_show=1 and is_on_sale=1 and is_audit=1')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->page($page,$pagesize)->select();
 					foreach($goods as &$v)
 					{
-						$v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+						$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
 					}
 					$data = $this->listPageData($count,$goods);
 					return $data;
@@ -1959,7 +1959,7 @@ class GoodsController extends BaseController {
 
 		foreach($goods as &$v)
 		{
-			$v['original_img'] =  C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
 		}
 		$data = $this->listPageData($count,$goods);
 
@@ -1985,7 +1985,7 @@ class GoodsController extends BaseController {
 
 		foreach($goods as &$v)
 		{
-			$v['original_img'] =  C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
 		}
 		$data = $this->listPageData($count,$goods);
 		return $data;
@@ -2156,7 +2156,7 @@ class GoodsController extends BaseController {
 
 		foreach($goods as &$v)
 		{
-			$v['original_img'] =  C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
 		}
 
 		$data =$this->listPageData($count,$goods);

@@ -94,7 +94,7 @@ Released under the MIT License <http://www.opensource.org/licenses/mit-license.p
 
 				// Setup the default options
 				var settings = $.extend({
-					// Required Settings
+					// Required Settings®
 					id       : $this.attr('id'), // The ID of the DOM object
 					swf      : 'uploadify.swf',  // The path to the uploadify SWF file
 					uploader : 'uploadify.php',  // The path to the server-side upload script

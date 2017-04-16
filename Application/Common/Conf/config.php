@@ -1,7 +1,14 @@
 <?php
 //  加载常量配置文件
 header("Content-type:text/html;charset=utf-8");
-
+//redis 开关、服务器IP、密码、失效时间 20170411 simon
+define("REDIS_SWITCH", true); //true、false
+define("REDISIP", "127.0.0.1");
+define("PORT", 6379);
+define("REDISPASS", "");
+define("REDISTIME", 300);
+/////
+define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
 	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
 	'HTTP_URL'=>'http://pinquduo.cn',
@@ -274,6 +281,21 @@ return array(
 //		),
 //	),
 
-		'SHARE_URL' => 'http://wx.pinquduo.cn',
+    'SHARE_URL' => 'http://wx.pinquduo.cn',
     'DATA_URL' => '/data/wwwroot/default',
+
+    'UPLOAD_FILE_QINIU'     => array (
+        'maxSize'           => 20*1024*1024,//文件大小
+        'rootPath'          => './',
+        'savePath'          => 'img',// 文件上传的保存路径
+        'saveName'          => array ('uniqid', ''),
+        'exts'              => ['jpg', 'jpeg', 'bmp', 'gif', 'png'],  // 设置附件上传类型
+        'driver'            => 'Qiniu',//七牛驱动
+        'driverConfig'      => array (
+            'accessKey'        => '15gPbXtT9oIJ2EpAuUsHJFPcmZ68qxTXnHTpqwgG',
+            'secretKey'        => '2c1Jyq1_xt3sIbODugIWLNAGC9kwHZS9xmpHxmjm',
+            'domain'           => 'ooc3vwe04.bkt.clouddn.com',
+            'bucket'           => 'imgbucket',
+        )
+    ),
 );

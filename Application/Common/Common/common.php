@@ -69,51 +69,55 @@ function goods_thum_images($goods_id,$width,$height){
 		 return '';
 
     $original_img = M('Goods')->where("goods_id = $goods_id")->getField('original_img');
-    $img = explode('/',$original_img);
-    $img1 = explode('.',$img[6]);
+    if (strstr($original_img, "http") !== false) {
+        return $original_img . "?imageView2/1/w/" . $width . "/h/" . $height;
+    } else {
+        $img = explode('/', $original_img);
+        $img1 = explode('.', $img[6]);
 
-    //判断缩略图是否存在
-    $path = "Public/upload/goods/thumb/$goods_id/";
-    $goods_thumb_name ="goods_thumb_{$goods_id}_{$width}_{$height}_".$img1[0];
+        //判断缩略图是否存在
+        $path = "Public/upload/goods/thumb/$goods_id/";
+        $goods_thumb_name = "goods_thumb_{$goods_id}_{$width}_{$height}_" . $img1[0];
 
-    // 这个商品 已经生成过这个比例的图片就直接返回了
-    if(file_exists($path.$goods_thumb_name.'.jpg'))  return '/'.$path.$goods_thumb_name.'.jpg'; 
-    if(file_exists($path.$goods_thumb_name.'.jpeg')) return '/'.$path.$goods_thumb_name.'.jpeg'; 
-    if(file_exists($path.$goods_thumb_name.'.gif'))  return '/'.$path.$goods_thumb_name.'.gif'; 
-    if(file_exists($path.$goods_thumb_name.'.png'))  return '/'.$path.$goods_thumb_name.'.png'; 
+        // 这个商品 已经生成过这个比例的图片就直接返回了
+        if (file_exists($path . $goods_thumb_name . '.jpg')) return C('HTTP_URL').'/' . $path . $goods_thumb_name . '.jpg';
+        if (file_exists($path . $goods_thumb_name . '.jpeg')) return C('HTTP_URL').'/' . $path . $goods_thumb_name . '.jpeg';
+        if (file_exists($path . $goods_thumb_name . '.gif')) return C('HTTP_URL').'/' . $path . $goods_thumb_name . '.gif';
+        if (file_exists($path . $goods_thumb_name . '.png')) return C('HTTP_URL').'/' . $path . $goods_thumb_name . '.png';
 
-    if(empty($original_img)) return '';
-    
-    $original_img = '.'.$original_img; // 相对路径
-    if(!file_exists($original_img)) return '';
+        if (empty($original_img)) return '';
 
-    $image = new \Think\Image();
-    $image->open($original_img);
-        
-    $goods_thumb_name = $goods_thumb_name. '.'.$image->type();
-    // 生成缩略图
-    if(!is_dir($path)) 
-        mkdir($path,0777,true);
-    
-    // 参考文章 http://www.mb5u.com/biancheng/php/php_84533.html  改动参考 http://www.thinkphp.cn/topic/13542.html
-    $image->thumb($width, $height,2)->save($path.$goods_thumb_name,NULL,100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
+        $original_img = '.' . $original_img; // 相对路径
+        if (!file_exists($original_img)) return '';
 
-    //图片水印处理
-    /*
-    $water = tpCache('water');
-    if($water['is_mark']==1){
-    	$imgresource = './'.$path.$goods_thumb_name;
-    	if($width>$water['mark_width'] && $height>$water['mark_height']){
-    		if($water['mark_type'] == 'img'){
-    			$image->open($imgresource)->water(".".$water['mark_img'],9,$water['mark_degree'])->save($imgresource);
-    		}else{
-    			$image->open($imgresource)->text($water['mark_txt'],'./zhjt.ttf',20,'#000000',9)->save($imgresource);
-    		}
-    	}
+        $image = new \Think\Image();
+        $image->open($original_img);
+
+        $goods_thumb_name = $goods_thumb_name . '.' . $image->type();
+        // 生成缩略图
+        if (!is_dir($path))
+            mkdir($path, 0777, true);
+
+        // 参考文章 http://www.mb5u.com/biancheng/php/php_84533.html  改动参考 http://www.thinkphp.cn/topic/13542.html
+        $image->thumb($width, $height, 2)->save($path . $goods_thumb_name, NULL, 100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
+
+        //图片水印处理
+        /*
+        $water = tpCache('water');
+        if($water['is_mark']==1){
+            $imgresource = './'.$path.$goods_thumb_name;
+            if($width>$water['mark_width'] && $height>$water['mark_height']){
+                if($water['mark_type'] == 'img'){
+                    $image->open($imgresource)->water(".".$water['mark_img'],9,$water['mark_degree'])->save($imgresource);
+                }else{
+                    $image->open($imgresource)->text($water['mark_txt'],'./zhjt.ttf',20,'#000000',9)->save($imgresource);
+                }
+            }
+        }
+        */
+
+        return C('HTTP_URL').'/' . $path . $goods_thumb_name;
     }
-    */
-
-    return '/'.$path.$goods_thumb_name;
 }
 
 /**
