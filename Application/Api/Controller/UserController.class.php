@@ -27,7 +27,6 @@ class UserController extends BaseController {
      */
     public function thirdLogin(){
         $map['openid'] = I('openid','');
-        $map['unionid'] = I('unionid','');
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
@@ -1008,32 +1007,6 @@ class UserController extends BaseController {
      * 测试短信接口
      */
     public function sendSMS(){
-<<<<<<< HEAD
-        $mobile = I('mobile');
-        if(!check_mobile($mobile))
-            exit(json_encode(array('status'=>-1,'msg'=>'手机号码格式有误')));
-
-        //短时间不给重复访问
-        $fin_mobile = M('sms_log')->where('mobile = '.$mobile)->order('id desc')->find();
-        $time = time()-$fin_mobile['add_time'];
-        if($time<60)
-        {
-            exit(json_encode(array('status'=>0,'msg'=>'验证码已发送，请耐心等待')));
-        }
-
-        if($mobile != '15019236664')
-        {
-            $code = rand(1000,9999) ;
-            $result = sendMessage($mobile,array($code,'5分钟'),'155220');
-        }else{
-            $code = 111111;
-            $result =1;
-        }
-        //先将短信code值存起来
-        if(!empty($result))
-        {
-            $res = M('sms_log')->add(array('mobile'=>$mobile,'add_time'=>time(),'code'=>$code));
-=======
         if (intval(time()) - intval(session("code")) > 60) {
             session("code", time());
             $mobile = I('mobile');
@@ -1052,7 +1025,6 @@ class UserController extends BaseController {
             if (!empty($result)) {
                 $res = M('sms_log')->add(array('mobile' => $mobile, 'add_time' => time(), 'code' => $code));
             }
->>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
         }
 
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
