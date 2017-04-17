@@ -1984,7 +1984,7 @@ class GoodsController extends BaseController {
 	//获取用户地址列表
 	function getUserAddressList()
 	{
-		   $user_id = I('user_id');
+        $user_id = I('user_id');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$a = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
 
