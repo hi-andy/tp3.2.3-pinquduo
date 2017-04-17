@@ -1008,7 +1008,7 @@ class UserController extends BaseController {
      * 测试短信接口
      */
     public function sendSMS(){
-<<<<<<< HEAD
+
         $mobile = I('mobile');
         if(!check_mobile($mobile))
             exit(json_encode(array('status'=>-1,'msg'=>'手机号码格式有误')));
@@ -1033,7 +1033,6 @@ class UserController extends BaseController {
         if(!empty($result))
         {
             $res = M('sms_log')->add(array('mobile'=>$mobile,'add_time'=>time(),'code'=>$code));
-=======
         if (intval(time()) - intval(session("code")) > 60) {
             session("code", time());
             $mobile = I('mobile');
@@ -1052,7 +1051,7 @@ class UserController extends BaseController {
             if (!empty($result)) {
                 $res = M('sms_log')->add(array('mobile' => $mobile, 'add_time' => time(), 'code' => $code));
             }
->>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
+
         }
 
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
