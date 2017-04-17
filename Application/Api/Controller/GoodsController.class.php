@@ -487,15 +487,20 @@ class GoodsController extends BaseController {
             $goods['shop_price'] = $details['shop_price'];
             $goods['prom'] = $details['prom'];
             $goods['goods_remark'] = $details['goods_remark'];
+
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
             $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
+
             $goods['sales'] = $details['sales'];
             $goods['is_support_buy'] = $details['is_support_buy'];
             $goods['free'] = $details['free'];
             $goods['the_raise'] = $details['the_raise'];
+
+
             $store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
             $store['store_logo'] = C('HTTP_URL') . $store['store_logo'];
             $goods['store'] = $store;
+
             $goods['is_special'] = $details['is_special'];
             $goods['goods_content'] = $details['goods_content'];
             $goods['original_img'] = TransformationImgurl($details['original_img']);
