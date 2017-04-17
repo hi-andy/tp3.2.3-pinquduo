@@ -1,8 +1,4 @@
 .idea/
-
-Application/Admin/Conf/
-Application/Common/
-Application/Admin/Common/
 Application/Runtime/
 Application/Api/Controller/notify_url.log
 Public/upload/goods/
