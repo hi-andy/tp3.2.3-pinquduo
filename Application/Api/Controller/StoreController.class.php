@@ -37,7 +37,7 @@ class StoreController extends BaseController{
 				$pin = $this->storeLOGO($goods_pic_url, $store_id);
 				$store['logo_share_url'] = C('HTTP_URL') . $pin;
 			}
-			$store['store_logo'] = C('HTTP_URl') . $store['store_logo'];
+			$store['store_logo'] = TransformationImgurl($store['store_logo']);
 			if (empty($count)) {
 				$count = null;
 			} elseif (empty($goods)) {
