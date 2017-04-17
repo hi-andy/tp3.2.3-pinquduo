@@ -17,50 +17,50 @@ class StoreController extends BaseController{
 
 		$page = I('page',1);
 		$pagesize = I('pagesize',10);
-		$store = M('merchant')->where('`id` = '.$store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
-		$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id='.$store_id;
+        $rdsname = "getStoreList".$store_id.$stor.$page.$pagesize;
+        if (empty($rdsname)) {//判断是否有缓存
+            $store = M('merchant')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
+            $store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
 
-		$count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->count();
-		$goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
+            $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->count();
+            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
 
-		//合成商户logo的分享图
-		if(file_exists('Public/upload/store_fenxiang/'.$store_id.'.jpg'))
-		{
-			$store['logo_share_url'] = C('HTTP_URL').'/Public/upload/store_fenxiang/'.$store_id.'.jpg';
-		}elseif(file_exists('Public/upload/store_fenxiang/'.$store_id.'.png')){
-			$store['logo_share_url'] = C('HTTP_URL').'/Public/upload/store_fenxiang/'.$store_id.'.png';
-		}elseif(file_exists('Public/upload/store_fenxiang/'.$store_id.'.gif')){
-			$store['logo_share_url'] = C('HTTP_URL').'/Public/upload/store_fenxiang/'.$store_id.'.gif';
-		}else{
-			$goods_pic_url = $store['store_logo'];
-			$pin = $this->storeLOGO($goods_pic_url,$store_id);
-			$store['logo_share_url'] = C('HTTP_URL').$pin; 
-		}
-		$store['store_logo'] = C('HTTP_URl').$store['store_logo'];
-		if(empty($count))
-		{
-			$count = null;
-		}
-		elseif(empty($goods))
-		{
-			$goods = null;
-		}
-		//获取店铺优惠卷store_logo_compression
-		$coupon = M('coupon')->where('`store_id` = '.$store_id.' and `send_start_time` <= '.time().' and `send_end_time` >= '.time().' and createnum!=send_num' )->select();
-		if(empty($coupon))
-		{
-			$coupon = null;
-		}
+            //合成商户logo的分享图
+            if (file_exists('Public/upload/store_fenxiang/' . $store_id . '.jpg')) {
+                $store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.jpg';
+            } elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.png')) {
+                $store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.png';
+            } elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.gif')) {
+                $store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.gif';
+            } else {
+                $goods_pic_url = $store['store_logo'];
+                $pin = $this->storeLOGO($goods_pic_url, $store_id);
+                $store['logo_share_url'] = C('HTTP_URL') . $pin;
+            }
+            $store['store_logo'] = C('HTTP_URl') . $store['store_logo'];
+            if (empty($count)) {
+                $count = null;
+            } elseif (empty($goods)) {
+                $goods = null;
+            }
+            //获取店铺优惠卷store_logo_compression
+            $coupon = M('coupon')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+            if (empty($coupon)) {
+                $coupon = null;
+            }
 
-		foreach($goods as &$v)
-		{
-			$v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
-		}
+            foreach ($goods as &$v) {
+                $v['original_img'] = C('HTTP_URL') . goods_thum_images($v['goods_id'], 400, 400);
+            }
 
-		$data = $this->listPageData($count,$goods);
+            $data = $this->listPageData($count, $goods);
+            $json = array('status' => 1, 'msg' => '', 'result' => array('store' => $store, 'goods' => $data, 'coupon' => $coupon));
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
 
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status'=>1,'msg'=>'','result'=>array('store'=>$store,'goods'=>$data,'coupon'=>$coupon));
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
