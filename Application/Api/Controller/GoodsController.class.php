@@ -478,47 +478,28 @@ class GoodsController extends BaseController {
             if (empty($banner)) {
                 $banner = null;
             }
-            $details = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
-
-            //商品详情
-            $goods['goods_id'] = $details['goods_id'];
-            $goods['goods_name'] = $details['goods_name'];
-            $goods['market_price'] = $details['market_price'];
-            $goods['shop_price'] = $details['shop_price'];
-            $goods['prom'] = $details['prom'];
-            $goods['goods_remark'] = $details['goods_remark'];
-
+            $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
             $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-
-            $goods['sales'] = $details['sales'];
-            $goods['is_support_buy'] = $details['is_support_buy'];
-            $goods['free'] = $details['free'];
-            $goods['the_raise'] = $details['the_raise'];
-
-
-            $store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
+            $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
             $store['store_logo'] = C('HTTP_URL') . $store['store_logo'];
             $goods['store'] = $store;
+            $goods['original_img'] = TransformationImgurl($goods['original_img']);
 
-            $goods['is_special'] = $details['is_special'];
-            $goods['goods_content'] = $details['goods_content'];
-            $goods['original_img'] = TransformationImgurl($details['original_img']);
-
-            if (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.jpg')) {
-                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.jpg';
-            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.png')) {
-                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.png';
-            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.gif')) {
-                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.gif';
+            if (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg')) {
+                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg';
+            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png')) {
+                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png';
+            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif')) {
+                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif';
             } else {
-                $goods_pic_url = goods_thum_images($details['goods_id'], 400, 400);
-                $pin = $this->fenxiangLOGO($goods_pic_url, $details['goods_id'], $details['store_id']);
+                $goods_pic_url = goods_thum_images($goods['goods_id'], 400, 400);
+                $pin = $this->fenxiangLOGO($goods_pic_url, $goods['goods_id'], $goods['store_id']);
                 $goods['fenxiang_url'] = C('HTTP_URL') . $pin;
             }
 
             //获取已经开好的团
-            $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
+            $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
             if (!empty($group_buy)) {
                 for ($i = 0; $i < count($group_buy); $i++) {
                     $order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
@@ -549,7 +530,7 @@ class GoodsController extends BaseController {
                 $group_buy = null;
             }
             //计算团购价
-            $goods['prom_price'] = (string)($details['prom_price']);
+            $goods['prom_price'] = (string)($goods['prom_price']);
             //是否收藏
             $goods['collect'] = 0;//默认没收藏
             if (!empty($user_id)) {
@@ -593,7 +574,7 @@ class GoodsController extends BaseController {
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($ajax_get))
 		{
-			$goods['html'] = htmlspecialchars_decode($details['goods_content']);
+			$goods['html'] = htmlspecialchars_decode($goods['goods_content']);
 		}
 
 		if(!empty($ajax_get))
