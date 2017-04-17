@@ -1082,6 +1082,8 @@ class GoodsController extends BaseController {
                 redisdelall($rdsname);//删除用户订单缓存
                 $rdsname = "getGoodsDetails".$goods_id.$user_id."*";
                 redisdelall($rdsname);//删除商品详情缓存
+                $rdsname = "TuiSong".$user_id;
+                redisdelall($rdsname);//删除推送缓存
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;

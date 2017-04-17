@@ -6,7 +6,7 @@ define("REDIS_SWITCH", true); //true、false
 define("REDISIP", "127.0.0.1");
 define("PORT", 6379);
 define("REDISPASS", "");
-define("REDISTIME", 300);
+define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
 	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
