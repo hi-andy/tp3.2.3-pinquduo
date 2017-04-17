@@ -1869,9 +1869,15 @@ class GoodsController extends BaseController {
 	{
 		$id = I('id');
 		$type = I('type');
-		$data = $this->getOtheyMore($id,$type);
+        $rdsname = "getMore".$id.$type;
+        if (empty(redis($rdsname))) {//判断是否有缓存
+            $data = $this->getOtheyMore($id, $type);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
@@ -2154,18 +2160,22 @@ class GoodsController extends BaseController {
 		$key = I('key');
 		$page = I('page');
 		$pagesize = I('pagesize',50);
-		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$count = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->count();
-		$goods = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
+        $rdsname = "getsearch".$key.$page.$pagesize;
+        if (empty(redis($rdsname))) {//判断是否有缓存
+            $count = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->count();
+            $goods = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->select();
 
-		foreach($goods as &$v)
-		{
-			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
-		}
+            foreach ($goods as &$v) {
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+            }
 
-		$data =$this->listPageData($count,$goods);
-
-		$json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+            $data = $this->listPageData($count, $goods);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读出缓存
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
