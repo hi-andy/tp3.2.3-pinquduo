@@ -27,6 +27,7 @@ class UserController extends BaseController {
      */
     public function thirdLogin(){
         $map['openid'] = I('openid','');
+        $map['unionid'] = I('unionid','');
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
@@ -1002,6 +1003,15 @@ class UserController extends BaseController {
         $mobile = I('mobile');
         if(!check_mobile($mobile))
             exit(json_encode(array('status'=>-1,'msg'=>'手机号码格式有误')));
+
+        //短时间不给重复访问
+        $fin_mobile = M('sms_log')->where('mobile = '.$mobile)->order('id desc')->find();
+        $time = time()-$fin_mobile['add_time'];
+        if($time<60)
+        {
+            exit(json_encode(array('status'=>0,'msg'=>'验证码已发送，请耐心等待')));
+        }
+
         if($mobile != '15019236664')
         {
             $code = rand(1000,9999) ;

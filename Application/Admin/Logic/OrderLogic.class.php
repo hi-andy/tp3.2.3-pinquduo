@@ -452,20 +452,13 @@ class OrderLogic extends RelationModel
     public function deliveryHandle($data){
 	    $order = M('order')->where('`order_id`='.$data['order_id'])->find();;
 	    $orderGoods = $this->getOrderGoods($data['order_id']);
-//		$selectgoods = $data['goods'];
 	    $data['order_sn'] = $order['order_sn'];
-//		$data['delivery_sn'] = $this->get_delivery_sn();
 	    $data['zipcode'] = $order['zipcode'];
 	    $data['user_id'] = $order['user_id'];
 		$data['admin_id'] = session('admin_id');
-//	    $data['store_id'] = session('merchant_id');
 	    $data['consignee'] = $order['consignee'];
 	    $data['mobile'] = $order['mobile'];
-//		$data['country'] = $order['country'];
-//		$data['province'] = $order['province'];
-//		$data['city'] = $order['district'];
 	    $data['address_base'] = $order['address_base'];
-//	    $data['district'] = $order['order_sn'];
 	    $data['address'] = $order['address'];
 	    $data['shipping_name']= M('logistics')->where(array('logistics_code'=>$data['shipping_code']))->getField('logistics_name');
 	    $data['invoice_no'] = $data['shipping_order'];
@@ -473,17 +466,6 @@ class OrderLogic extends RelationModel
 	    $data['create_time'] = time();
 	    $did = M('delivery_doc')->add($data);
 
-//		foreach ($orderGoods as $k=>$v){
-//			if($v['is_send'] == 1){
-//				$is_delivery++;
-//			}
-//			if($v['is_send'] == 0 && in_array($v['rec_id'],$selectgoods)){
-//				$res['is_send'] = 1;
-//				$res['delivery_id'] = $did;
-//				$r = M('order_goods')->where("rec_id=".$v['rec_id'])->save($res);//改变订单商品发货状态
-//				$is_delivery++;
-//			}
-//		}
 	    $res['is_send'] = 1;
 	    $res['delivery_id'] = $did;
 	    $r = M('order_goods')->where("rec_id=".$orderGoods[0]['rec_id'])->save($res);//改变订单商品发货状态

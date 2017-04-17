@@ -37,10 +37,10 @@ class BaseController extends Controller {
         $this->assign('user_id',$this->user_id); 
                 
         // 判断当前用户是否手机                
-        if(isMobile())
-            cookie('is_mobile','1',3600); 
-        else 
-            cookie('is_mobile','0',3600);
+//        if(isMobile())
+//            cookie('is_mobile','1',3600);
+//        else
+//            cookie('is_mobile','0',3600);
                   
         $this->cartLogic = new \Home\Logic\CartLogic();        
         $cart_result = $this->cartLogic->cartList($this->user, $this->session_id,0,1);
