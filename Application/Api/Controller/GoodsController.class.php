@@ -463,7 +463,7 @@ class GoodsController extends BaseController {
 		$goods_id = I('goods_id');
 		I('user_id') && $user_id = I('user_id');
 		I('spec_key') && $spec_key = I('spec_key');
-        $rdsname = "getGoodsDetails".$user_id.$spec_key;
+        $rdsname = "getGoodsDetails".$goods_id.$user_id.$spec_key;
         if(empty(redis($rdsname))) {//判断是否有缓存
             //轮播图
             $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
@@ -1094,7 +1094,7 @@ class GoodsController extends BaseController {
 				$json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
                 $rdsname = "getUserOrderList".$user_id."*";
                 redisdelall($rdsname);//删除用户订单缓存
-                $rdsname = "getGoodsDetails".$user_id."*";
+                $rdsname = "getGoodsDetails".$goods_id.$user_id."*";
                 redisdelall($rdsname);//删除商品详情缓存
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
