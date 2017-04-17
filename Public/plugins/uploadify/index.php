@@ -1,4 +1,4 @@
-<?php	
+<?php
 exit;
 require_once(dirname(__FILE__).'/../../inc/config.inc.php');
 
@@ -137,7 +137,7 @@ function SetImgContent(data)
 	else
 	{
 		var resjson = data.split(",");
-	
+
 		if(resjson[0] == 0)
 		{
 			alert(resjson[1]);
@@ -237,15 +237,15 @@ $(function() {
 			//移动时根据鼠标位置计算控件左上角的绝对位置
 			var x = e.pageX - _x;
 			var y = e.pageY - _y;
-	
+
 			//控件新位置
 			$(ObjW).css({top:y,left:x});
 		}
 	}).mouseup(function(){
 		_move = false;
 	});
-	
-	
+
+
 	/*点击保存按钮时
 	 *判断允许上传数，检测是单一文件上传还是组文件上传
 	 *如果是单一文件，上传结束后将地址存入$input元素

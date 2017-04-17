@@ -5,7 +5,6 @@ namespace Admin\Controller;
 use Common\Util\File;
 use Think\Log;
 use Think\Upload;
-
 /**
  * Class UeditorController
  * @package Admin\Controller
@@ -43,6 +42,7 @@ class UeditorController extends BaseController
      */
     public function fileUp()
     {
+        exit;
         $config = array(
             "savePath" => 'File/',
             "maxSize" =>  20000000, // 单位B
@@ -256,8 +256,9 @@ class UeditorController extends BaseController
     {
         // 上传图片框中的描述表单名称，
         $title = htmlspecialchars($_POST['pictitle'], ENT_QUOTES);
-        $path = htmlspecialchars($_POST['dir'], ENT_QUOTES);        
+        $path = htmlspecialchars($_POST['dir'], ENT_QUOTES);
 
+        /*
         $config = array(
             "savePath" => $this->savePath,
             "maxSize" =>  20000000, // 单位B
@@ -267,9 +268,8 @@ class UeditorController extends BaseController
 
         $upload = new Upload($config);
         $info = $upload->upload();
-
         if ($info) {
-            $state = "SUCCESS";         
+            $state = "SUCCESS";
         } else {
             $state = "ERROR" . $upload->getError();
         }
@@ -292,10 +292,29 @@ class UeditorController extends BaseController
         	}
         }
 
-        $return_data['url'] = '/Uploads/'.$info['upfile']['savepath'].'/'.$info['upfile']['savename'];
+        $return_data['url'] = C('HTTP_URL').'/Uploads/'.$info['upfile']['savepath'].'/'.$info['upfile']['savename'];
         $return_data['title'] = $title;
         $return_data['original'] = $info['upfile']['name'];
         $return_data['state'] = $state;
+        */
+
+        //调用七牛云上传
+        $suffix = substr(strrchr($_FILES['Filedata']['name'], '.'), 1);
+        $files = array(
+            "key" => time().rand(0,9).".".$suffix,
+            "filePath" => $_FILES['Filedata']['tmp_name'],
+            "mime" => $_FILES['Filedata']['type']
+        );
+        $qiniu = new QiniuController();
+        $info = $qiniu->uploadfile("imgbucket", $files);
+
+
+        $return_data['url'] = CDN."/".$info[0]["key"];
+        $return_data['title'] = $title;
+        $return_data['original'] = $_FILES['Filedata']['name'];
+        $return_data['state'] = "SUCCESS";
+
+
         $this->ajaxReturn($return_data,'json');
     }
 
@@ -307,7 +326,7 @@ class UeditorController extends BaseController
         // 上传图片框中的描述表单名称，
         $title = htmlspecialchars($_POST['pictitle'], ENT_QUOTES);
         $path = htmlspecialchars($_POST['dir'], ENT_QUOTES);
-
+        /*
         $config = array(
             "savePath" => $this->savePath,
             "maxSize" =>  20000000, // 单位B
@@ -346,6 +365,23 @@ class UeditorController extends BaseController
         $return_data['title'] = $title;
         $return_data['original'] = $info['upfile']['name'];
         $return_data['state'] = $state;
+        */
+
+        //调用七牛云上传
+        $suffix = substr(strrchr($_FILES['upfile']['name'], '.'), 1);
+        $files = array(
+            "key" => time().rand(0,9).".".$suffix,
+            "filePath" => $_FILES['upfile']['tmp_name'],
+            "mime" => $_FILES['upfile']['type']
+        );
+        $qiniu = new QiniuController();
+        $info = $qiniu->uploadfile("imgbucket", $files);
+
+        $return_data['url'] = CDN."/".$info[0]["key"];
+        $return_data['title'] = $title;
+        $return_data['original'] = $_FILES['Filedata']['name'];
+        $return_data['state'] = "SUCCESS";
+
         $this->ajaxReturn($return_data,'json');
     }
 }

@@ -32,7 +32,6 @@ class GoodsController extends BaseController {
         {
             $this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
         }
-        session('merchant_id',$haitao['storeid']);
 
     }
 
@@ -340,6 +339,14 @@ class GoodsController extends BaseController {
                 $return_arr = array(
                     'status' => -1,
                     'msg'   => '有分类尚未选择，请检查后提交',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+            if($_POST['prom']<2 && $_POST['is_special']!=6){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '团购人数不能低于两人',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
@@ -1051,6 +1058,14 @@ class GoodsController extends BaseController {
                 $return_arr = array(
                     'status' => -1,
                     'msg'   => '有分类尚未选择，请检查后提交',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+            if($_POST['prom']<2){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '团购人数不能低于两人',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));

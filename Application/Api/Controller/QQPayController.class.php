@@ -10,7 +10,7 @@ class QQPayController extends BaseController
     private $md5Key     = "u6rAIksPMZVm4V6wc5Xh8STxvxJ3Vym1";
     private $logPath    ="./";
 
-    const CERT_DIR = '/data/wwwroot/default/ThinkPHP/Library/Vendor/QQPay/Cacert/';
+    const CERT_DIR = '/data/wwwroot/default/Application/Common/QQpay/Cacert/';
     private $certFile   = 'apiclient_cert.pem';
     private $keyFile    = 'apiclient_key.pem';
     private $cacertFile = 'rootca.pem';
@@ -28,9 +28,9 @@ class QQPayController extends BaseController
                 $this->{$k} = $v;
             }
         }
-        if (defined(RUNTIME_PATH)) {
-            $this->logPath = RUNTIME_PATH;
-        }
+        //if (defined(RUNTIME_PATH)) {
+        //    $this->logPath = RUNTIME_PATH;
+        //}
     }
 
     /**
@@ -90,26 +90,29 @@ class QQPayController extends BaseController
             return array(-1, "network error");
         }
     }
-
+    public function test(){
+	echo "OK";
+    }
     public function createPayScript($params)
     {
-        $scriptTpl = "<script>\n";
+	$scriptTpl  = '<script src="https://open.mobile.qq.com/sdk/qqapi.js?_bid=152"></script>';
+        $scriptTpl .= "<script>\n";
         $scriptTpl .= "(function(){\n";
         $scriptTpl .= "    mqq.tenpay.pay({tokenId: '%s',appInfo: '%s'}, \n";
         $scriptTpl .= "        function(result, resultCode){\n";
         $scriptTpl .= "            if ((result && result.resultCode === 0) || (resultCode === 0)) {\n";
-        $scriptTpl .="                 alert('支付成功');\n";
+        $scriptTpl .="                 setTimeout(function(){window.location.href='%s';}, 1500);\n";
         $scriptTpl .="             } else {\n";
         $scriptTpl .="                  if (result.match(/permission/)) {\n";
         $scriptTpl .="                     alert('您的QQ钱包需要实名认证才能使用');\n";
         $scriptTpl .="                  } else {\n";
-        $scriptTpl .="                      alert('支付失败');\n";
+        $scriptTpl .="                      alert('支付失败' + result);setTimeout(function(){history.back(-1);},1500);\n";
         $scriptTpl .="                  }\n";
         $scriptTpl .="             }\n";
         $scriptTpl .="         }\n";
         $scriptTpl .= ")})();</script>\n";
 
-        return sprintf($scriptTpl, $params["tokenId"], $params["appInfo"]);
+        return sprintf($scriptTpl, $params["tokenId"], $params["appInfo"], $params["go_url"]);
     }
 
     /**
@@ -117,10 +120,22 @@ class QQPayController extends BaseController
      * @param  [type] $order [description]
      * @return [type]        [description]
      */
-    public function getQQPay($order)
+    public function getQQPay($order=array())
     {
+	file_put_contents("log.txt", $_SERVER['HTTP_USER_AGENT'], FILE_APPEND);
+	//echo "<script>alert('Sorry, QQ pay Currrently is not enabled!');</script>"; die();
+	//if(empty($order)){$order=array('order_sn' => date('YmdHis').mt_rand(1000,9999), 'order_amount' => 0.1);}
         $notifyUrl = C('HTTP_URL').'/Api/QQPay/notify';
         list($code, $data) = $this->unifyOrder($order['order_sn'], $order['order_amount']*100, $notifyUrl);
+
+        if($order['prom_id']){
+            $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+            $type = $prom_info['mark']>0?1:0;
+            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+        }else{
+            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+        }
+	$data['go_url'] = $go_url;
 
         if ($code == 0) {
             $script = $this->createPayScript($data);
@@ -138,8 +153,8 @@ class QQPayController extends BaseController
      */
     public function notify()
     {
-        $log_ = new \Log_();
-        $log_name = $this->logPath;
+        //$log_ = new \Log_();
+        //$log_name = $this->logPath . "qq_notify.log";
 
         list($code, $data) = $this->checkNotify();
         if ($code !== 0) {
@@ -164,14 +179,14 @@ class QQPayController extends BaseController
 
         if(!$res)
         {
-            $log_->log_result($log_name,"【修改订单状态】:\n".$res."\n");
+            $this->log("【修改订单状态】:\n".$res."\n", "notify");
             M()->rollback();
             exit();
         }
 
         if($order['prom_id']){
             $res2 = $this->Join_Prom($order['prom_id']);
-            $log_->log_result($log_name,"【团修改】:\n".$res2."\n");
+            $this->log("【团修改】:\n".$res2."\n", "notify");
             if($res2){
                 $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
                 M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
@@ -195,7 +210,7 @@ class QQPayController extends BaseController
         }else{
             M()->commit();
         }
-        $log_->log_result($log_name,"【成功】");
+        $this->log($log_name,"【成功】", "notify");
         $this->successAck();
     }
 
@@ -339,6 +354,7 @@ class QQPayController extends BaseController
         $this->log($postStr, "refund-request");
 
         $header = array('Content-Type: application/xml');
+        // 下面这三个变量没有用到了。
         $certFilePath = self::CERT_DIR . $this->certFile;
         $keyFilePath  = self::CERT_DIR . $this->keyFile;
         $cacertFilePath = self::CERT_DIR . $this->cacertFile;
@@ -500,6 +516,11 @@ class QQPayController extends BaseController
 
     private static function curlHttps($url, $data, $certPemFile, $keyPemFile, $cacertPemFile, $header = array(), $timeout=30)
     {
+        //未用到传入参数，发现会找不到文件。在此重新定义。
+        $certPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/apiclient_cert.pem';
+        $keyPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/apiclient_key.pem';
+        $cacertPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/rootca.pem';
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
