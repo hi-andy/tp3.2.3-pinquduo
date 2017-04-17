@@ -1,5 +1,7 @@
 .idea/
 Application/Runtime/
+Application/Common/Conf/db.php
 Public/upload/goods/
 Uploads/
+/__MACOSX
 .DS_Store
