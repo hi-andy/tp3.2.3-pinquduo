@@ -17,49 +17,48 @@ class StoreController extends BaseController{
 
 		$page = I('page',1);
 		$pagesize = I('pagesize',10);
-        $rdsname = "getStoreList".$store_id.$stor.$page.$pagesize;
-        if(empty(redis($rdsname))) {//判断是否有缓存
-            $store = M('merchant')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
-            $store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
+		$rdsname = "getStoreList".$store_id.$stor.$page.$pagesize;
+		if(empty(redis($rdsname))) {//判断是否有缓存
+			$store = M('merchant')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
+			$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
 
-            $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->count();
-            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
+			$count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->count();
+			$goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
 
-            //合成商户logo的分享图
-            if (file_exists('Public/upload/store_fenxiang/' . $store_id . '.jpg')) {
-                $store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.jpg';
-            } elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.png')) {
-                $store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.png';
-            } elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.gif')) {
-                $store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.gif';
-            } else {
-                $goods_pic_url = $store['store_logo'];
-                $pin = $this->storeLOGO($goods_pic_url, $store_id);
-                $store['logo_share_url'] = C('HTTP_URL') . $pin;
-            }
-            $store['store_logo'] = C('HTTP_URl') . $store['store_logo'];
-            if (empty($count)) {
-                $count = null;
-            } elseif (empty($goods)) {
-                $goods = null;
-            }
-            //获取店铺优惠卷store_logo_compression
-            $coupon = M('coupon')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
-            if (empty($coupon)) {
-                $coupon = null;
-            }
+			//合成商户logo的分享图
+			if (file_exists('Public/upload/store_fenxiang/' . $store_id . '.jpg')) {
+				$store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.jpg';
+			} elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.png')) {
+				$store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.png';
+			} elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.gif')) {
+				$store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.gif';
+			} else {
+				$goods_pic_url = $store['store_logo'];
+				$pin = $this->storeLOGO($goods_pic_url, $store_id);
+				$store['logo_share_url'] = C('HTTP_URL') . $pin;
+			}
+			$store['store_logo'] = C('HTTP_URl') . $store['store_logo'];
+			if (empty($count)) {
+				$count = null;
+			} elseif (empty($goods)) {
+				$goods = null;
+			}
+			//获取店铺优惠卷store_logo_compression
+			$coupon = M('coupon')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+			if (empty($coupon)) {
+				$coupon = null;
+			}
 
-            foreach ($goods as &$v) {
-                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-            }
+			foreach ($goods as &$v) {
+				$v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+			}
 
-            $data = $this->listPageData($count, $goods);
-            $json = array('status' => 1, 'msg' => '', 'result' => array('store' => $store, 'goods' => $data, 'coupon' => $coupon));
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        } else {
-            $json = unserialize(redis($rdsname));//读取缓存
-        }
-
+			$data = $this->listPageData($count, $goods);
+			$json = array('status' => 1, 'msg' => '', 'result' => array('store' => $store, 'goods' => $data, 'coupon' => $coupon));
+			redis($rdsname, serialize($json), REDISTIME);//写入缓存
+		} else {
+			$json = unserialize(redis($rdsname));//读取缓存
+		}
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
@@ -165,7 +164,7 @@ class StoreController extends BaseController{
 				exit(json_encode(array('code'=>0,'Msg'=>'您的店铺暂审核未通过')));
 			}else{
 				M('merchant')->where('id = '.$res['id'])->save(array('y_time'=>$y_time));
-				exit(json_encode(array('code'=>1,'Msg'=>'登录成功','Store_id'=>$res['id'])));
+				exit(json_encode(array('code'=>1,'Msg'=>'登录成功','store_id'=>$res['id'])));
 			}
 		}else{
 			exit(json_encode(array('code'=>0,'Msg'=>'没有该店铺')));
@@ -181,7 +180,7 @@ class StoreController extends BaseController{
 		I('post.end_time') && $end_time = I('post.end_time');
 		I('post.order_sn') && $order_sn = I('post.order_sn');
 
-		$where = "o.store_id = $store_id and o.order_type in (3,14)";
+		$where = "o.store_id = $store_id and o.order_type in (2,14)";
 		if (!empty($start_time) && !empty($end_time)) {
 			$where = "$where and o.add_time between $start_time and $end_time ";
 		}
@@ -268,7 +267,24 @@ class StoreController extends BaseController{
 		$datas['create_time'] = time();
 		$datas['ytime'] = $data['y_time'];
 		$did = M('delivery_doc')->add($datas);
-		return $did;
+
+		$goods = M('goods')->where('`goods_id`='.$order['goods_id'])->find();
+		if(!empty($order['prom_id'])){
+			$updata['order_status'] = $action['order_status'] = 11;
+			$updata['order_type'] = $action['order_type'] = 15;
+		}else{
+			$updata['order_type'] = $action['order_type'] = 3;
+		}
+		if($goods['is_special']==1)
+		{
+			$updata['automatic_time'] = time()+30*24*60*60;
+		}else{
+			$updata['automatic_time'] = time()+15*24*60*60;
+		}
+
+		$res1 = M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
+
+		return $did and $res1;
 	}
 	//多维数组去重
 	function mult_unique($array)

@@ -1,6 +1,9 @@
 <?php
 //  加载常量配置文件
 header("Content-type:text/html;charset=utf-8");
+<<<<<<< HEAD
+
+=======
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", true); //true、false
 define("REDISIP", "127.0.0.1");
@@ -9,6 +12,7 @@ define("REDISPASS", "");
 define("REDISTIME", 300);
 /////
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
+>>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
 return array(
 	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
 	'HTTP_URL'=>'http://pinquduo.cn',
@@ -175,6 +179,16 @@ return array(
         'CANCEL'=>'已取消',
         'FINISH'=>'已完成', //
     ),
+<<<<<<< HEAD
+
+    /**
+     *  订单用户端显示按钮
+        去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
+        取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0
+        确认收货  AND shipping_status=1 AND order_status=0
+        评价      AND order_status=1
+        查看物流  if(!empty(物流单号))
+=======
     
     /**
      *  订单用户端显示按钮     
@@ -183,6 +197,7 @@ return array(
         确认收货  AND shipping_status=1 AND order_status=0 
         评价      AND order_status=1 
         查看物流  if(!empty(物流单号))   
+>>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
         退货按钮（联系客服）  所有退换货操作， 都需要人工介入   不支持在线退换货
      */
     
@@ -281,6 +296,10 @@ return array(
 //		),
 //	),
 
+<<<<<<< HEAD
+		'SHARE_URL' => 'http://wx.pinquduo.cn',
+    'DATA_URL' => '/data/wwwroot/default',
+=======
     'SHARE_URL' => 'http://wx.pinquduo.cn',
     'DATA_URL' => '/data/wwwroot/default',
 
@@ -298,4 +317,5 @@ return array(
             'bucket'           => 'imgbucket',
         )
     ),
+>>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
 );

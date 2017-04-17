@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 /**
  *一元云购
@@ -20,4 +21,28 @@ class CloudshopController extends Controller {
     public function index(){
         echo "index";
     }
+=======
+<?php
+/**
+ *一元云购
+ */
+namespace Cloud\Controller;
+use Think\Controller;
+class CloudshopController extends Controller {
+
+    /**
+     * 析构流函数
+     */
+    public function  __construct() {
+        parent::__construct();
+
+    }
+
+    /**
+     * 一元云购主页
+     */
+    public function index(){
+        echo "index";
+    }
+>>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
 }
