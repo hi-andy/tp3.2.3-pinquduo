@@ -1082,7 +1082,7 @@ class GoodsController extends BaseController {
                 redisdelall($rdsname);//删除用户订单缓存
                 $rdsname = "getGoodsDetails".$goods_id.$user_id."*";
                 redisdelall($rdsname);//删除商品详情缓存
-                $rdsname = "TuiSong".$user_id;
+                $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
@@ -1852,9 +1852,11 @@ class GoodsController extends BaseController {
 	{
 		$id = I('id');
 		$type = I('type');
-        $rdsname = "getMore".$id.$type;
+        $page=I('page',1);
+        $pagesize = I('pagesize',20);
+        $rdsname = "getMore".$id.$type.$page.$pagesize;
         if (empty(redis($rdsname))) {//判断是否有缓存
-            $data = $this->getOtheyMore($id, $type);
+            $data = $this->getOtheyMore($id,$type,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -1866,10 +1868,8 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
-	function getOtheyMore($id,$type)
+	function getOtheyMore($id,$type,$page,$pagesize)
 	{
-		$page=I('page',1);
-		$pagesize = I('pagesize',20);
 //		$id = I('id');//分类id
 //		$type = I('type');//0->不是海淘的  1->是海淘的
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
