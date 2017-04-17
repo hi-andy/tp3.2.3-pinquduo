@@ -65,7 +65,7 @@ class SecondController extends Controller {
         $data['type'] = 1;
         foreach ($data['goods_id'] as $value) {
             $data['goods_id'] = $value;
-            $res = M('goods_promotion')->data($data)->add();
+            $res = M('goods_activity')->data($data)->add();
         }
         if($res)
         {
@@ -77,7 +77,7 @@ class SecondController extends Controller {
 
     public function ajaxindex()
     {
-        $where = '`type`=1 and show_type=0 ';
+        $where = '1';
         if(!empty(I('store_name')))
         {
             $this->assign('store_name', I('store_name'));
@@ -100,12 +100,8 @@ class SecondController extends Controller {
         }
         $show = $Page->show();
 
-//        $sql = "SELECT id FROM tp_goods_promotion";
-//        $goodsList = M()->query($sql);
-//        print_r($goodsList);exit;
-
-        $sql = 'SELECT gp.id,gp.start_date,gp.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name FROM tp_goods_activity gp 
-                LEFT JOIN tp_goods g ON g.goods_id=gp.goods_id
+        $sql = 'SELECT ga.id,ga.start_date,ga.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name FROM tp_goods_activity ga 
+                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category gc ON g.cat_id=gc.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id LIMIT ' .$Page->firstRow.','.$Page->listRows;
         $goodsList = M()->query($sql);
@@ -194,11 +190,11 @@ class SecondController extends Controller {
     public function delete()
     {
         // 判断此商品是否有订单
-        $goods_count = M('goods_promotion')->where("id = {$_GET['id']}")->find();
+        $goods_count = M('goods_activity')->where("id = {$_GET['id']}")->find();
         if($goods_count)
         {
             // 删除此商品
-            M("Goods_promotion")->where('id =' . $_GET['id'])->delete();
+            M("Goods_activity")->where('id =' . $_GET['id'])->delete();
             $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
             $this->ajaxReturn(json_encode($return_arr));
         }
