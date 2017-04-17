@@ -21,7 +21,6 @@ $verifyToken = md5('unique_salt'.$timestamp);
 //判断上传状态
 if(!empty($_FILES) && $token==$verifyToken && isset($sessionid))
 {
-
 	//引入上传类
 	require_once(PHPMYWIND_DATA.'/httpfile/upload.class.php');
 	$upload_info = UploadFile('Filedata', $iswatermark);

@@ -284,10 +284,12 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         I('invitation_num') && $invitation_num = strtolower(I('invitation_num'));//统一大小写
+        $rdsname = "getPromDetail".$order_id.$user_id.$page.$pagesize.$invitation_num;
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
         if(empty($user_id))
         {
+            //if(empty(redis($rdsname))){//判断是否有缓存
             $json = array('status'=>-1,'msg'=>'非法数据');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
@@ -305,7 +307,7 @@ class UserController extends BaseController {
         if($order['prom_id']!=null)
         {
             $order['goodsInfo'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_id,goods_name,goods_remark,original_img,prom,prom_price,cat_id,market_price,store_id')->find();
-            $order['goodsInfo']['original_img'] =  C('HTTP_URL').goods_thum_images($order['goods_id'],400,400);
+            $order['goodsInfo']['original_img'] =  goods_thum_images($order['goods_id'],400,400);
 
             //获取分享缩略图
             if(file_exists('Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg'))
@@ -404,7 +406,7 @@ class UserController extends BaseController {
             //找到order表里的详情
             $order['address'] = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
             $order['goods'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
-            $order['goods']['original_img'] = C('HTTP_URL').goods_thum_images($order['goods_id'],400,400);
+            $order['goods']['original_img'] = goods_thum_images($order['goods_id'],400,400);
             $order['store'] = M('merchant')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
             $order['store']['store_logo'] = C('HTTP_URL').$order['store']['store_logo'];
 
@@ -427,7 +429,7 @@ class UserController extends BaseController {
             $address = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
 
             $goods = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
-            $goods['original_img'] = C('HTTP_URL').goods_thum_images($order['goods_id'],200,200);
+            $goods['original_img'] = goods_thum_images($order['goods_id'],200,200);
             $store = M('merchant')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
             $store['store_logo'] = C('HTTP_URL').$store['store_logo'];
             $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
@@ -485,7 +487,7 @@ class UserController extends BaseController {
         if($order['prom_id']!=null)
         {
             $order['goodsInfo'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_id,goods_name,goods_remark,original_img,prom,prom_price,cat_id,market_price,store_id')->find();
-            $order['goodsInfo']['original_img'] =  C('HTTP_URL').goods_thum_images($order['goods_id'],400,400);
+            $order['goodsInfo']['original_img'] =  goods_thum_images($order['goods_id'],400,400);
 
             //获取分享缩略图
             if(file_exists('Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg'))
@@ -579,7 +581,7 @@ class UserController extends BaseController {
             //找到order表里的详情
             $order['address'] = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
             $order['goods'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
-            $order['goods']['original_img'] = C('HTTP_URL').goods_thum_images($order['goods_id'],400,400);
+            $order['goods']['original_img'] = goods_thum_images($order['goods_id'],400,400);
             $order['store'] = M('merchant')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
             $order['store']['store_logo'] = C('HTTP_URL').$order['store']['store_logo'];
 
@@ -602,7 +604,7 @@ class UserController extends BaseController {
             $address = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
 
             $goods = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
-            $goods['original_img'] = C('HTTP_URL').goods_thum_images($order['goods_id'],200,200);
+            $goods['original_img'] = goods_thum_images($order['goods_id'],200,200);
             $store = M('merchant')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
             $store['store_logo'] = C('HTTP_URL').$store['store_logo'];
             $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
@@ -650,7 +652,7 @@ class UserController extends BaseController {
         }
         foreach($goods as &$v)
         {
-            $v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
         }
         $data = $this->listPageData($count,$goods);
 
@@ -669,18 +671,22 @@ class UserController extends BaseController {
         $id = I('order_id');
         $user_id = I('user_id',0);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        $data = $this->userLogic->cancel_order($user_id,$id);
+        $json = $data;
+        $returnjson = $json;
         if(!$user_id > 0 || !$id > 0)
         {
             $json = array('status'=>-1,'msg'=>'参数有误','result'=>'');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
-            exit(json_encode($json));
+            $returnjson = json_encode($json);
         }
-        $data = $this->userLogic->cancel_order($user_id,$id);
-        $json = $data;
         if(!empty($ajax_get))
             $this->getJsonp($json);
-        exit(json_encode($json));
+
+        $rdsname = "getUserOrderList".$user_id."*";
+        redisdelall($rdsname);//根据类型删除用户订单缓存
+        exit(json_encode($returnjson));
     }
 
     /**
@@ -716,6 +722,8 @@ class UserController extends BaseController {
         }
         $data = $this->userLogic->confirm_order($user_id,$id);
         $json = $data;
+        $rdsname = "getUserOrderList".$user_id."*";
+        redisdelall($rdsname);//删除用户订单缓存
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
@@ -824,7 +832,7 @@ class UserController extends BaseController {
                 }
 
                 $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$order[$i]['goods_id'])->field('goods_name,original_img')->find();
-                $order[$i]['goodsInfo']['original_img'] = C('HTTP_URL').goods_thum_images($order[$i]['goods_id'],400,400);
+                $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'],400,400);
                 $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$order[$i]['store_id'])->field('store_name,store_logo')->find();
                 $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
                 $order[$i]['goods_num'] = $mark['goods_num'];
@@ -834,7 +842,7 @@ class UserController extends BaseController {
                 $order[$i]['order_type'] = $order_status['order_type'];
             }else{
                 $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$order[$i]['goods_id'])->field('goods_name,original_img')->find();
-                $order[$i]['goodsInfo']['original_img'] = C('HTTP_URL').goods_thum_images($order[$i]['goods_id'],400,400);
+                $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'],400,400);
                 $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$order[$i]['store_id'])->field('store_name,store_logo')->find();
                 $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
                 $order[$i]['goods_num'] = $order[$i]['goods_num'];
@@ -1000,6 +1008,7 @@ class UserController extends BaseController {
      * 测试短信接口
      */
     public function sendSMS(){
+<<<<<<< HEAD
         $mobile = I('mobile');
         if(!check_mobile($mobile))
             exit(json_encode(array('status'=>-1,'msg'=>'手机号码格式有误')));
@@ -1024,6 +1033,26 @@ class UserController extends BaseController {
         if(!empty($result))
         {
             $res = M('sms_log')->add(array('mobile'=>$mobile,'add_time'=>time(),'code'=>$code));
+=======
+        if (intval(time()) - intval(session("code")) > 60) {
+            session("code", time());
+            $mobile = I('mobile');
+            if (!check_mobile($mobile))
+                exit(json_encode(array('status' => -1, 'msg' => '手机号码格式有误')));
+            if ($mobile != '15019236664') {
+                $code = rand(1000, 9999);
+                $alidayu = new AlidayuController();
+                $result = $alidayu->sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
+                //$result = sendMessage($mobile,array($code,'5分钟'),'155220');
+            } else {
+                $code = 111111;
+                $result = 1;
+            }
+            //先将短信code值存起来
+            if (!empty($result)) {
+                $res = M('sms_log')->add(array('mobile' => $mobile, 'add_time' => time(), 'code' => $code));
+            }
+>>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
         }
 
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -1183,7 +1212,7 @@ class UserController extends BaseController {
                         $num = M('group_buy')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
                         $all[$i]['type'] = 1;
                         $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $mark['goods_id'])->field('goods_name,original_img')->find();
-                        $all[$i]['goodsInfo']['original_img'] = C('HTTP_URL') . goods_thum_images($all[$i]['goods_id'], 400, 400);
+                        $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
                         $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $mark['store_id'])->field('store_name,store_logo')->find();
                         $all[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $all[$i]['storeInfo']['store_logo'];
                         $all[$i]['goods_num'] = $mark['goods_num'];
@@ -1198,7 +1227,7 @@ class UserController extends BaseController {
                         $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
                         $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
                         unset($all[$i]['goodsInfo']['shop_price']);
-                        $all[$i]['goodsInfo']['original_img'] = C('HTTP_URL') . goods_thum_images($all[$i]['goods_id'], 400, 400);
+                        $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
                         $all[$i]['storeInfo'] = M('merchant')->where('`id`=' . $mark['store_id'])->field('store_name,store_logo')->find();
                         $all[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $all[$i]['storeInfo']['store_logo'];
 
@@ -1211,7 +1240,7 @@ class UserController extends BaseController {
                     $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
                     $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
                     unset($all[$i]['goodsInfo']['shop_price']);
-                    $all[$i]['goodsInfo']['original_img'] = C('HTTP_URL') . goods_thum_images($all[$i]['goods_id'], 400, 400);
+                    $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
                     $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $all[$i]['store_id'])->field('store_name,store_logo')->find();
                     $all[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $all[$i]['storeInfo']['store_logo'];
 
@@ -1225,7 +1254,7 @@ class UserController extends BaseController {
             $all = $this->listPageData($count, $all);
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-            redis($rdsname, serialize($json), 60);//存入缓存
+            redis($rdsname, serialize($json), 60);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
@@ -1368,7 +1397,7 @@ class UserController extends BaseController {
             $goodsInfo[$i] = M('goods')->where('`goods_id` = '.$id)->field('goods_id,store_id,original_img')->find();
             $goodsInfo[$i]['storeInfo'] = M('merchant')->where('`id` = '.$goodsInfo[$i]['store_id'])->field('store_name,store_logo')->find();
             $goodsInfo[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$goodsInfo[$i]['storeInfo']['store_logo'];
-            $goodsInfo[$i]['original_img'] = C('HTTP_URL').$goodsInfo[$i]['original_img'];
+            $goodsInfo[$i]['original_img'] = TransformationImgurl($goodsInfo[$i]['original_img']);
         }
         return $goodsInfo;
     }
@@ -1401,7 +1430,7 @@ class UserController extends BaseController {
 
         foreach($goods as &$v)
         {
-            $v['original_img'] = C('HTTP_URL').goods_thum_images($v['goods_id'],400,400);
+            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
         }
 
         $collection = $this->listPageData($count,$goods);
@@ -1486,7 +1515,7 @@ class UserController extends BaseController {
                 $num = M('group_buy')->where('`is_pay`=1 and `mark`='.$prom['mark'])->count();
             }
             $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$prom['goods_id'])->field('goods_name,original_img')->find();
-            $order[$i]['goodsInfo']['original_img'] = C('HTTP_URL').goods_thum_images($prom['goods_id'],400,400);
+            $order[$i]['goodsInfo']['original_img'] = goods_thum_images($prom['goods_id'],400,400);
             $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$prom['store_id'])->field('store_name,store_logo')->find();
             $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
             $order[$i]['goods_num'] = $prom['goods_num'];
@@ -1671,7 +1700,7 @@ class UserController extends BaseController {
                 $num = M('group_buy')->where('`is_pay`=1 and `mark`='.$prom['mark'])->count();
             }
             $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$prom['goods_id'])->field('goods_name,original_img')->find();
-            $order[$i]['goodsInfo']['original_img'] = C('HTTP_URL').goods_thum_images($prom['goods_id'],400,400);
+            $order[$i]['goodsInfo']['original_img'] = goods_thum_images($prom['goods_id'],400,400);
             $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$prom['store_id'])->field('store_name,store_logo')->find();
             $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
             $order[$i]['goods_num'] = $prom['goods_num'];
@@ -1750,7 +1779,7 @@ class UserController extends BaseController {
                 $num = M('group_buy')->where('`mark`='.$prom['mark'])->count();
             }
             $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$prom['goods_id'])->field('goods_name,original_img')->find();
-            $order[$i]['goodsInfo']['original_img'] = C('HTTP_URL').goods_thum_images($prom['goods_id'],400,400);
+            $order[$i]['goodsInfo']['original_img'] = goods_thum_images($prom['goods_id'],400,400);
             $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$prom['store_id'])->field('store_name,store_logo')->find();
             $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
             $order[$i]['goods_num'] = $prom['goods_num'];
