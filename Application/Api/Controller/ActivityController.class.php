@@ -27,11 +27,8 @@ class ActivityController extends Controller {
 		$times[3]['choose'] = 0;
 		$times[4]['time'] = '24:00';
 
-<<<<<<< HEAD
-=======
 		
 
->>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4
 		for($i=0;$i<4;$i++)
 		{
 			$time = strtotime(date('Y-m-d',time()).$times[$i]['time']);
