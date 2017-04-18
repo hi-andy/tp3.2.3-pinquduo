@@ -889,7 +889,7 @@ class GoodsController extends BaseController {
 		$data = array();
 		$order = array();
 		$address_id = $parameter['address_id'];
-		$goods_id = $parameter['goods_id'];
+		//$goods_id = $parameter['goods_id'];
 		$spec_key = $parameter['spec_key'];
 		$coupon_id = $parameter['coupon_id'];
 		$ajax_get =  $parameter['ajax_get'];
@@ -1355,6 +1355,10 @@ class GoodsController extends BaseController {
 //				$this->getJsonp($json);
             $rdsname = "getUserOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1538,6 +1542,10 @@ class GoodsController extends BaseController {
 //			}
             $rdsname = "getUserOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;

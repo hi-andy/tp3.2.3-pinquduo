@@ -200,7 +200,6 @@ class StoreController extends BaseController{
 				->order('order_id asc')
 				->select();
 		}
-
 		/*处理订单数组的数据*/
 		if(!empty($order_info)){
 			//处理地址问题
@@ -281,7 +280,7 @@ class StoreController extends BaseController{
 		}else{
 			$updata['automatic_time'] = time()+15*24*60*60;
 		}
-
+		reserve_logistics($order['order_id']);
 		$res1 = M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
 
 		return $did and $res1;

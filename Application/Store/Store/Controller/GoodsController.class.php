@@ -8,8 +8,6 @@ use Think\AjaxPage;
 use Think\Page;
 
 class GoodsController extends BaseController {
-
-
     /*
      * 初始化操作
      */
