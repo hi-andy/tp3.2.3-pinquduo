@@ -17,12 +17,13 @@ use Think\Controller;
 class SecondBuyController extends Controller {
 	public function index()
 	{
-		$times          = array('10:00', '12:00', '16:00', '20:00'); //抢购时间段
+		$times          = array('10:00', '13:00', '16:00', '19:00'); //抢购时间段
 		$currentTime    = 0;   //当前抢购时间
 		for ($i=0; $i<count($times); $i++) {
 		    $startTime = strtotime(date('Y-m-d',time()).$times[$i]);
-		    if (time() > $startTime && time() < $startTime + 7200) {
+		    if (time() > $startTime && time() < $startTime + 3600 * 3) {
                 $currentTime = intval($times[$i]);
+                //echo $times[$i];exit;
 		        $times[$i] = array('time'=>$times[$i]);
                 $times[$i]['notice'] = '正在抢';
             } elseif (time() < $startTime) {

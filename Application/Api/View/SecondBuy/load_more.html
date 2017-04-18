@@ -1,9 +1,9 @@
 <ul id="page" data-page="1" data-total="{$pages}" data-type="{$current}" data-url="{:U('SecondBuy/ajaxGetList')}">
   <volist name="lists" id="goods">
   <li>
-    <a href="">
+    <a href="<if condition="$goods.status gt 0">http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}</if>">
       <div class="img">
-        <img width="100%"  class="lazy" src="http://pinquduo.cn/{$goods.original_img}" alt=""/>
+        <img width="100%"  class="lazy" src="{$goods.original_img}" alt=""/>
         <if condition="$goods.status eq 0">
           <div class="mask align-vertical">
             <div class="align-vertical">抢光了</div>
