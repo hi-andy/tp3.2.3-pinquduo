@@ -3,9 +3,7 @@ namespace Api\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
     public function index(){
-        //redis("abc", "123", 60);
-        echo json_encode(unserialize(redis("home")));
-        //$this->display();
+
     }
 
     /*
@@ -698,20 +696,24 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
 
-    //为我拼
+    //为我点赞
     public function getThe_raise()
     {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
-
-        $count = M('goods')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-        $goods = M('goods')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
-        foreach($goods as &$v)
-        {
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+        $rdsname = "getThe_raise".$page.$pagesize;
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            $count = M('goods')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
+            $goods = M('goods')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+            foreach ($goods as &$v) {
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+            }
+            $data = $this->listPageData($count, $goods);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
         }
-        $data = $this->listPageData($count,$goods);
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);

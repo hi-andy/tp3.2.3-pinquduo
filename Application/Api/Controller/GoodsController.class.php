@@ -458,13 +458,14 @@ class GoodsController extends BaseController {
 	}
 
 	//详情页
-	function getGoodsDetails()
-	{
-		$goods_id = I('goods_id');
-		I('user_id') && $user_id = I('user_id');
-		I('spec_key') && $spec_key = I('spec_key');
-        $rdsname = "getGoodsDetails".$goods_id.$user_id.$spec_key;
-        if(empty(redis($rdsname))) {//判断是否有缓存
+    function getGoodsDetails()
+    {
+        $goods_id = I('goods_id');
+        I('user_id') && $user_id = I('user_id');
+        I('spec_key') && $spec_key = I('spec_key');
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        $rdsname = "getGoodsDetails".$goods_id.$user_id.$spec_key.$ajax_get;
+        if (empty(redis($rdsname))) {//判断是否有缓存
             //轮播图
             $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
 
@@ -478,23 +479,37 @@ class GoodsController extends BaseController {
             if (empty($banner)) {
                 $banner = null;
             }
-            $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
+            $details = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
+
+            //商品详情
+            $goods['goods_id'] = $details['goods_id'];
+            $goods['goods_name'] = $details['goods_name'];
+            $goods['market_price'] = $details['market_price'];
+            $goods['shop_price'] = $details['shop_price'];
+            $goods['prom'] = $details['prom'];
+            $goods['goods_remark'] = $details['goods_remark'];
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
             $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-            $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+            $goods['sales'] = $details['sales'];
+            $goods['is_support_buy'] = $details['is_support_buy'];
+            $goods['free'] = $details['free'];
+            $goods['the_raise'] = $details['the_raise'];
+            $store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
             $store['store_logo'] = C('HTTP_URL') . $store['store_logo'];
             $goods['store'] = $store;
-            $goods['original_img'] = TransformationImgurl($goods['original_img']);
+            $goods['is_special'] = $details['is_special'];
+            $goods['goods_content'] = $details['goods_content'];
+            $goods['original_img'] = TransformationImgurl($details['original_img']);
 
-            if (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg')) {
-                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg';
-            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png')) {
-                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png';
-            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif')) {
-                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif';
+            if (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.jpg')) {
+                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.jpg';
+            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.png')) {
+                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.png';
+            } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.gif')) {
+                $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $details['store_id'] . '.gif';
             } else {
-                $goods_pic_url = goods_thum_images($goods['goods_id'], 400, 400);
-                $pin = $this->fenxiangLOGO($goods_pic_url, $goods['goods_id'], $goods['store_id']);
+                $goods_pic_url = goods_thum_images($details['goods_id'], 400, 400);
+                $pin = $this->fenxiangLOGO($goods_pic_url, $details['goods_id'], $details['store_id']);
                 $goods['fenxiang_url'] = C('HTTP_URL') . $pin;
             }
 
@@ -524,13 +539,13 @@ class GoodsController extends BaseController {
                     $group_buy[$i]['address'] = $address;
                 }
                 foreach ($group_buy as &$v) {
-                    $v['photo'] = C('HTTP_URL') . $v['photo'];
+                    $v['photo'] = TransformationImgurl($v['photo']);
                 }
             } else {
                 $group_buy = null;
             }
             //计算团购价
-            $goods['prom_price'] = (string)($goods['prom_price']);
+            $goods['prom_price'] = (string)($details['prom_price']);
             //是否收藏
             $goods['collect'] = 0;//默认没收藏
             if (!empty($user_id)) {
@@ -557,7 +572,7 @@ class GoodsController extends BaseController {
             for ($i = 0; $i < count($new_filter_spec); $i++) {
                 foreach ($new_filter_spec[$i]['items'] as &$v) {
                     if (!empty($v['src'])) {
-                        $v['src'] = C('HTTP_URL') . $v['src'];
+                        $v['src'] = TransformationImgurl($v['src']);
                     }
                 }
             }
@@ -566,21 +581,20 @@ class GoodsController extends BaseController {
                 $key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
                 $goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
             }
+
+            if (!empty($ajax_get)) {
+                $goods['html'] = htmlspecialchars_decode($details['goods_content']);
+            }
+
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		if(!empty($ajax_get))
-		{
-			$goods['html'] = htmlspecialchars_decode($details['goods_content']);
-		}
-
-		if(!empty($ajax_get))
-			$this->getJsonp($json);
-		exit(json_encode($json));
-	}
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
 
 	function getShare()
 	{
@@ -875,7 +889,7 @@ class GoodsController extends BaseController {
 		$data = array();
 		$order = array();
 		$address_id = $parameter['address_id'];
-		$goods_id = $parameter['goods_id'];
+		//$goods_id = $parameter['goods_id'];
 		$spec_key = $parameter['spec_key'];
 		$coupon_id = $parameter['coupon_id'];
 		$ajax_get =  $parameter['ajax_get'];
@@ -1080,8 +1094,10 @@ class GoodsController extends BaseController {
 				$json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
                 $rdsname = "getUserOrderList".$user_id."*";
                 redisdelall($rdsname);//删除用户订单缓存
-                $rdsname = "getGoodsDetails".$goods_id.$user_id."*";
+                $rdsname = "getGoodsDetails".$goods_id."*";
                 redisdelall($rdsname);//删除商品详情缓存
+                $rdsname = "TuiSong*";
+                redisdelall($rdsname);//删除推送缓存
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -1339,6 +1355,10 @@ class GoodsController extends BaseController {
 //				$this->getJsonp($json);
             $rdsname = "getUserOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1522,6 +1542,10 @@ class GoodsController extends BaseController {
 //			}
             $rdsname = "getUserOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1850,18 +1874,24 @@ class GoodsController extends BaseController {
 	{
 		$id = I('id');
 		$type = I('type');
-		$data = $this->getOtheyMore($id,$type);
+        $page=I('page',1);
+        $pagesize = I('pagesize',20);
+        $rdsname = "getMore".$id.$type.$page.$pagesize;
+        if (empty(redis($rdsname))) {//判断是否有缓存
+            $data = $this->getOtheyMore($id,$type,$page,$pagesize);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
 
-	function getOtheyMore($id,$type)
+	function getOtheyMore($id,$type,$page,$pagesize)
 	{
-		$page=I('page',1);
-		$pagesize = I('pagesize',20);
 //		$id = I('id');//分类id
 //		$type = I('type');//0->不是海淘的  1->是海淘的
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -1978,7 +2008,7 @@ class GoodsController extends BaseController {
 	//获取用户地址列表
 	function getUserAddressList()
 	{
-		   $user_id = I('user_id');
+        $user_id = I('user_id');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$a = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
 
@@ -2135,18 +2165,22 @@ class GoodsController extends BaseController {
 		$key = I('key');
 		$page = I('page');
 		$pagesize = I('pagesize',50);
-		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$count = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->count();
-		$goods = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
+        $rdsname = "getsearch".$key.$page.$pagesize;
+        if (empty(redis($rdsname))) {//判断是否有缓存
+            $count = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->count();
+            $goods = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->select();
 
-		foreach($goods as &$v)
-		{
-			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
-		}
+            foreach ($goods as &$v) {
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+            }
 
-		$data =$this->listPageData($count,$goods);
-
-		$json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+            $data = $this->listPageData($count, $goods);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读出缓存
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));

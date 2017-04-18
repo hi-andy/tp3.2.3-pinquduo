@@ -32,33 +32,6 @@ class SecondController extends Controller {
     // 秒杀商品列表
     public function secondGoods()
     {
-        for ($i = 0; $i < 5; $i++) {
-            $date[$i]['id'] = $i + 1;
-            $date1 = time();
-            if($i==0)  {
-                $day = $date1 - (24 * 60 * 60 * 2);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            } elseif($i==1) {
-                $day = $date1 - (24 * 60 * 60);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            } elseif($i == 2) {
-                $date[$i]['date'] = date("Y-m-d", time());
-            }elseif($i==3){
-                $day = $date1 + (24 * 60 * 60);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            }else{
-                $day = $date1 + (24 * 60 * 60 * 2);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            }
-        }
-        $time = M('seconds_kill_time')->where('`is_show`=1')->order('time asc')->select();
-        for ($i = 0; $i < count($time); $i++) {
-            $time[$i]['time'] = $time[$i]['time'] . ':00:00';
-        }
-        $store = M('merchant')->where('`state`=1')->field('id,store_name')->select();
-        $this->assign('store', $store);
-        $this->assign('time', $time);
-        $this->assign('date', $date);
         $this->display();
     }
 
@@ -92,7 +65,7 @@ class SecondController extends Controller {
         $data['type'] = 1;
         foreach ($data['goods_id'] as $value) {
             $data['goods_id'] = $value;
-            $res = M('goods_promotion')->data($data)->add();
+            $res = M('goods_activity')->data($data)->add();
         }
         if($res)
         {
@@ -104,7 +77,7 @@ class SecondController extends Controller {
 
     public function ajaxindex()
     {
-        $where = '`type`=1 and show_type=0 ';
+        $where = '1';
         if(!empty(I('store_name')))
         {
             $this->assign('store_name', I('store_name'));
@@ -120,15 +93,16 @@ class SecondController extends Controller {
             $times = strtotime(I('date'));
             $where = $where . ' and `on_time`>='.$times.' and `on_time`<'.($times + 24 * 60 * 60);
         }
-        $count = M('goods')->where($where)->count();
+        $count = M('goods_activity')->where($where)->count();
         $Page = new AjaxPage($count, 20);
         foreach ($where as $key => $val) {
             $Page->parameter[$key] = urlencode($val);
         }
         $show = $Page->show();
-        $sql = 'SELECT gp.id,gp.start_date,gp.start_time,g.goods_name,g.shop_price,g.prom_price,c.name cat_name,m.store_name FROM tp_goods_promotion gp 
-                LEFT JOIN tp_goods g ON g.goods_id=gp.goods_id
-                LEFT JOIN tp_goods_category c ON g.cat_id=c.id
+
+        $sql = 'SELECT ga.id,ga.start_date,ga.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name FROM tp_goods_activity ga 
+                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
+                LEFT JOIN tp_goods_category gc ON g.cat_id=gc.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id LIMIT ' .$Page->firstRow.','.$Page->listRows;
         $goodsList = M()->query($sql);
 
@@ -136,6 +110,7 @@ class SecondController extends Controller {
             $goodsList[$key]['start_time'] = date('Y-m-d', $value['start_date']) . ' ' . $value['start_time'] . ':00';
             $goodsList[$key]['end_time'] = empty($value['end_time']) ? date('Y-m-d ',$value['start_date']) . ' 00:00' : date('Y-m-d ', $value['start_date']) . $value['start_time'] . ':00';
         }
+
         $this->assign('goods', $goodsList);
         $this->assign('page', $show);// 赋值分页输出
         $this->display();
@@ -215,11 +190,11 @@ class SecondController extends Controller {
     public function delete()
     {
         // 判断此商品是否有订单
-        $goods_count = M('goods_promotion')->where("id = {$_GET['id']}")->find();
+        $goods_count = M('goods_activity')->where("id = {$_GET['id']}")->find();
         if($goods_count)
         {
             // 删除此商品
-            M("Goods_promotion")->where('id =' . $_GET['id'])->delete();
+            M("Goods_activity")->where('id =' . $_GET['id'])->delete();
             $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
             $this->ajaxReturn(json_encode($return_arr));
         }
