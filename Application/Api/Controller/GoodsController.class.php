@@ -495,7 +495,7 @@ class GoodsController extends BaseController {
             $goods['free'] = $details['free'];
             $goods['the_raise'] = $details['the_raise'];
             $store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
-            $store['store_logo'] = C('HTTP_URL') . $store['store_logo'];
+            $store['store_logo'] = TransformationImgurl($store['store_logo']);
             $goods['store'] = $store;
             $goods['is_special'] = $details['is_special'];
             $goods['goods_content'] = $details['goods_content'];
