@@ -3,9 +3,9 @@
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", true); //true、false
-define("REDISIP", "127.0.0.1");
+define("REDISIP", "r-uf634d79ab146d84.redis.rds.aliyuncs.com");
 define("PORT", 6379);
-define("REDISPASS", "");
+define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
