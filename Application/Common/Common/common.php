@@ -69,7 +69,7 @@ function goods_thum_images($goods_id,$width,$height){
 		 return '';
 
     $original_img = M('Goods')->where("goods_id = $goods_id")->getField('original_img');
-    if (strstr($original_img, "http") !== false) {
+    if (strstr($original_img, CDN) !== false) {
         return $original_img . "?imageView2/1/w/" . $width . "/h/" . $height;
     } else {
         $img = explode('/', $original_img);
