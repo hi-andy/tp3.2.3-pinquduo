@@ -36,22 +36,20 @@ class SecondBuyController extends Controller {
 
         $getTime = intval(I('get.start'));
         $startTime = $getTime ? $getTime : $currentTime;
-        $where = ' start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
+        //$where = ' start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
+        $where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
+        $count = M('goods_activity')->where($where)->count();
 
-        $count = M('goods_promotion')->where($where)->count();
-        $Page = new AjaxPage($count, 20);
-        $show = $Page->show();
-
-        $sql = 'SELECT gp.id,gp.start_time,g.goods_name,g.shop_price,g.prom_price,c.name cat_name,m.store_name FROM tp_goods_promotion gp 
-                LEFT JOIN tp_goods g ON g.goods_id=gp.goods_id
+        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.store_name FROM tp_goods_activity ga 
+                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category c ON g.cat_id=c.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id 
-                WHERE ' . $where . ' LIMIT ' .$Page->firstRow.','.$Page->listRows;
+                WHERE ' . $where . ' LIMIT 6';
         $goodsList = M()->query($sql);
-        print_r($goodsList);
 
         $this->assign('current',$startTime.':00');
-        $this->assign('page', $show);// 赋值分页输出
+        $this->assign('lists', $goodsList);// 赋值分页输出
+        $this->assign('pages', $count);// 赋值分页输出
         $this->assign('time',$times);
 		$this->display();
 	}
@@ -61,18 +59,23 @@ class SecondBuyController extends Controller {
      */
     public function ajaxGetList ()
     {
-        $filter = I('get.');
-        $count = M('goods_promotion')->where($filter)->count();
-        $pageNumber = 3;
-        $Page  = new \Think\Page($count, $pageNumber, $filter);
+        $startTime = intval(I('get.start'));
+        //$where = ' start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
+        $where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
 
-print_r($filter);
+        $count = M('goods_activity')->where($where)->count();
+        $pages = 6;
+        $Page = new AjaxPage($count, $pages, $_GET['p']);
 
-        $this->assign('pages', $filter['p']);
-        $this->assign('list', $article_list);
-        $this->assign('type', $filter['type']);
+        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.store_name FROM tp_goods_activity ga 
+                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
+                LEFT JOIN tp_goods_category c ON g.cat_id=c.id
+                LEFT JOIN tp_merchant m ON g.store_id=m.id 
+                WHERE ' . $where . ' LIMIT ' .$Page->firstRow.','.$Page->listRows;
+        $goodsList = M()->query($sql);
+
+        $this->assign('lists', $goodsList);// 赋值分页输出
+        $this->assign('pages', $count);// 赋值分页输出
         $this->display('load_more');
     }
 }
-
-// TODO 在 goods_promotion 表加入 status 字段，控制某一商品的当前状态（是否可购买），正常可用：1 ，不可用为：0 今日限定的商品数量已抢光
