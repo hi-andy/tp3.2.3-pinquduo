@@ -1,20 +1,27 @@
 <ul id="page" data-page="1" data-total="{$pages}" data-type="{$current}" data-url="{:U('SecondBuy/ajaxGetList')}">
   <volist name="lists" id="goods">
   <li>
-    <a href="<if condition="$goods.status gt 0">http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}</if>">
       <div class="img">
-        <img width="100%"  class="lazy" src="{$goods.original_img}" alt=""/>
+        <img width="100%" onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}'" class="lazy" src="http://pinquduo.cn{$goods.original_img}" alt=""/>
         <if condition="$goods.status eq 0">
           <div class="mask align-vertical">
             <div class="align-vertical">抢光了</div>
           </div>
         </if>
       </div>
-      <div class="info">
+    <div class="info">
         <h3>{$goods.goods_name}</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;{$goods.shop_price}</del> <span class="more">查看更多</span> </h4>
+        <h4>&yen; <i>0.1</i> <del>&yen;{$goods.shop_price}</del>
+          <?php if($goods['status'] > 0 && $notBuy > 0) { ?>
+              <span onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看详情</span>
+          <?php } else if($goods['status'] > 0) { ?>
+              <span onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/type/1/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">马上开抢</span>
+          <?php } else { ?>
+            <span onclick="location.href='http://pinquduo.cn/api/Store/getStoreList/store_id/{$goods.store_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看更多</span>
+          <?php } ?>
+
+        </h4>
       </div>
-    </a>
   </li>
   </volist>
 </ul>

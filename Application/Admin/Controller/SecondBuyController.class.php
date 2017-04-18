@@ -174,7 +174,7 @@ class SecondBuyController extends Controller {
         return $categoryList;
     }
 
-    public function delete()
+    public function delete1()
     {
         // 判断此商品是否有订单
         $goods_count = M('goods_activity')->where("id = {$_GET['id']}")->find();
@@ -190,7 +190,7 @@ class SecondBuyController extends Controller {
     }
 
     // 批量删除秒杀商品
-    public function deleteBatch()
+    public function delete()
     {
         $data = I('post.');
         //print_r($data);exit;

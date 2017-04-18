@@ -41,17 +41,25 @@ class SecondBuyController extends Controller {
         $where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
         $count = M('goods_activity')->where($where)->count();
 
-        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.store_name FROM tp_goods_activity ga 
+        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
                 LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category c ON g.cat_id=c.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id 
                 WHERE ' . $where . ' LIMIT 6';
         $goodsList = M()->query($sql);
 
+        // 时间未到不可购买
+        $notBuy = 0;
+        $buyTime = strtotime(date('Y-m-d ').$startTime.':00');
+        if ($buyTime > time()) {
+            $notBuy = 1;
+        }
+
         $this->assign('current',$startTime.':00');
         $this->assign('lists', $goodsList);// 赋值分页输出
         $this->assign('pages', $count);// 赋值分页输出
         $this->assign('time',$times);
+        $this->assign('notBuy',$notBuy);
 		$this->display();
 	}
 
@@ -68,15 +76,23 @@ class SecondBuyController extends Controller {
         $pages = 6;
         $Page = new AjaxPage($count, $pages, $_GET['p']);
 
-        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.store_name FROM tp_goods_activity ga 
+        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
                 LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category c ON g.cat_id=c.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id 
                 WHERE ' . $where . ' LIMIT ' .$Page->firstRow.','.$Page->listRows;
         $goodsList = M()->query($sql);
 
+        // 时间未到不可购买
+        $notBuy = 0;
+        $buyTime = strtotime(date('Y-m-d ').$startTime.':00');
+        if ($buyTime > time()) {
+            $notBuy = 1;
+        }
+
         $this->assign('lists', $goodsList);// 赋值分页输出
         $this->assign('pages', $count);// 赋值分页输出
+        $this->assign('notBuy',$notBuy);
         $this->display('load_more');
     }
 }
