@@ -30,7 +30,6 @@ class UserController extends BaseController {
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
-        redis("tttt", json_encode($map), REDISTIME);
         $data = $this->userLogic->thirdLogin($map);
 
         if($data['status'] ==1){
@@ -41,7 +40,7 @@ class UserController extends BaseController {
             $res = $HXcall->hx_register($username,$password,$nickname);
         }
         $data['name'] = $data['nickname'];
-        $data['head_pic'] = C('HTTP_URL').$data['head_pic'];
+        $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $json = array('status'=>1,'msg'=>'登录成功','result'=>$data);
@@ -1056,7 +1055,7 @@ class UserController extends BaseController {
             if (!$user_id)
             {
                 $_REQUEST['reg_time'] = time();
-                $_REQUEST['head_pic'] = '/Public/upload/logo/logo.jpg';
+                $_REQUEST['head_pic'] = CDN.'/Public/upload/logo/logo.jpg';
                 $_REQUEST['nickname'] = $mobile;
                 M('users')->data($_REQUEST)->add();
                 $user_id = M('users')->where(array('mobile' => $mobile))->getField('user_id');
@@ -1083,7 +1082,7 @@ class UserController extends BaseController {
                         exit(json_encode(array('status' => -1, 'msg' => '验证失败')));
                 }
                 $userinfo = M('users')->where(array('mobile' => $mobile))->field('user_id,pay_points,mobile,head_pic')->find();
-                $userinfo['head_pic'] = C('HTTP_URL').$userinfo['head_pic'];
+                $userinfo['head_pic'] = TransformationImgurl($userinfo['head_pic']);
                 $userinfo['name'] = substr_replace($userinfo['mobile'], '****', 3, 4);//将手机号码中间四位变成*号
 
                 $pay_points=$userinfo['pay_points'];

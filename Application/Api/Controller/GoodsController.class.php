@@ -465,7 +465,7 @@ class GoodsController extends BaseController {
         I('spec_key') && $spec_key = I('spec_key');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $rdsname = "getGoodsDetails".$goods_id.$user_id.$spec_key.$ajax_get;
-        if (empty(redis($rdsname))) {//判断是否有缓存
+        //if (empty(redis($rdsname))) {//判断是否有缓存
             //轮播图
             $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
 
@@ -588,9 +588,9 @@ class GoodsController extends BaseController {
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        } else {
-            $json = unserialize(redis($rdsname));//读取缓存
-        }
+        //} else {
+        //    $json = unserialize(redis($rdsname));//读取缓存
+        //}
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
