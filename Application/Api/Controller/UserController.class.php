@@ -349,7 +349,7 @@ class UserController extends BaseController {
                 exit(json_encode($json));
             }
 
-            $promInfo['photo'] = C('HTTP_URL').$promInfo['photo'];
+            $promInfo['photo'] = TransformationImgurl($promInfo['photo']);
             $promInfo['prom'] = $order['goodsInfo']['prom'];
             if(!empty($promInfo['mark'])) {
                 $join_num = M('group_buy')->where('`mark` = '.$promInfo['mark'].' and `is_pay`=1')->select();
