@@ -878,6 +878,10 @@ class GoodsController extends BaseController {
 		}
         $rdsname = "getUserOrderList".$user_id."*";
         redisdelall($rdsname);//删除用户订单缓存
+        $rdsname = "getGoodsDetails".$goods_id."*";
+        redisdelall($rdsname);//删除商品详情缓存
+        $rdsname = "TuiSong*";
+        redisdelall($rdsname);//删除推送缓存
 	}
 
 	/**
@@ -1684,7 +1688,7 @@ class GoodsController extends BaseController {
 		$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
 		$goods['original_img'] = goods_thum_images($goods['goods_id'],400,400);
 		$goods['store'] = M('merchant')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
-		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
+		$goods['store']['store_logo'] = TransformationImgurl($goods['store']['store_logo']);
 
 		//获取商品规格
 		if(!empty($spec_key))
