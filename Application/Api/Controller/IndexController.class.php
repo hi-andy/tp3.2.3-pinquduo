@@ -3,6 +3,7 @@ namespace Api\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
     public function index(){
+        print_r(json_decode(redis("tttt")));
 
     }
 
@@ -18,7 +19,7 @@ class IndexController extends BaseController {
             //获取轮播图
             $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
             foreach ($data as & $v) {
-                $v['ad_code'] = C('HTTP_URL') . $v['ad_code'];
+                $v['ad_code'] = TransformationImgurl($v['ad_code']);
             }
 
             //中间图标

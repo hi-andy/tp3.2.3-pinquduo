@@ -1,88 +1,27 @@
-<ul id="page" data-page="1" data-total="10" data-type="{$current}" data-url="{:U('SecondBuy/ajaxGetList')}">
+<ul id="page" data-page="1" data-total="{$pages}" data-type="{$current}" data-url="{:U('SecondBuy/ajaxGetList')}">
+  <volist name="lists" id="goods">
   <li>
-    <a href="">
       <div class="img">
-        <img width="100%"  class="lazy" src="__PUBLIC__/images/activity/img1.jpg" alt=""/>
-        <div class="mask align-vertical">
-          <div class="align-vertical">抢光了</div>
-        </div>
+        <img width="100%" onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}'" class="lazy" src="http://pinquduo.cn{$goods.original_img}" alt=""/>
+        <if condition="$goods.status eq 0">
+          <div class="mask align-vertical">
+            <div class="align-vertical">抢光了</div>
+          </div>
+        </if>
       </div>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>2.2</i> <del>&yen;102</del> <span class="more">查看更多</span> </h4>
+    <div class="info">
+        <h3>{$goods.goods_name}</h3>
+        <h4>&yen; <i>0.1</i> <del>&yen;{$goods.shop_price}</del>
+          <?php if($goods['status'] > 0 && $notBuy > 0) { ?>
+              <span onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看详情</span>
+          <?php } else if($goods['status'] > 0) { ?>
+              <span onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/type/1/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">马上开抢</span>
+          <?php } else { ?>
+            <span onclick="location.href='http://pinquduo.cn/api/Store/getStoreList/store_id/{$goods.store_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看更多</span>
+          <?php } ?>
+
+        </h4>
       </div>
-    </a>
   </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img5.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img6.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img7.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img8.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img5.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img6.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img7.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
-  <li>
-    <a href="">
-      <img width="100%" class="lazy" src="__PUBLIC__/images/activity/img8.jpg" alt=""/>
-      <div class="info">
-        <h3>2016秋装新款女外套提花短款西装女西服修 身显瘦气质女上衣一粒扣</h3>
-        <h4>&yen; <i>0.1</i> <del>&yen;102</del> <span></span> </h4>
-      </div>
-    </a>
-  </li>
+  </volist>
 </ul>

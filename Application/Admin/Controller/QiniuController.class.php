@@ -40,6 +40,15 @@ class QiniuController extends BaseController {
         return $uploadMgr->putFile($upToken,$key,$filePath,null,$mime);
     }
 
+    /*
+     * 从第三方获取文件上传
+     */
+    public function fetch($url="", $bucket="", $key=""){
+        $auth = new Auth(QiniuController::ACCESSKEY, QiniuController::SECRETKEY);
+        $bucketMgr = new BucketManager($auth);
+        return $bucketMgr->fetch($url, $bucket, $key);
+    }
+
     /**
      * 删除文件
      * @param $bucket 资源所在的空间

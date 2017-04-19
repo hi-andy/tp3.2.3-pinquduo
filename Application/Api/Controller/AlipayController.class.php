@@ -16,7 +16,7 @@ class AlipayController extends BaseController
     /**
      * 支付宝预支付
      */
-    public function addAlipayOrder($order_sn="")
+    public function addAlipayOrder($order_sn="",$user_id,$goods_id)
     {
         vendor('Alipay.AlipaySubmit');
 
@@ -76,6 +76,12 @@ class AlipayController extends BaseController
 
         if($_GET['order_sn'])
         {
+            $rdsname = "getUserOrderList".$user_id."*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
             exit(json_encode(array('status'=>1,'msg'=>'支付宝预支付订单生成成功','data'=>$orderdetail)));
         }else {
             return $orderdetail;
