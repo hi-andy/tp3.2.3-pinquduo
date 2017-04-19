@@ -349,7 +349,7 @@ EOF;
         }else{
             $data['order_type'] = 2;
         }
-        //销量、库存
+        //销量
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         //商品规格库存

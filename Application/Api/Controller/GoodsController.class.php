@@ -330,8 +330,13 @@ class GoodsController extends BaseController {
         I('user_id') && $user_id = I('user_id');
         I('spec_key') && $spec_key = I('spec_key');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+<<<<<<< HEAD
         $rdsname = "getGoodsDetails".$goods_id;
         if (empty(redis($rdsname))) {//判断是否有缓存
+=======
+        $rdsname = "getGoodsDetails".$goods_id.$user_id.$spec_key.$ajax_get;
+        //if (empty(redis($rdsname))) {//判断是否有缓存
+>>>>>>> bce8ffb325dc2cdb8459d2d9c88ab52bd99c0107
             //轮播图
             $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
 
@@ -441,9 +446,9 @@ class GoodsController extends BaseController {
             }
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        } else {
-            $json = unserialize(redis($rdsname));//读取缓存
-        }
+        //} else {
+        //    $json = unserialize(redis($rdsname));//读取缓存
+        //}
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
@@ -730,6 +735,10 @@ class GoodsController extends BaseController {
 		}
         $rdsname = "getUserOrderList".$user_id."*";
         redisdelall($rdsname);//删除用户订单缓存
+        $rdsname = "getGoodsDetails".$goods_id."*";
+        redisdelall($rdsname);//删除商品详情缓存
+        $rdsname = "TuiSong*";
+        redisdelall($rdsname);//删除推送缓存
 	}
 
 	/**
@@ -1535,7 +1544,7 @@ class GoodsController extends BaseController {
 		$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
 		$goods['original_img'] = goods_thum_images($goods['goods_id'],400,400);
 		$goods['store'] = M('merchant')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
-		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
+		$goods['store']['store_logo'] = TransformationImgurl($goods['store']['store_logo']);
 
 		//获取商品规格
 		if(!empty($spec_key))
