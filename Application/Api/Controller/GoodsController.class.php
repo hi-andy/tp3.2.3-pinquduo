@@ -1086,7 +1086,7 @@ class GoodsController extends BaseController {
 					}
 				}elseif($order['pay_code'] == 'alipay'){
 					$AliPay = new AlipayController();
-					$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
+					$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
 				}elseif($order['pay_code'] == 'qpay'){
 					$qqPay = new QQPayController();
 					$pay_detail = $qqPay->getQQPay($order);

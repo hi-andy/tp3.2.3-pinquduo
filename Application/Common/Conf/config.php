@@ -3,7 +3,7 @@
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", true); //true、false
-define("REDISIP", "r-uf634d79ab146d84.redis.rds.aliyuncs.com");
+define("REDISIP", "r-wz95cb4e0b1ea4f4.redis.rds.aliyuncs.com");
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);

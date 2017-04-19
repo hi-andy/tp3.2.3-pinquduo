@@ -30,6 +30,7 @@ class UserController extends BaseController {
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
+        redis("tttt", json_encode($map), REDISTIME);
         $data = $this->userLogic->thirdLogin($map);
 
         if($data['status'] ==1){

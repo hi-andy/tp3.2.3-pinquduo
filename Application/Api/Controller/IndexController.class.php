@@ -3,6 +3,7 @@ namespace Api\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
     public function index(){
+        print_r(json_decode(redis("tttt")));
 
     }
 
