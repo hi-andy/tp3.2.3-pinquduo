@@ -3,14 +3,14 @@
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", false); //true、false
-define("REDISIP", "r-wz95cb4e0b1ea4f4.redis.rds.aliyuncs.com");
+define("REDISIP", "r-wz9ef37016b1fbd4.redis.rds.aliyuncs.com");
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
 	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
-	'HTTP_URL'=>'http://pinquduo.cn',
+	'HTTP_URL'=>'http://load.pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
