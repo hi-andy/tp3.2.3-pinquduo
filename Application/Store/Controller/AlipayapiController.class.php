@@ -99,11 +99,11 @@ class AlipayapiController extends BaseController {
 		vendor('Alipay.Rsafunction');
 		vendor('Alipay.alipay_notify');
 		vendor('Alipay.alipay_submit');
-//		vendor('Alipay.AlipaySubmit');
 		if(empty($_SESSION['merchant_id']))
 		{
-			session_unset();
-			session_destroy();
+			foreach($_COOKIE as $key=>$val){
+				setcookie($key,"",time()-100);
+			}
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
 		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->field('is_pay')->find();

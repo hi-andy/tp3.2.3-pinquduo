@@ -199,56 +199,6 @@ EOF;
      * 微信支付回调函数
      */
     public function endpay(){
-        /*
-        M()->startTrans();
-        $order_sn = $_GET['order_sn'];
-
-        $where=array('order_sn'=>$order_sn);
-        $order=M('order')->where($where)->find();
-
-        $res = $this->changeOrderStatus($order);
-
-        if(!$res)
-        {
-            M()->rollback();
-            exit();
-        }
-
-        //以log文件形式记录回调信息
-        vendor('WxPay.WxPayPubHelper.WxPayPubHelper');
-        vendor('WxPay.WxPayPubHelper.log_');
-        $log_ = new \Log_();
-        $log_name=dirname(__FILE__)."/notify_url.log";//log文件路径
-
-        if($order['prom_id']){
-                $res2 = $this->Join_Prom($order['prom_id']);
-                $log_->log_result($log_name,"【团修改】:\n".$res2."\n");
-                if($res2){
-                    $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
-                    M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
-
-                    if($group_info['mark']>0){
-                        $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
-                        M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
-                        if(($nums)==$group_info['goods_num'])
-                        {
-                            $Goods = new GoodsController();
-                            $Goods->getFree($group_info['mark']);
-                            M()->commit();
-                        }
-                        M()->commit();
-                    }
-                    M()->commit();
-                }else{
-                    M()->rollback();
-                    exit();
-                }
-            }else{
-                M()->commit();
-            }
-        die;
-        */
-
         vendor('WxPay.WxPayPubHelper.WxPayPubHelper');
         vendor('WxPay.WxPayPubHelper.log_');
 
@@ -272,14 +222,13 @@ EOF;
             //更新商户状态
             $order_sn = $notify->data['out_trade_no'];
 
-            $where=array('order_sn'=>$order_sn);
+            $where="order_sn = $order_sn";
             $order=M('order')->where($where)->find();
 
             if($order['pay_status']==1){
                 $notify->setReturnParameter("return_code","SUCCESS");
                 exit();
             }
-
             $res = $this->changeOrderStatus($order);
 
             if(!$res)
@@ -340,14 +289,14 @@ EOF;
         $log_ = new \Log_();
         $log_name=dirname(__FILE__)."/notify_url.log";//log文件路径
 
-        $log_->log_result($log_name,"【接收到的notify通知】:\n".$xml."\n");
+        $log_->log_result($log_name,"【接收到WX的notify通知】:\n".$xml."\n");
 
         M()->startTrans();
 
         //更新商户状态
         $order_sn = $notify->data['out_trade_no'];
 
-        $where=array('order_sn'=>$order_sn);
+        $where="order_sn = $order_sn";
         $order=M('order')->where($where)->find();
 
         if($order['pay_status']==1){

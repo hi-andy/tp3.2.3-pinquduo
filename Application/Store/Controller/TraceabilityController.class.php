@@ -64,8 +64,6 @@ class TraceabilityController extends BaseController{
 			$grandson_ids = getCatGrandson($cat_id);
 			$where .= " and cat_id in(".  implode(',', $grandson_ids).") "; // 初始化搜索条件
 		}
-
-
 		$model = M('Goods');
 		$count = $model->where($where)->count();
 		$Page  = new AjaxPage($count,10);

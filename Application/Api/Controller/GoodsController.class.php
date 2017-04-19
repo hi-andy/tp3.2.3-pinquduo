@@ -1079,6 +1079,7 @@ class GoodsController extends BaseController {
 					//微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
 					if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
 						$order['order_id'] = $order_id;
+						
 						$code_str = $weixinPay->getJSAPI($order);
 						$pay_detail = $code_str;
 					}else{
@@ -1530,10 +1531,8 @@ class GoodsController extends BaseController {
 				$AliPay = new AlipayController();
 				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
 			}elseif($order['pay_code'] == 'qpay'){
-                // Begin code by lcy
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
-                // End code by lcy
             }
 			$json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
 //			if(!empty($ajax_get)){
@@ -2294,5 +2293,10 @@ class GoodsController extends BaseController {
 		$this->assign('join',$join);
 		$this->assign('free',json_encode($data));
 		$this->show();
+	}
+
+	function test()
+	{
+		$this->display();
 	}
 }

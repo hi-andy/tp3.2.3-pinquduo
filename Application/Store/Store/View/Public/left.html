@@ -8,7 +8,7 @@
             <!--</span>-->
           <!--</div>-->
         </form>
-        <php> $is_haitao = $_SESSION['is_haitao'];</php>
+        <php> $is_haitao = $_COOKIE['is_haitao'];</php>
         <!-- /.search form -->
         <ul class="sidebar-menu">
         	<li class="treeview">
@@ -24,7 +24,7 @@
                     <i class="fa fa-flag"></i><span>订单管理</span><i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <if condition="$_SESSION['merchant_id'] eq 2">
+                    <if condition="$_COOKIE['merchant_id'] eq 2">
                     <li onclick="makecss(this,30)" id="menu_29"><a href="/index.php?s=/Store/Order/batchindex" target='rightContent'><i class="fa fa-circle-o"></i>批量发货</a></li>
                         </if>
                     <li onclick="makecss(this,30)" id="menu_30"><a href="/index.php?s=/Store/Order/index" target='rightContent'><i class="fa fa-circle-o"></i>订单列表</a></li>
@@ -37,7 +37,7 @@
                     <i class="fa fa-flag"></i><span>团购订单管理</span><i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <if condition="$_SESSION['merchant_id'] eq 2">
+                    <if condition="$_COOKIE['merchant_id'] eq 2">
                     <li onclick="makecss(this,30)" id="menu_1"><a href="/index.php?s=/Store/Order/batchindex" target='rightContent'><i class="fa fa-circle-o"></i>批量发货</a></li>
                         </if>
                     <li onclick="makecss(this,111)" id="menu_2"><a href="/index.php?s=/Store/Prom/index" target='rightContent'><i class="fa fa-circle-o"></i>订单列表</a></li>
@@ -52,14 +52,9 @@
                 <ul class="treeview-menu">
                     <!--<li onclick="makecss(this,38)" id="menu_38"><a href='{:U("Goods/categoryList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品分类</a></li>-->
                     <li onclick="makecss(this,41)" id="menu_41"><a href='{:U("Goods/goodsTypeList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品类型</a></li>
-                    <!--<li onclick="makecss(this,40)" id="menu_40"><a href='{:U("Goods/goodsTypeList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品类型</a></li>-->
                     <li onclick="makecss(this,40)" id="menu_40"><a href='{:U("Goods/specList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品规格</a></li>
                     <li onclick="makecss(this,39)" id="menu_39"><a href='{:U("Goods/goodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品列表</a></li>
-                    <!--<if condition="$_SESSION['is_haitao'] neq 1">-->
-                    <!--<li onclick="makecss(this,42)" id="menu_42"><a href='{:U("Goods/Goodsindex")}' target='rightContent'><i class="fa fa-circle-o"></i>9.9专场商品管理</a></li>-->
-                    <!--<li onclick="makecss(this,43)" id="menu_43"><a href='{:U("Goods/Seconds_kill_goods")}' target='rightContent'><i class="fa fa-circle-o"></i>限时秒杀商品管理</a></li>-->
-                    <!--</if>-->
-                    <if condition="$_SESSION['is_haitao'] eq 1">
+                    <if condition="$_COOKIE['is_haitao'] eq 1">
                         <li onclick="makecss(this,44)" id="menu_44"><a href='{:U("Goods/haitaogoodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>海淘商品管理</a></li>
                     </if>
                 </ul>

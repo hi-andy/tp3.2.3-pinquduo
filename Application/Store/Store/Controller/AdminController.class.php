@@ -131,11 +131,12 @@ class AdminController extends BaseController {
     public function login(){
 	    if($_GET['type']==1)
 	    {
-		    session_unset();
-		    session_destroy();
+		    foreach($_COOKIE as $key=>$val){
+			    setcookie($key,"",time()-100);
+		    }
 	    }
 
-	    if(session('?merchant_id') && session('merchant_id')>0) {
+	    if($_COOKIE('merchant_id') && $_COOKIE('merchant_id')>0) {
 	        $this->error("您已登录", U('Store/Index/index'));
         }
 
@@ -167,11 +168,11 @@ class AdminController extends BaseController {
 	                }elseif($merchant_info['is_check']==2){
 		                exit(json_encode(array('status'=>0,'msg'=>'您的申请未通过审核，有疑问可与客服联系')));
 	                }
-	                $lifeTime = 24 * 3600;
-	                session_set_cookie_params($lifeTime);
-	                session_start();
-	                session('merchant_id',$merchant_info['id']);
-	                session('trade_no',$haitao['trade_no']);
+//	                $lifeTime = 24 * 3600;
+//	                session_set_cookie_params($lifeTime);
+//	                session_start();
+//	                session('merchant_id',$merchant_info['id']);
+//	                session('trade_no',$haitao['trade_no']);
 	                if($haitao['is_pay']==0)
 	                {
 		                $url = U('Store/Index/pay_money');
@@ -182,11 +183,14 @@ class AdminController extends BaseController {
 	                {
 		                $this->set_Cookie($_POST['merchantname'],$_POST['password']);
 	                }
-                    session('act_list',$merchant_info['act_list']);
-					session('is_haitao',$haitao['is_haitao']);
-					session('state',$merchant_info['state']);
-					session('merchant_name',$merchant_info['store_name']);
-					session('merchant_name',$merchant_info['store_name']);
+//                    session('act_list',$merchant_info['act_list']);
+//					session('is_haitao',$haitao['is_haitao']);
+//					session('state',$merchant_info['state']);
+//					session('merchant_name',$merchant_info['store_name']);
+//					session('merchant_name',$merchant_info['store_name']);
+
+	                $this->set_store_cookie($merchant_info,$haitao);
+
 	                $data['last_login'] = time();
 	                $data['last_ip'] = get_client_ip();
 	                $last_login =M('merchant');
@@ -200,7 +204,6 @@ class AdminController extends BaseController {
                 exit(json_encode(array('status'=>0,'msg'=>'请填写账号密码')));
             }
         }
-
         $this->display();
     }
 
@@ -218,12 +221,24 @@ class AdminController extends BaseController {
 			setcookie("storeid","$storeid",time()+1*7*24*3600);
 		}
 	}
+
+	//将用户数据存储为cookie
+	function set_store_cookie($store,$type)
+	{
+		setcookie("merchant_id",$store['id'],time()+1*7*24*3600);
+		setcookie("trade_no",$type['trade_no'],time()+1*7*24*3600);
+		setcookie("is_haitao",$type['is_haitao'],time()+1*7*24*3600);
+		setcookie("state",$store['state'],time()+1*7*24*3600);
+		setcookie("merchant_name",$store['merchant_name'],time()+1*7*24*3600);
+	}
+
     /**
      * 退出登陆
      */
     public function logout(){
-        session_unset();
-        session_destroy();
+	    foreach($_COOKIE as $key=>$val){
+		    setcookie($key,"",time()-100);
+	    }
         $this->success("退出成功",U('Store/Admin/login'));
     }
     
