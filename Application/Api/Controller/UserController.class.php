@@ -1870,7 +1870,7 @@ class UserController extends BaseController {
         {
             for($j=0;$j<count($self_cancel_order);$j++)
             {
-                $data_time = $self_cancel_order[$j]['add_time']+30*60;
+                $data_time = $self_cancel_order[$j]['add_time']+3*60;
                 if($data_time<=time())
                 {
                     $ids[]['id'] = $self_cancel_order[$j]['order_id'];
@@ -1889,9 +1889,7 @@ class UserController extends BaseController {
                 }
             }
             $where['order_id'] = array('IN',array_column($ids,'id'));
-//            $where['order_id'] ;$store_ids = $store_ids."('".$store_id[$i]['id']."')";
             $res =  M('order')->where($where)->data(array('order_status'=>3,'order_type'=>5,'is_cancel'=>1))->save();
-
         }
 
         //将团购里超时支付的订单设置成取消
@@ -1901,7 +1899,7 @@ class UserController extends BaseController {
         {
             for($z=0;$z<count($join_prom_order);$z++)
             {
-                $data_time = $join_prom_order[$z]['start_time']+5*60;
+                $data_time = $join_prom_order[$z]['start_time']+3*60;
                 if($data_time<=time())
                 {
                     $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];

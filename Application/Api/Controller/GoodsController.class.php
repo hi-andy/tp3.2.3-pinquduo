@@ -333,16 +333,13 @@ class GoodsController extends BaseController {
 
 	    $rdsname = "getGoodsDetails" . $goods_id;
 	    if (empty(redis($rdsname))) {//判断是否有缓存
-
-		    $rdsname = "getGoodsDetails" . $goods_id . $user_id . $spec_key . $ajax_get;
-		    //if (empty(redis($rdsname))) {//判断是否有缓存
-
+		    $rdsname = "getGoodsDetails" . $goods_id;
 		    //轮播图
 		    $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
 
 		    foreach ($banner as &$v) {
 			    //TODO 缩略图处理
-			    $v['small'] = TransformationImgurl($v['image_url']);
+			    $v['small'] = goods_thum_images($v['image_url']);
 			    $v['origin'] = TransformationImgurl($v['image_url']);
 			    unset($v['image_url']);
 		    }
@@ -350,7 +347,7 @@ class GoodsController extends BaseController {
 		    if (empty($banner)) {
 			    $banner = null;
 		    }
-		    $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
+		    $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
 
 		    //商品详情
 		    $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
@@ -444,11 +441,13 @@ class GoodsController extends BaseController {
 		    if (!empty($ajax_get)) {
 			    $goods['html'] = htmlspecialchars_decode($goods['goods_content']);
 		    }
-		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
-		    redis($rdsname, serialize($json), REDISTIME);//写入缓存
-		    //} else {
-		    //    $json = unserialize(redis($rdsname));//读取缓存
-		    //}
+
+		    //提供保障
+		    $security = array('包邮','7天退换','假一赔十','48小时发货');
+
+
+		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'security'=>$security,'store' => $store,  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+		    redis($rdsname, serialize($json), REDISTIME);//写入缓
 		    if (!empty($ajax_get))
 			    $this->getJsonp($json);
 		    exit(json_encode($json));

@@ -302,6 +302,8 @@ class GoodsController extends BaseController
                     $Goods->afterSave($goods_id);
                     $rdsname = "getGoodsDetails".$goods_id."*";
                     redisdelall($rdsname);//删除商品详情缓存
+                    $rdsname = "home*";
+                    redisdelall($rdsname);//删除首页缓存
                 }
                 else
                 {

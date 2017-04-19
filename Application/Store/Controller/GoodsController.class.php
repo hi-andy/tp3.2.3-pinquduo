@@ -388,6 +388,8 @@ class GoodsController extends BaseController {
                     $Goods->afterSave($goods_id);
                     $rdsname = "getGoodsDetails".$goods_id."*";
                     redisdelall($rdsname);//删除商品详情缓存
+                    $rdsname = "home*";
+                    redisdelall($rdsname);//删除首页缓存
                 }
                 else
                 {
@@ -1050,6 +1052,8 @@ class GoodsController extends BaseController {
                     $Goods->afterSave($goods_id);
                     $rdsname = "getGoodsDetails".$goods_id."*";
                     redisdelall($rdsname);//删除商品详情缓存
+                    $rdsname = "home*";
+                    redisdelall($rdsname);//删除首页缓存
 //					M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
                 }
                 else

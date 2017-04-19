@@ -37,19 +37,8 @@ class IndexController extends BaseController {
                 $activity['banner_url'] = C('HTTP_URL') . '/Public/images/daojishibanner.jpg';
 //            $activity['H5_url'] = C('HTTP_URL').'/api/goods/test';
             }
-
-            $result1 = M('goods')->where("`show_type`=0 and `is_show` = 1 and `is_on_sale`=1 and `is_audit`=1 and sort IN ('10001','10002','10003') and `is_special` not in ('1','2') ")->limit(3)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free,the_raise')->select();
-
-            foreach ($result1 as &$v) {
-                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-                $v['original_img'] = TransformationImgurl($v['original_img']);
-            }
-
-            //将补丁块的里面的id屏蔽掉
-            $not = "('" . $result1[0]['goods_id'] . "','" . $result1[1]['goods_id'] . "','" . $result1[2]['goods_id'] . "')";
-
-            $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 and goods_id not in ' . $not)->count();
-            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 and goods_id not in ' . $not)->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free,the_raise')->select();
+            $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->count();
+            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free,the_raise')->select();
 
             $result2 = $this->listPageData($count, $goods);
 
@@ -219,7 +208,7 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         $rdsname = "getJIuJIuCategory".$id.$page.$pagesize;
-        if(empty(redis($resname))) {//判断是否有缓存
+        if(empty(redis($rdsname))) {//判断是否有缓存
             //获取轮播图
             $banner = M('exclusive')->where('id =' . $id)->field(array('banner'))->find();
             $banner['banner'] = C('HTTP_URL') . $banner['banner'];
