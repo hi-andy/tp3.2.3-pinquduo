@@ -59,6 +59,7 @@
 	                               <td class="text-left">{$list.store_name|getSubstr=0,33}</td>
                                    <td class="text-left">{$list.shop_price}</td>
                                    <td class="text-left">{$list.store_count}</td>
+								   <td class="text-left" style="display:none;" id="number"><input type="text" name="number" /></td>
                                    <td><a href="javascript:void(0)" onclick="javascript:$(this).parent().parent().remove();">删除</a></td>
                                </tr>                              
 			            	</volist>   
@@ -97,6 +98,7 @@
 			   $(this).attr("checked","checked");
 		   }
 		   //$(this).siblings().show();
+            $(this).parent().siblings('#number').css('display','block');
 	    });
 		$(".btn-info").remove();	
         javascript:window.parent.call_back($('#goos_table').html());
