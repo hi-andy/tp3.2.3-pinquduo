@@ -34,7 +34,7 @@ class UeditorController extends BaseController
                   'highlightJsUrl':'" . __ROOT__ . "/Public/plugins/Ueditor/third-party/SyntaxHighlighter/shCore.js',
                   'highlightCssUrl':" . __ROOT__ . "/Public/plugins/Ueditor/third-party/SyntaxHighlighter/shCoreDefault.css'
               })</script>";
-        $content = htmlspecialchars(stripslashes($_REQUEST['myEditor']));
+        $content = htmlspecialchars(stripslashes($_REQUEST ['myEditor']));
         echo "<div class='content'>" . htmlspecialchars_decode($content) . "</div>";
     }
 

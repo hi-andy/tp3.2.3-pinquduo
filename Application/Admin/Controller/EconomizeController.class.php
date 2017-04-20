@@ -32,8 +32,7 @@ class EconomizeController extends Controller {
             $data['goods_id'] = $value;
             $res = M('goods_activity')->data($data)->add();
         }
-        if($res)
-        {
+        if($res) {
             $this->success("添加成功",U('Economize/goodsList'));
         }else{
             $this->success("添加失败",U('Economize/goodsList'));

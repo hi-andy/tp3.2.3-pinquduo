@@ -404,6 +404,9 @@ class UserController extends BaseController {
             $spec_key = M('spec_goods_price')->where("`key`='".$key_name['spec_key']."'")->find();
             $order['key_name'] = $spec_key['key_name'];
             //猜你喜欢
+            if($order['free']<1)
+                $order['free'] = null;
+
             $data = $this->if_you_like($order['goodsInfo']['cat_id'],$page,$pagesize);
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('isGroup'=>array('order'=>$order,'goods'=>$data),'is_order'=>array('order'=>$order,'addreess'=>$order['address'],'goods'=>$order['goods'],'store'=>$order['store'],'like'=>$data)));
             if(!empty($ajax_get))
