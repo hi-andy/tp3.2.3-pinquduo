@@ -10,37 +10,21 @@
         <div class="container-fluid">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> 秒杀商品列表</h3>
+                    <h3 class="panel-title"><i class="fa fa-list"></i>省钱大法商品列表</h3>
                 </div>
                 <div class="panel-body">
                     <div class="navbar navbar-default">
-                            <form action="{:U('Admin/SecondBuy/ajaxindex')}" id="search-form2" class="navbar-form form-inline" method="post">
+                            <form action="{:U('Admin/Economize/ajaxindex')}" id="search-form2" class="navbar-form form-inline" method="post">
 	                            <div class="form-group">
 		                            <label class="control-label">商户名</label>
 		                            <div class="input-group">
 			                            <input type="text" name="store_name" id="store_name" value="{$store_name}" placeholder="商户名"  class="form-control">
 		                            </div>
 	                            </div>
-	                            <div class="form-group">
-		                            <select name="date" id="date" class="form-control">
-			                            <option value="">秒杀日期</option>
-			                            <foreach name="date" item="v">
-				                            <option value="{$v}">{$v}</option>
-			                            </foreach>
-		                            </select>
-	                            </div>
-	                            <div class="form-group">
-	                            <select name="time" id="time" class="form-control">
-		                            <option value="">秒杀时间</option>
-		                            <volist name="time" id="v" >
-			                            <option value="{$v}">{$v}</option>
-		                            </volist>
-	                            </select>
-                            </div>
                                 <div class="form-group">
                                 	<a href="javascript:void(0)" onclick="ajax_get_table('search-form2',1)" id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i> 筛选</a>
                                 </div>
-	                            <button type="button" onclick="location.href='{:U('Admin/SecondBuy/selectGoods')}'" class="btn btn-primary pull-right" style="margin-left: 25px"><i class="fa fa-plus"></i>添加商户商品</button>
+	                            <button type="button" onclick="location.href='{:U('Admin/Economize/selectGoods')}'" class="btn btn-primary pull-right" style="margin-left: 25px"><i class="fa fa-plus"></i>添加商户商品</button>
                             </form>
                     </div>
                     <div id="ajax_return">
@@ -66,7 +50,7 @@
         cur_page = page; //当前页面 保存为全局变量
             $.ajax({
                 type : "POST",
-                url:"/Admin/SecondBuy/ajaxindex?p="+page,//+tab,
+                url:"/Admin/Economize/ajaxindex?p="+page,//+tab,
                 data : $('#'+tab).serialize(),// 你的formid
                 success: function(data){
                     $("#ajax_return").html('');
@@ -91,7 +75,7 @@
 	    if(!confirm('确定要删除吗?'))
 		    return false;
 	    $.ajax({
-		    url:"/Admin/SecondBuy/delete?id="+id,
+		    url:"/Admin/Economize/delete?id="+id,
 		    success: function(v){
 			    var v =  eval('('+v+')');
 			    if(v.hasOwnProperty('status') && (v.status == 1))
@@ -122,7 +106,6 @@
                 $(this).attr("checked","checked");
             }
             //$(this).siblings().show();
-
         });
         //$(".btn-info").remove();
         //javascript:window.parent.call_back($('#goos_table').html());
@@ -138,10 +121,10 @@
             layer.msg('请选择商品');
             return false;
         }
-        $('#SecondBuy').submit();
+        $('#Economize').submit();
 
         $.ajax({
-            url:"{:U('Admin/SecondBuy/deleteBatch')}",
+            url:"{:U('Admin/Economize/deleteBatch')}",
             type:'POST',
             data:{id:id},
             dataType:"json",

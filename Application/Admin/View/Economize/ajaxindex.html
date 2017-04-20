@@ -1,5 +1,5 @@
 
-                    <form method="post" id="SecondBuy" action="{:U('Admin/SecondBuy/deleteBatch')}" >
+                    <form method="post" id="Economize" action="{:U('Admin/Economize/deleteBatch')}" >
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover" style="font-size:12px;">
                                 <thead>
@@ -10,7 +10,10 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="">商户名称</a>
-                                    </td>
+                                    </td>      
+                                    <!--<td class="text-center">-->
+                                        <!--<a href="">货号</a>-->
+                                    <!--</td>-->
                                     <td class="text-center">
                                         <a href="javascript:sort('');">分类</a>
                                     </td>
@@ -20,18 +23,17 @@
                                     <td class="text-center">
                                         <a href="javascript:sort('');">团购价</a>
                                     </td>
-                                    <td class="text-center">
-                                        <a href="javascript:sort('on_time');">开始时间</a>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="javascript:sort('on_time');">结束时间</a>
-                                    </td>
                                     <td class="text-center">操作</td>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <volist name="goods" id="list">
                                     <tr>
+                                        <!--<td class="text-center">-->
+                                        	<!--<input type="checkbox" name="selected[]" value="6">-->
+                                        	<!--<input type="hidden" name="shipping_code[]" value="flat.flat">-->
+                                        <!--</td>-->
+
                                         <td class="text-left">
                                             <input type="checkbox" name="id[]" value="{$list.id}"/> {$list.id}
                                         </td>
@@ -40,8 +42,6 @@
                                         <td class="text-center">{$list.cat_name}</td>
                                         <td class="text-center">{$list.shop_price}</td>
                                         <td class="text-center">{$list.prom_price}</td>
-                                        <td class="text-center">{$list.start_time}</td>
-                                        <td class="text-center">{$list.end_time}</td>
                                         <td class="text-center">
                                             <!--<a href="{:U('Admin/Secondskill/detail',array('id'=>$list['goods_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>-->
                                             <!--<a href="{:U('Admin/Secondskill/addEditGoods',array('id'=>$list['goods_id']))}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="查看详情"><i class="fa fa-pencil"></i></a>-->

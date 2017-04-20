@@ -460,6 +460,7 @@ class GoodsController extends BaseController {
 	//详情页
     function getGoodsDetails()
     {
+<<<<<<< HEAD
         $goods_id = I('goods_id');
         I('user_id') && $user_id = I('user_id');
         I('spec_key') && $spec_key = I('spec_key');
@@ -594,6 +595,111 @@ class GoodsController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
+=======
+	    $goods_id = I('goods_id');
+	    I('user_id') && $user_id = I('user_id');
+	    I('spec_key') && $spec_key = I('spec_key');
+	    I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
+
+	    $rdsname = "getGoodsDetails" . $goods_id;
+	    if (empty(redis($rdsname))) {//判断是否有缓存
+		    $rdsname = "getGoodsDetails" . $goods_id;
+		    //轮播图
+		    $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
+
+		    foreach ($banner as &$v) {
+			    //TODO 缩略图处理
+			    $v['small'] = goods_thum_images($v['image_url']);
+			    $v['origin'] = TransformationImgurl($v['image_url']);
+			    unset($v['image_url']);
+		    }
+
+		    if (empty($banner)) {
+			    $banner = null;
+		    }
+		    $goods = $this->getGoodsInfo($goods_id);
+		    //获取已经开好的团
+		    $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
+		    if (!empty($group_buy)) {
+			    for ($i = 0; $i < count($group_buy); $i++) {
+				    $order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
+				    $group_buy[$i]['id'] = $order_id['order_id'];
+
+				    $longitude = $group_buy[$i]['longitude'];
+				    $latitude = $group_buy[$i]['latitude'];
+				    $address = $this->getAddress($latitude, $longitude);
+
+				    $mens = M('group_buy')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+
+				    $group_buy[$i]['prom_mens'] = $group_buy[$i]['goods_num'] - $mens - 1;
+
+				    $user_name = M('users')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
+				    if (!empty($user_name['oauth'])) {
+					    $group_buy[$i]['user_name'] = $user_name['nickname'];
+					    $group_buy[$i]['photo'] = $user_name['head_pic'];
+				    } else {
+					    $group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
+				    }
+
+				    $group_buy[$i]['address'] = $address;
+			    }
+			    foreach ($group_buy as &$v) {
+				    $v['photo'] = TransformationImgurl($v['photo']);
+			    }
+		    } else {
+			    $group_buy = null;
+		    }
+		    //计算团购价
+		    $goods['prom_price'] = (string)($goods['prom_price']);
+		    //是否收藏
+		    $goods['collect'] = 0;//默认没收藏
+		    if (!empty($user_id)) {
+			    $collect = M('goods_collect')->where("`user_id` = $user_id and `goods_id` = $goods_id")->find();
+			    if ($collect) {
+				    $goods['collect'] = 1;
+			    } else {
+				    $goods['collect'] = 0;
+			    }
+		    }
+		    //商品规格
+		    $goodsLogic = new \Home\Logic\GoodsLogic();
+		    $spec_goods_price = M('spec_goods_price')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
+		    $filter_spec = $goodsLogic->get_spec($goods_id);//规格参数
+		    $new_spec_goods = array();
+		    foreach ($spec_goods_price as $spec) {
+			    $new_spec_goods[] = $spec;
+		    }
+		    $new_filter_spec = array();
+
+		    foreach ($filter_spec as $key => $filter) {
+			    $new_filter_spec[] = array('title' => $key, 'items' => $filter);
+		    }
+		    for ($i = 0; $i < count($new_filter_spec); $i++) {
+			    foreach ($new_filter_spec[$i]['items'] as &$v) {
+				    if (!empty($v['src'])) {
+					    $v['src'] = TransformationImgurl($v['src']);
+				    }
+			    }
+		    }
+		    //如果有传规格过来就改变商品名字
+		    if (!empty($spec_key)) {
+			    $key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
+			    $goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
+		    }
+		    if (!empty($ajax_get)) {
+			    $goods['html'] = htmlspecialchars_decode($goods['goods_content']);
+		    }
+
+		    //提供保障
+		    $security = array('包邮','7天退换','假一赔十','48小时发货');
+
+		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+		    redis($rdsname, serialize($json), REDISTIME);//写入缓
+		    if (!empty($ajax_get))
+			    $this->getJsonp($json);
+		    exit(json_encode($json));
+	    }
+>>>>>>> bf8f77894018b664e412d18c4cfb183c7df8dd90
     }
 
 	function getShare()
@@ -742,19 +848,6 @@ class GoodsController extends BaseController {
 		$spec_key = I('spec_key');
 		I('prom') && $prom = I('prom');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-
-//		if(I('ajax_get')) {
-//			$get_new_order = M('order')->where(array('goods_id' => $goods_id, 'user_id' => $user_id))->order('add_time desc')->find();
-//
-//			$now_time = time();
-//            /*
-//			if (($now_time - $get_new_order['add_time']) < 120) {
-//				$go_url = "http://wx.pinquduo.cn/index.html";
-//				echo "<script> location.href='$go_url'; </script>";
-//				exit();
-//			}
-//            */
-//		}
 
 		$parameter['order_id'] = $order_id;
 		$parameter['prom'] = $prom;
@@ -1695,6 +1788,12 @@ class GoodsController extends BaseController {
 		{
 			M('temporary_key')->add(array('goods_id'=>$goods_id,'goods_spec_key'=>$spec_key,'user_id'=>$user_id,'add_time'=>time()));
 			$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
+			if (empty($goods_spec))
+			{
+				$char = $spec_key;
+				$arr = explode('_', $char);
+				$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`= '".$arr[1].'_'.$arr[0]."'")->field('key_name,price,prom_price')->find();
+			}
 			$goods['shop_price']=$goods_spec['price'];
 			$goods['prom_price']=$goods_spec['prom_price'];
 			$goods['key_name'] = $goods_spec['key_name'];

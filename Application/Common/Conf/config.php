@@ -17,7 +17,7 @@ return array(
     //'URL_CASE_INSENSITIVE' => false, //URL大小写不敏感
     'LOAD_EXT_CONFIG'=>'db,route', // 加载数据库配置文件
     'LOAD_EXT_CONFIG'=>'db', // 加载数据库配置文件
-    'URL_MODEL'=>3, // 如果需要 隐藏 index.php  打开这行"URL_MODEL"注释 同时在apache环境下 开启 伪静态模块，  如果在nginx 下需要另外配置，参考thinkphp官网手册
+    'URL_MODEL'=>2, // 如果需要 隐藏 index.php  打开这行"URL_MODEL"注释 同时在apache环境下 开启 伪静态模块，  如果在nginx 下需要另外配置，参考thinkphp官网手册
     /*
      * RBAC认证配置信息
      */
@@ -305,5 +305,11 @@ return array(
             'domain'           => 'ooc3vwe04.bkt.clouddn.com',
             'bucket'           => 'imgbucket',
         )
+    ),
+
+    // 0.1秒杀时间段，时间/日期
+    'SecondBuy' => array(
+        'dates' => array('2017-4-20', '2017-4-21', '2017-4-22', '2017-4-23', '2017-4-24'),
+        'times' => array('10:00', '13:00', '16:00', '19:00')
     ),
 );
