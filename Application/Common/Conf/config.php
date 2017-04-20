@@ -3,21 +3,21 @@
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", false); //true、false
-define("REDISIP", "r-wz95cb4e0b1ea4f4.redis.rds.aliyuncs.com");
+define("REDISIP", "r-wz9ef37016b1fbd4.redis.rds.aliyuncs.com");
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
 	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
-	'HTTP_URL'=>'http://pinquduo.cn',
+	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
     //'URL_CASE_INSENSITIVE' => false, //URL大小写不敏感
     'LOAD_EXT_CONFIG'=>'db,route', // 加载数据库配置文件
     'LOAD_EXT_CONFIG'=>'db', // 加载数据库配置文件
-    'URL_MODEL'=>3, // 如果需要 隐藏 index.php  打开这行"URL_MODEL"注释 同时在apache环境下 开启 伪静态模块，  如果在nginx 下需要另外配置，参考thinkphp官网手册
+    'URL_MODEL'=>2, // 如果需要 隐藏 index.php  打开这行"URL_MODEL"注释 同时在apache环境下 开启 伪静态模块，  如果在nginx 下需要另外配置，参考thinkphp官网手册
     /*
      * RBAC认证配置信息
      */

@@ -76,12 +76,6 @@ class AlipayController extends BaseController
 
         if($_GET['order_sn'])
         {
-            $rdsname = "getUserOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
             exit(json_encode(array('status'=>1,'msg'=>'支付宝预支付订单生成成功','data'=>$orderdetail)));
         }else {
             return $orderdetail;
@@ -153,6 +147,12 @@ class AlipayController extends BaseController
                         }
                         M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
                         M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums+1));
+                        $rdsname = "getUserOrderList".$group_info["user_id"]."*";
+                        redisdelall($rdsname);//删除用户订单缓存
+                        $rdsname = "getGoodsDetails".$group_info["goods_id"];
+                        redisdelall($rdsname);//删除商品详情缓存
+                        $rdsname = "TuiSong*";
+                        redisdelall($rdsname);//删除推送缓存
                     }
                 }else{
                     M()->rollback();

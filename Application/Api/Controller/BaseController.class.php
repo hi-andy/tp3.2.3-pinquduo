@@ -565,4 +565,30 @@ class BaseController extends Controller {
         }
         return $pin;
     }
+
+    //调度商品详情
+    function  getGoodsInfo($goods_id)
+    {
+        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
+
+        //商品详情
+        $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
+        $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
+
+        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+        $store['store_logo'] = TransformationImgurl($store['store_logo']);
+        $goods['store'] = $store;
+        $goods['original_img'] = TransformationImgurl($goods['original_img']);
+
+        $goods['fenxiang_url'] = $goods['original_img']."?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
+
+        return $goods;
+    }
+
+    function getGoodsList($where,$page,$pagesize)
+    {
+        $count = M('goods')->where($where)->count();
+        $goods = M('goods')->where($where)->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $result = $this->listPageData($count, $goods);
+    }
 }
