@@ -358,18 +358,7 @@ class GoodsController extends BaseController {
 		    $goods['store'] = $store;
 		    $goods['original_img'] = TransformationImgurl($goods['original_img']);
 
-		    if (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg')) {
-			    $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg';
-		    } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png')) {
-			    $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png';
-		    } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif')) {
-			    $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif';
-		    } else {
-			    $goods_pic_url = goods_thum_images($goods['goods_id'], 400, 400);
-			    $pin = $this->fenxiangLOGO($goods_pic_url, $goods['goods_id'], $goods['store_id']);
-			    $goods['fenxiang_url'] = C('HTTP_URL') . $pin;
-		    }
-
+		    $goods['fenxiang_url'] = $goods['original_img']."?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
 		    //获取已经开好的团
 		    $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
 		    if (!empty($group_buy)) {
@@ -599,19 +588,6 @@ class GoodsController extends BaseController {
 		$spec_key = I('spec_key');
 		I('prom') && $prom = I('prom');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-
-//		if(I('ajax_get')) {
-//			$get_new_order = M('order')->where(array('goods_id' => $goods_id, 'user_id' => $user_id))->order('add_time desc')->find();
-//
-//			$now_time = time();
-//            /*
-//			if (($now_time - $get_new_order['add_time']) < 120) {
-//				$go_url = "http://wx.pinquduo.cn/index.html";
-//				echo "<script> location.href='$go_url'; </script>";
-//				exit();
-//			}
-//            */
-//		}
 
 		$parameter['order_id'] = $order_id;
 		$parameter['prom'] = $prom;
