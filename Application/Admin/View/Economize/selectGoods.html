@@ -25,39 +25,16 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> 添加商户限时秒杀商品  </h3>
+                    <h3 class="panel-title"><i class="fa fa-list"></i> 添加商户省钱大法商品  </h3>
                 </div>
                 <div class="panel-body ">   
                     <!--表单数据-->
-                    <form method="post" id="Secondskill" action="{:U('Admin/SecondBuy/save')}">
+                    <form method="post" id="Secondskill" action="{:U('Admin/Economize/save')}">
                         <!--通用信息-->
                     <div class="tab-content col-md-10">                 	  
                         <div class="tab-pane active" id="tab_tongyong">                           
                             <table class="table table-bordered">
                                 <tbody>
-
-                                <tr>
-                                    <td>开始时间：</td>
-                                    <td>
-	                                    <div class="form-group" >
-		                                    <select name="start_date" id="date" class="form-control">
-			                                    <option value="">秒杀日期</option>
-                                                <foreach name="startDates" item="v" key="k" >
-                                                    <option value="{$v}">{$v}</option>
-                                                </foreach>
-		                                    </select>
-	                                    </div>
-	                                    <div class="form-group">
-		                                    <select name="start_time" id="time" class="form-control">
-			                                    <option value="">秒杀时间</option>
-			                                    <foreach name="startTimes" item="v" key="k" >
-				                                    <option value="{$v}">{$v}</option>
-			                                    </foreach>
-		                                    </select>
-	                                    </div>
-                                    </td>
-                                </tr>
-
                                 <tr>
                                     <td>选择商品:</td>
                                     <td>
@@ -81,38 +58,18 @@
 									                <th class="text-left">商品名称</th>
 			                                        <th class="text-left">商户名称</th>
 									                <th class="text-left">价格</th>         
-<<<<<<< HEAD
-									                <th class="text-left">库存</th>
-                                                    <th class="text-left" style="width:5%;">活动数量</th>
-=======
 									                <th class="text-left">库存</th>								                
-									                <th class="text-left">活动数量</th>
->>>>>>> 4f5be26def01a39bce3c2392987f179d9fa942aa
 									                <th class="text-left">操作</th>
 									            </tr>
 									            </thead>
 									            <tbody id="goods_list">
 									            <foreach name="prom_goods" item="vo">
 									            	<tr>
-									            		<td style="display:none">
-                                                            <input type="checkbox" name="goods_id[]" checked="checked" value="{$vo.goods_id}"/>
-<<<<<<< HEAD
-                                                            <input type="hidden" name="goods_id"  value="{$vo.goods_id}"/>
-=======
-                                                            <input type="hidden" name="goods_id" value="{$vo.goods_id}"/>
->>>>>>> 4f5be26def01a39bce3c2392987f179d9fa942aa
-                                                        </td>
+									            		<td style="display:none"><input type="checkbox" name="goods_id[]" checked="checked" value="{$vo.goods_id}"/></td>
 									                	<td class="text-left">{$vo.goods_name}</td>
 											            <td class="text-left">{$vo.store_name}</td>
 											            <td class="text-left">{$vo.shop_price}</td>
 									                	<td class="text-left">{$vo.store_count}</td>
-<<<<<<< HEAD
-                                                        <td class="text-left" style="width:5%;"><input type="text" name="number" value="" style="width:7%;" /></td>
-=======
-									                	<td class="text-left" style="display:none;" id="number">
-                                                            <input type="text" name="number" value="" />
-                                                        </td>
->>>>>>> 4f5be26def01a39bce3c2392987f179d9fa942aa
 									                	<td class="text-left"><a href="javascript:void(0)" onclick="javascript:$(this).parent().parent().remove();">删除</a></td>
 									           		</tr>
 									           </foreach>
@@ -153,56 +110,21 @@ function adsubmit(){
 		layer.msg('请选择商品');
 		return false;
 	}
+	$('#Secondskill').submit();
 
-	var tag = true;
-    // 检查参加活动商品数量
-    $('input[name="number"]').each(function(i,o){
-        if ($(o).val() <= 0) {
-            layer.msg('请为每个商品指定参与活动数量');
-            tag = false;
-            return false;
-        }
-    });
-
-    if (tag) {
-
-        var date = $('#date').val();
-        var time = $('#time').val();
-        data = '{"goods":['
-        $('input[name*="goods_id"]').each(function(i,o){
-            var goods_id = $(o).val();
-            var number = 0;
-            $('input[name="number"]').each(function(j,k){
-                if (i == j) {
-                    number = $(k).val();
-                }
-            });
-            data += '{"goods_id":'+goods_id+',"number":'+number+'},';
-        });
-        data = data.substr(0,data.length-1)
-        data += ']}'
-        data = JSON.parse(data);
-        //$('#Secondskill').submit();
-
-        $.ajax({
-            url:"{:U('Admin/SecondBuy/save')}",
-            type:'POST',
-            data:{
-                date : date,
-                time : time,
-                goods : data
-            },
-            dataType:"json",
-            success:function(data){
-                if(data.status=1){
-                    var num = $(".sun").text();
-                    num = (data.msg);
-                    $(".sun").text(num);
-                }
-            }
-        });
-    }
-
+	$.ajax({
+		url:"{:U('Admin/Economize/save')}",
+		type:'POST',
+		data:{id:id,name:name},
+		dataType:"json",
+		success:function(data){
+			if(data.status=1){
+				var num = $(".sun").text();
+				num = (data.msg);
+				$(".sun").text(num);
+			}
+		}
+	});
 }
 
 
@@ -212,7 +134,7 @@ function selectGoods(){
 	$('input[name*="goods_id"]').each(function(i,o){
 		goods_id.push($(o).val());
 	});
-    var url = '/index.php?m=Admin&c=SecondBuy&a=search_goods&goods_id='+goods_id+'&t='+Math.random();
+    var url = '/index.php?m=Admin&c=Economize&a=search_goods&goods_id='+goods_id+'&t='+Math.random();
     layer.open({
         type: 2,
         title: '选择商品',
@@ -229,33 +151,33 @@ function call_back(table_html)
 	$('#goods_list').append(table_html);
 }
 
-//$("#prom_type").on("change",function(){
-//	  var type = parseInt($("#prom_type").val());
-//	  var expression = '';
-//	  switch(type){
-//	    case 0:{
-//	      expression = '<td><b class="red">*</b>折扣：</td> <td> <input name="expression" type="text" class="small"  pattern="int" value=""> <label>% 折扣值(1-100 如果打9折，请输入90)</label> </td>';
-//	      break;
-//	    }
-//	    case 1:{
-//	      expression = '<td><b class="red">*</b>立减金额：</td> <td> <input name="expression" type="text" class="small"  pattern="float" value=""> <label>立减金额（元）</label> </td>';
-//	      break;
-//	    }
-//	    case 2:{
-//	      expression = '<td><b class="red">*</b>出售金额：</td> <td> <input name="expression" type="text" class="small"  pattern="float" value=""> <label>出售金额（元）</label> </td>';
-//	      break;
-//	    }
-//	    case 3:{
-//	      expression = '<td><b class="red">*</b>代金券：</td> <td><select name="expression"><tpshop sql="select * from __PREFIX__coupon where type=0" item="v"><option value="{$v.id}" <if condition="$v[id] eq $info[expression]">selected</if>>{$v.name}</option></tpshop></select></td>';
-//	      break;
-//	    }
-//	    case 4:{
-//	      expression = '<td><b class="red">*</b>买M送N：</td> <td> <input name="expression" type="text" class="small"  pattern="\\d+\/\\d+" value=""> <label>买几件送几件（如买3件送1件: 3/1）</label> </td>';
-//	      break;
-//	    }
-//	  }
-//	  $("#expression").html(expression);
-//});
+$("#prom_type").on("change",function(){
+	  var type = parseInt($("#prom_type").val());
+	  var expression = '';
+	  switch(type){
+	    case 0:{
+	      expression = '<td><b class="red">*</b>折扣：</td> <td> <input name="expression" type="text" class="small"  pattern="int" value=""> <label>% 折扣值(1-100 如果打9折，请输入90)</label> </td>';
+	      break;
+	    }
+	    case 1:{
+	      expression = '<td><b class="red">*</b>立减金额：</td> <td> <input name="expression" type="text" class="small"  pattern="float" value=""> <label>立减金额（元）</label> </td>';
+	      break;
+	    }
+	    case 2:{
+	      expression = '<td><b class="red">*</b>出售金额：</td> <td> <input name="expression" type="text" class="small"  pattern="float" value=""> <label>出售金额（元）</label> </td>';
+	      break;
+	    }
+	    case 3:{
+	      expression = '<td><b class="red">*</b>代金券：</td> <td><select name="expression"><tpshop sql="select * from __PREFIX__coupon where type=0" item="v"><option value="{$v.id}" <if condition="$v[id] eq $info[expression]">selected</if>>{$v.name}</option></tpshop></select></td>';
+	      break;
+	    }
+	    case 4:{
+	      expression = '<td><b class="red">*</b>买M送N：</td> <td> <input name="expression" type="text" class="small"  pattern="\\d+\/\\d+" value=""> <label>买几件送几件（如买3件送1件: 3/1）</label> </td>';
+	      break;
+	    }
+	  }
+	  $("#expression").html(expression);
+});
 
 </script>
 </body>
