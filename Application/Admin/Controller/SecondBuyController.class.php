@@ -42,16 +42,29 @@ class SecondBuyController extends Controller {
         $data['start_time'] = I('post.time');
         $data['create_time'] = time();
         $data['type'] = 1;
+
+//        $start_date = strtotime(I('post.date'));
+//        $start_time = I('post.time');
+//        $create_time = time();
+
         $goods = I('post.goods')['goods'];
         foreach ($goods as $value) {
-            $data = array_merge($data, $value);
-            $res = M('goods_activity')->data($data)->add();
+            $dataList[] = array_merge($data, $value);
+            //$sql[] = "INSERT INTO tp_goods_activity (`goods_id`,`quantity`,`start_date`,`start_time`,`create_time`,`type`) VALUES('".$value['goods_id']."','".$value['quantity']."','".$start_date."','".$start_time."','".$create_time."','1')";
         }
-        if($res) {
-            $this->success("添加成功",U('SecondBuy/goodsList'));
-        } else {
-            $this->success("添加失败",U('SecondBuy/goodsList'));
-        }
+        //file_put_contents('data.txt', print_r($sql, true), FILE_APPEND);
+//        foreach ($sql as $value) {
+//            if (mysqli_query($value)) {
+//                $count ++;
+//            }
+//        }
+        M('goods_activity')->addAll($dataList);
+        $this->success("添加成功", U('SecondBuy/goodsList'));
+//        if($count > 0) {
+//            $this->success("添加成功", U('SecondBuy/goodsList'));
+//        } else {
+//            $this->error("添加失败", U('SecondBuy/goodsList'));
+//        }
     }
 
     // ajax 返回商品列表
