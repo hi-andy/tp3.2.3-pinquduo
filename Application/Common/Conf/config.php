@@ -2,7 +2,7 @@
 //  加载常量配置文件
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
-define("REDIS_SWITCH", false); //true、false
+define("REDIS_SWITCH", true); //true、false
 define("REDISIP", "r-wz9ef37016b1fbd4.redis.rds.aliyuncs.com");
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");
@@ -305,11 +305,5 @@ return array(
             'domain'           => 'ooc3vwe04.bkt.clouddn.com',
             'bucket'           => 'imgbucket',
         )
-    ),
-
-    // 0.1秒杀时间段，时间/日期
-    'SecondBuy' => array(
-        'dates' => array('2017-4-20', '2017-4-21', '2017-4-22', '2017-4-23', '2017-4-24'),
-        'times' => array('10:00', '13:00', '16:00', '19:00')
     ),
 );

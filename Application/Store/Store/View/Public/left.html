@@ -1,0 +1,93 @@
+<aside class="main-sidebar" style="overflow-y:auto;">
+      <section class="sidebar">
+        <!-- search form -->
+        <form action="#" method="get" class="sidebar-form">
+          <!--<div class="input-group">-->
+            <!--<span class="input-group-btn">-->
+              <!--<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>-->
+            <!--</span>-->
+          <!--</div>-->
+        </form>
+        <php> $is_haitao = $_COOKIE['is_haitao'];</php>
+        <!-- /.search form -->
+        <ul class="sidebar-menu">
+        	<li class="treeview">
+        	    <a href="javascript:void(0)">
+	              <i class="fa fa-flag"></i><span>报表统计</span><i class="fa fa-angle-left pull-right"></i>
+	            </a>
+	            <ul class="treeview-menu">
+	            	<li onclick="makecss(this,37)" id="menu_37" ><a href='{:U("report/index")}' target='rightContent'><i class="fa fa-circle-o"></i>销售概况</a></li>
+	            </ul>
+        	</li>
+            <li class="treeview">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-flag"></i><span>订单管理</span><i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <if condition="$_COOKIE['merchant_id'] eq 2">
+                    <li onclick="makecss(this,30)" id="menu_29"><a href="/index.php?s=/Store/Order/batchindex" target='rightContent'><i class="fa fa-circle-o"></i>批量发货</a></li>
+                        </if>
+                    <li onclick="makecss(this,30)" id="menu_30"><a href="/index.php?s=/Store/Order/index" target='rightContent'><i class="fa fa-circle-o"></i>订单列表</a></li>
+                    <li onclick="makecss(this,31)" id="menu_31"><a href="/index.php?s=/Store/Order/delivery_list" target='rightContent'><i class="fa fa-circle-o"></i>发货单列表</a></li>
+                    <li onclick="makecss(this,32)" id="menu_32"><a href="/index.php?s=/Store/Order/return_list" target='rightContent'><i class="fa fa-circle-o"></i>退货单列表</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-flag"></i><span>团购订单管理</span><i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <if condition="$_COOKIE['merchant_id'] eq 2">
+                    <li onclick="makecss(this,30)" id="menu_1"><a href="/index.php?s=/Store/Order/batchindex" target='rightContent'><i class="fa fa-circle-o"></i>批量发货</a></li>
+                        </if>
+                    <li onclick="makecss(this,111)" id="menu_2"><a href="/index.php?s=/Store/Prom/index" target='rightContent'><i class="fa fa-circle-o"></i>订单列表</a></li>
+                    <li onclick="makecss(this,2)" id="menu_3"><a href="/index.php?s=/Store/Prom/delivery_list" target='rightContent'><i class="fa fa-circle-o"></i>发货单列表</a></li>
+                    <li onclick="makecss(this,3)" id="menu_4"><a href="/index.php?s=/Store/Prom/return_list" target='rightContent'><i class="fa fa-circle-o"></i>退货单列表</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-flag"></i><span>商品管理</span><i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <!--<li onclick="makecss(this,38)" id="menu_38"><a href='{:U("Goods/categoryList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品分类</a></li>-->
+                    <li onclick="makecss(this,41)" id="menu_41"><a href='{:U("Goods/goodsTypeList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品类型</a></li>
+                    <li onclick="makecss(this,40)" id="menu_40"><a href='{:U("Goods/specList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品规格</a></li>
+                    <li onclick="makecss(this,39)" id="menu_39"><a href='{:U("Goods/goodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品列表</a></li>
+                    <if condition="$_COOKIE['is_haitao'] eq 1">
+                        <li onclick="makecss(this,44)" id="menu_44"><a href='{:U("Goods/haitaogoodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>海淘商品管理</a></li>
+                    </if>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-flag"></i><span>优惠券管理</span><i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li onclick="makecss(this,321)" id="menu_321"><a href="/index.php?s=/Store/Coupon/index" target='rightContent'><i class="fa fa-circle-o"></i>优惠券列表</a></li>
+                    <!--<li onclick="makecss(this,132)" id="menu_132"><a href="/index.php?s=/Store/Store/withdrawal_add" target='rightContent'><i class="fa fa-circle-o"></i>申请提现</a></li>-->
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-flag"></i><span>提现管理</span><i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li onclick="makecss(this,222)" id="menu_222"><a href="/index.php?s=/Store/Store/withdrawal_index" target='rightContent'><i class="fa fa-circle-o"></i>提现列表</a></li>
+                    <li onclick="makecss(this,22)" id="menu_22"><a href="/index.php?s=/Store/Store/withdrawal_add" target='rightContent'><i class="fa fa-circle-o"></i>申请提现</a></li>
+                    <!--<if condition="$_SESSION['trade_no'] neq 0">-->
+                    <!--<li onclick="makecss(this,23)" id="menu_23"><a href="/index.php?s=/Store/Store/receiptindex" target='rightContent'><i class="fa fa-circle-o"></i>电子收据</a></li>-->
+                        <!--</if>-->
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="javascript:void(0)">
+                    <i class="fa fa-flag"></i><span style="color: red">上传助手</span><i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li  onclick="makecss(this,221)" id="menu_5"><a href="/index.php?s=/Store/Store/assistant" target='rightContent'><i class="fa fa-circle-o" ></i><span style="color: red">助手文档</span></a></li>
+                </ul>
+            </li>
+        </ul>
+      </section>
+</aside>

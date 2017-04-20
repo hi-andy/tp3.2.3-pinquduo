@@ -10,7 +10,10 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="">商户名称</a>
-                                    </td>
+                                    </td>      
+                                    <!--<td class="text-center">-->
+                                        <!--<a href="">货号</a>-->
+                                    <!--</td>-->
                                     <td class="text-center">
                                         <a href="javascript:sort('');">分类</a>
                                     </td>
@@ -32,11 +35,21 @@
                                 <tbody>
                                 <volist name="goods" id="list">
                                     <tr>
+                                        <!--<td class="text-center">-->
+                                        	<!--<input type="checkbox" name="selected[]" value="6">-->
+                                        	<!--<input type="hidden" name="shipping_code[]" value="flat.flat">-->
+                                        <!--</td>-->
+
                                         <td class="text-left">
                                             <input type="checkbox" name="id[]" value="{$list.id}"/> {$list.id}
                                         </td>
                                         <td class="text-lifter">{$list.goods_name}</td>
                                         <td class="text-center">{$list.store_name}</td>
+                                        <!--<td class="text-center">{$list.order_amount}</td>-->
+                                        <!--<td class="text-center">{$order_status[$list[order_status]]}<if condition="$list['is_cod'] eq '1'"><span style="color: red">(货到付款)</span></if></td>-->
+                                        <!--<td class="text-center">{$pay_status[$list[pay_status]]}</td>-->
+                                        <!--<td class="text-center">{$shipping_status[$list[shipping_status]]}</td>-->
+                                        <!--<td class="text-center">{$list.goods_sn}</td>-->
                                         <td class="text-center">{$list.cat_name}</td>
                                         <td class="text-center">{$list.shop_price}</td>
                                         <td class="text-center">{$list.prom_price}</td>

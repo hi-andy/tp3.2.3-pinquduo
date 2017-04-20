@@ -404,9 +404,6 @@ class UserController extends BaseController {
             $spec_key = M('spec_goods_price')->where("`key`='".$key_name['spec_key']."'")->find();
             $order['key_name'] = $spec_key['key_name'];
             //猜你喜欢
-            if($order['free']<1)
-                $order['free'] = null;
-
             $data = $this->if_you_like($order['goodsInfo']['cat_id'],$page,$pagesize);
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('isGroup'=>array('order'=>$order,'goods'=>$data),'is_order'=>array('order'=>$order,'addreess'=>$order['address'],'goods'=>$order['goods'],'store'=>$order['store'],'like'=>$data)));
             if(!empty($ajax_get))
@@ -1216,7 +1213,7 @@ class UserController extends BaseController {
             $all = $this->listPageData($count, $all);
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-            redis($rdsname, serialize($json), 60);//写入缓存
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
@@ -1707,7 +1704,7 @@ class UserController extends BaseController {
                 unset($new_prom[$i]['userInfo']['mobile']);
                 unset($new_prom[$i]['userInfo']['oauth']);
                 unset($new_prom[$i]['user_id']);
-                $new_prom[$i]['userInfo']['head_pic'] = C('HTTP_URL') . $new_prom[$i]['userInfo']['head_pic'];
+                $new_prom[$i]['userInfo']['head_pic'] = TransformationImgurl($new_prom[$i]['userInfo']['head_pic']);
             }
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $new_prom);
