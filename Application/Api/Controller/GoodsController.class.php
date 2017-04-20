@@ -347,18 +347,7 @@ class GoodsController extends BaseController {
 		    if (empty($banner)) {
 			    $banner = null;
 		    }
-		    $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
-
-		    //商品详情
-		    $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
-		    $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-
-		    $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
-		    $store['store_logo'] = TransformationImgurl($store['store_logo']);
-		    $goods['store'] = $store;
-		    $goods['original_img'] = TransformationImgurl($goods['original_img']);
-
-		    $goods['fenxiang_url'] = $goods['original_img']."?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
+		    $goods = $this->getGoodsInfo($goods_id);
 		    //获取已经开好的团
 		    $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
 		    if (!empty($group_buy)) {
@@ -434,8 +423,7 @@ class GoodsController extends BaseController {
 		    //提供保障
 		    $security = array('包邮','7天退换','假一赔十','48小时发货');
 
-
-		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'security'=>$security,'store' => $store,  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
 		    redis($rdsname, serialize($json), REDISTIME);//写入缓
 		    if (!empty($ajax_get))
 			    $this->getJsonp($json);
@@ -1527,6 +1515,12 @@ class GoodsController extends BaseController {
 		{
 			M('temporary_key')->add(array('goods_id'=>$goods_id,'goods_spec_key'=>$spec_key,'user_id'=>$user_id,'add_time'=>time()));
 			$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
+			if (empty($goods_spec))
+			{
+				$char = $spec_key;
+				$arr = explode('_', $char);
+				$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`= '".$arr[1].'_'.$arr[0]."'")->field('key_name,price,prom_price')->find();
+			}
 			$goods['shop_price']=$goods_spec['price'];
 			$goods['prom_price']=$goods_spec['prom_price'];
 			$goods['key_name'] = $goods_spec['key_name'];
