@@ -18,21 +18,20 @@ class SecondBuyController extends Controller {
     // 秒杀商品列表
     public function goodsList()
     {
-        $dateTime = (C('SecondBuy'));
-        $this->assign('time', $dateTime['time']);
-        $this->assign('date', $dateTime['date']);
+        $dateTime = C('SecondBuy');
+        $this->assign('time', $dateTime['times']);
+        $this->assign('date', $dateTime['dates']);
         $this->display();
     }
 
     // 选择秒杀商品页
     public function selectGoods()
     {
-        $dateTime = (C('SecondBuy'));
-
+        $dateTime = C('SecondBuy');
         $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
         $this->assign('store', $store);
-        $this->assign('startTimes', $dateTime['time']);
-        $this->assign('startDates', $dateTime['date']);
+        $this->assign('startTimes', $dateTime['times']);
+        $this->assign('startDates', $dateTime['dates']);
         $this->display();
     }
 
@@ -48,10 +47,9 @@ class SecondBuyController extends Controller {
             $data = array_merge($data, $value);
             $res = M('goods_activity')->data($data)->add();
         }
-        if($res)
-        {
+        if($res) {
             $this->success("添加成功",U('SecondBuy/goodsList'));
-        }else{
+        } else {
             $this->success("添加失败",U('SecondBuy/goodsList'));
         }
     }
@@ -94,8 +92,8 @@ class SecondBuyController extends Controller {
         $this->assign('goods', $goodsList);
         $this->assign('page', $show);// 赋值分页输出
         $dateTime = (C('SecondBuy'));
-        $this->assign('time', $dateTime['time']);
-        $this->assign('date', $dateTime['date']);
+        $this->assign('time', $dateTime['times']);
+        $this->assign('date', $dateTime['dates']);
         $this->display();
     }
 
