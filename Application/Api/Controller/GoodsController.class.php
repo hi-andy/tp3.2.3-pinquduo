@@ -339,7 +339,7 @@ class GoodsController extends BaseController {
 
 		    foreach ($banner as &$v) {
 			    //TODO 缩略图处理
-			    $v['small'] = goods_thum_images($v['image_url']);
+			    $v['small'] = TransformationImgurl($v['image_url']);
 			    $v['origin'] = TransformationImgurl($v['image_url']);
 			    unset($v['image_url']);
 		    }
@@ -347,7 +347,29 @@ class GoodsController extends BaseController {
 		    if (empty($banner)) {
 			    $banner = null;
 		    }
-		    $goods = $this->getGoodsInfo($goods_id);
+		    $details = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
+		    //商品详情
+		    $goods['goods_id'] = $details['goods_id'];
+		    $goods['goods_name'] = $details['goods_name'];
+		    $goods['market_price'] = $details['market_price'];
+		    $goods['shop_price'] = $details['shop_price'];
+		    $goods['prom_price'] = $details['prom_price'];
+		    $goods['prom'] = $details['prom'];
+		    $goods['goods_remark'] = $details['goods_remark'];
+		    $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
+		    $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
+		    $goods['sales'] = $details['sales'];
+		    $goods['is_support_buy'] = $details['is_support_buy'];
+		    $goods['free'] = $details['free'];
+		    $goods['the_raise'] = $details['the_raise'];
+		    $store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
+		    $store['store_logo'] = TransformationImgurl($store['store_logo']);
+		    $goods['store'] = $store;
+		    $goods['is_special'] = $details['is_special'];
+		    $goods['goods_content'] = $details['goods_content'];
+		    $goods['original_img'] = TransformationImgurl($details['original_img']);
+
+		    $goods['fenxiang_url'] = $details['original_img'] . "?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
 		    //获取已经开好的团
 		    $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
 		    if (!empty($group_buy)) {
@@ -421,14 +443,17 @@ class GoodsController extends BaseController {
 		    }
 
 		    //提供保障
-		    $security = array('包邮','7天退换','假一赔十','48小时发货');
+		    $security = array('包邮', '7天退换', '假一赔十', '48小时发货');
 
-		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
 		    redis($rdsname, serialize($json), REDISTIME);//写入缓
+	    }else{
+		    $json = unserialize(redis($rdsname));//读取缓存
+	    }
+
 		    if (!empty($ajax_get))
 			    $this->getJsonp($json);
 		    exit(json_encode($json));
-	    }
     }
 
 	function getShare()
@@ -1519,7 +1544,7 @@ class GoodsController extends BaseController {
 			{
 				$char = $spec_key;
 				$arr = explode('_', $char);
-				$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`= '".$arr[1].'_'.$arr[0]."'")->field('key_name,price,prom_price')->find();
+				$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id.' and `key`= '".$arr[1].'_'.$arr[0]."'")->field('key_name,price,prom_price')->find();
 			}
 			$goods['shop_price']=$goods_spec['price'];
 			$goods['prom_price']=$goods_spec['prom_price'];
