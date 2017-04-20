@@ -1,79 +1,53 @@
 <?php
 /**
- * tpshop
- * ============================================================================
- * * 版权所有 2015-2027 深圳搜豹网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.tp-shop.cn
- * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
- * 不允许对程序代码以任何形式任何目的的再发布。
- * ============================================================================
- * $Author: IT宇宙人 2015-08-10 $
+ * 商品活动：
+ * 省钱大法活动控制器
  */
 namespace Admin\Controller;
 use Think\Controller;
 use Think\AjaxPage;
-class SecondBuyController extends Controller {
+class EconomizeController extends Controller {
 
-    // 秒杀商品列表
+    // 商品列表
     public function goodsList()
     {
-        $dateTime = (C('SecondBuy'));
-        $this->assign('time', $dateTime['time']);
-        $this->assign('date', $dateTime['date']);
         $this->display();
     }
 
-    // 选择秒杀商品页
+    // 选择商品页
     public function selectGoods()
     {
-        $dateTime = (C('SecondBuy'));
-
         $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
         $this->assign('store', $store);
-        $this->assign('startTimes', $dateTime['time']);
-        $this->assign('startDates', $dateTime['date']);
         $this->display();
     }
 
-    // 保存秒杀商品
+    // 保存商品
     public function save()
     {
         $data = I('post.');
-        //print_r($_POST);exit;
-        print_r($data);exit;
-        $data['start_date'] = strtotime($data['start_date']);
         $data['create_time'] = time();
-        $data['type'] = 1;  // 标识 0.1 秒杀商品类型
+        $data['type'] = 2;  // 标识省钱大法商品类型
         foreach ($data['goods_id'] as $value) {
             $data['goods_id'] = $value;
             $res = M('goods_activity')->data($data)->add();
         }
         if($res)
         {
-            $this->success("添加成功",U('SecondBuy/goodsList'));
+            $this->success("添加成功",U('Economize/goodsList'));
         }else{
-            $this->success("添加失败",U('SecondBuy/goodsList'));
+            $this->success("添加失败",U('Economize/goodsList'));
         }
     }
 
     // ajax 返回商品列表
     public function ajaxindex()
     {
-        $where = 'WHERE ga.type=1';
+        $where = 'WHERE ga.type=2';
         if($store_name = I('store_name')) {
             $this->assign('store_name', I('store_name'));
-            //$where = $this->getStoreWhere($where,I('store_name'));
             $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->getField('id');
             $where .= ' AND g.store_id='.$store_id;
-        }
-        if ($date = I('date')) {
-            $startDate = strtotime($date);
-            $where .= ' AND ga.start_date='.$startDate;
-        }
-        if ($time = I('time')) {
-            $startTime = intval($time);
-            $where .= ' AND ga.start_time='.$startTime;
         }
 
         $sqlCount = 'SELECT COUNT(*) count FROM tp_goods_activity ga LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id  LEFT JOIN tp_merchant m ON g.store_id=m.id '.$where;
@@ -87,16 +61,8 @@ class SecondBuyController extends Controller {
                 LEFT JOIN tp_merchant m ON g.store_id=m.id '.$where.' LIMIT ' .$Page->firstRow.','.$Page->listRows;
         $goodsList = M()->query($sql);
 
-        foreach ($goodsList as $key => $value) {
-            $goodsList[$key]['start_time'] = date('Y-m-d', $value['start_date']) . ' ' . $value['start_time'] . ':00';
-            $goodsList[$key]['end_time'] = empty($value['end_time']) ? date('Y-m-d ',$value['start_date']) . ' 00:00' : date('Y-m-d ', $value['start_date']) . $value['start_time'] . ':00';
-        }
-
         $this->assign('goods', $goodsList);
         $this->assign('page', $show);// 赋值分页输出
-        $dateTime = (C('SecondBuy'));
-        $this->assign('time', $dateTime['time']);
-        $this->assign('date', $dateTime['date']);
         $this->display();
     }
 
@@ -165,14 +131,15 @@ class SecondBuyController extends Controller {
     public function deleteBatch()
     {
         $data = I('post.');
+        //print_r($data);exit;
         foreach ($data['id'] as $value) {
             $res = M('goods_activity')->where('id='.$value)->delete();
         }
         if($res)
         {
-            $this->success("删除成功",U('SecondBuy/goodsList'));
+            $this->success("删除成功",U('Economize/goodsList'));
         }else{
-            $this->success("删除失败",U('SecondBuy/goodsList'));
+            $this->success("删除失败",U('Economize/goodsList'));
         }
     }
 
