@@ -317,7 +317,7 @@ class UserController extends BaseController {
             }elseif(file_exists('Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.gif')){
                 $order['goodsInfo']['fenxiang_url'] = C('HTTP_URL').'/Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.gif';
             }else{
-                $goods_pic_url = C('HTTP_URL').goods_thum_images($order['goodsInfo']['goods_id'],400,400);
+                $goods_pic_url = goods_thum_images($order['goodsInfo']['goods_id'],400,400);
                 $pin = $this->fenxiangLOGO($goods_pic_url,$order['goodsInfo']['goods_id'],$order['goodsInfo']['store_id']);
                 $order['goodsInfo']['fenxiang_url'] = C('HTTP_URL').$pin;
             }
@@ -561,7 +561,7 @@ class UserController extends BaseController {
                 }else{
                     $promInfo['join_num'][$i]['name'] = substr_replace($mobile['mobile'], '****', 3, 4);
                 }
-                $promInfo['join_num'][$i]['head_pic'] = C('HTTP_URL').$mobile['head_pic'];
+                $promInfo['join_num'][$i]['head_pic'] = TransformationImgurl($mobile['head_pic']);
                 $promInfo['join_num'][$i]['addtime'] = $start_time['start_time'];
                 $promInfo['join_num'][$i]['is_free'] = $start_time['is_free'];
                 if($user_id==$join_num[$i-1]['user_id'])
