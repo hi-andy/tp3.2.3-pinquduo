@@ -323,6 +323,38 @@ class BaseController extends Controller {
         $data['daishouhuo'] = M('order')->where('`pay_status` = 1 and `shipping_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `user_id` = '.$user_id)->count();
         $data['daifukuan'] = M('order')->where('`pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = '.$user_id)->count();
         $data['refund'] = M('order')->where('(`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`='.$user_id)->count();//售后
+//        $mark = M('group_buy')->where('`mark`=0 and `is_cancel`=0 and `user_id` = '.$user_id.' and `end_time`>='.time())->select();
+//        $count = '0';
+//        if(!empty($mark))
+//        {
+//            foreach($mark as &$v)
+//            {
+//                $num[] = M('group_buy')->where('`mark` = '.$v['id'])->count();
+//            }
+//            for($i = 0;$i<count($num);$i++)
+//            {
+//                if(($num[$i]+1) < $mark[$i]['goods_num'])
+//                {
+//                    $count++;
+//                }
+//            }
+//        }
+//        //再计算参与的团
+//        $mark2 = M('group_buy')->where('`mark`!=0 and `is_cancel`=0 and `user_id` = '.$user_id.' and `end_time`>='.time())->select();
+//        if(!empty($mark2))
+//        {
+//            foreach($mark2 as &$v)
+//            {
+//                $num2[] = M('group_buy')->where('`mark` = '.$v['id'])->count();
+//                for($i = 0;$i<count($num2);$i++)
+//                {
+//                    if(($num2[$i]+1) < $mark[$i]['goods_num'])
+//                    {
+//                        $count++;
+//                    }
+//                }
+//            }
+//        }
         $mark = M('group_buy')->where('`is_successful`=0 and `is_cancel`=0 and `user_id` = '.$user_id.' and `end_time`>='.time())->count();
         $data['in_prom'] = $mark;
 
@@ -564,31 +596,5 @@ class BaseController extends Controller {
                 break;
         }
         return $pin;
-    }
-
-    //调度商品详情
-    function  getGoodsInfo($goods_id)
-    {
-        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
-
-        //商品详情
-        $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
-        $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-
-        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
-        $store['store_logo'] = TransformationImgurl($store['store_logo']);
-        $goods['store'] = $store;
-        $goods['original_img'] = TransformationImgurl($goods['original_img']);
-
-        $goods['fenxiang_url'] = $goods['original_img']."?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
-
-        return $goods;
-    }
-
-    function getGoodsList($where,$page,$pagesize)
-    {
-        $count = M('goods')->where($where)->count();
-        $goods = M('goods')->where($where)->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
-        $result = $this->listPageData($count, $goods);
     }
 }
