@@ -1,5 +1,6 @@
 <?php
-/**
+/*
+ *统计
  */
 
 namespace Store\Controller;
@@ -24,31 +25,32 @@ class ReportController extends BaseController{
 		$this->assign('order_type',C('ORDER_TYPE'));
 		$this->begin = strtotime($begin);
 		$this->end = strtotime($end);
-		if(empty($_SESSION['merchant_id']))
+		if(empty($_COOKIE['merchant_id']))
 		{
-			session_unset();
-			session_destroy();
+			foreach($_COOKIE as $key=>$val){
+				setcookie($key,"",time()-100);
+			}
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
-		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
+		$haitao = M('store_detail')->where('storeid='.$_COOKIE['merchant_id'])->find();
 		if($haitao['is_pay']==0)
 		{
 			$this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
 		}
 	}
-	
+
 	public function index(){
 		//拿到凌晨的时间戳和第二天的凌晨时间戳
 		$now = strtotime(date('Y-m-d'));
 		$tomorrow = $now+24*3600;
-		$where = " store_id = ".$_SESSION['merchant_id'] ." and ";
+		$where = " store_id = ".$_COOKIE['merchant_id'] ." and ";
 		$today['today_amount'] = M('order')->where($where."add_time>$now and add_time<$tomorrow AND pay_status=1")->sum('order_amount');//今日销售总额
 
 		//计算今日订单数
 		$today['today_order']= $single = M('order')->where($where."add_time>$now and add_time<$tomorrow and pay_status=1")->count();
 		$today['cancel_order'] = M('order')->where($where."add_time>$now and add_time<$tomorrow AND is_cancel=1")->count();//今日取消订单
 		//拿到总共能体现的资金
-		$one = M('order')->where('order_type in (4,16) and store_id='.$_SESSION['merchant_id'])->select();
+		$one = M('order')->where('order_type in (4,16) and store_id='.$_COOKIE['merchant_id'])->select();
 		$reflect = null;
 		foreach($one as $v)
 		{
@@ -61,7 +63,7 @@ class ReportController extends BaseController{
 		}
 		//获取以前的提取记录
 		$total = 0;
-		$withdrawal_total = M('store_withdrawal')->where('store_id='.$_SESSION['merchant_id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
+		$withdrawal_total = M('store_withdrawal')->where('store_id='.$_COOKIE['merchant_id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
 
 		foreach($withdrawal_total as $v)
 		{
@@ -71,7 +73,7 @@ class ReportController extends BaseController{
 		if(empty($today['reflect']))
 			$today['reflect'] = 0;
 
-		$today['sign'] = M('order')->where('pay_status=1 and store_id = '.$_SESSION['merchant_id'])->sum('order_amount');//总销售额
+		$today['sign'] = M('order')->where('pay_status=1 and store_id = '.$_COOKIE['merchant_id'])->sum('order_amount');//总销售额
 
 		$this->assign('today',$today);
 
@@ -80,7 +82,7 @@ class ReportController extends BaseController{
 		$res = M()->query($sql);//订单数,交易额
 
 //		//获取取消订单数
-//		$cancel = "SELECT count(*) AS cancel_num,FROM_UNIXTIME(add_time, '%Y-%m-%d') AS gap FROM __PREFIX__order WHERE store_id = ".$_SESSION['merchant_id']." AND add_time > $this->begin AND add_time < $this->end AND is_cancel = 1  GROUP BY	gap";
+//		$cancel = "SELECT count(*) AS cancel_num,FROM_UNIXTIME(add_time, '%Y-%m-%d') AS gap FROM __PREFIX__order WHERE store_id = ".$_COOKIE['merchant_id']." AND add_time > $this->begin AND add_time < $this->end AND is_cancel = 1  GROUP BY	gap";
 //		$cancel_res = M()->query($cancel);
 
 		for($i=0;$i<count($res);$i++)
@@ -178,15 +180,15 @@ class ReportController extends BaseController{
 		$this->assign('list',$res);
 		$this->display();
 	}
-	
+
 	public function userTop(){
 		$sql = "select count(a.user_id) as order_num,sum(a.order_amount) as amount,a.user_id,b.mobile,b.email from __PREFIX__order as a left join __PREFIX__users as b ";
-		$sql .= "  on a.user_id = b.user_id where  store_id = ".$_SESSION['merchant_id']." and  a.add_time>$this->begin and a.add_time<$this->end and a.pay_status=1 order by amount DESC limit 100";
+		$sql .= "  on a.user_id = b.user_id where  store_id = ".$_COOKIE['merchant_id']." and  a.add_time>$this->begin and a.add_time<$this->end and a.pay_status=1 order by amount DESC limit 100";
 		$res = M()->cache(true)->query($sql);
 		$this->assign('list',$res);
 		$this->display();
 	}
-	
+
 	public function saleList(){
 		$p = I('p',0);
 		$end = $p*20;
@@ -201,12 +203,12 @@ class ReportController extends BaseController{
 		}
 
 		$sql = "select a.*,b.order_sn,b.order_amount,b.shipping_name,b.pay_name,b.add_time,b.order_type from __PREFIX__order_goods as a left join __PREFIX__order as b on a.order_id=b.order_id ";
-		$sql .= " where b.store_id = ".$_SESSION['merchant_id']." and b.add_time>$this->begin and b.add_time<$this->end order by add_time limit $start,$end";
+		$sql .= " where b.store_id = ".$_COOKIE['merchant_id']." and b.add_time>$this->begin and b.add_time<$this->end order by add_time limit $start,$end";
 		$res = M()->cache(true)->query($sql);
 		$this->assign('list',$res);
 
 		$sql2 = "select count(*) as tnum from __PREFIX__order_goods as a left join __PREFIX__order as b on a.order_id=b.order_id ";
-		$sql2 .= " where b.store_id = ".$_SESSION['merchant_id']." and  b.add_time>$this->begin and b.add_time<$this->end  ";
+		$sql2 .= " where b.store_id = ".$_COOKIE['merchant_id']." and  b.add_time>$this->begin and b.add_time<$this->end  ";
 		$total = M()->query($sql2);
 		$count =  $total[0]['tnum'];
 		$Page = new \Think\Page($count,20);
@@ -214,7 +216,7 @@ class ReportController extends BaseController{
 		$this->assign('page',$show);
 		$this->display();
 	}
-	
+
 	public function user(){
 		$today = strtotime(date('Y-m-d'));
 		$month = strtotime(date('Y-m-01'));
@@ -225,34 +227,34 @@ class ReportController extends BaseController{
 		$res = M('order')->cache(true)->distinct(true)->field('user_id')->select();
 		$user['hasorder'] = count($res);
 		$this->assign('user',$user);
-		$sql = "SELECT COUNT(*) as num,FROM_UNIXTIME(reg_time,'%Y-%m-%d') as gap from __PREFIX__users where store_id = ".$_SESSION['merchant_id']." and reg_time>$this->begin and reg_time<$this->end group by gap";
+		$sql = "SELECT COUNT(*) as num,FROM_UNIXTIME(reg_time,'%Y-%m-%d') as gap from __PREFIX__users where store_id = ".$_COOKIE['merchant_id']." and reg_time>$this->begin and reg_time<$this->end group by gap";
 		$new = M()->query($sql);//新增会员趋势		
 		foreach ($new as $val){
 			$arr[$val['gap']] = $val['num'];
 		}
-		
+
 		for($i=$this->begin;$i<=$this->end;$i=$i+24*3600){
 			$brr[] = empty($arr[date('Y-m-d',$i)]) ? 0 : $arr[date('Y-m-d',$i)];
 			$day[] = date('Y-m-d',$i);
 		}
 		$result = array('data'=>$brr,'time'=>$day);
-		$this->assign('result',json_encode($result));					
+		$this->assign('result',json_encode($result));
 		$this->display();
 	}
-	
+
 	//财务统计
 	public function finance(){
 		$sql = "SELECT sum(a.order_amount) as goods_amount,sum(a.shipping_price) as shipping_amount,sum(b.goods_num*b.cost_price) as cost_price,";
 		$sql .= " FROM_UNIXTIME(a.add_time,'%Y-%m-%d') as gap from  __PREFIX__order a left join __PREFIX__order_goods b on a.order_id=b.order_id ";
 		$sql .= " where a.add_time>$this->begin and a.add_time<$this->end AND a.pay_status=1 and a.order_status in (1,2,4) group by gap order by a.add_time";
 		$res = M()->cache(true)->query($sql);//物流费,交易额,成本价
-		
+
 		foreach ($res as $val){
 			$arr[$val['gap']] = $val['goods_amount'];
 			$brr[$val['gap']] = $val['cost_price'];
 			$crr[$val['gap']] = $val['shipping_amount'];
 		}
-			
+
 		for($i=$this->begin;$i<=$this->end;$i=$i+24*3600){
 			$tmp_goods_amount = empty($arr[date('Y-m-d',$i)]) ? 0 : $arr[date('Y-m-d',$i)];
 			$tmp_amount = empty($brr[date('Y-m-d',$i)]) ? 0 : $brr[date('Y-m-d',$i)];
@@ -264,11 +266,11 @@ class ReportController extends BaseController{
 			$list[] = array('day'=>$date,'goods_amount'=>$tmp_goods_amount,'cost_amount'=>$tmp_amount,'shipping_amount'=>$tmp_shipping_amount,'end'=>date('Y-m-d',$i+24*60*60));
 			$day[] = $date;
 		}
-		
+
 		$this->assign('list',$list);
 		$result = array('goods_arr'=>$goods_arr,'amount'=>$amount_arr,'shipping_arr'=>$shipping_arr,'time'=>$day);
 		$this->assign('result',json_encode($result));
 		$this->display();
 	}
-	
+
 }

@@ -323,38 +323,6 @@ class BaseController extends Controller {
         $data['daishouhuo'] = M('order')->where('`pay_status` = 1 and `shipping_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `user_id` = '.$user_id)->count();
         $data['daifukuan'] = M('order')->where('`pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = '.$user_id)->count();
         $data['refund'] = M('order')->where('(`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`='.$user_id)->count();//售后
-//        $mark = M('group_buy')->where('`mark`=0 and `is_cancel`=0 and `user_id` = '.$user_id.' and `end_time`>='.time())->select();
-//        $count = '0';
-//        if(!empty($mark))
-//        {
-//            foreach($mark as &$v)
-//            {
-//                $num[] = M('group_buy')->where('`mark` = '.$v['id'])->count();
-//            }
-//            for($i = 0;$i<count($num);$i++)
-//            {
-//                if(($num[$i]+1) < $mark[$i]['goods_num'])
-//                {
-//                    $count++;
-//                }
-//            }
-//        }
-//        //再计算参与的团
-//        $mark2 = M('group_buy')->where('`mark`!=0 and `is_cancel`=0 and `user_id` = '.$user_id.' and `end_time`>='.time())->select();
-//        if(!empty($mark2))
-//        {
-//            foreach($mark2 as &$v)
-//            {
-//                $num2[] = M('group_buy')->where('`mark` = '.$v['id'])->count();
-//                for($i = 0;$i<count($num2);$i++)
-//                {
-//                    if(($num2[$i]+1) < $mark[$i]['goods_num'])
-//                    {
-//                        $count++;
-//                    }
-//                }
-//            }
-//        }
         $mark = M('group_buy')->where('`is_successful`=0 and `is_cancel`=0 and `user_id` = '.$user_id.' and `end_time`>='.time())->count();
         $data['in_prom'] = $mark;
 

@@ -52,14 +52,16 @@
 			            <tbody id="goos_table">
 			                <volist name="goodsList" id="list">
                                <tr>
-                               	<td class="text-left">                
+								   <td class="text-left">
                                         <input type="checkbox" name="goods_id[]" value="{$list.goods_id}"/>
                                    </td>
                                    <td class="text-left">{$list.goods_name|getSubstr=0,33}</td>
 	                               <td class="text-left">{$list.store_name|getSubstr=0,33}</td>
                                    <td class="text-left">{$list.shop_price}</td>
                                    <td class="text-left">{$list.store_count}</td>
-								   <td class="text-left" id="number" style="display:none;"><input type="text" name="number" style="width: 100%;" /></td>
+								   <td class="text-left" id="number" style="display:none;">
+									   <input type="text" name="number" style="width: 100%;" />
+								   </td>
                                    <td><a href="javascript:void(0)" onclick="javascript:$(this).parent().parent().remove();">删除</a></td>
                                </tr>                              
 			            	</volist>   

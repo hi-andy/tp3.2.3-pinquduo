@@ -30,7 +30,6 @@ class UserController extends BaseController {
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
-        redis("tttt", json_encode($map), REDISTIME);
         $data = $this->userLogic->thirdLogin($map);
 
         if($data['status'] ==1){
@@ -41,7 +40,7 @@ class UserController extends BaseController {
             $res = $HXcall->hx_register($username,$password,$nickname);
         }
         $data['name'] = $data['nickname'];
-        $data['head_pic'] = C('HTTP_URL').$data['head_pic'];
+        $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $json = array('status'=>1,'msg'=>'登录成功','result'=>$data);
@@ -350,7 +349,7 @@ class UserController extends BaseController {
                 exit(json_encode($json));
             }
 
-            $promInfo['photo'] = C('HTTP_URL').$promInfo['photo'];
+            $promInfo['photo'] = TransformationImgurl($promInfo['photo']);
             $promInfo['prom'] = $order['goodsInfo']['prom'];
             if(!empty($promInfo['mark'])) {
                 $join_num = M('group_buy')->where('`mark` = '.$promInfo['mark'].' and `is_pay`=1')->select();
@@ -1056,7 +1055,7 @@ class UserController extends BaseController {
             if (!$user_id)
             {
                 $_REQUEST['reg_time'] = time();
-                $_REQUEST['head_pic'] = '/Public/upload/logo/logo.jpg';
+                $_REQUEST['head_pic'] = CDN.'/Public/upload/logo/logo.jpg';
                 $_REQUEST['nickname'] = $mobile;
                 M('users')->data($_REQUEST)->add();
                 $user_id = M('users')->where(array('mobile' => $mobile))->getField('user_id');
@@ -1067,7 +1066,6 @@ class UserController extends BaseController {
                 $nickname = $mobile;
                 $res = $HXcall->hx_register($username,$password,$nickname);
             }
-
             session('mobile_user',$user_id);
 
             $r = 1;
@@ -1083,7 +1081,7 @@ class UserController extends BaseController {
                         exit(json_encode(array('status' => -1, 'msg' => '验证失败')));
                 }
                 $userinfo = M('users')->where(array('mobile' => $mobile))->field('user_id,pay_points,mobile,head_pic')->find();
-                $userinfo['head_pic'] = C('HTTP_URL').$userinfo['head_pic'];
+                $userinfo['head_pic'] = TransformationImgurl($userinfo['head_pic']);
                 $userinfo['name'] = substr_replace($userinfo['mobile'], '****', 3, 4);//将手机号码中间四位变成*号
 
                 $pay_points=$userinfo['pay_points'];
@@ -1872,7 +1870,7 @@ class UserController extends BaseController {
         {
             for($j=0;$j<count($self_cancel_order);$j++)
             {
-                $data_time = $self_cancel_order[$j]['add_time']+30*60;
+                $data_time = $self_cancel_order[$j]['add_time']+3*60;
                 if($data_time<=time())
                 {
                     $ids[]['id'] = $self_cancel_order[$j]['order_id'];
@@ -1891,9 +1889,7 @@ class UserController extends BaseController {
                 }
             }
             $where['order_id'] = array('IN',array_column($ids,'id'));
-//            $where['order_id'] ;$store_ids = $store_ids."('".$store_id[$i]['id']."')";
             $res =  M('order')->where($where)->data(array('order_status'=>3,'order_type'=>5,'is_cancel'=>1))->save();
-
         }
 
         //将团购里超时支付的订单设置成取消
@@ -1903,7 +1899,7 @@ class UserController extends BaseController {
         {
             for($z=0;$z<count($join_prom_order);$z++)
             {
-                $data_time = $join_prom_order[$z]['start_time']+5*60;
+                $data_time = $join_prom_order[$z]['start_time']+3*60;
                 if($data_time<=time())
                 {
                     $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
@@ -2177,54 +2173,21 @@ class UserController extends BaseController {
 
     function test()
     {
-        if(IS_POST){
-            if (!empty($_FILES)) {
-                $upload = new \Think\Upload();// 实例化上传类
-                $filepath='./Uploads/upfile/Excel/';
-                $upload->exts = array('xlsx','xls');// 设置附件上传类型
-                $upload->rootPath  =  $filepath; // 设置附件上传根目录
-                $upload->saveName  =     'time';
-                $upload->autoSub   =     false;
-                if (!$info=$upload->upload()) {
-                    $this->error($upload->getError());
-                }
-                foreach ($info as $key => $value) {
-                    unset($info);
-                    $info[0]=$value;
-                    $info[0]['savepath']=$filepath;
-                }
-                vendor("PHPExcel.PHPExcel");
-                $file_name=$info[0]['savepath'].$info[0]['savename'];
-                $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
-                $objPHPExcel = $objReader->load($file_name,$encode='utf-8');
-                $sheet = $objPHPExcel->getSheet(0);
-                $highestRow = $sheet->getHighestRow(); // 取得总行数
-                $highestColumn = $sheet->getHighestColumn(); // 取得总列数
-                $j=0;
-                for($i=2;$i<=$highestRow;$i++)
-                {
-                    $order_sn= $objPHPExcel->getActiveSheet()->getCell("A".$i)->getValue();
-                    $shipping_order= $objPHPExcel->getActiveSheet()->getCell("B".$i)->getValue();
-                    $shipping_name= $objPHPExcel->getActiveSheet()->getCell("C".$i)->getValue();
-                    if(!empty($order_sn) || !empty($shipping_order) || !empty($shipping_name)){
-                        $shipping = M('logistics')->where("logistics_name = '".$shipping_name."'")->find();
-                        $store_info = M('order')->where('order_sn = '.$order_sn)->find();
-                        if($store_info['shipping_code']==0){
-                            //寻找订单，找出订单，然后将订单的信息写进去
-                            $res = M('order')->where('order_id = '.$store_info['order_id'])->save(array('shipping_code'=>$shipping['logistics_code'],'shipping_order'=>$shipping_order,'shipping_name'=>$shipping_name));
-                            $res1 = M('delivery_doc')->where('order_id = '.$store_info['order_id'])->save(array('shipping_code'=>$shipping['logistics_code'],'shipping_order'=>$shipping_order,'shipping_name'=>$shipping_name));
-                        }
-                    }
-                }
-                unlink($file_name);
-//                User_log('批量导入联系人，数量：'.$j);
-//                $this->success('导入成功！本次导入联系人数量：'.$j);
-            }else
+        //将不正常的订单状态进行修改
+        $luan_order = M('group_buy')->where('mark = 0 and is_pay = 1 and is_successful = 0 and end_time>'.time())->select();
+        if(!empty($luan_order))
+        {
+            $num =count($luan_order);
+            for ($i=0;$i<$num;$i++)
             {
-                $this->error("请选择上传的文件");
+                $info =  M('group_buy')->where('mark = '.$luan_order[$i]['id'].' or id ='.$luan_order[$i]['id'])->count();
+                if($info == $luan_order[$i]['goods_num'])
+                {
+                    $free = new GoodsController();
+                    $free->getFree($luan_order[$i]['id']);
+                }
             }
         }
-        $this->display();
     }
 
     public function doRefund($orderSn, $refundFee, $opUserPassMd5 = '', $transactionId = '')

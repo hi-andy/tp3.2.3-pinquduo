@@ -13,7 +13,7 @@ use Qiniu\Storage\UploadManager;
 use Qiniu\Storage\BucketManager;
 
 //七牛云
-class QiniuController extends BaseController {
+class QiniuController {
 
     const ACCESSKEY = '15gPbXtT9oIJ2EpAuUsHJFPcmZ68qxTXnHTpqwgG';
     const SECRETKEY = '2c1Jyq1_xt3sIbODugIWLNAGC9kwHZS9xmpHxmjm';

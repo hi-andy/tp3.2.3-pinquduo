@@ -11,13 +11,14 @@ class StoreController extends BaseController{
      * 初始化操作
      */
     public function _initialize() {
-        if(empty($_SESSION['merchant_id']))
+        if(empty($_COOKIE['merchant_id']))
         {
-            session_unset();
-            session_destroy();
+            foreach($_COOKIE as $key=>$val){
+                setcookie($key,"",time()-100);
+            }
             $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
         }
-        $haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->field('is_pay')->find();
+        $haitao = M('store_detail')->where('storeid='.$_COOKIE['merchant_id'])->field('is_pay')->find();
         if($haitao['is_pay']==0)
         {
             $this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
@@ -33,7 +34,7 @@ class StoreController extends BaseController{
      * 提现申请ajax列表
      */
     public function withdrawal_ajax(){
-        $store_id = $_SESSION['merchant_id'];
+        $store_id = $_COOKIE['merchant_id'];
 
         $where = " `store_id`=".$store_id;
         if(I('status') != null && I('status')!=99)
@@ -58,10 +59,10 @@ class StoreController extends BaseController{
      */
     public function withdrawal_add(){
         //	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
-        $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->find();
+        $store_info = M('merchant')->where(array('id'=>$_COOKIE['merchant_id']))->find();
 
         //拿到总共能体现的资金
-        $one = M('order')->where('(order_type =4 or order_type = 16) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
+        $one = M('order')->where('(order_type =4 or order_type = 16) and confirm_time is not null and store_id='.$_COOKIE['merchant_id'])->select();
         $reflect = null;
         foreach($one as $v)
         {
@@ -110,13 +111,13 @@ class StoreController extends BaseController{
             echo json_encode(array('status'=>0,'msg'=>'请输入500的倍数的体现金额'));
             die;
         }
-        if($data['withdrawal_money']>$_SESSION['reflect'])
+        if($data['withdrawal_money']>$_COOKIE['reflect'])
         {
             echo json_encode(array('status'=>0,'msg'=>'提现余额不足'));
             die;
         }
 
-        $withdrawal_total = M('store_withdrawal')->where('store_id='.$_SESSION['merchant_id'])->order('id desc')->find();
+        $withdrawal_total = M('store_withdrawal')->where('store_id='.$_COOKIE['merchant_id'])->order('id desc')->find();
         $datetime = strtotime(date('Y-m-d',strtotime($withdrawal_total['datetime'])));
         $new = strtotime(date('Y-m-d',time()));
         if($datetime==$new){
@@ -124,7 +125,7 @@ class StoreController extends BaseController{
             die;
         }
 
-        $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->find();
+        $store_info = M('merchant')->where(array('id'=>$_COOKIE['merchant_id']))->find();
         $data['store_id'] = $store_info['id'];
         $data['store_name'] = $store_info['store_name'];
         $data['datetime'] = date('Y-m-d H:i:s');
@@ -474,7 +475,7 @@ class StoreController extends BaseController{
 
     function ajaxreceipt()
     {
-        $store_id = $_SESSION['merchant_id'];
+        $store_id = $_COOKIE['merchant_id'];
         $store_info = M('merchant')->alias('m')
             ->Join(' INNER JOIN tp_store_detail d ON d.storeid = m.id ')
             ->where('m.id = '.$store_id)

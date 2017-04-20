@@ -26,12 +26,12 @@ class OrderController extends BaseController
 		$this->pay_status = C('PAY_STATUS');
 		$this->shipping_status = C('SHIPPING_STATUS');
 
-		if (empty($_SESSION['merchant_id'])) {
+		if (empty($_COOKIE['merchant_id'])) {
 			session_unset();
 			session_destroy();
 			$this->error("登录超时或未登录，请登录", U('Store/Admin/login'));
 		}
-		$haitao = M('store_detail')->where('storeid=' . $_SESSION['merchant_id'])->find();
+		$haitao = M('store_detail')->where('storeid=' . $_COOKIE['merchant_id'])->find();
 		if ($haitao['is_pay'] == 0) {
 			$this->error("尚未缴纳保证金，现在前往缴纳", U('Store/Index/pay_money'));
 		}
@@ -78,7 +78,7 @@ class OrderController extends BaseController
 		I('pay_status') != '' ? $condition['pay_status'] = I('pay_status') : false;
 		I('pay_code') != '' ? $condition['pay_code'] = I('pay_code') : false;
 		I('shipping_status') != '' ? $condition['shipping_status'] = I('shipping_status') : false;
-		$condition['store_id'] = $_SESSION['merchant_id'];
+		$condition['store_id'] = $_COOKIE['merchant_id'];
 		$condition['is_show'] = 1;
 
 		$sort_order = I('order_by', 'DESC') . ' ' . I('sort');
@@ -116,7 +116,7 @@ class OrderController extends BaseController
 		$condition['pay_status'] = array('eq', 1);
 		$condition['is_cancel'] = array('neq', 1);
 		$condition['is_return_or_exchange'] = array('eq', 0);
-		$condition['store_id'] = $_SESSION['merchant_id'];
+		$condition['store_id'] = $_COOKIE['merchant_id'];
 		$shipping_status = I('shipping_status');
 		if (I('shipping_status') == 0) {
 			$condition['automatic_time'] = array('eq', 0);
@@ -794,7 +794,7 @@ class OrderController extends BaseController
 	public function export_order()
 	{
 		//搜索条件
-		$store_id = $_SESSION['merchant_id'];
+		$store_id = $_COOKIE['merchant_id'];
 		$where = ' where 1=1 and prom_id is Null';
 		$timegap = I('timegap');
 		if ($timegap) {
@@ -928,7 +928,7 @@ class OrderController extends BaseController
 			$order['shipping_price'] = $result['result']['shipping_price']; //物流费
 			$order['order_amount'] = $result['result']['order_amount']; // 应付金额
 			$order['total_amount'] = $result['result']['total_amount']; // 订单总价
-			$order['store_id'] = $_SESSION['merchant_id'];
+			$order['store_id'] = $_COOKIE['merchant_id'];
 
 			// 添加订单
 			$order_id = M('order')->add($order);
@@ -1001,7 +1001,7 @@ class OrderController extends BaseController
 	 */
 	public function download_delivery()
 	{
-		$condition['o.store_id'] = $_SESSION['merchant_id'];
+		$condition['o.store_id'] = $_COOKIE['merchant_id'];
 
 		$condition['o.pay_status'] = array('eq', 1);
 		$condition['o.order_type'] = array('eq', 3);

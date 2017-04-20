@@ -19,13 +19,13 @@ class GoodsController extends BaseController {
         $this->assign('is_on_sale',C('IS_ON_SALE'));
         $this->assign('is_special',C('IS_SPECIAL'));
 
-        if(empty($_SESSION['merchant_id']))
+        if(empty($_COOKIE['merchant_id']))
         {
             session_unset();
             session_destroy();
             $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
         }
-        $haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
+        $haitao = M('store_detail')->where('storeid='.$_COOKIE['merchant_id'])->find();
         if($haitao['is_pay']==0)
         {
             $this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
@@ -173,8 +173,7 @@ class GoodsController extends BaseController {
      *  商品列表
      */
     public function goodsList(){
-//        var_dump($_SESSION['is_haitao']);die;
-        if($_SESSION['is_haitao']==1)
+        if($_COOKIE['is_haitao']==1)
         {
             $cat1 = M('haitao')->where('`parent_id`=0')->select();
             $where['parent_id'] = array('IN',array_column($cat1,'id'));
@@ -184,7 +183,7 @@ class GoodsController extends BaseController {
             $where['parent_id'] = array('IN',array_column($cat1,'id'));
             $cat2 = M('GoodsCategory')->where($where)->select();
         }
-        $store_state = M('merchant')->where('id = '.$_SESSION['merchant_id'])->find();
+        $store_state = M('merchant')->where('id = '.$_COOKIE['merchant_id'])->find();
         $this->assign('store',$store_state);
         $this->assign('cat2',$cat2);
         $this->assign('cat1',$cat1);
@@ -195,14 +194,12 @@ class GoodsController extends BaseController {
      *  商品列表
      */
     public function ajaxGoodsList(){
-
-        $where = ' show_type = 0 '. ' and store_id = '.$_SESSION['merchant_id'] ; // 搜索条件
+        $where = ' show_type = 0 '. ' and store_id = '.$_COOKIE['merchant_id'] ; // 搜索条件
         I('intro') && $where = "$where and ".I('intro')." = 1" ;
         I('is_on_sale') != null && $where = "$where and `is_on_sale`= ".I('is_on_sale') ;
         (I('merchant_id') !=0) && $where = "$where and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';
 
         if($_REQUEST['is_audit']!=''){
-//            $where = "$where and is_on_sale = ".$_REQUEST['is_on_sale'] ;
             $where = "$where and is_audit = ".$_REQUEST['is_audit'];
         }
         if(!empty(I('store_name')))
@@ -211,7 +208,7 @@ class GoodsController extends BaseController {
             $where = $this->getStoreWhere($where,I('store_name'));
         }
 
-        if($_SESSION['is_haitao']==1)
+        if($_COOKIE['is_haitao']==1)
         {
             if(I('cat_id_2')){
                 $where = $where = "$where and haitao_cat =".I('cat_id_2');
@@ -289,7 +286,7 @@ class GoodsController extends BaseController {
         }else{
             $goodsList = $model->where($where)->order($order_str)->limit($Page->firstRow,$Page->listRows)->select();
         }
-        $haitao = $_SESSION['is_haitao'];
+        $haitao = $_COOKIE['is_haitao'];
         if(!empty($haitao))
         {
             $this->assign('haitao',$haitao);
@@ -311,10 +308,11 @@ class GoodsController extends BaseController {
      * 添加修改商品
      */
     public function addEditGoods(){
-        if(empty($_SESSION['merchant_id']))
+        if(empty($_COOKIE['merchant_id']))
         {
-            session_unset();
-            session_destroy();
+            foreach($_COOKIE as $key=>$val){
+                setcookie($key,"",time()-100);
+            }
             $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
         }
         $GoodsLogic = new GoodsLogic();
@@ -412,7 +410,7 @@ class GoodsController extends BaseController {
 //        $brandList = $GoodsLogic->getSortBrands();
         $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
         if(empty($goodsType))
-            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+            $goodsType = M("GoodsType")->where('`store_id`='.$_COOKIE['merchant_id'])->select();
         $haitao = $goodsInfo['is_special'];
         if($haitao==1) {
             $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
@@ -445,7 +443,7 @@ class GoodsController extends BaseController {
     public function goodsTypeList(){
         $model = M("GoodsType");
 
-        $where ='store_id = '.$_SESSION['merchant_id'];
+        $where ='store_id = '.$_COOKIE['merchant_id'];
         $count = $model->where($where)->count();
         $Page  = new Page($count,100);
         $show  = $Page->show();
@@ -465,7 +463,7 @@ class GoodsController extends BaseController {
         $model = M("GoodsType");
         if(IS_POST)
         {
-            $_POST['store_id'] = $_SESSION['merchant_id'];
+            $_POST['store_id'] = $_COOKIE['merchant_id'];
             $model->create();
             if($_GET['id'])
                 $model->save();
@@ -498,10 +496,10 @@ class GoodsController extends BaseController {
         I('type_id')   && $where = "$where and type_id = ".I('type_id') ;
         // 关键词搜索
         $model = M('GoodsAttribute');
-        $count = $model->where($where.' and is_show =1 and store_id ='.$_SESSION['merchant_id'])->count();
+        $count = $model->where($where.' and is_show =1 and store_id ='.$_COOKIE['merchant_id'])->count();
         $Page = new AjaxPage($count,13);
         $show = $Page->show();
-        $goodsAttributeList = $model->where($where.' and is_show =1 and store_id ='.$_SESSION['merchant_id'])->order('`order` desc,attr_id DESC')->limit($Page->firstRow.','.$Page->listRows)->select();
+        $goodsAttributeList = $model->where($where.' and is_show =1 and store_id ='.$_COOKIE['merchant_id'])->order('`order` desc,attr_id DESC')->limit($Page->firstRow.','.$Page->listRows)->select();
 //        var_dump(m()->getLastSql());die;
         $goodsTypeList = M("GoodsType")->getField('id,name');
         $attr_input_type = array(0=>'手工录入',1=>' 从列表中选择',2=>' 多行文本框');
@@ -673,9 +671,9 @@ class GoodsController extends BaseController {
         $model = M("Brand");
         $keyword = I('keyword');
         $where = $keyword ? " name like '%$keyword%' " : "";
-        $count = $model->where($where.'is_show =1 and store_id ='.$_SESSION['merchant_id'])->count();
+        $count = $model->where($where.'is_show =1 and store_id ='.$_COOKIE['merchant_id'])->count();
         $Page  = new Page($count,10);
-        $brandList = $model->where($where .'is_show =1 and store_id ='.$_SESSION['merchant_id'])->order("`sort` asc")->limit($Page->firstRow.','.$Page->listRows)->select();
+        $brandList = $model->where($where .'is_show =1 and store_id ='.$_COOKIE['merchant_id'])->order("`sort` asc")->limit($Page->firstRow.','.$Page->listRows)->select();
         $show  = $Page->show();
         $cat_list = M('goods_category')->where("parent_id = 0")->getField('id,name'); // 已经改成联动菜单
         $this->assign('cat_list',$cat_list);
@@ -750,7 +748,7 @@ class GoodsController extends BaseController {
      * 商品规格列表
      */
     public function specList(){
-        $condition['store_id'] = $_SESSION['merchant_id'];
+        $condition['store_id'] = $_COOKIE['merchant_id'];
         $goodsTypeList = M("GoodsType")->where($condition)->select();
 
         $this->assign('goodsTypeList',$goodsTypeList);
@@ -768,7 +766,7 @@ class GoodsController extends BaseController {
         // 关键词搜索
         $model = D('spec');
 
-        $where .= 'and store_id='.$_SESSION['merchant_id'];
+        $where .= 'and store_id='.$_COOKIE['merchant_id'];
         $count = $model->where($where)->count();
         $Page = new AjaxPage($count,100);
         $show = $Page->show();
@@ -781,7 +779,7 @@ class GoodsController extends BaseController {
 
         $this->assign('specList',$specList);
         $this->assign('page',$show);// 赋值分页输出
-        $goodsTypeList = M("GoodsType")->where(array('store_id'=>$_SESSION['merchant_id']))->select(); // 规格分类
+        $goodsTypeList = M("GoodsType")->where(array('store_id'=>$_COOKIE['merchant_id']))->select(); // 规格分类
         $goodsTypeList = convert_arr_key($goodsTypeList, 'id');
 
         $this->assign('goodsTypeList',$goodsTypeList);
@@ -833,8 +831,8 @@ class GoodsController extends BaseController {
         $spec[items] = implode(PHP_EOL, $items);
         $this->assign('spec',$spec);
 
-        $goodsTypeList = M("GoodsType")->where(array('store_id'=>$_SESSION['merchant_id']))->select();
-        $this->assign('store_id',$_SESSION['merchant_id']);
+        $goodsTypeList = M("GoodsType")->where(array('store_id'=>$_COOKIE['merchant_id']))->select();
+        $this->assign('store_id',$_COOKIE['merchant_id']);
         $this->assign('goodsTypeList',$goodsTypeList);
         $this->display('_spec');
     }
@@ -895,7 +893,7 @@ class GoodsController extends BaseController {
 
     public function ajaxindex()
     {
-        $store_id = $_SESSION['merchant_id'];
+        $store_id = $_COOKIE['merchant_id'];
         $where = "is_show=1 and is_special=4 and store_id=$store_id ";
         I('exclusive') && $where = $where.' and exclusive_cat='.I('exclusive');
 
@@ -909,7 +907,7 @@ class GoodsController extends BaseController {
         $goods = $this->getGoodsList($where, $Page->firstRow, $Page->listRows);
         for ($i = 0; $i < count($goods); $i++) {
             $name = M('merchant')->where('`id`=' . $goods[$i]['store_id'])->field('store_name')->find();
-            if($_SESSION['is_haitao']==1){
+            if($_COOKIE['is_haitao']==1){
                 $cat_name = M('haitao')->where('`id`='.$goods[$i]['cat_id'])->field('name')->find();
             }else{
                 $cat_name = M('goods_category')->where('`id`=' . $goods[$i]['cat_id'])->field('name')->find();
@@ -921,7 +919,7 @@ class GoodsController extends BaseController {
         }
         if(!empty($haitao))
         {
-            $haitao = $_SESSION['is_haitao'];
+            $haitao = $_COOKIE['is_haitao'];
             $this->assign('haitao',$haitao);
         }
 
@@ -980,7 +978,7 @@ class GoodsController extends BaseController {
     public function ajaxHaitaoGoodsList()
     {
 //		$HaitaoLogic = new HaitaoLogic();
-        $store_id = $_SESSION['merchant_id'];
+        $store_id = $_COOKIE['merchant_id'];
         $where = "`show_type`=0  `is_special`=1 and `the_raise`=0 and store_id=$store_id  "; // 搜索条件
         I('intro')    && $where = "$where and ".I('intro')." = 1" ;
 //		I('brand_id') && $where = "$where and brand_id = ".I('brand_id') ;
@@ -1030,7 +1028,7 @@ class GoodsController extends BaseController {
     public function addEditHaitaoGoods()
     {
 
-        if(empty($_SESSION['merchant_id']))
+        if(empty($_COOKIE['merchant_id']))
         {
             session_unset();
             session_destroy();
@@ -1135,7 +1133,7 @@ class GoodsController extends BaseController {
         $haitao_style = M('haitao_style')->select();
         $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
         if(empty($goodsType))
-            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+            $goodsType = M("GoodsType")->where('`store_id`='.$_COOKIE['merchant_id'])->select();
         $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
         $this->assign('haitao_style',$haitao_style);
@@ -1181,7 +1179,7 @@ class GoodsController extends BaseController {
     {
 //		var_dump($_POST);
 //		var_dump(strtotime(I('time')));die;
-        $store_id = $_SESSION['merchant_id'];
+        $store_id = $_COOKIE['merchant_id'];
         $where = "`is_special`=2 and `on_time`>0 and `is_show`=1 and `store_id`=$store_id ";
         I('store') && $where = $where . ' and `store_id`=' . I('store');
 //		I('date') && $where = $where.' and ``'

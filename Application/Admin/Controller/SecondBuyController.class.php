@@ -39,14 +39,13 @@ class SecondBuyController extends Controller {
     // 保存秒杀商品
     public function save()
     {
-        $data = I('post.');
-        //print_r($_POST);exit;
-        print_r($data);exit;
-        $data['start_date'] = strtotime($data['start_date']);
+        $data['start_date'] = strtotime(I('post.date'));
+        $data['start_time'] = I('post.time');
         $data['create_time'] = time();
-        $data['type'] = 1;  // 标识 0.1 秒杀商品类型
-        foreach ($data['goods_id'] as $value) {
-            $data['goods_id'] = $value;
+        $data['type'] = 1;
+        $goods = I('post.goods')['goods'];
+        foreach ($goods as $value) {
+            $data = array_merge($data, $value);
             $res = M('goods_activity')->data($data)->add();
         }
         if($res)

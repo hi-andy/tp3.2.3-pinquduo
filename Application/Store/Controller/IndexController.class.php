@@ -147,17 +147,18 @@ class IndexController extends BaseController {
 		vendor('Alipay.Notify');
 		vendor('Alipay.Submit');
 		vendor('Alipay.AlipaySubmit');
-		if(empty($_SESSION['merchant_id']))
+		if(empty($_COOKIE['merchant_id']))
 		{
-			session_unset();
-			session_destroy();
+			foreach($_COOKIE as $key=>$val){
+				setcookie($key,"",time()-100);
+			}
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
 	}
 
 	function pay_money()
 	{
-		$store_id = $_SESSION['merchant_id'];
+		$store_id = $_COOKIE['merchant_id'];
 		$detail = M('store_detail')->where('storeid = '.$store_id)->find();
 		$store_name = M('merchant')->where('id = '.$store_id)->find();
 		if($detail['store_from']==1)

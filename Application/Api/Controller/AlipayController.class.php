@@ -175,7 +175,7 @@ class AlipayController extends BaseController
         }else{
             $data['order_type'] = 2;
         }
-        //销量、库存
+        //销量
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         //商品规格库存
@@ -184,6 +184,7 @@ class AlipayController extends BaseController
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }
+
     //开团 参团的时候在支付完成时将is_pay字段改变，标示加入团成功
     public function Join_Prom($order_id)
     {
