@@ -81,13 +81,8 @@
 									                <th class="text-left">商品名称</th>
 			                                        <th class="text-left">商户名称</th>
 									                <th class="text-left">价格</th>         
-<<<<<<< HEAD
 									                <th class="text-left">库存</th>
                                                     <th class="text-left" style="width:5%;">活动数量</th>
-=======
-									                <th class="text-left">库存</th>								                
-									                <th class="text-left">活动数量</th>
->>>>>>> 4f5be26def01a39bce3c2392987f179d9fa942aa
 									                <th class="text-left">操作</th>
 									            </tr>
 									            </thead>
@@ -96,23 +91,15 @@
 									            	<tr>
 									            		<td style="display:none">
                                                             <input type="checkbox" name="goods_id[]" checked="checked" value="{$vo.goods_id}"/>
-<<<<<<< HEAD
                                                             <input type="hidden" name="goods_id"  value="{$vo.goods_id}"/>
-=======
-                                                            <input type="hidden" name="goods_id" value="{$vo.goods_id}"/>
->>>>>>> 4f5be26def01a39bce3c2392987f179d9fa942aa
                                                         </td>
 									                	<td class="text-left">{$vo.goods_name}</td>
 											            <td class="text-left">{$vo.store_name}</td>
 											            <td class="text-left">{$vo.shop_price}</td>
 									                	<td class="text-left">{$vo.store_count}</td>
-<<<<<<< HEAD
-                                                        <td class="text-left" style="width:5%;"><input type="text" name="number" value="" style="width:7%;" /></td>
-=======
-									                	<td class="text-left" style="display:none;" id="number">
-                                                            <input type="text" name="number" value="" />
+                                                        <td class="text-left" style="width:5%;">
+                                                            <input type="text" name="number" value="" style="width:7%;" />
                                                         </td>
->>>>>>> 4f5be26def01a39bce3c2392987f179d9fa942aa
 									                	<td class="text-left"><a href="javascript:void(0)" onclick="javascript:$(this).parent().parent().remove();">删除</a></td>
 									           		</tr>
 									           </foreach>
@@ -182,7 +169,7 @@ function adsubmit(){
         data = data.substr(0,data.length-1)
         data += ']}'
         data = JSON.parse(data);
-        //$('#Secondskill').submit();
+        $('#Secondskill').submit();
 
         $.ajax({
             url:"{:U('Admin/SecondBuy/save')}",
