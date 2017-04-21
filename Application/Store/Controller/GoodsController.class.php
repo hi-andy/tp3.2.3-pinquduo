@@ -312,9 +312,7 @@ class GoodsController extends BaseController {
     /**
      * 添加修改商品
      */
-    public function addEditGoods()
-    {
-        //print_r(I('request.'));exit;
+    public function addEditGoods(){
         if(empty($_SESSION['merchant_id']))
         {
             session_unset();
@@ -411,16 +409,14 @@ class GoodsController extends BaseController {
             }
         }
 
-        //  ->fetchsql('true') print_r($goodsInfo);exit;
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
-
         //$cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
 //        $brandList = $GoodsLogic->getSortBrands();
-        $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
-        if(empty($goodsType))
-            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+        //$goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
+        //if(empty($goodsType))
+        $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
         $haitao = $goodsInfo['is_special'];
         if($haitao==1) {
             $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单

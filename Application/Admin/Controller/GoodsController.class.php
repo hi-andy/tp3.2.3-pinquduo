@@ -280,7 +280,9 @@ class GoodsController extends BaseController
                 $this->ajaxReturn(json_encode($return_arr));
             }else {
                 //  form表单提交
+                // C('TOKEN_ON',true);
                 $Goods->on_time = time(); // 上架时间
+                //$Goods->cat_id = $_POST['cat_id_1'];
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
                 session('goods',$_POST);
@@ -300,8 +302,6 @@ class GoodsController extends BaseController
                     $Goods->afterSave($goods_id);
                     $rdsname = "getGoodsDetails".$goods_id."*";
                     redisdelall($rdsname);//删除商品详情缓存
-                    $rdsname = "home*";
-                    redisdelall($rdsname);//删除首页缓存
                 }
                 else
                 {
