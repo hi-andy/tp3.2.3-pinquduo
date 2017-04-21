@@ -17,10 +17,10 @@ use Think\Controller;
 class SecondBuyController extends Controller {
 	public function index()
 	{
-        $times = C('SecondBuy')['times']; //抢购时间段
+		$times          = array('10:00', '13:00', '16:00', '19:00'); //抢购时间段
 		$currentTime    = 0;   //当前抢购时间
 		for ($i=0; $i<count($times); $i++) {
-		    $startTime = strtotime(date('Y-m-d').$times[$i]);
+		    $startTime = strtotime(date('Y-m-d',time()).$times[$i]);
 		    if (time() > $startTime && time() < $startTime + 3600 * 3) {
                 $currentTime = intval($times[$i]);
                 //echo $times[$i];exit;
@@ -39,6 +39,7 @@ class SecondBuyController extends Controller {
         $startTime = $getTime ? $getTime : $currentTime;
         $where = 'type=1 AND start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
         //$where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
+
         $count = M('goods_activity')->where($where)->count();
 
         $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 

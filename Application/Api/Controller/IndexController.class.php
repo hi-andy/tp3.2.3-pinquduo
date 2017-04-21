@@ -23,15 +23,15 @@ class IndexController extends BaseController {
             //中间图标
             $category = M('group_category')->where('`id` != 9 and `id` != 8')->select();
             foreach ($category as &$v) {
-                $v['cat_img'] = C('HTTP_URL') . $v['cat_img'];
+                $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
             if ($version == '1.3.0') {
                 $category[4]['cat_name'] = '为我拼';
-                $category[4]['cat_img'] = C('HTTP_URL') . '/Public/upload/index/5-weiwo.jpg';
+                $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
                 $category[7]['cat_name'] = '省钱大法';
-                $category[7]['cat_img'] = C('HTTP_URL') . '/Public/upload/index/8-shenqian.jpg';
+                $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
                 //中间活动模块
-                $activity['banner_url'] = C('HTTP_URL') . '/Public/images/daojishibanner.jpg';
+                $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
 //            $activity['H5_url'] = C('HTTP_URL').'/api/goods/test';
             }
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
@@ -112,13 +112,13 @@ class IndexController extends BaseController {
 //        unset($directory['img']);
             foreach ($directory as &$v) {
 //            $v['img'] = C('HTTP_URL').$v['img'];
-                $v['logo'] = C('HTTP_URL') . $v['logo'];
+                $v['logo'] = TransformationImgurl($v['logo']);
             }
             //中间分类
             $directory2 = M('haitao')->where('`parent_id` = 0')->limit(4)->field('id,name,logo,img')->select();
             foreach ($directory2 as &$v) {
-                $v['img'] = C('HTTP_URL') . $v['img'];
-                $v['logo'] = C('HTTP_URL') . $v['logo'];
+                $v['img'] = TransformationImgurl($v['img']);
+                $v['logo'] = TransformationImgurl($v['logo']);
             }
 
             $total = M('goods')->where('`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ')->count();
@@ -148,7 +148,7 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $banner = M('ad')->where('pid = 2')->field(array('ad_name','ad_code','type'))->find();
-        $banner['ad_code'] = C('HTTP_URL').$banner['ad_code'];
+        $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
 
         $count = M('goods')->where('is_special=3 and `is_on_sale`=1 and `is_audit`=1 and `is_show`=0 `prom` > 0')->count();
         $goods = M('goods')->where('is_special=3 and `is_on_sale`=1 and `is_audit`=1 and `is_show`=0 `prom` > 0')->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
@@ -173,13 +173,13 @@ class IndexController extends BaseController {
         $rdsname = "getJiuJiu".$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $banner = M('ad')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
-            $banner['ad_code'] = C('HTTP_URL') . $banner['ad_code'];
+            $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
 
             //中间四个小块
             $banner2 = M('exclusive')->select();
 
             foreach ($banner2 as &$v) {
-                $v['img'] = C('HTTP_URL') . $v['img'];
+                $v['img'] = TransformationImgurl($v['img']);
             }
 
             $count = M('goods')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
@@ -210,7 +210,7 @@ class IndexController extends BaseController {
         if(empty(redis($rdsname))) {//判断是否有缓存
             //获取轮播图
             $banner = M('exclusive')->where('id =' . $id)->field(array('banner'))->find();
-            $banner['banner'] = C('HTTP_URL') . $banner['banner'];
+            $banner['banner'] = TransformationImgurl($banner['banner']);
 
 
             $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
@@ -460,20 +460,20 @@ class IndexController extends BaseController {
             $cat1 = $category->where('`parent_id` = 0 and id != 10044')->order('sort_order asc')->field('id,name,logo')->select();
 
             for ($i = 0; $i < count($cat1); $i++) {
-                $cat1[$i]['logo'] = C('HTTP_URL') . $cat1[$i]['logo'];
+                $cat1[$i]['logo'] = TransformationImgurl($cat1[$i]['logo']);
                 $cat1[$i]['cat2'] = $category->where('`parent_id` = ' . $cat1[$i]['id'])->field('id,name,img')->select();
 //            array_unshift($cat1[$i]['cat2'],array('id'=>'0','name'=>'全部'));
                 for ($j = 0; $j < count($cat1[$i]['cat2']); $j++) {
                     $cat1[$i]['cat2'][$j]['cat3'] = $category->where('`parent_id` = ' . $cat1[$i]['cat2'][$j]['id'])->field('id,name')->select();
-                    $cat1[$i]['cat2'][$j]['img'] = C('HTTP_URL') . $cat1[$i]['cat2'][$j]['img'];
+                    $cat1[$i]['cat2'][$j]['img'] = TransformationImgurl($cat1[$i]['cat2'][$j]['img']);
                     array_unshift($cat1[$i]['cat2'][$j]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
             }
-            $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => C('HTTP_URL') . '/Public/upload/category/img_international@3x.png');
+            $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
 
             $haitao['cat2'] = M('haitao')->where('`parent_id` = 0')->field('id,name,img')->select();
             foreach ($haitao['cat2'] as &$v) {
-                $v['img'] = C('HTTP_URL') . $v['img'];
+                $v['img'] = TransformationImgurl($v['img']);
             }
             for ($i = 0; $i < count($haitao['cat2']); $i++) {
                 $haitao['cat2'][$i]['cat3'] = M('haitao')->where('`parent_id` = ' . $haitao['cat2'][$i]['id'])->field('id,name')->select();
