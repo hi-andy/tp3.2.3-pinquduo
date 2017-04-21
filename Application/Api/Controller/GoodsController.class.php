@@ -699,6 +699,11 @@ class GoodsController extends BaseController {
 		{
 			$this->buyBymyself($parameter);
 		}
+        //跨区同步订单、推送、详情缓存
+        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+        $this->async_get_url($url);
+        $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+        $this->async_get_url($url);
 		$rdsname = "getUserOrderList".$user_id."*";
 		redisdelall($rdsname);//删除用户订单缓存
 		$rdsname = "getGoodsDetails".$goods_id."*";
@@ -926,6 +931,11 @@ class GoodsController extends BaseController {
 				redisdelall($rdsname);//删除商品详情缓存
 				$rdsname = "TuiSong*";
 				redisdelall($rdsname);//删除推送缓存
+                //跨区同步订单、推送、详情缓存
+                $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+                $this->async_get_url($url);
+                $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+                $this->async_get_url($url);
 				if(!empty($ajax_get)){
 					echo "<script> alert('".$json['msg']."') </script>";
 					exit;
@@ -1187,6 +1197,11 @@ class GoodsController extends BaseController {
 			redisdelall($rdsname);//删除商品详情缓存
 			$rdsname = "TuiSong*";
 			redisdelall($rdsname);//删除推送缓存
+            //跨区同步订单、推送、详情缓存
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            $this->async_get_url($url);
+            $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            $this->async_get_url($url);
 			if(!empty($ajax_get)){
 				echo "<script> alert('".$json['msg']."') </script>";
 				exit;
@@ -1372,6 +1387,11 @@ class GoodsController extends BaseController {
 			redisdelall($rdsname);//删除商品详情缓存
 			$rdsname = "TuiSong*";
 			redisdelall($rdsname);//删除推送缓存
+            //跨区同步订单、推送、详情缓存
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            $this->async_get_url($url);
+            $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            $this->async_get_url($url);
 			if(!empty($ajax_get)){
 				echo "<script> alert('".$json['msg']."') </script>";
 				exit;
