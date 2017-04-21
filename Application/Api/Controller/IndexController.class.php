@@ -734,5 +734,4 @@ class IndexController extends BaseController {
         }
         exit(json_encode($json));
     }
-    
 }

@@ -283,7 +283,7 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         I('invitation_num') && $invitation_num = strtolower(I('invitation_num'));//统一大小写
-
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(empty($user_id))
         {
             //if(empty(redis($rdsname))){//判断是否有缓存
@@ -1171,7 +1171,7 @@ class UserController extends BaseController {
                         $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $mark['goods_id'])->field('goods_name,original_img')->find();
                         $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
                         $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $mark['store_id'])->field('store_name,store_logo')->find();
-                        $all[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $all[$i]['storeInfo']['store_logo'];
+                        $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
                         $all[$i]['goods_num'] = $mark['goods_num'];
 
                         $order_status = $this->getPromStatus($all[$i], $mark, $num);
@@ -1186,7 +1186,7 @@ class UserController extends BaseController {
                         unset($all[$i]['goodsInfo']['shop_price']);
                         $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
                         $all[$i]['storeInfo'] = M('merchant')->where('`id`=' . $mark['store_id'])->field('store_name,store_logo')->find();
-                        $all[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $all[$i]['storeInfo']['store_logo'];
+                        $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
 
                         $order_status = $this->getPromStatus($all[$i], $mark, $num);
                         $all[$i]['annotation'] = $order_status['annotation'];
@@ -1199,7 +1199,7 @@ class UserController extends BaseController {
                     unset($all[$i]['goodsInfo']['shop_price']);
                     $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
                     $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $all[$i]['store_id'])->field('store_name,store_logo')->find();
-                    $all[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $all[$i]['storeInfo']['store_logo'];
+                    $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
 
                     $order_status = $this->getStatus($all[$i]);
                     $all[$i]['annotation'] = $order_status['annotation'];

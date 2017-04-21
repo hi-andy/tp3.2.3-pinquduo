@@ -330,7 +330,6 @@ class GoodsController extends BaseController {
 		I('user_id') && $user_id = I('user_id');
 		I('spec_key') && $spec_key = I('spec_key');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
-
 		$rdsname = "getGoodsDetails" . $goods_id;
 		if (empty(redis($rdsname))) {//判断是否有缓存
 			//轮播图
@@ -346,29 +345,10 @@ class GoodsController extends BaseController {
 			if (empty($banner)) {
 				$banner = null;
 			}
-			$details = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
-			//商品详情
-			$goods['goods_id'] = $details['goods_id'];
-			$goods['goods_name'] = $details['goods_name'];
-			$goods['market_price'] = $details['market_price'];
-			$goods['shop_price'] = $details['shop_price'];
-			$goods['prom_price'] = $details['prom_price'];
-			$goods['prom'] = $details['prom'];
-			$goods['goods_remark'] = $details['goods_remark'];
-			$goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
-			$goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-			$goods['sales'] = $details['sales'];
-			$goods['is_support_buy'] = $details['is_support_buy'];
-			$goods['free'] = $details['free'];
-			$goods['the_raise'] = $details['the_raise'];
-			$store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
-			$store['store_logo'] = TransformationImgurl($store['store_logo']);
-			$goods['store'] = $store;
-			$goods['is_special'] = $details['is_special'];
-			$goods['goods_content'] = $details['goods_content'];
-			$goods['original_img'] = TransformationImgurl($details['original_img']);
 
-			$goods['fenxiang_url'] = $details['original_img'] . "?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
+			//商品详情
+			$goods = $this->getGoodsInfo($goods_id);
+
 			//获取已经开好的团
 			$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
 			if (!empty($group_buy)) {
@@ -437,19 +417,17 @@ class GoodsController extends BaseController {
 				$key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
 				$goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
 			}
+
 			if (!empty($ajax_get)) {
 				$goods['html'] = htmlspecialchars_decode($goods['goods_content']);
 			}
-
 			//提供保障
-			$security = array('包邮', '7天退换', '假一赔十', '48小时发货');
-
-			$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
-			redis($rdsname, serialize($json), REDISTIME);//写入缓
-		}else{
+			$security = array('包邮','7天退换','假一赔十','48小时发货');
+			$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+			redis($rdsname, serialize($json), REDISTIME);//写入缓存
+		} else {
 			$json = unserialize(redis($rdsname));//读取缓存
 		}
-
 		if (!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
@@ -721,9 +699,14 @@ class GoodsController extends BaseController {
 		{
 			$this->buyBymyself($parameter);
 		}
+        //跨区同步订单、推送、详情缓存
+        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+        async_get_url($url);
+        $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+        async_get_url($url);
 		$rdsname = "getUserOrderList".$user_id."*";
 		redisdelall($rdsname);//删除用户订单缓存
-		$rdsname = "getGoodsDetails".$goods_id;
+		$rdsname = "getGoodsDetails".$goods_id."*";
 		redisdelall($rdsname);//删除商品详情缓存
 		$rdsname = "TuiSong*";
 		redisdelall($rdsname);//删除推送缓存
@@ -948,6 +931,11 @@ class GoodsController extends BaseController {
 				redisdelall($rdsname);//删除商品详情缓存
 				$rdsname = "TuiSong*";
 				redisdelall($rdsname);//删除推送缓存
+                //跨区同步订单、推送、详情缓存
+                $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+                async_get_url($url);
+                $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+                async_get_url($url);
 				if(!empty($ajax_get)){
 					echo "<script> alert('".$json['msg']."') </script>";
 					exit;
@@ -1193,7 +1181,7 @@ class GoodsController extends BaseController {
 				}
 			}elseif($order['pay_code'] == 'alipay'){
 				$AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
 			}elseif($order['pay_code'] == 'qpay'){
 				// Begin code by lcy
 				$qqPay = new QQPayController();
@@ -1209,6 +1197,11 @@ class GoodsController extends BaseController {
 			redisdelall($rdsname);//删除商品详情缓存
 			$rdsname = "TuiSong*";
 			redisdelall($rdsname);//删除推送缓存
+            //跨区同步订单、推送、详情缓存
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
+            $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
 			if(!empty($ajax_get)){
 				echo "<script> alert('".$json['msg']."') </script>";
 				exit;
@@ -1378,7 +1371,7 @@ class GoodsController extends BaseController {
 				}
 			}elseif($order['pay_code'] == 'alipay'){
 				$AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
 			}elseif($order['pay_code'] == 'qpay'){
 				$qqPay = new QQPayController();
 				$pay_detail = $qqPay->getQQPay($order);
@@ -1394,6 +1387,11 @@ class GoodsController extends BaseController {
 			redisdelall($rdsname);//删除商品详情缓存
 			$rdsname = "TuiSong*";
 			redisdelall($rdsname);//删除推送缓存
+            //跨区同步订单、推送、详情缓存
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
+            $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
 			if(!empty($ajax_get)){
 				echo "<script> alert('".$json['msg']."') </script>";
 				exit;
