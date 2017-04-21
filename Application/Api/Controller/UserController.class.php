@@ -353,7 +353,7 @@ class UserController extends BaseController {
                 $promInfo['join_num'][0]['addtime'] = $promInfo['start_time'];
                 $promInfo['join_num'][0]['id'] = $promInfo['id'];
             }
-            $promInfo['join_num'][0]['head_pic'] = C('HTTP_URL').$promInfo['join_num'][0]['head_pic'];
+            $promInfo['join_num'][0]['head_pic'] = TransformationImgurl($promInfo['join_num'][0]['head_pic']);
             if(!empty($promInfo['join_num'][0]['oauth']))
             {
                 $promInfo['join_num'][0]['name'] = $promInfo['join_num'][0]['nickname'];
@@ -374,7 +374,7 @@ class UserController extends BaseController {
                 }else{
                     $promInfo['join_num'][$i]['name'] = substr_replace($mobile['mobile'], '****', 3, 4);
                 }
-                $promInfo['join_num'][$i]['head_pic'] = C('HTTP_URL').$mobile['head_pic'];
+                $promInfo['join_num'][$i]['head_pic'] = TransformationImgurl($mobile['head_pic']);
                 $promInfo['join_num'][$i]['addtime'] = $start_time['start_time'];
                 $promInfo['join_num'][$i]['is_free'] = $start_time['is_free'];
                 if($user_id==$join_num[$i-1]['user_id'])
@@ -395,7 +395,7 @@ class UserController extends BaseController {
             $order['goods'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
             $order['goods']['original_img'] = goods_thum_images($order['goods_id'],400,400);
             $order['store'] = M('merchant')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
-            $order['store']['store_logo'] = C('HTTP_URL').$order['store']['store_logo'];
+            $order['store']['store_logo'] = TransformationImgurl($order['store']['store_logo']);
 
             $order_status = $this->getPromStatus($order,$promInfo,count($join_num));
             $order['annotation'] = $order_status['annotation'];
@@ -418,7 +418,7 @@ class UserController extends BaseController {
             $goods = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
             $goods['original_img'] = goods_thum_images($order['goods_id'],200,200);
             $store = M('merchant')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
-            $store['store_logo'] = C('HTTP_URL').$store['store_logo'];
+            $store['store_logo'] = TransformationImgurl($store['store_logo']);
             $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
             $order['key_name'] = $key_name['spec_key_name'];
             $order_status = $this->getStatus($order);

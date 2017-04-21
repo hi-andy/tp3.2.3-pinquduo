@@ -333,7 +333,6 @@ class GoodsController extends BaseController {
 
 		$rdsname = "getGoodsDetails" . $goods_id;
 		if (empty(redis($rdsname))) {//判断是否有缓存
-			$rdsname = "getGoodsDetails" . $goods_id;
 			//轮播图
 			$banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
 
@@ -945,7 +944,7 @@ class GoodsController extends BaseController {
 				$json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
 				$rdsname = "getUserOrderList".$user_id."*";
 				redisdelall($rdsname);//删除用户订单缓存
-				$rdsname = "getGoodsDetails".$goods_id;
+				$rdsname = "getGoodsDetails".$goods_id."*";
 				redisdelall($rdsname);//删除商品详情缓存
 				$rdsname = "TuiSong*";
 				redisdelall($rdsname);//删除推送缓存
@@ -1206,7 +1205,7 @@ class GoodsController extends BaseController {
 //				$this->getJsonp($json);
 			$rdsname = "getUserOrderList".$user_id."*";
 			redisdelall($rdsname);//删除用户订单缓存
-			$rdsname = "getGoodsDetails".$goods_id;
+			$rdsname = "getGoodsDetails".$goods_id."*";
 			redisdelall($rdsname);//删除商品详情缓存
 			$rdsname = "TuiSong*";
 			redisdelall($rdsname);//删除推送缓存
@@ -1391,7 +1390,7 @@ class GoodsController extends BaseController {
 //			}
 			$rdsname = "getUserOrderList".$user_id."*";
 			redisdelall($rdsname);//删除用户订单缓存
-			$rdsname = "getGoodsDetails".$goods_id;
+			$rdsname = "getGoodsDetails".$goods_id."*";
 			redisdelall($rdsname);//删除商品详情缓存
 			$rdsname = "TuiSong*";
 			redisdelall($rdsname);//删除推送缓存
