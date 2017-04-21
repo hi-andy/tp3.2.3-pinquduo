@@ -283,8 +283,6 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         I('invitation_num') && $invitation_num = strtolower(I('invitation_num'));//统一大小写
-        $rdsname = "getPromDetail".$order_id.$user_id.$page.$pagesize.$invitation_num;
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
         if(empty($user_id))
         {
@@ -483,7 +481,7 @@ class UserController extends BaseController {
             }else{
                 $goods_pic_url = C('HTTP_URL').goods_thum_images($order['goodsInfo']['goods_id'],400,400);
                 $this->fenxiangLOGO($goods_pic_url,$order['goodsInfo']['goods_id'],$order['goodsInfo']['store_id']);
-                $order['goodsInfo']['fenxiang_url'] = C('HTTP_URL').'/Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg';
+                $order['goodsInfo']['fenxiang_url'] = $order['goodsInfo']['original_img']."/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0|imageslim";
             }
             $store_id['id'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('store_id')->find();
             $order['goodsInfo']['store']['id']= $store_id['id']['store_id'];
@@ -512,7 +510,7 @@ class UserController extends BaseController {
                 exit(json_encode($json));
             }
 
-            $promInfo['photo'] = C('HTTP_URL').$promInfo['photo'];
+            $promInfo['photo'] = TransformationImgurl($promInfo['photo']);
             $promInfo['prom'] = $order['goodsInfo']['prom'];
             if(!empty($promInfo['mark'])) {
                 $join_num = M('group_buy')->where('`mark` = '.$promInfo['mark'].' and `is_pay`=1')->select();
@@ -528,7 +526,7 @@ class UserController extends BaseController {
                 $promInfo['join_num'][0]['addtime'] = $promInfo['start_time'];
                 $promInfo['join_num'][0]['id'] = $promInfo['id'];
             }
-            $promInfo['join_num'][0]['head_pic'] = C('HTTP_URL').$promInfo['join_num'][0]['head_pic'];
+            $promInfo['join_num'][0]['head_pic'] = TransformationImgurl($promInfo['join_num'][0]['head_pic']);
             if(!empty($promInfo['join_num'][0]['oauth']))
             {
                 $promInfo['join_num'][0]['name'] = $promInfo['join_num'][0]['nickname'];
@@ -549,7 +547,7 @@ class UserController extends BaseController {
                 }else{
                     $promInfo['join_num'][$i]['name'] = substr_replace($mobile['mobile'], '****', 3, 4);
                 }
-                $promInfo['join_num'][$i]['head_pic'] = C('HTTP_URL').$mobile['head_pic'];
+                $promInfo['join_num'][$i]['head_pic'] = TransformationImgurl($mobile['head_pic']);
                 $promInfo['join_num'][$i]['addtime'] = $start_time['start_time'];
                 $promInfo['join_num'][$i]['is_free'] = $start_time['is_free'];
                 if($user_id==$join_num[$i-1]['user_id'])
@@ -570,7 +568,7 @@ class UserController extends BaseController {
             $order['goods'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
             $order['goods']['original_img'] = goods_thum_images($order['goods_id'],400,400);
             $order['store'] = M('merchant')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
-            $order['store']['store_logo'] = C('HTTP_URL').$order['store']['store_logo'];
+            $order['store']['store_logo'] = TransformationImgurl($order['store']['store_logo']);
 
             $order_status = $this->getPromStatus($order,$promInfo,count($join_num));
             $order['annotation'] = $order_status['annotation'];
@@ -593,7 +591,7 @@ class UserController extends BaseController {
             $goods = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
             $goods['original_img'] = goods_thum_images($order['goods_id'],200,200);
             $store = M('merchant')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
-            $store['store_logo'] = C('HTTP_URL').$store['store_logo'];
+            $store['store_logo'] = TransformationImgurl($store['store_logo']);
             $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
             $order['key_name'] = $key_name['spec_key_name'];
             $order_status = $this->getStatus($order);
