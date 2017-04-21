@@ -711,20 +711,67 @@ class IndexController extends BaseController {
 
     function  getPreferentialgoods()
     {
-        $page = I('page',1);
-        $pagesize = I('pagesize',10);
+//        $page = I('page',1);
+//        $pagesize = I('pagesize',10);
+//
+//        $count = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
+//        $goods = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
+//        foreach($goods as &$v)
+//        {
+//            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+//        }
+//        $data = $this->listPageData($count,$goods);
+//        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+//        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+//        if(!empty($ajax_get))
+//            $this->getJsonp($json);
+//        exit(json_encode($json));
+        $where = 'type=2';
+        $count = M('goods_activity')->where($where)->count();
+        $pages = 10;
+        $Page = new \Think\Page($count, $pages);
+        echo $count;exit;
 
-        $count = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-        $goods = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
-        foreach($goods as &$v)
-        {
+        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
+                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
+                LEFT JOIN tp_goods_category c ON g.cat_id=c.id
+                LEFT JOIN tp_merchant m ON g.store_id=m.id 
+                WHERE ' . $where . ' LIMIT ' .$Page->firstRow.','.$Page->listRows;
+
+        $goodsList = M()->query($sql);
+        foreach($goodsList as &$v) {
             $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
         }
-        $data = $this->listPageData($count,$goods);
+        $data = $this->listPageData($count,$goodsList);
         $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        if(!empty($ajax_get))
+        if(I('ajax_get')) {
             $this->getJsonp($json);
+        }
+        exit(json_encode($json));
+    }
+
+    public function getEconomizeGoods()
+    {
+        $where = 'type=2';
+        $count = M('goods_activity')->where($where)->count();
+        $pages = 10;
+        $Page = new \Think\Page($count, $pages);
+
+        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
+                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
+                LEFT JOIN tp_goods_category c ON g.cat_id=c.id
+                LEFT JOIN tp_merchant m ON g.store_id=m.id 
+                WHERE ' . $where . ' LIMIT ' .$Page->firstRow.','.$Page->listRows;
+
+        $goodsList = M()->query($sql);
+        foreach($goodsList as &$v) {
+            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+        }
+        $data = $this->listPageData($count,$goodsList);
+        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+        if(I('ajax_get')) {
+            $this->getJsonp($json);
+        }
         exit(json_encode($json));
     }
     

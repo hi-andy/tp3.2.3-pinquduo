@@ -418,9 +418,9 @@ class GoodsController extends BaseController {
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
 //        $brandList = $GoodsLogic->getSortBrands();
-        $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
-        if(empty($goodsType))
-            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+        //$goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
+        //if(empty($goodsType))
+        $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
         $haitao = $goodsInfo['is_special'];
         if($haitao==1) {
             $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
