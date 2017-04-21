@@ -186,7 +186,7 @@ class StoreController extends BaseController{
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->where($where)
 				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
-				->limit($page,$page_num)
+				->page($page,$page_num)
 				->order('order_id asc')
 				->select();
 		}
