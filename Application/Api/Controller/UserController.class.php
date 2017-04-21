@@ -1186,7 +1186,7 @@ class UserController extends BaseController {
                         unset($all[$i]['goodsInfo']['shop_price']);
                         $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
                         $all[$i]['storeInfo'] = M('merchant')->where('`id`=' . $mark['store_id'])->field('store_name,store_logo')->find();
-                        $all[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $all[$i]['storeInfo']['store_logo'];
+                        $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
 
                         $order_status = $this->getPromStatus($all[$i], $mark, $num);
                         $all[$i]['annotation'] = $order_status['annotation'];
