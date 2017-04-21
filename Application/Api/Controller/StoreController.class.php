@@ -161,60 +161,61 @@ class StoreController extends BaseController{
 		}
 	}
 
-	function Y_orderlist()
-	{
-		$store_id = I('post.store_id');//商户ID
-		$page = I('post.page',1);//页码
-		$page_num = I('post.page_num',10);//分页变量
-		I('post.start_time') && $start_time = I('post.start_time');
-		I('post.end_time') && $end_time = I('post.end_time');
-		I('post.order_sn') && $order_sn = I('post.order_sn');
+    function Y_orderlist()
+    {
+        $store_id = I('post.store_id');//商户ID
+        $page = I('post.page',1);//页码
+        $page_num = I('post.page_num',10);//分页变量
+        I('post.start_time') && $start_time = I('post.start_time');
+        I('post.end_time') && $end_time = I('post.end_time');
+        I('post.order_sn') && $order_sn = I('post.order_sn');
 
-		$where = "o.store_id = $store_id and o.order_type in (2,14)";
-		if (!empty($start_time) && !empty($end_time)) {
-			$where = "$where and o.add_time between $start_time and $end_time ";
-		}
-		if (!empty($order_sn)){
-			$where = "$where and o.order_sn = $order_sn";
-			$order_info = M('order')->alias('o')
-				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
-				->where($where)
-				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
-				->select();
-		}else{
-			$order_info = M('order')->alias('o')
-				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
-				->where($where)
-				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
-				->page($page,$page_num)
-				->order('order_id asc')
-				->select();
-		}
-		/*处理订单数组的数据*/
-		if(!empty($order_info)){
-			//处理地址问题
-			$num = count($order_info);
-			for ($i=0;$i<$num;$i++){
-				$adress_info = $this->getAdress($order_info[$i]['address_base']);
-				$order_info[$i]['province'] =$adress_info['province'];//省
-				$order_info[$i]['city'] = $adress_info['city'];//市
-				$order_info[$i]['district'] = $adress_info['district'];//区
-				$order_info[$i]['street'] = $order_info[$i]['address'];//
+        $where = "o.store_id = $store_id and o.order_type in (2,14)";
+        if (!empty($start_time) && !empty($end_time)) {
+            $where = "$where and o.add_time between $start_time and $end_time ";
+        }
+        if (!empty($order_sn)){
+            $where = "$where and o.order_sn = $order_sn";
+            $order_info = M('order')->alias('o')
+                ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+                ->where($where)
+                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
+                ->page($page,$page_num)
+                ->select();
+        }else{
+            $order_info = M('order')->alias('o')
+                ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+                ->where($where)
+                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
+                ->page($page,$page_num)
+                ->order('order_id asc')
+                ->select();
+        }
+        /*处理订单数组的数据*/
+        if(!empty($order_info)){
+            //处理地址问题
+            $num = count($order_info);
+            for ($i=0;$i<$num;$i++){
+                $adress_info = $this->getAdress($order_info[$i]['address_base']);
+                $order_info[$i]['province'] =$adress_info['province'];//省
+                $order_info[$i]['city'] = $adress_info['city'];//市
+                $order_info[$i]['district'] = $adress_info['district'];//区
+                $order_info[$i]['street'] = $order_info[$i]['address'];//
 
-				$goods_info = M('order_goods')->where('order_id = '.$order_info[$i]['order_id'])->field('goods_name,market_price,goods_price,goods_num,spec_key_name')->limit($page,$page_num)->order('order_id asc')->find();
+                $goods_info = M('order_goods')->where('order_id = '.$order_info[$i]['order_id'])->field('goods_name,market_price,goods_price,goods_num,spec_key_name')->limit($page,$page_num)->order('order_id asc')->find();
 
-				$order_info[$i]['goods'] = $goods_info;
-				//unset()掉多余数据
-				unset($order_info[$i]['address_base']);
-				unset($order_info[$i]['address']);
-				unset($order_info[$i]['goods_id']);
-				unset($order_info[$i]['user_id']);
-			}
-			exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$order_info)));
-		}else{
-			exit(json_encode(array('code'=>0,'Msg'=>'您暂时还有新的未发货订单哦！')));
-		}
-	}
+                $order_info[$i]['goods'] = $goods_info;
+                //unset()掉多余数据
+                unset($order_info[$i]['address_base']);
+                unset($order_info[$i]['address']);
+                unset($order_info[$i]['goods_id']);
+                unset($order_info[$i]['user_id']);
+            }
+            exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$order_info)));
+        }else{
+            exit(json_encode(array('code'=>0,'Msg'=>'您暂时还有新的未发货订单哦！')));
+        }
+    }
 
 	function Y_changestatus()
 	{
