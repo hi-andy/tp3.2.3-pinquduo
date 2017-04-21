@@ -82,6 +82,9 @@ class AlipayController extends BaseController
             redisdelall($rdsname);//删除商品详情缓存
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
+            //跨区同步订单、推送、详情缓存
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            $this->async_get_url($url);
             exit(json_encode(array('status'=>1,'msg'=>'支付宝预支付订单生成成功','data'=>$orderdetail)));
         }else {
             return $orderdetail;
