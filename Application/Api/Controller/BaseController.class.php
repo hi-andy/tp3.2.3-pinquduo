@@ -38,7 +38,18 @@ class BaseController extends Controller {
      * 初始化操作
      */
     public function _initialize() {
-                 
+
+
+        if (I('getGoodsDetails') == 1) {
+            $user_id = I('user_id');
+            $goods_id = I('goods_id');
+            $rdsname = "getUserOrderList".$user_id."*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
+        }
 		//exit(array('status'=>-1,'msg'=>'请修改注释Application\Api\Controller\BaseController.class.php 文件42行打开手机接口','result'=>'')); //  开启后注释掉这行代码即可
 		
         $local_sign = $this->getSign();
