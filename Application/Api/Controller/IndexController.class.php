@@ -2,8 +2,18 @@
 namespace Api\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
-    public function index(){
 
+    public function index($getGoodsDetails="",$user_id="",$goods_id=""){
+        if ($getGoodsDetails == "1") {
+            $rdsname = "getUserOrderList".$user_id."*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
+            $result = "true";
+        }
+        print_r($result);
     }
 
     /*
