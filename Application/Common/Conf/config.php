@@ -2,7 +2,7 @@
 //  加载常量配置文件
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
-define("REDIS_SWITCH", true); //true、false
+define("REDIS_SWITCH", false); //true、false
 define("REDISIP", "r-wz9ef37016b1fbd4.redis.rds.aliyuncs.com");
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");

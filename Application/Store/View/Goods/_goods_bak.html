@@ -108,9 +108,9 @@
                 <div class="panel-body">
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#tab_tongyong" data-toggle="tab">通用信息</a></li>
+<!--                        <li><a href="#tab_goods_desc" data-toggle="tab">描述信息</a></li>-->
                         <li><a href="#tab_goods_images" data-toggle="tab">商品相册</a></li>
-                        <li><a href="#tab_goods_desc" data-toggle="tab">描述信息</a></li>
-                        <!--<li><a href="#tab_goods_spec" data-toggle="tab">商品规格</a></li>-->
+                        <li><a href="#tab_goods_spec" data-toggle="tab">商品规格</a></li>
                         <!--<li><a href="#tab_goods_attr" data-toggle="tab">商品属性</a></li>                        -->
                     </ul>
                     <!--表单数据-->
@@ -133,8 +133,8 @@
                                 <tr>
                                     <td>商品名称:</td>
                                     <td>
-                                        <input type="text" value="{$goodsInfo.goods_name}" name="goods_name" class="form-control" style="display:inline;width:350px;"/> &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 必填</span>
-                                        <span id="err_goods_name" style="color:#F00;"></span>
+                                        <input type="text" value="{$goodsInfo.goods_name}" name="goods_name" class="form-control" style="width:350px;"/>
+                                        <span id="err_goods_name" style="color:#F00; display:none;"></span>                                        
                                     </td>
                                 </tr>
                                 <tr>
@@ -157,7 +157,6 @@
                                                </option>
                                              </foreach>
                                       </select>
-
                                       </div>
                                       <div class="col-xs-3">
                                       <select name="cat_id_2" id="cat_id_2" onchange="get_category(this.value,'cat_id_3','0');" class="form-control" style="width:250px;margin-left:-15px;">
@@ -165,19 +164,17 @@
                                       </select>
                                       </div>
                                       <div class="col-xs-3">
-                                      <select name="cat_id_3" id="cat_id_3" class="form-control" style="display:inline;width:250px;margin-left:-15px;">
+                                      <select name="cat_id_3" id="cat_id_3" class="form-control" style="width:250px;margin-left:-15px;">
                                         <option value="0">请选择商品分类</option>
                                       </select>
-                                          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 必选</span>
                                       </div>
-
                                       <span id="err_cat_id" style="color:#F00; display:none;"></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>市场售价:</td>
                                     <td>
-                                        <input type="text" value="{$goodsInfo.market_price}" name="market_price" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 必填</span>
+                                        <input type="text" value="{$goodsInfo.market_price}" name="market_price" class="form-control" style="width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
                                         <span id="err_market_price" style="color:#F00; display:none;"></span>
                                     </td>
                                 </tr>
@@ -199,7 +196,7 @@
                                 <tr>
                                     <td>开团人数:</td>
                                     <td>
-                                        <input type="text" value="{$goodsInfo.prom}" name="prom" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 必填</span>
+                                        <input type="text" value="{$goodsInfo.prom}" name="prom" class="form-control" style="width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
                                         <span id="err_prom" style="color:#F00; display:none;"></span>
                                     </td>
                                 </tr>
@@ -230,32 +227,20 @@
                                             </a>
                                         </if>
                                         <span id="err_original_img" style="color:#F00; display:none;"></span>
-                                        <span  style="color:red; ">类目主图：400*400px 纯白底无Logo/无文字（服饰箱包除外）</span>
+                                        <span  style="color:red; ">类目主图：400*400px 纯白底无Logo/无文字（服饰箱包除外）
+</span>
                                     </td>
                                 </tr>
-
+                                <tr>
+                                    <td>商品详情描述:<br><span  style="color:red; ">商品详情描述图最大规格640*960</span></td>
+                                    <td width="85%">
+										<textarea class="span12 ckeditor" id="goods_content" name="goods_content" title="">{$goodsInfo.goods_content}</textarea>
+                                        <span id="err_goods_content" style="color:#F00; display:none;"></span>
+                                    </td>
+                                </tr>
                                 <input type="hidden" name="store_id" value="<?php echo $_SESSION['merchant_id'];?>">
                                 </tbody>
                                 </table>
-                            <!-- 商品规格-->
-                            <div class="tab-pane" id="tab_goods_spec">
-                                <table class="table table-bordered" id="goods_spec_table">
-                                    <tr>
-                                        <td>商品类型:</td>
-                                        <td>
-                                            <select name="spec_type" id="spec_type" class="form-control" style="display:inline;width:250px;">
-                                                <option value="0">选择商品类型</option>
-                                                <foreach name="goodsType" item="vo" key="k" >
-                                                    <option value="{$vo.id}"<if condition="$goodsInfo[spec_type] eq $vo[id]"> selected="selected" </if> >{$vo.name}</option>
-                                                </foreach>
-                                            </select>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 如果相关商品有类型，此项则必填</span>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <div id="ajax_spec_data"><!-- ajax 返回规格--></div>
-                            </div>
-                            <!-- 商品规格-->
                         </div>
                          <!--其他信息-->
                          
@@ -283,22 +268,36 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><span style="color: red">必填：点击 + 号上传商品轮播图，640px * 400px（宽 * 高）, 封面图片最后上传</span></td>
+                                    <td><span style="color: red">温馨提示：点击+号上传您的多张商品图(轮播图)，大小640*400px（首图请最后上传）</span></td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
                          <!--商品相册--> 
    
-                        <!-- 商品描述-->
-                        <div class="tab-pane" id="tab_goods_desc">
-                                <p style="padding: 15px 0 0 0;"><span style="font-weight:bold;">商品详情描述:</span>  &nbsp;&nbsp;&nbsp; <span  style="color:red; ">必填， 图片要求：640px * 960px（宽 * 高） </span></p>
-                                <div width="85%">
-                                    <textarea class="span12 ckeditor" id="goods_content" name="goods_content" title="">{$goodsInfo.goods_content}</textarea>
-                                    <span id="err_goods_content" style="color:#F00; display:none;"></span>
-                                </div>
+                        <!-- 商品规格-->
+                        <div class="tab-pane" id="tab_goods_spec">
+                            <table class="table table-bordered" id="goods_spec_table">
+                                <tr>
+                                <td colspan="2">
+                                    <span style="color: red">温馨提示：点击+号上传颜色对应的图片，此处为必上项（200*200px）</span>
+                                </td>
+                                </tr>
+                                <tr>
+                                    <td>商品类型:</td>
+                                    <td>
+                                      <select name="spec_type" id="spec_type" class="form-control" style="width:250px;">
+                                        <option value="0">选择商品类型</option>
+                                        <foreach name="goodsType" item="vo" key="k" >
+                                            <option value="{$vo.id}"<if condition="$goodsInfo[spec_type] eq $vo[id]"> selected="selected" </if> >{$vo.name}</option>
+                                        </foreach>
+                                      </select>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="ajax_spec_data"><!-- ajax 返回规格--></div>
                         </div>
-                        <!-- 商品描述-->
+                        <!-- 商品规格-->
                     </div>
                     <div class="pull-right">
                         <if condition="$goodsInfo.is_special eq 1">
