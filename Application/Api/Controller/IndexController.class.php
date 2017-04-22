@@ -5,7 +5,10 @@ class IndexController extends BaseController {
     public function index(){
 
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
     /*
      * 获取首页数据
      */
@@ -20,6 +23,7 @@ class IndexController extends BaseController {
             foreach ($data as & $v) {
                 $v['ad_code'] = TransformationImgurl($v['ad_code']);
             }
+<<<<<<< HEAD
 
             //中间图标
             $category = M('group_category')->where('`id` != 9 and `id` != 8')->select();
@@ -49,6 +53,29 @@ class IndexController extends BaseController {
             }
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods1' => $result1, 'goods2' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
+=======
+            //中间图标
+            $category = M('group_category')->where('`id` != 9 and `id` != 8')->select();
+            foreach ($category as &$v) {
+                $v['cat_img'] = TransformationImgurl($v['cat_img']);
+            }
+            if ($version == '1.3.0' || $version == '2.0.0') {
+                $category[4]['cat_name'] = '为我拼';
+                $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
+                $category[7]['cat_name'] = '省钱大法';
+                $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
+                //中间活动模块
+                $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
+//            $activity['H5_url'] = C('HTTP_URL').'/api/goods/test';
+            }
+            $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
+            $result = $this->getGoodsList($where,$page,$pagesize);
+            if($version=='2.0.0'){
+                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
+            }else{
+                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
+            }
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -113,13 +140,22 @@ class IndexController extends BaseController {
 //        unset($directory['img']);
             foreach ($directory as &$v) {
 //            $v['img'] = C('HTTP_URL').$v['img'];
+<<<<<<< HEAD
                 $v['logo'] = C('HTTP_URL') . $v['logo'];
+=======
+                $v['logo'] = TransformationImgurl($v['logo']);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
             }
             //中间分类
             $directory2 = M('haitao')->where('`parent_id` = 0')->limit(4)->field('id,name,logo,img')->select();
             foreach ($directory2 as &$v) {
+<<<<<<< HEAD
                 $v['img'] = C('HTTP_URL') . $v['img'];
                 $v['logo'] = C('HTTP_URL') . $v['logo'];
+=======
+                $v['img'] = TransformationImgurl($v['img']);
+                $v['logo'] = TransformationImgurl($v['logo']);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
             }
 
             $total = M('goods')->where('`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ')->count();
@@ -149,7 +185,11 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $banner = M('ad')->where('pid = 2')->field(array('ad_name','ad_code','type'))->find();
+<<<<<<< HEAD
         $banner['ad_code'] = C('HTTP_URL').$banner['ad_code'];
+=======
+        $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
 
         $count = M('goods')->where('is_special=3 and `is_on_sale`=1 and `is_audit`=1 and `is_show`=0 `prom` > 0')->count();
         $goods = M('goods')->where('is_special=3 and `is_on_sale`=1 and `is_audit`=1 and `is_show`=0 `prom` > 0')->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
@@ -174,13 +214,21 @@ class IndexController extends BaseController {
         $rdsname = "getJiuJiu".$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $banner = M('ad')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
+<<<<<<< HEAD
             $banner['ad_code'] = C('HTTP_URL') . $banner['ad_code'];
+=======
+            $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
 
             //中间四个小块
             $banner2 = M('exclusive')->select();
 
             foreach ($banner2 as &$v) {
+<<<<<<< HEAD
                 $v['img'] = C('HTTP_URL') . $v['img'];
+=======
+                $v['img'] = TransformationImgurl($v['img']);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
             }
 
             $count = M('goods')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
@@ -211,8 +259,15 @@ class IndexController extends BaseController {
         if(empty(redis($rdsname))) {//判断是否有缓存
             //获取轮播图
             $banner = M('exclusive')->where('id =' . $id)->field(array('banner'))->find();
+<<<<<<< HEAD
             $banner['banner'] = C('HTTP_URL') . $banner['banner'];
 
+=======
+            $banner['banner'] = TransformationImgurl($banner['banner']);
+
+
+            $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
             $count = M('goods')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->count();
             $goods = M('goods')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
             for ($i = 0; $i < count($goods); $i++) {
@@ -242,7 +297,10 @@ class IndexController extends BaseController {
         $free_max = I('free_max');
         $pagesize = I('pagesize',20);
         $page = I('page',1);
+<<<<<<< HEAD
 //	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
+=======
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
         $condition['price'] = array('between',"$price_min,$price_max");
         $condition['free'] = array('between',"$free_min,$free_max");
         $condition['is_successful'] = array('eq',0);
@@ -252,7 +310,10 @@ class IndexController extends BaseController {
         $condition['is_audit'] = array('eq',1);
         $condition['is_on_sale'] = array('eq',1);
         $condition['show_type'] = array('eq',0);
+<<<<<<< HEAD
 //		$condition['_string'] = " (`prom` BETWEEN '$man_min' AND '$man_max') and (`show_price` BETWEEN '$price_min' AND '$price_max') ";
+=======
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
         $count = M('group_buy')->where($condition)->count();
         $prom = M('group_buy')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
         foreach($prom as &$v)
@@ -459,11 +520,16 @@ class IndexController extends BaseController {
             $cat1 = $category->where('`parent_id` = 0 and id != 10044')->order('sort_order asc')->field('id,name,logo')->select();
 
             for ($i = 0; $i < count($cat1); $i++) {
+<<<<<<< HEAD
                 $cat1[$i]['logo'] = C('HTTP_URL') . $cat1[$i]['logo'];
+=======
+                $cat1[$i]['logo'] = TransformationImgurl($cat1[$i]['logo']);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
                 $cat1[$i]['cat2'] = $category->where('`parent_id` = ' . $cat1[$i]['id'])->field('id,name,img')->select();
 //            array_unshift($cat1[$i]['cat2'],array('id'=>'0','name'=>'全部'));
                 for ($j = 0; $j < count($cat1[$i]['cat2']); $j++) {
                     $cat1[$i]['cat2'][$j]['cat3'] = $category->where('`parent_id` = ' . $cat1[$i]['cat2'][$j]['id'])->field('id,name')->select();
+<<<<<<< HEAD
                     $cat1[$i]['cat2'][$j]['img'] = C('HTTP_URL') . $cat1[$i]['cat2'][$j]['img'];
                     array_unshift($cat1[$i]['cat2'][$j]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
@@ -473,12 +539,26 @@ class IndexController extends BaseController {
             $haitao['cat2'] = M('haitao')->where('`parent_id` = 0')->field('id,name,img')->select();
             foreach ($haitao['cat2'] as &$v) {
                 $v['img'] = C('HTTP_URL') . $v['img'];
+=======
+                    $cat1[$i]['cat2'][$j]['img'] = TransformationImgurl($cat1[$i]['cat2'][$j]['img']);
+                    array_unshift($cat1[$i]['cat2'][$j]['cat3'], array('id' => '0', 'name' => '全部'));
+                }
+            }
+            $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
+
+            $haitao['cat2'] = M('haitao')->where('`parent_id` = 0')->field('id,name,img')->select();
+            foreach ($haitao['cat2'] as &$v) {
+                $v['img'] = TransformationImgurl($v['img']);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
             }
             for ($i = 0; $i < count($haitao['cat2']); $i++) {
                 $haitao['cat2'][$i]['cat3'] = M('haitao')->where('`parent_id` = ' . $haitao['cat2'][$i]['id'])->field('id,name')->select();
                 array_unshift($haitao['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
             }
+<<<<<<< HEAD
 //        array_unshift($header,array('id'=>'0','name'=>'首页','mobile_name'=>'首页'));
+=======
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
             $json = array('status' => 1, 'msg' => '', 'result' => array('haitao' => $haitao, 'cat' => $cat1));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -523,6 +603,7 @@ class IndexController extends BaseController {
         $condition2['is_show'] = 1;
         $condition2['show_type'] = 0;
         $condition2['is_recommend'] = 0;
+<<<<<<< HEAD
         $count = M('goods')->where($condition2)->count();
         $order = "sales desc";//筛选条件
         $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
@@ -532,6 +613,14 @@ class IndexController extends BaseController {
             $v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
         }
         $data = $this->listPageData($count,$goods);
+=======
+        $data = $this->getGoodsList($condition2,$page,$pagesize);
+//        $count = M('goods')->where($condition2)->count();
+//        $order = "sales desc";//筛选条件
+//        $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
+//
+//        $data = $this->listPageData($count,$goods);
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
         return $data;
     }
 
@@ -685,6 +774,26 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
 
+<<<<<<< HEAD
+=======
+    //免单拼的团显示
+    function get_Free_Prom()
+    {
+        $free_num = I('free_num',1);
+        $page = I('page',1);
+        $pagesize = I('pagesize',10);
+        $rdsname = "getFreeProm".$page.$pagesize;
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList();
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+    }
+
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
     //为我点赞
     public function getThe_raise()
     {
@@ -709,6 +818,7 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
 
+<<<<<<< HEAD
     function  getPreferentialgoods()
     {
         $page = I('page',1);
@@ -728,4 +838,33 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
     
+=======
+    /**
+     * 获取省钱大法商品列表
+     */
+    public function getEconomizeGoods()
+    {
+        $where = 'type=2';
+        $count = M('goods_activity')->where($where)->count();
+        $pages = 10;
+        $Page = new \Think\Page($count, $pages);
+
+        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
+                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
+                LEFT JOIN tp_goods_category c ON g.cat_id=c.id
+                LEFT JOIN tp_merchant m ON g.store_id=m.id 
+                WHERE ' . $where . ' LIMIT ' .$Page->firstRow.','.$Page->listRows;
+
+        $goodsList = M()->query($sql);
+        foreach($goodsList as &$v) {
+            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+        }
+        $data = $this->listPageData($count,$goodsList);
+        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+        if(I('ajax_get')) {
+            $this->getJsonp($json);
+        }
+        exit(json_encode($json));
+    }
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
 }

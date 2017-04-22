@@ -82,24 +82,17 @@
 			                                        <th class="text-left">商户名称</th>
 									                <th class="text-left">价格</th>         
 									                <th class="text-left">库存</th>								                
-									                <th class="text-left">活动数量</th>
 									                <th class="text-left">操作</th>
 									            </tr>
 									            </thead>
 									            <tbody id="goods_list">
 									            <foreach name="prom_goods" item="vo">
 									            	<tr>
-									            		<td style="display:none">
-                                                            <input type="checkbox" name="goods_id[]" checked="checked" value="{$vo.goods_id}"/>
-                                                            <input type="hidden" name="goods_id" value="{$vo.goods_id}"/>
-                                                        </td>
+									            		<td style="display:none"><input type="checkbox" name="goods_id[]" checked="checked" value="{$vo.goods_id}"/></td>
 									                	<td class="text-left">{$vo.goods_name}</td>
 											            <td class="text-left">{$vo.store_name}</td>
 											            <td class="text-left">{$vo.shop_price}</td>
 									                	<td class="text-left">{$vo.store_count}</td>
-									                	<td class="text-left" style="display:none;" id="number">
-                                                            <input type="text" name="number" value="" />
-                                                        </td>
 									                	<td class="text-left"><a href="javascript:void(0)" onclick="javascript:$(this).parent().parent().remove();">删除</a></td>
 									           		</tr>
 									           </foreach>
@@ -140,54 +133,21 @@ function adsubmit(){
 		layer.msg('请选择商品');
 		return false;
 	}
+	$('#Secondskill').submit();
 
-	var tag = true;
-    $('input[name="number"]').each(function(i,o){
-        if ($(o).val() <=0) {
-            layer.msg('请输入参与活动的商品数量');
-            tag = false;
-            return false;
-        }
-    });
-
-    if (tag) {
-        var date = $('#date').val();
-        var time = $('#time').val();
-        data = '{"goods":['
-        $('input[name*="goods_id"]').each(function(i,o){
-            var goods_id = $(o).val();
-            var number = 0;
-            $('input[name="number"]').each(function(j,k){
-                if (i == j) {
-                    number = $(k).val();
-                }
-            });
-            data += '{"goods_id":'+goods_id+',"number":'+number+'},';
-        });
-        data = data.substr(0,data.length-1)
-        data += ']}'
-        data = JSON.parse(data);
-        //$('#Secondskill').submit();
-
-        $.ajax({
-            url:"{:U('Admin/SecondBuy/save')}",
-            type:'POST',
-            data:{
-                date : date,
-                time : time,
-                goods : data
-            },
-            dataType:"json",
-            success:function(data){
-                if(data.status=1){
-                    var num = $(".sun").text();
-                    num = (data.msg);
-                    $(".sun").text(num);
-                }
-            }
-        });
-    }
-
+	$.ajax({
+		url:"{:U('Admin/SecondBuy/save')}",
+		type:'POST',
+		data:{id:id,name:name},
+		dataType:"json",
+		success:function(data){
+			if(data.status=1){
+				var num = $(".sun").text();
+				num = (data.msg);
+				$(".sun").text(num);
+			}
+		}
+	});
 }
 
 

@@ -16,7 +16,7 @@ class AlipayController extends BaseController
     /**
      * 支付宝预支付
      */
-    public function addAlipayOrder($order_sn="",$user_id,$goods_id)
+    public function addAlipayOrder($order_sn="",$user_id="",$goods_id="")
     {
         vendor('Alipay.AlipaySubmit');
 
@@ -82,6 +82,11 @@ class AlipayController extends BaseController
             redisdelall($rdsname);//删除商品详情缓存
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
+            //跨区同步订单、推送、详情缓存
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
+            $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
             exit(json_encode(array('status'=>1,'msg'=>'支付宝预支付订单生成成功','data'=>$orderdetail)));
         }else {
             return $orderdetail;
@@ -175,7 +180,7 @@ class AlipayController extends BaseController
         }else{
             $data['order_type'] = 2;
         }
-        //销量
+        //销量、库存
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         //商品规格库存
@@ -184,7 +189,6 @@ class AlipayController extends BaseController
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }
-
     //开团 参团的时候在支付完成时将is_pay字段改变，标示加入团成功
     public function Join_Prom($order_id)
     {

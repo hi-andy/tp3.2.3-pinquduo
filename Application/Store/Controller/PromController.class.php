@@ -23,14 +23,13 @@ class PromController extends BaseController {
 		$this->pay_status = C('PAY_STATUS');
 		$this->shipping_status = C('SHIPPING_STATUS');
 
-		if(empty($_COOKIE['merchant_id']))
+		if(empty($_SESSION['merchant_id']))
 		{
-			foreach($_COOKIE as $key=>$val){
-				setcookie($key,"",time()-100);
-			}
+			session_unset();
+			session_destroy();
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
-		$haitao = M('store_detail')->where('storeid='.$_COOKIE['merchant_id'])->find();
+		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
 		if($haitao['is_pay']==0)
 		{
 			$this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
@@ -61,7 +60,7 @@ class PromController extends BaseController {
 		// 搜索条件
 		$condition = array();
 		$condition['g.is_raise'] = 0 ;
-		$condition['g.store_id'] = $_COOKIE['merchant_id'];
+		$condition['g.store_id'] = $_SESSION['merchant_id'];
 		$condition['o.is_show'] = 1 ;
 		if($begin && $end){
 			$condition['o.add_time'] = array('GT',$begin);
@@ -158,7 +157,7 @@ class PromController extends BaseController {
 			$where = $where." and ( order_type = 15 or order_type = 4 ) ";
 		}
 
-		$where = $where." and store_id = ".$_COOKIE['merchant_id']." ";
+		$where = $where." and store_id = ".$_SESSION['merchant_id']." ";
 
 		if(I('shipping_status')==0)
 		{
@@ -600,7 +599,7 @@ class PromController extends BaseController {
 		$sort_order = I('sort_order') ? I('sort_order') : 'desc';
 		$status =  I('status');
 
-		$where = "tp_return_goods.`store_id`=".$_COOKIE['merchant_id']." and tp_return_goods.`is_prom`=1 and tp_group_buy.is_successful=1 ";
+		$where = "tp_return_goods.`store_id`=".$_SESSION['merchant_id']." and tp_return_goods.`is_prom`=1 and tp_group_buy.is_successful=1 ";
 		$order_sn && $where.= " and tp_return_goods.order_sn like '%$order_sn%' ";
 		empty($order_sn) && $where.= " and tp_return_goods.`status` = '$status' ";
 
@@ -847,7 +846,7 @@ class PromController extends BaseController {
 	public function export_order()
 	{
 		//搜索条件
-		$store_id = $_COOKIE['merchant_id'];
+		$store_id = $_SESSION['merchant_id'];
 		$where = ' where 1=1 and prom_id is not Null';
 		$consignee = I('consignee');
 		$timegap = I('timegap');
@@ -977,7 +976,7 @@ class PromController extends BaseController {
 			$order['shipping_price'] = $result['result']['shipping_price']; //物流费
 			$order['order_amount']   = $result['result']['order_amount']; // 应付金额
 			$order['total_amount']   = $result['result']['total_amount']; // 订单总价
-			$order['store_id'] = $_COOKIE['merchant_id'];
+			$order['store_id'] = $_SESSION['merchant_id'];
 
 			// 添加订单
 			$order_id = M('order')->add($order);

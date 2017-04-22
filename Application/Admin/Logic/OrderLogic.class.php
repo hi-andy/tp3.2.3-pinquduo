@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <?php
 
 
@@ -528,6 +529,8 @@ class OrderLogic extends RelationModel
 
 }
 =======
+=======
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
 <?php
 
 
@@ -1074,4 +1077,3 @@ class OrderLogic extends RelationModel
     }
 
 }
->>>>>>> 0b7f13d20f77f1260095c707f48567c3375029f4

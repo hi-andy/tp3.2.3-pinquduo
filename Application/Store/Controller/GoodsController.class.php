@@ -1,6 +1,5 @@
 <?php
-/*
- *
+/**
  */
 namespace Store\Controller;
 use Admin\Logic\HaitaoLogic;
@@ -9,6 +8,8 @@ use Think\AjaxPage;
 use Think\Page;
 
 class GoodsController extends BaseController {
+
+
     /*
      * 初始化操作
      */
@@ -350,6 +351,22 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
+            if($_POST['goods_images'] <= 0){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '请上传商品轮播图！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+            if($_POST['goods_content'] == ''){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '请填写商品详细描述！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
         }
 
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
@@ -388,8 +405,6 @@ class GoodsController extends BaseController {
                     $Goods->afterSave($goods_id);
                     $rdsname = "getGoodsDetails".$goods_id."*";
                     redisdelall($rdsname);//删除商品详情缓存
-                    $rdsname = "home*";
-                    redisdelall($rdsname);//删除首页缓存
                 }
                 else
                 {
@@ -411,13 +426,9 @@ class GoodsController extends BaseController {
         }
 
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
-        //$cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
-//        $brandList = $GoodsLogic->getSortBrands();
-        $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
-        if(empty($goodsType))
-            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+        $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
         $haitao = $goodsInfo['is_special'];
         if($haitao==1) {
             $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
@@ -672,6 +683,68 @@ class GoodsController extends BaseController {
     }
 
     /**
+     * 品牌列表
+     */
+    public function brandList(){
+        $model = M("Brand");
+        $keyword = I('keyword');
+        $where = $keyword ? " name like '%$keyword%' " : "";
+        $count = $model->where($where.'is_show =1 and store_id ='.$_SESSION['merchant_id'])->count();
+        $Page  = new Page($count,10);
+        $brandList = $model->where($where .'is_show =1 and store_id ='.$_SESSION['merchant_id'])->order("`sort` asc")->limit($Page->firstRow.','.$Page->listRows)->select();
+        $show  = $Page->show();
+        $cat_list = M('goods_category')->where("parent_id = 0")->getField('id,name'); // 已经改成联动菜单
+        $this->assign('cat_list',$cat_list);
+        $this->assign('show',$show);
+        $this->assign('brandList',$brandList);
+        $this->display('brandList');
+    }
+
+    /**
+     * 添加修改编辑  商品品牌
+     */
+    public  function addEditBrand(){
+        $id = I('id');
+        $model = M("Brand");
+        if(IS_POST)
+        {
+            $model->create();
+            if($id)
+                $model->save();
+            else
+                $id = $model->add();
+
+            $this->success("操作成功!!!",U('Store/Goods/brandList',array('p'=>$_GET['p'])));
+            exit;
+        }
+        $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
+        $this->assign('cat_list',$cat_list);
+        $brand = $model->find($id);
+        $this->assign('brand',$brand);
+        $this->display('_brand');
+    }
+
+    /**
+     * 删除品牌
+     */
+    public function delBrand()
+    {
+        // 判断此品牌是否有商品在使用
+        $goods_count = M('Goods')->where("brand_id = {$_GET['id']}")->count('1');
+        if($goods_count)
+        {
+            $return_arr = array('status' => -1,'msg' => '此品牌有商品在用不得删除!','data'  =>'',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+            $this->ajaxReturn(json_encode($return_arr));
+        }
+
+        $model = M("Brand");
+        $data['is_show'] = 0 ;
+        $model->data($data)->where('id ='.$_GET['id'])->save();
+        $return_arr = array('status' => 1,'msg' => '操作成功','data'  =>'',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+        $this->ajaxReturn(json_encode($return_arr));
+    }
+
+    /**
      * 初始化编辑器链接
      * 本编辑器参考 地址 http://fex.baidu.com/ueditor/
      */
@@ -788,9 +861,7 @@ class GoodsController extends BaseController {
      */
     public function ajaxGetSpecSelect(){
         $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
-        $GoodsLogic = new GoodsLogic();
-        //$_GET['spec_type'] =  13;
-        $specList = D('Spec')->where("type_id = ".$_GET['spec_type'])->order('`order` desc')->select();
+        $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type'])->order('`order` desc')->select();
         foreach($specList as $k => $v){
             $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
         }
@@ -825,6 +896,7 @@ class GoodsController extends BaseController {
     public function ajaxGetSpecInput(){
         $GoodsLogic = new GoodsLogic();
         $goods_id = $_REQUEST['goods_id'] ? $_REQUEST['goods_id'] : 0;
+        //print_r($_REQUEST);exit;
         $str = $GoodsLogic->getSpecInput($goods_id ,$_POST['spec_arr']);
         exit($str);
     }
@@ -1052,8 +1124,6 @@ class GoodsController extends BaseController {
                     $Goods->afterSave($goods_id);
                     $rdsname = "getGoodsDetails".$goods_id."*";
                     redisdelall($rdsname);//删除商品详情缓存
-                    $rdsname = "home*";
-                    redisdelall($rdsname);//删除首页缓存
 //					M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
                 }
                 else

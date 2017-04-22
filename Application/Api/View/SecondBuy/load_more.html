@@ -2,7 +2,7 @@
   <volist name="lists" id="goods">
   <li>
       <div class="img">
-        <img width="100%" onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}'" class="lazy" src="http://pinquduo.cn{$goods.original_img}" alt=""/>
+        <img width="100%" onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}'" class="lazy" src="{$goods.original_img}" alt=""/>
         <if condition="$goods.status eq 0">
           <div class="mask align-vertical">
             <div class="align-vertical">抢光了</div>

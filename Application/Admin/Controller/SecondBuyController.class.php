@@ -18,41 +18,33 @@ class SecondBuyController extends Controller {
     // 秒杀商品列表
     public function goodsList()
     {
+        $dateTime = (C('SecondBuy'));
+        $this->assign('time', $dateTime['time']);
+        $this->assign('date', $dateTime['date']);
         $this->display();
     }
 
     // 添加秒杀商品页
     public function selectGoods()
     {
-        $startDate = strtotime('2017-4-19'); //开始日期
-        $oneDay = 3600 * 24;    // 一天
-        $startDates = array();
-        $startTimes = array(' 10:00', ' 13:00', ' 16:00', ' 19:00');
-        $i = 0;
-        do {
-            $startDate = $startDate + $oneDay;
-            $startDates[$startDate] = date('Y-m-d', $startDate);
-            $oneDay =+ $oneDay;
-            $i++;
-        } while ($i < 5);
+        $dateTime = (C('SecondBuy'));
 
         $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
         $this->assign('store', $store);
-        $this->assign('startTimes', $startTimes);
-        $this->assign('startDates', $startDates);
+        $this->assign('startTimes', $dateTime['time']);
+        $this->assign('startDates', $dateTime['date']);
         $this->display();
     }
 
     // 保存秒杀商品
     public function save()
     {
-        $data['start_date'] = strtotime(I('post.date'));
-        $data['start_time'] = I('post.time');
+        $data = I('post.');
+        $data['start_date'] = strtotime($data['start_date']);
         $data['create_time'] = time();
-        $data['type'] = 1;
-        $goods = I('post.goods')['goods'];
-        foreach ($goods as $value) {
-            $data = array_merge($data, $value);
+        $data['type'] = 1;  // 标识 0.1 秒杀商品类型
+        foreach ($data['goods_id'] as $value) {
+            $data['goods_id'] = $value;
             $res = M('goods_activity')->data($data)->add();
         }
         if($res)
@@ -65,33 +57,34 @@ class SecondBuyController extends Controller {
 
     public function ajaxindex()
     {
-        $where = '1';
-        if(!empty(I('store_name')))
+        $where = 'WHERE ga.type=1';
+        if($store_name = I('store_name'))
         {
             $this->assign('store_name', I('store_name'));
-            $where = $this->getStoreWhere($where,I('store_name'));
+            //$where = $this->getStoreWhere($where,I('store_name'));
+            $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->getField('id');
+            $where .= ' AND g.store_id='.$store_id;
         }
-        if (I('date') && I('time')) {
-            $all_time = I('date') . ' ' . I('time');
-            $where = $where . ' and `on_time`='.strtotime($all_time);
-        } elseif (I('time')) {
-            $times = strtotime(I('time'));
-            $where = $where . ' and `on_time`='.$times;
-        } elseif (I('date')) {
-            $times = strtotime(I('date'));
-            $where = $where . ' and `on_time`>='.$times.' and `on_time`<'.($times + 24 * 60 * 60);
+
+        if ($date = I('date')) {
+            $startDate = strtotime($date);
+            $where .= ' AND ga.start_date='.$startDate;
         }
-        $count = M('goods_activity')->where($where)->count();
+
+        if ($time = I('time')) {
+            $startTime = intval($time);
+            $where .= ' AND ga.start_time='.$startTime;
+        }
+
+        $sqlCount = 'SELECT COUNT(*) count FROM tp_goods_activity ga LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id  LEFT JOIN tp_merchant m ON g.store_id=m.id '.$where;
+        $count = M()->query($sqlCount)[0]['count'];
         $Page = new AjaxPage($count, 20);
-        foreach ($where as $key => $val) {
-            $Page->parameter[$key] = urlencode($val);
-        }
         $show = $Page->show();
 
         $sql = 'SELECT ga.id,ga.start_date,ga.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name FROM tp_goods_activity ga 
                 LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category gc ON g.cat_id=gc.id
-                LEFT JOIN tp_merchant m ON g.store_id=m.id LIMIT ' .$Page->firstRow.','.$Page->listRows;
+                LEFT JOIN tp_merchant m ON g.store_id=m.id '.$where.' LIMIT ' .$Page->firstRow.','.$Page->listRows;
         $goodsList = M()->query($sql);
 
         foreach ($goodsList as $key => $value) {
@@ -101,6 +94,9 @@ class SecondBuyController extends Controller {
 
         $this->assign('goods', $goodsList);
         $this->assign('page', $show);// 赋值分页输出
+        $dateTime = (C('SecondBuy'));
+        $this->assign('time', $dateTime['time']);
+        $this->assign('date', $dateTime['date']);
         $this->display();
     }
 
@@ -176,7 +172,7 @@ class SecondBuyController extends Controller {
         return $categoryList;
     }
 
-    public function delete1()
+    public function delete()
     {
         // 判断此商品是否有订单
         $goods_count = M('goods_activity')->where("id = {$_GET['id']}")->find();
@@ -192,7 +188,7 @@ class SecondBuyController extends Controller {
     }
 
     // 批量删除秒杀商品
-    public function delete()
+    public function deleteBatch()
     {
         $data = I('post.');
         //print_r($data);exit;

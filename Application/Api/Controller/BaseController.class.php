@@ -415,6 +415,7 @@ class BaseController extends Controller {
         }
     }
 
+<<<<<<< HEAD
 
     /**
      *快递单打印信息
@@ -469,6 +470,8 @@ class BaseController extends Controller {
         $result = curl_exec($ch);		//返回提交结果，格式与指定的格式一致（result=true代表成功）
     }
 
+=======
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
     /**
      * 定时更新订单状态
      */
@@ -565,4 +568,39 @@ class BaseController extends Controller {
         }
         return $pin;
     }
+<<<<<<< HEAD
+=======
+
+    //调度商品详情
+    function  getGoodsInfo($goods_id)
+    {
+        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
+
+        //商品详情
+        $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
+        $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
+        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+        $store['store_logo'] = TransformationImgurl($store['store_logo']);
+        $goods['store'] = $store;
+        $goods['original_img'] = TransformationImgurl($goods['original_img']);
+        $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0|imageslim";
+
+        return $goods;
+    }
+
+
+
+    function getGoodsList($where,$page=1,$pagesize=10)
+    {
+        $count = M('goods')->where($where)->count();
+        $goods = M('goods')->where($where)->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $result = $this->listPageData($count, $goods);
+        foreach ($result['items'] as &$v) {
+            $v['original'] = TransformationImgurl($v['original_img']);
+            $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+            $v['original_img'] = TransformationImgurl($v['original_img']);
+        }
+        return $result;
+    }
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
 }

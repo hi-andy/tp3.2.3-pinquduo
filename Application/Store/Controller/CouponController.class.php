@@ -8,14 +8,13 @@ class CouponController extends BaseController {
      * 初始化操作
      */
 	public function _initialize() {
-		if(empty($_COOKIE['merchant_id']))
+		if(empty($_SESSION['merchant_id']))
 		{
-			foreach($_COOKIE as $key=>$val){
-				setcookie($key,"",time()-100);
-			}
+			session_unset();
+			session_destroy();
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
-		$haitao = M('store_detail')->where('storeid='.$_COOKIE['merchant_id'])->find();
+		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
 		if($haitao['is_pay']==0) {
 			$this->error("尚未缴纳保证金，现在前往缴纳", U('Store/Index/pay_money'));
 		}
@@ -29,12 +28,12 @@ class CouponController extends BaseController {
 	public function index(){
 		//获取优惠券列表
 
-		$count =  M('coupon')->where('store_id='.$_COOKIE['merchant_id'])->count();
+		$count =  M('coupon')->where('store_id='.$_SESSION['merchant_id'])->count();
 		$Page = new \Think\Page($count,10);
 		$show = $Page->show();
 		$lists = M('coupon')
 			->join(array(" LEFT JOIN tp_merchant ON tp_coupon.store_id = tp_merchant.id "))
-			->where('store_id='.$_COOKIE['merchant_id'])
+			->where('store_id='.$_SESSION['merchant_id'])
 			->order('add_time desc')
 			->field('tp_coupon.*,tp_merchant.store_name')
 			->limit($Page->firstRow.','.$Page->listRows)

@@ -166,6 +166,13 @@ EOF;
         //$this->display();
     }
 
+<<<<<<< HEAD
+=======
+    public function test(){
+        echo $this->get_real_ip();
+    }
+
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
     public function get_real_ip(){
         $ip=false;
         if(!empty($_SERVER["HTTP_CLIENT_IP"]))
@@ -315,7 +322,11 @@ EOF;
             if($res2){
                 $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
                 M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
+<<<<<<< HEAD
                 $log_->log_result($log_name,"【WX】:\n".$group_info['mark']."\n");
+=======
+                $log_->log_result($log_name,"【WX】:\n".$group_info."\n");
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
                 if($group_info['mark']>0){
                     $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
@@ -349,7 +360,11 @@ EOF;
         }else{
             $data['order_type'] = 2;
         }
+<<<<<<< HEAD
         //销量
+=======
+        //销量、库存
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         //商品规格库存

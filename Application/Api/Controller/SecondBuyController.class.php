@@ -37,8 +37,9 @@ class SecondBuyController extends Controller {
 
         $getTime = intval(I('get.start'));
         $startTime = $getTime ? $getTime : $currentTime;
-        //$where = ' start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
-        $where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
+        $where = 'type=1 AND start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
+        //$where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
+
         $count = M('goods_activity')->where($where)->count();
 
         $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
@@ -69,8 +70,8 @@ class SecondBuyController extends Controller {
     public function ajaxGetList ()
     {
         $startTime = intval(I('get.start'));
-        //$where = ' start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
-        $where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
+        $where = 'type=1 AND start_date=' . strtotime(date('Y-m-d')) . ' AND start_time=' . $startTime;
+        //$where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime; //测试代码
 
         $count = M('goods_activity')->where($where)->count();
         $pages = 6;
