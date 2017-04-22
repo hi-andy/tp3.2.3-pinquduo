@@ -2,18 +2,8 @@
 namespace Api\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
+    public function index(){
 
-    public function index($getGoodsDetails="",$user_id="",$goods_id=""){
-        if ($getGoodsDetails == "1") {
-            $rdsname = "getUserOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
-            $result = "true";
-        }
-        print_r($result);
     }
     /*
      * 获取首页数据
@@ -723,6 +713,9 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
 
+    /**
+     * 获取省钱大法商品列表
+     */
     public function getEconomizeGoods()
     {
         $where = 'type=2';
@@ -747,84 +740,4 @@ class IndexController extends BaseController {
         }
         exit(json_encode($json));
     }
-
-    function  test()
-    {
-        echo json_encode('邮政包裹/平邮');
-
-    }
-    function unicodeDecode($data)
-    {
-        function replace_unicode_escape_sequence($match) {
-            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
-        }
-
-        $rs = preg_replace_callback('/\\\\u([0-9a-f]{4})/i', 'replace_unicode_escape_sequence', $data);
-
-        return $rs;
-    }
-
-
-    /**
-     * 加密方法
-     * @param string $str
-     * @return string
-     */
-    public function encrypt($str)
-    {
-        //AES, 128 ECB模式加密数据
-        $screct_key = $this->_app_key;
-        $screct_key = base64_decode($screct_key);
-        $str = trim($str);
-        $str = $this->addPKCS7Padding($str);
-        $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
-        $encrypt_str = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $screct_key, $str, MCRYPT_MODE_ECB, $iv);
-        return base64_encode($encrypt_str);
-    }
-
-    private function decrypt($str)
-    {
-        //AES, 128 ECB模式加密数据
-        $screct_key = $this->_app_key;
-        $str = base64_decode($str);
-        $screct_key = base64_decode($screct_key);
-        $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
-        $encrypt_str = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $screct_key, $str, MCRYPT_MODE_ECB, $iv);
-        $encrypt_str = trim($encrypt_str);
-        $encrypt_str = $this->stripPKSC7Padding($encrypt_str);
-        return $encrypt_str;
-    }
-
-    /**
-     * 填充算法
-     * @param string $source
-     * @return string
-     */
-    private function  addPKCS7Padding($source)
-    {
-        $source = trim($source);
-        $block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-        $pad = $block - (strlen($source) % $block);
-        if ($pad <= $block) {
-            $char = chr($pad);
-            $source .= str_repeat($char, $pad);
-        }
-        return $source;
-    }
-
-    /**
-     * 移去填充算法
-     * @param string $source
-     * @return string
-     */
-    private function  stripPKSC7Padding($source)
-    {
-        $source = trim($source);
-        $char = substr($source, -1);
-        $num = ord($char);
-        if ($num > 32) return $source;
-        $source = substr($source, 0, -$num);
-        return $source;
-    }
-
 }
