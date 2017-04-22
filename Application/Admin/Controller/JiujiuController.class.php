@@ -340,32 +340,9 @@ class JiujiuController extends BaseController{
 			);
 			$this->ajaxReturn(json_encode($return_arr));
 		}
-//		// 判断此商品是否有订单
-//		$goods_count = M('OrderGoods')->where("goods_id = {$_GET['id']} and `is_pay`=1 and `is_cancel`=0")->count('1');
-//		if (!empty($goods_count)) {
-//			$return_arr = array(
-//				'status' => -1,
-//				'msg' => '该商品已被删除',
-//				'data' => array('url' => U('Admin/Jiujiu/Goodsindex')),
-//			);
-//			$this->ajaxReturn(json_encode($return_arr));
-//		}
-//		M('goods')->where('`goods_id`='.$id)->delete();
-//		M('goods_images')->where('`goods_id`='.$id)->delete();
-//		M('spec_goods_price')->where('`goods_id`='.$id)->delete();
-//		$res = M('spec_image')->where('`goods_id`='.$id)->delete();
-//		if($res)
-//		{
-//			$return_arr = array(
-//				'status' => 1,
-//				'msg' => '删除成功',
-//				'data' => array('url' => U('Admin/Jiujiu/Goodsindex')),
-//			);
-//			$this->ajaxReturn(json_encode($return_arr));
-//		}
 		// 删除此商品
-		M("Goods")->where('goods_id =' . $id)->save(array('show_type'=>1));
-		$return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+		M("Goods")->where('goods_id =' . $id)->save(array('is_special'=>0,'exclusive_cat'=>0));
+		$return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);  
 		$this->ajaxReturn(json_encode($return_arr));
 	}
 }

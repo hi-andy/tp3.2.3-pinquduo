@@ -330,6 +330,7 @@ class GoodsController extends BaseController {
 		I('user_id') && $user_id = I('user_id');
 		I('spec_key') && $spec_key = I('spec_key');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
+		I('version') && $version = I('version');
 		$rdsname = "getGoodsDetails" . $goods_id;
 		if (empty(redis($rdsname))) {//判断是否有缓存
 			//轮播图
@@ -341,14 +342,12 @@ class GoodsController extends BaseController {
 				$v['origin'] = TransformationImgurl($v['image_url']);
 				unset($v['image_url']);
 			}
-
 			if (empty($banner)) {
 				$banner = null;
 			}
-
 			//商品详情
-			$goods = $this->getGoodsInfo($goods_id);
-
+			$goods = $this->getGoodsInfo($goods_id,$version);
+			
 			//获取已经开好的团
 			$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
 			if (!empty($group_buy)) {
@@ -1744,8 +1743,6 @@ class GoodsController extends BaseController {
 
 	function getOtheyMore($id,$type,$page,$pagesize)
 	{
-//		$id = I('id');//分类id
-//		$type = I('type');//0->不是海淘的  1->是海淘的
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		if($type==0)
 		{

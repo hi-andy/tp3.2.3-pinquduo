@@ -180,6 +180,7 @@ class StoreController extends BaseController{
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->where($where)
 				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
+
 				->select();
 		}else{
 			$order_info = M('order')->alias('o')
@@ -220,19 +221,24 @@ class StoreController extends BaseController{
 	{
 		$store_id = I('post.store_id');
 		$data['order_sn'] = I('post.order_sn');
-		$data['shipping_order'] = I('post.deliverSn');
-		$data['shipping_name'] = I('post.deliverName');
-		$data['shipping_code'] = I('post.deliverCode');
+		$data['shipping_order'] = (I('post.deliverSn'));
+		$code = $data['shipping_code'] = I('deliverCode');
 		$data['y_time'] = I('post.timeStamp');
+
+		$logistics = array('shunfeng'=>'顺丰','shentong'=>'申通','youzhengguonei'=>'邮政包裹/平邮','yuantong'=>'圆通','zhongtong'=>'中通','huitongkuaidi'=>'百世物流','yunda'=>'韵达','zhaijisong'=>'宅急送','tiantian'=>'天天','youzhengguoji'=>'国际包裹','ems'=>'EMS','emsguoji'=>'EMS-国际件','huitongkuaidi'=>'汇通','debangwuliu'=>'德邦','guotongkuaidi'=>'国通','zengyisudi'=>'增益','suer'=>'速尔','zhongtiewuliu'=>'中铁快运','ganzhongnengda'=>'能达','youshuwuliu'=>'优速','quanfengkuaidi'=>'全峰','kuaijiesudi'=>'快捷','wanxiangwuliu'=>'万象','tiandihuayu'=>'天地华宇','annengwuliu'=>'安能');
+		$data['shipping_name'] = $logistics[$code];
 		M()->startTrans();
 		$res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name']));
 		$res1 = $this->deliveryHandle($data);
 		if($res && $res1){
 			M()->commit();
 			exit(json_encode(array('code'=>1,'Msg'=>'发货成功！')));
+		}elseif (!$res){
+			M()->rollback();
+			exit(json_encode(array('code'=>0,'Msg'=>'订单修改失败')));
 		}else{
 			M()->rollback();
-			exit(json_encode(array('code'=>0,'Msg'=>'发货失败！')));
+			exit(json_encode(array('code'=>0,'Msg'=>'创建发货订单失败')));
 		}
 	}
 

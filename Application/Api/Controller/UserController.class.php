@@ -273,7 +273,6 @@ class UserController extends BaseController {
         unset($data['show']);
         exit(json_encode($data));
     }
-
     /*
      * 获取拼团或订单详情
      */
@@ -283,7 +282,7 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         I('invitation_num') && $invitation_num = strtolower(I('invitation_num'));//统一大小写
-
+        I('ajax_get') && $ajax_get = I('ajax_get');
         if(empty($user_id))
         {
             //if(empty(redis($rdsname))){//判断是否有缓存

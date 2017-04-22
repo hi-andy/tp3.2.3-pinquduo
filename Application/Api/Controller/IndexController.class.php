@@ -15,7 +15,6 @@ class IndexController extends BaseController {
         }
         print_r($result);
     }
-
     /*
      * 获取首页数据
      */
@@ -35,7 +34,7 @@ class IndexController extends BaseController {
             foreach ($category as &$v) {
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
-            if ($version == '1.3.0') {
+            if ($version == '1.3.0' || $version == '2.0.0') {
                 $category[4]['cat_name'] = '为我拼';
                 $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
                 $category[7]['cat_name'] = '省钱大法';
@@ -45,19 +44,12 @@ class IndexController extends BaseController {
 //            $activity['H5_url'] = C('HTTP_URL').'/api/goods/test';
             }
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
-            
-            $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->count();
-            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
-
-            $result2 = $this->listPageData($count, $goods);
-
-            foreach ($result2['items'] as &$v) {
-                $v['original'] = TransformationImgurl($v['original_img']);
-                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-                $v['original_img'] = TransformationImgurl($v['original_img']);
+            $result = $this->getGoodsList($where,$page,$pagesize);
+            if($version=='2.0.0'){
+                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
+            }else{
+                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
             }
-
-            $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -253,7 +245,6 @@ class IndexController extends BaseController {
         $free_max = I('free_max');
         $pagesize = I('pagesize',20);
         $page = I('page',1);
-//	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
         $condition['price'] = array('between',"$price_min,$price_max");
         $condition['free'] = array('between',"$free_min,$free_max");
         $condition['is_successful'] = array('eq',0);
@@ -263,7 +254,6 @@ class IndexController extends BaseController {
         $condition['is_audit'] = array('eq',1);
         $condition['is_on_sale'] = array('eq',1);
         $condition['show_type'] = array('eq',0);
-//		$condition['_string'] = " (`prom` BETWEEN '$man_min' AND '$man_max') and (`show_price` BETWEEN '$price_min' AND '$price_max') ";
         $count = M('group_buy')->where($condition)->count();
         $prom = M('group_buy')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
         foreach($prom as &$v)
@@ -533,15 +523,12 @@ class IndexController extends BaseController {
         $condition2['is_show'] = 1;
         $condition2['show_type'] = 0;
         $condition2['is_recommend'] = 0;
-        $count = M('goods')->where($condition2)->count();
-        $order = "sales desc";//筛选条件
-        $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
-
-        foreach($goods as &$v)
-        {
-            $v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
-        }
-        $data = $this->listPageData($count,$goods);
+        $data = $this->getGoodsList($condition2,$page,$pagesize);
+//        $count = M('goods')->where($condition2)->count();
+//        $order = "sales desc";//筛选条件
+//        $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
+//
+//        $data = $this->listPageData($count,$goods);
         return $data;
     }
 
@@ -695,6 +682,23 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
 
+    //免单拼的团显示
+    function get_Free_Prom()
+    {
+        $free_num = I('free_num',1);
+        $page = I('page',1);
+        $pagesize = I('pagesize',10);
+        $rdsname = "getFreeProm".$page.$pagesize;
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList();
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+    }
+
     //为我点赞
     public function getThe_raise()
     {
@@ -716,47 +720,6 @@ class IndexController extends BaseController {
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);
-        exit(json_encode($json));
-    }
-
-    function  getPreferentialgoods()
-    {
-//        $page = I('page',1);
-//        $pagesize = I('pagesize',10);
-//
-//        $count = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-//        $goods = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
-//        foreach($goods as &$v)
-//        {
-//            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
-//        }
-//        $data = $this->listPageData($count,$goods);
-//        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
-//        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-//        if(!empty($ajax_get))
-//            $this->getJsonp($json);
-//        exit(json_encode($json));
-        $where = 'type=2';
-        $count = M('goods_activity')->where($where)->count();
-        $pages = 10;
-        $Page = new \Think\Page($count, $pages);
-        echo $count;exit;
-
-        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
-                LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
-                LEFT JOIN tp_goods_category c ON g.cat_id=c.id
-                LEFT JOIN tp_merchant m ON g.store_id=m.id 
-                WHERE ' . $where . ' LIMIT ' .$Page->firstRow.','.$Page->listRows;
-
-        $goodsList = M()->query($sql);
-        foreach($goodsList as &$v) {
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
-        }
-        $data = $this->listPageData($count,$goodsList);
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
-        if(I('ajax_get')) {
-            $this->getJsonp($json);
-        }
         exit(json_encode($json));
     }
 
@@ -784,5 +747,84 @@ class IndexController extends BaseController {
         }
         exit(json_encode($json));
     }
-    
+
+    function  test()
+    {
+        echo json_encode('邮政包裹/平邮');
+
+    }
+    function unicodeDecode($data)
+    {
+        function replace_unicode_escape_sequence($match) {
+            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+        }
+
+        $rs = preg_replace_callback('/\\\\u([0-9a-f]{4})/i', 'replace_unicode_escape_sequence', $data);
+
+        return $rs;
+    }
+
+
+    /**
+     * 加密方法
+     * @param string $str
+     * @return string
+     */
+    public function encrypt($str)
+    {
+        //AES, 128 ECB模式加密数据
+        $screct_key = $this->_app_key;
+        $screct_key = base64_decode($screct_key);
+        $str = trim($str);
+        $str = $this->addPKCS7Padding($str);
+        $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+        $encrypt_str = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $screct_key, $str, MCRYPT_MODE_ECB, $iv);
+        return base64_encode($encrypt_str);
+    }
+
+    private function decrypt($str)
+    {
+        //AES, 128 ECB模式加密数据
+        $screct_key = $this->_app_key;
+        $str = base64_decode($str);
+        $screct_key = base64_decode($screct_key);
+        $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+        $encrypt_str = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $screct_key, $str, MCRYPT_MODE_ECB, $iv);
+        $encrypt_str = trim($encrypt_str);
+        $encrypt_str = $this->stripPKSC7Padding($encrypt_str);
+        return $encrypt_str;
+    }
+
+    /**
+     * 填充算法
+     * @param string $source
+     * @return string
+     */
+    private function  addPKCS7Padding($source)
+    {
+        $source = trim($source);
+        $block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+        $pad = $block - (strlen($source) % $block);
+        if ($pad <= $block) {
+            $char = chr($pad);
+            $source .= str_repeat($char, $pad);
+        }
+        return $source;
+    }
+
+    /**
+     * 移去填充算法
+     * @param string $source
+     * @return string
+     */
+    private function  stripPKSC7Padding($source)
+    {
+        $source = trim($source);
+        $char = substr($source, -1);
+        $num = ord($char);
+        if ($num > 32) return $source;
+        $source = substr($source, 0, -$num);
+        return $source;
+    }
+
 }
