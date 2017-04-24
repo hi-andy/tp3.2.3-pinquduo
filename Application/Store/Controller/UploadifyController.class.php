@@ -31,6 +31,10 @@ class UploadifyController extends BaseController{
         $filename= trim($filename,'/');
         */
         if($action=='del' && !empty($filename)){
+            //删除七牛云图片
+            $key = str_replace(CDN."/", "", $filename);
+            $qiniu = new \Admin\Controller\QiniuController();
+            $qiniu->delete("imgbucket", $key);
             /*
             $size = getimagesize($filename);
             $filetype = explode('/',$size['mime']);
