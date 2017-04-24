@@ -50,7 +50,7 @@ class UploadifyController extends BaseController{
             */
             if(!empty($_GET['goods_id']))
             {
-                M('goods_images')->where('goods_id = '.$_GET['goods_id'].' and image_url = "/'.$filename.'"')->delete();
+                $res = M('goods_images')->where('goods_id = '.$_GET['goods_id'].' and image_url = "'.CDN."/".$filename.'"')->delete();
             }
             //unlink($filename);
             exit;
