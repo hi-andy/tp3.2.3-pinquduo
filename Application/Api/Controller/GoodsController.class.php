@@ -809,6 +809,8 @@ class GoodsController extends BaseController {
         async_get_url($url);
 		$rdsname = "getUserOrderList".$user_id."*";
 		redisdelall($rdsname);//删除用户订单缓存
+        $rdsname = "getUserPromList".$user_id."*";
+        redisdelall($rdsname);//删除我的拼团缓存
 		$rdsname = "getGoodsDetails".$goods_id."*";
 		redisdelall($rdsname);//删除商品详情缓存
 		$rdsname = "TuiSong*";
@@ -1039,6 +1041,8 @@ class GoodsController extends BaseController {
 				redisdelall($rdsname);//删除用户订单缓存
 				$rdsname = "getGoodsDetails".$goods_id."*";
 				redisdelall($rdsname);//删除商品详情缓存
+                $rdsname = "getUserPromList".$user_id."*";
+                redisdelall($rdsname);//删除我的拼团缓存
 				$rdsname = "TuiSong*";
 				redisdelall($rdsname);//删除推送缓存
                 //跨区同步订单、推送、详情缓存
@@ -1313,6 +1317,8 @@ class GoodsController extends BaseController {
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
             redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "getUserPromList".$user_id."*";
+            redisdelall($rdsname);//删除我的拼团缓存
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
@@ -1520,6 +1526,8 @@ class GoodsController extends BaseController {
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
             redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "getUserPromList".$user_id."*";
+            redisdelall($rdsname);//删除我的拼团缓存
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
