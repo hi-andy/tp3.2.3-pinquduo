@@ -217,25 +217,28 @@ class StoreController extends BaseController{
         }
     }
 
-	function Y_changestatus()
-	{
-		$store_id = I('post.store_id');
-		$data['order_sn'] = I('post.order_sn');
-		$data['shipping_order'] = I('post.deliverSn');
-		$data['shipping_name'] = I('post.deliverName');
-		$data['shipping_code'] = I('post.deliverCode');
-		$data['y_time'] = I('post.timeStamp');
-		M()->startTrans();
-		$res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name']));
-		$res1 = $this->deliveryHandle($data);
-		if($res && $res1){
-			M()->commit();
-			exit(json_encode(array('code'=>1,'Msg'=>'发货成功！')));
-		}else{
-			M()->rollback();
-			exit(json_encode(array('code'=>0,'Msg'=>'发货失败！')));
-		}
-	}
+    function Y_changestatus()
+    {
+        $store_id = I('post.store_id');
+        $data['order_sn'] = I('post.order_sn');
+        $data['shipping_order'] = base64_decode(I('post.deliverSn'));
+        $data['shipping_name'] = I('post.deliverName');
+        $data['shipping_code'] = I('post.deliverCode');
+        $data['y_time'] = I('post.timeStamp');
+        M()->startTrans();
+        $res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name']));
+        $res1 = $this->deliveryHandle($data);
+        if($res && $res1){
+            M()->commit();
+            exit(json_encode(array('code'=>1,'Msg'=>'发货成功！')));
+        }elseif (!$res){
+            M()->rollback();
+            exit(json_encode(array('code'=>0,'Msg'=>'订单修改失败')));
+        }else{
+            M()->rollback();
+            exit(json_encode(array('code'=>0,'Msg'=>'创建发货订单失败')));
+        }
+    }
 
 	function deliveryHandle($data)
 	{

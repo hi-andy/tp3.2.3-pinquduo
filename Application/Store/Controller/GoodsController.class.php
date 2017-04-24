@@ -321,7 +321,6 @@ class GoodsController extends BaseController {
         }
         $GoodsLogic = new GoodsLogic();
         $Goods = D('Goods'); //
-
         if(IS_POST)
         {
             $min_num = key($_POST['item']);
@@ -374,6 +373,15 @@ class GoodsController extends BaseController {
                 //$Goods->cat_id = $_POST['cat_id_1'];
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
+                //详情图片
+                $Goods->goods_content = null;
+                $goodscontent = "";
+                foreach ($_POST['goods_content'] as $v){
+                    $goodscontent .= '<img src="'.$v.'">';
+                }
+                $goodscontent = str_replace('<img src="">','',$goodscontent);
+                $Goods->goods_content = $goodscontent;
+                //
                 if ($type == 2)
                 {
                     $goods_id = $_POST['goods_id'];
@@ -414,9 +422,9 @@ class GoodsController extends BaseController {
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
 //        $brandList = $GoodsLogic->getSortBrands();
-        //$goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
-        //if(empty($goodsType))
-        $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+        $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
+        if(empty($goodsType))
+            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
         $haitao = $goodsInfo['is_special'];
         if($haitao==1) {
             $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
@@ -433,6 +441,7 @@ class GoodsController extends BaseController {
         $level_cat = array_merge($level_cat);
         $level_cat = array_reverse($level_cat, TRUE);
         array_unshift($level_cat,array('id'=>'0','name'=>'null'));
+        $this->assign('goodsContent',getImgs($goodsInfo['goods_content']));
         $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
         $this->assign('goodsType',$goodsType);

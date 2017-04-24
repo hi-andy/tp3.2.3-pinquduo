@@ -234,7 +234,33 @@
                                 <tr>
                                     <td>商品详情描述:<br><span  style="color:red; ">商品详情描述图最大规格640*960</span></td>
                                     <td width="85%">
-										<textarea class="span12 ckeditor" id="goods_content" name="goods_content" title="">{$goodsInfo.goods_content}</textarea>
+										<!--<textarea class="span12 ckeditor" id="goods_content" name="goods_content" title="">{$goodsInfo.goods_content}</textarea>-->
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <foreach name="goodsContent" item="vo" key="k" >
+                                                        <div style="width:100px; text-align:center; margin: 5px; display:inline-block;" class="goods_xc">
+                                                            <input type="hidden" value="{$vo}" name="goods_content[]">
+                                                            <a onclick="" href="{$vo}" target="_blank"><img width="100" height="100" src="{$vo}"></a>
+                                                            <br>
+                                                            <a href="javascript:void(0)" onclick="ClearPicArr2(this,'{$vo}','0')">删除</a>
+                                                        </div>
+                                                    </foreach>
+
+                                                    <div class="goods_xc2" style="width:100px; text-align:center; margin: 5px; display:inline-block;">
+                                                        <input type="hidden" name="goods_content[]" value="" />
+                                                        <a href="javascript:void(0);" onclick="GetUploadify(5,'','goods','call_back4');"><img src="/Public/images/add-button.jpg" width="100" height="100" /></a>
+                                                        <br/>
+                                                        <a href="javascript:void(0)">&nbsp;&nbsp;</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><span style="color: red">温馨提示：点击+号上传您的多张商品图(轮播图)，大小640*400px（首图请最后上传）</span></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
                                         <span id="err_goods_content" style="color:#F00; display:none;"></span>                                         
                                     </td>                                                                       
                                 </tr>
@@ -337,19 +363,33 @@
         $("#original_img").val(fileurl_tmp);
     	$("#original_img2").attr('href', fileurl_tmp);
     }
- 
+
     // 上传商品相册回调函数
     function call_back2(paths){
-        
-        var  last_div = $(".goods_xc:last").prop("outerHTML");	
+
+        var  last_div = $(".goods_xc:last").prop("outerHTML");
         for (i=0;i<paths.length ;i++ )
-        {                    
+        {
             $(".goods_xc:eq(0)").before(last_div);	// 插入一个 新图片
-                $(".goods_xc:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
+            $(".goods_xc:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
             $(".goods_xc:eq(0)").find('img').attr('src',paths[i]);// 修改他的图片路径
-                $(".goods_xc:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
+            $(".goods_xc:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
             $(".goods_xc:eq(0)").find('input').val(paths[i]); // 设置隐藏域 要提交的值
-        } 			   
+        }
+    }
+
+    // 上传商品相册回调函数
+    function call_back4(paths){
+
+        var  last_div = $(".goods_xc2:last").prop("outerHTML");
+        for (i=0;i<paths.length ;i++ )
+        {
+            $(".goods_xc2:eq(0)").before(last_div);	// 插入一个 新图片
+            $(".goods_xc2:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
+            $(".goods_xc2:eq(0)").find('img').attr('src',paths[i]);// 修改他的图片路径
+            $(".goods_xc2:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
+            $(".goods_xc2:eq(0)").find('input').val(paths[i]); // 设置隐藏域 要提交的值
+        }
     }
     /*
      * 上传之后删除组图input     

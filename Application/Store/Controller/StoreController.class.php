@@ -76,7 +76,7 @@ class StoreController extends BaseController{
         $total = 0;
         $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_info['id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
 
-        $suoding = M('store_withdrawal')->where('store_id='.$store_info['id'].' and status=1')->field('withdrawal_money')->order('sw_id desc')->find();
+        $suoding = M('store_withdrawal')->where('store_id='.$store_info['id'].' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
         if(!empty($suoding))
         {
             $this->assign('suoding',$suoding);
@@ -99,7 +99,7 @@ class StoreController extends BaseController{
      */
     public function post_withdrawal(){
         if (empty(redis("post_withdrawal".$_SESSION['merchant_id']))) {//判断是否有锁
-            redis("post_withdrawal".$_SESSION['merchant_id'], 1, "5");//写入锁
+            redis("post_withdrawal".$_SESSION['merchant_id'], 1, 5);//写入锁
             $data = $_POST;
 
             if ($data['withdrawal_money'] == 0 || $data['withdrawal_money'] < 0) {
