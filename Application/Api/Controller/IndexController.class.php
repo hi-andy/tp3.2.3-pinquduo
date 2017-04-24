@@ -335,17 +335,20 @@ class IndexController extends BaseController {
     {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
-        $rdsname = "getRankingList".$page.$pagesize;
+        $version = I('version');
+        $rdsname = "getRankingList".$page.$pagesize.$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $count = M('goods')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->count();
-            $goods = M('goods')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->order(' sales desc ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom')->page($page, $pagesize)->select();
-
-            foreach ($goods as &$v) {
-                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+            if($version=='2.0.0'){
+                $where = '`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ';
+                $data = $this->getGoodsList($where,$page,$pagesize);
+            }else{
+                $count = M('goods')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->count();
+                $goods = M('goods')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->order(' sales desc ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom')->page($page, $pagesize)->select();
+                foreach ($goods as &$v) {
+                    $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+                }
+                $data = $this->listPageData($count, $goods);
             }
-
-            $data = $this->listPageData($count, $goods);
-
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -514,11 +517,6 @@ class IndexController extends BaseController {
         $condition2['show_type'] = 0;
         $condition2['is_recommend'] = 0;
         $data = $this->getGoodsList($condition2,$page,$pagesize);
-//        $count = M('goods')->where($condition2)->count();
-//        $order = "sales desc";//筛选条件
-//        $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
-//
-//        $data = $this->listPageData($count,$goods);
         return $data;
     }
 
@@ -541,7 +539,6 @@ class IndexController extends BaseController {
         $login_url = $Duiba->buildcreditautologinrequest(C('Duiba')['AppKey'],C('Duiba')['AppSecret'],$user_id,$credits);
         echo "<script>location.href='".$login_url."'</script>";
         die;
-        //exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('duiba_login_url'=>$login_url))));
     }
 
     /**

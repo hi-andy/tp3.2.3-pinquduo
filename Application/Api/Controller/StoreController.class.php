@@ -222,10 +222,11 @@ class StoreController extends BaseController{
 		$store_id = I('post.store_id');
 		$data['order_sn'] = I('post.order_sn');
 		$data['shipping_order'] = (I('post.deliverSn'));
-		$code = $data['shipping_code'] = I('deliverCode');
+		$code = $data['shipping_code'] = I('post.deliverCode');
 		$data['y_time'] = I('post.timeStamp');
 
 		$logistics = array('shunfeng'=>'顺丰','shentong'=>'申通','youzhengguonei'=>'邮政包裹/平邮','yuantong'=>'圆通','zhongtong'=>'中通','huitongkuaidi'=>'百世物流','yunda'=>'韵达','zhaijisong'=>'宅急送','tiantian'=>'天天','youzhengguoji'=>'国际包裹','ems'=>'EMS','emsguoji'=>'EMS-国际件','huitongkuaidi'=>'汇通','debangwuliu'=>'德邦','guotongkuaidi'=>'国通','zengyisudi'=>'增益','suer'=>'速尔','zhongtiewuliu'=>'中铁快运','ganzhongnengda'=>'能达','youshuwuliu'=>'优速','quanfengkuaidi'=>'全峰','kuaijiesudi'=>'快捷','wanxiangwuliu'=>'万象','tiandihuayu'=>'天地华宇','annengwuliu'=>'安能');
+
 		$data['shipping_name'] = $logistics[$code];
 		M()->startTrans();
 		$res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name']));
@@ -277,7 +278,7 @@ class StoreController extends BaseController{
 			$updata['automatic_time'] = time()+15*24*60*60;
 		}
 		reserve_logistics($order['order_id']);
-		$res1 = M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
+		$res1 = M('order')->where("order_sn=".$data['order_sn'])->save($updata);//改变订单状态
 
 		return $did and $res1;
 	}

@@ -1218,131 +1218,6 @@ class UserController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
-
-//        elseif($type == 1)
-//        {
-//            $count1= M('group_buy')->where('`is_successful`=0 and `is_cancel`=0 and `is_return_or_exchange`=0 and `user_id`='.$user_id.' and `end_time`>'.time())->count();
-//            $prom  = M('group_buy')->where('`is_successful`=0 and `is_cancel`=0 and `is_return_or_exchange`=0 and `user_id`='.$user_id.' and `end_time`>'.time())->order('id desc')->field('id,goods_name,end_time,store_id,end_time,goods_num,order_id,goods_id,goods_price,mark')->page($page,$pagesize)->select();
-//            for($i=0;$i<count($prom);$i++)
-//            {
-//                //将规格放入数组
-//                $goods_spec = M('order_goods')->where('`prom_id`='.$prom[$i]['id'])->field('spec_key_name')->find();
-//                if($prom[$i]['mark']>0)
-//                {
-//                    $order = M('order')->where('`order_id` = '.$prom[$i]['order_id'])->field('order_status,shipping_status,pay_status,order_amount,num')->find();
-//                    $prom[$i]['prom_id'] = $prom[$i]['id'];
-//
-//                    $prom[$i]['order_status'] = $order['order_status'];
-//                    $prom[$i]['shipping_status'] = $order['shipping_status'];
-//                    $prom[$i]['pay_status'] = $order['pay_status'];
-//                    $prom[$i]['order_amount'] = $order['order_amount'];
-//                    $prom[$i]['num'] = $order['num'];
-//
-//                    $prom[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$prom[$i]['goods_id'])->field('original_img')->find();
-//                    $prom[$i]['goodsInfo']['original_img'] = C('HTTP_URL').goods_thum_images($prom[$i]['goods_id'],400,400);
-//                    $prom[$i]['goodsInfo']['goods_name'] = $prom[$i]['goods_name'];
-//                    unset($prom[$i]['goods_name']);
-//                    $prom[$i]['storeInfo'] = M('merchant')->where('`id` = '.$prom[$i]['store_id'])->field('store_name,store_logo')->find();
-//                    $prom[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$prom[$i]['storeInfo']['store_logo'];
-//
-//                    $perant = M('group_buy')->where('`id` = '.$prom[$i]['prom_id'])->field('mark')->find();
-//                    $num = M('group_buy')->where('`is_pay`=1 and `mark` = '.$perant['mark'])->count();
-//
-//                    $order_status = $this->getPromStatus($order,$prom[$i],$num);
-//                    $prom[$i]['annotation'] = $order_status['annotation'];
-//                    $prom[$i]['order_type'] = $order_status['order_type'];
-//                }else{
-//                    $order = M('order')->where('`order_id` = '.$prom[$i]['order_id'])->field('order_status,shipping_status,pay_status,order_amount,num')->find();
-//                    $prom[$i]['prom_id'] = $prom[$i]['id'];
-//
-//                    $prom[$i]['order_status'] = $order['order_status'];
-//                    $prom[$i]['shipping_status'] = $order['shipping_status'];
-//                    $prom[$i]['pay_status'] = $order['pay_status'];
-//                    $prom[$i]['order_amount'] = $order['order_amount'];
-//                    $prom[$i]['num'] = $order['num'];
-//
-//                    $prom[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$prom[$i]['goods_id'])->field('original_img')->find();
-//                    $prom[$i]['goodsInfo']['original_img'] = C('HTTP_URL').goods_thum_images($prom[$i]['goods_id'],400,400);
-//                    $prom[$i]['goodsInfo']['goods_name'] = $prom[$i]['goods_name'];
-//                    unset($prom[$i]['goods_name']);
-//                    $prom[$i]['storeInfo'] = M('merchant')->where('`id` = '.$prom[$i]['store_id'])->field('store_name,store_logo')->find();
-//                    $prom[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$prom[$i]['storeInfo']['store_logo'];
-//
-//
-//                    $num = M('group_buy')->where('`is_pay`=1 and `mark`='.$prom[$i]['id'])->count();
-//
-//                    $order_status = $this->getPromStatus($order,$prom[$i],$num);
-//                    $prom[$i]['annotation'] = $order_status['annotation'];
-//                    $prom[$i]['order_type'] = $order_status['order_type'];
-//                }
-//
-//                $prom[$i] = $this->FormatOrderInfo($prom[$i]);
-//                $prom[$i]['key_name']=$goods_spec['spec_key_name'];
-//            }
-//            $data = $this->listPageData($count1,$prom);
-//            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>$data)));
-//        }
-//        elseif($type == 2)
-//        {
-//            //代发货
-//            $count = M('order')->where('`pay_status` = 1 and (`order_status` = 1 or `order_status` = 0) and `shipping_status` != 1 and
-//        `user_id` = '.$user_id)->count();
-//            $daifahuo = M('order')->where('`pay_status` = 1 and (`order_status` = 1 or `order_status` = 0) and `shipping_status` != 1 and
-//        `user_id` = '.$user_id)->field('order_id,goods_id,goods_price')->page($page,10)->select();
-//
-//            $info = $this->getGoodsInfo($daifahuo);
-//
-//            for($i=0;$i<count($info);$i++)
-//            {
-//                $daifahuo[$i]['annotation'] = '待发货';
-//                $daifahuo[$i]['store_id'] = $info['store_id'];
-//            }
-//            $daifahuo = $this->listPageData($count,$daifahuo);
-//            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>$daifahuo)));
-//        }
-//        elseif($type == 3)
-//        {
-//            //待收货
-//            $count = M('order')->where('`shipping_status` = 1 and `order_status` = 1 and `user_id` = '.$user_id)->count();
-//            $daishouhuo = M('order')->where('`shipping_status` = 1 and `order_status` = 1 and `user_id` = '.$user_id)->field('order_id,goods_id,goods_price')->page($page,0)->select();
-//            $info = $this->getGoodsInfo($daishouhuo);
-//            for($i=0;$i<count($info);$i++)
-//            {
-//                $daishouhuo[$i]['annotation'] = '待收货';
-//                $daishouhuo[$i]['info'] = $info[$i];
-//            }
-//            $daishouhuo = $this->listPageData($count,$daishouhuo);
-//            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>$daishouhuo)));
-//        }
-//        elseif($type == 4)
-//        {
-//            //待付款
-//            $count = M('order')->where('`pay_status` = 0 and `order_status` = 0 and `user_id` = '.$user_id)->count();
-//            $daifukuan = M('order')->where('`pay_status` = 0 and `order_status` = 0 and `user_id` = '.$user_id)->field('order_id,goods_id,goods_price')->page($page,10)->select();
-//            $info = $this->getGoodsInfo($daifukuan);
-//            for($i=0;$i<count($info);$i++)
-//            {
-//                $daifukuan[$i]['annotation'] = '待付款';
-//                $daifukuan[$i]['info'] = $info[$i];
-//            }
-//            $daifukuan = $this->listPageData($count,$daifukuan);
-//            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>$daifukuan)));
-//        }
-//        elseif($type == 5)
-//        {
-//            //已完成
-//            $count = M('order')->where('`order_status` = 5 and `user_id` = '.$user_id)->count();
-//            $success = M('order')->where('`order_status` = 5 and `user_id` = '.$user_id)->field('order_id,goods_id,goods_price')->page($page,0)->select();
-//            $info = $this->getGoodsInfo($success);
-//            for($i=0;$i<count($info);$i++)
-//            {
-//                $success[$i]['annotation'] = '退款/售后';
-//                $success[$i]['info'] = $info[$i];
-//            }
-//            $after_sales = $this->listPageData($count,$success);
-//            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>$success)));
-//        }
-
     }
     //获取商品详情
     function getGoodsInfo($array)
@@ -1494,44 +1369,6 @@ class UserController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-//    /*
-//         ; 说明：需要包含接口声明文件，可将该文件拷贝到自己的程序组织目录下。
-//         $accountSid= ;  说明：主账号，登陆云通讯网站后，可在"控制台-应用"中看到开发者主账号ACCOUNT SID。
-//         $accountToken= ;  说明：主账号Token，登陆云通讯网站后，可在控制台-应用中看到开发者主账号AUTH TOKEN。
-//         $appId=;  说明：应用Id，如果是在沙盒环境开发，请配置"控制台-应用-测试DEMO"中的APPID。如切换到生产环境， 请使用自己创建应用的APPID。
-//         $serverIP='app.cloopen.com';  说明：生成环境请求地址：app.cloopen.com。
-//         $serverPort='8883';  说明：请求端口 ，无论生产环境还是沙盒环境都为8883.
-//         $softVersion='2013-12-26';  说明：REST API版本号保持不变。
-//     */
-//    function sendTemplateSMS($to,$datas,$tempId)
-//    {
-//        include_once("../SDK/CCPRestSDK.php");
-//        // 初始化REST SDK
-//        global $accountSid,$accountToken,$appId,$serverIP,$serverPort,$softVersion;
-//        $rest = new REST($serverIP,$serverPort,$softVersion);
-//        $rest->setAccount($accountSid,$accountToken);
-//        $rest->setAppId($appId);
-//        // 发送模板短信
-//        echo "Sending TemplateSMS to $to";
-//        $result = $rest->sendTemplateSMS($to,$datas,$tempId);
-//        if($result == NULL ) {
-//            echo "result error!";
-//            exit();
-//        }
-//        if($result->statusCode!=0) {
-//            echo "模板短信发送失败!";
-//            echo "error code :" . $result->statusCode . "";
-//            echo "error msg :" . $result->statusMsg . "";
-//            //下面可以自己添加错误处理逻辑
-//        }else{
-//            echo "模板短信发送成功!";
-//            // 获取返回信息
-//            $smsmessage = $result->TemplateSMS;
-//            echo "dateCreated:".$smsmessage->dateCreated."";
-//            echo "smsMessageSid:".$smsmessage->smsMessageSid."";
-//            //下面可以自己添加成功处理逻辑
-//        }
-//    }
 
     public function getIncreaseGoodsTime()
     {
@@ -2156,24 +1993,24 @@ class UserController extends BaseController {
         }
     }
 
-    function test()
-    {
-        //将不正常的订单状态进行修改
-        $luan_order = M('group_buy')->where('mark = 0 and is_pay = 1 and is_successful = 0 and end_time>'.time())->select();
-        if(!empty($luan_order))
-        {
-            $num =count($luan_order);
-            for ($i=0;$i<$num;$i++)
-            {
-                $info =  M('group_buy')->where('mark = '.$luan_order[$i]['id'].' or id ='.$luan_order[$i]['id'])->count();
-                if($info == $luan_order[$i]['goods_num'])
-                {
-                    $free = new GoodsController();
-                    $free->getFree($luan_order[$i]['id']);
-                }
-            }
-        }
-    }
+//    function test()
+//    {
+//        //将不正常的订单状态进行修改
+//        $luan_order = M('group_buy')->where('mark = 0 and is_pay = 1 and is_successful = 0 and end_time>'.time())->select();
+//        if(!empty($luan_order))
+//        {
+//            $num =count($luan_order);
+//            for ($i=0;$i<$num;$i++)
+//            {
+//                $info =  M('group_buy')->where('mark = '.$luan_order[$i]['id'].' or id ='.$luan_order[$i]['id'])->count();
+//                if($info == $luan_order[$i]['goods_num'])
+//                {
+//                    $free = new GoodsController();
+//                    $free->getFree($luan_order[$i]['id']);
+//                }
+//            }
+//        }
+//    }
 
     public function doRefund($orderSn, $refundFee, $opUserPassMd5 = '', $transactionId = '')
     {
@@ -2206,5 +2043,71 @@ class UserController extends BaseController {
                 'out_refund_no' => $refundSn
             );
         }
+    }
+
+    /*
+     * 版本：2.0.0
+     * 获取订单列表
+     * */
+    function getOrderList(){
+        I('user_id') && $user_id = I('user_id');
+        $type = I('type',0);//0.全部 1.拼团中 2.待发货 3.待收货 4.待付款 5.已完成
+        $page = I('page',1);
+        $pagesize = I('pagesiaze',20);
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        $rdsname = "getOrderList".$user_id.$type.$page.$pagesize;
+
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            if ($type == 1) {
+                $condition = '`order_status`=8 and `user_id`=' . $user_id;
+            } elseif ($type == 2) {//待发货
+                $condition = '`pay_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `shipping_status` != 1  and `user_id` = ' . $user_id;
+            } elseif ($type == 3) {//待收货
+                $condition = '`pay_status` = 1 and `shipping_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `user_id` = ' . $user_id;
+            } elseif ($type == 4) {//待付款
+                $condition = '`pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = ' . $user_id;
+            } elseif ($type == 5) {//已完成
+                $condition = '`order_status`=2 and `user_id` = ' . $user_id;
+            } else {
+                $condition = '`user_id` = ' . $user_id;
+            }
+            $all = $this->get_OrderList($condition,$page,$pagesize);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        }else{
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
+
+    function get_Detaile_for_Prom()
+    {
+        $prom_id = I('prom_id');
+        $user_id = I('user_id');
+        $page = I('page',1);
+        $pagesize = I('pagesize',1);
+        I('invitation_num') && $invitation_num = strtolower(I('invitation_num'));//统一大小写
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
+        if($invitation_num)
+        {
+            $order = M('order')->where("`invitation_num`='$invitation_num'")->field('order_id,user_id,goods_id')->find();
+        }else{
+            $order = M('order')->where('`prom_id`='.$prom_id)->field('order_id,user_id,order,goods_id')->find();
+        }
+        $data['goodsInfo'] = M('goods')->where('goods_id = '.$order['goods_id'])->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->find();
+        //判断进来的用户身份
+        $res = M('group_buy')->where('id='.$prom_id.' or mark = '.$prom_id)->order('id asc')->select();
+        //团长
+        if($res[0]['user_id']==$user_id)
+        {
+            //计算多少人参团了
+            
+        }
+
+
     }
 }
