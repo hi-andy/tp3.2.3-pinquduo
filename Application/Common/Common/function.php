@@ -53,7 +53,8 @@ function redislist($key, $value=null){
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
  * @param $key
  */
-function redisdelall($key){
+function redisdelall($key)
+{
     $redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
