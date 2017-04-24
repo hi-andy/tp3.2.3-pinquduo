@@ -13,7 +13,18 @@
     border: none;
     cursor: pointer;
 }
-
+.notice{
+    display:inline-block;
+    width:1.5rem;
+    height:1.5rem;
+    position:relative;
+    top:.3rem;
+    left:.3rem;
+    margin-right:.6rem;
+    background:#ccc;
+    background: url(notice.png) no-repeat center center;
+    /*background-size:100%;*/
+}
 .icheckbox_flat-blue {
     background-position: 0 0;
 }
