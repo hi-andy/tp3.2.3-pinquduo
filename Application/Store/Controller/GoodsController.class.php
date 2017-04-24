@@ -359,7 +359,7 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
-            if($_POST['goods_content'] == ''){
+            if(empty($_POST['goods_content'][0])){
                 $return_arr = array(
                     'status' => -1,
                     'msg'   => '请填写商品详细描述！',
