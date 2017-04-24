@@ -29,22 +29,26 @@
                    		 	</div>
 		  				</div>
 		  			</div>
+					<!--<span class="notice" title=""></span>-->
 		  			<div class="box-body">
 		  				<div >
-				  			<div style="position: relative;min-height: 1px;padding-right: 90px;padding-left: 90px;float: left;">
-				  				今日销售额：￥<empty name="today.today_amount">0<else/>{$today.today_amount}</empty>
+				  			<div style="position: relative;min-height: 1px;padding-right: 60px;padding-left: 60px;float: left;">
+								<span class="notice" title="用户当天付款后即累计到这里，仅累计不扣除"></span>今日销售额：￥<empty name="today.today_amount">0<else/>{$today.today_amount}</empty>
 				  			</div>
-				  				<div style="position: relative;min-height: 1px;padding-right: 90px;padding-left: 90px;float: left;">
-								    总销售额：￥{$today.sign|default='0'}
+				  				<div style="position: relative;min-height: 1px;padding-right: 60px;padding-left: 60px;float: left;">
+									<span class="notice" title="用户付款后的即累计到这里，仅累计不扣除"></span>总销售额：￥{$today.sign|default='0'}
 				  			</div>
-				  				<div style="position: relative;min-height: 1px;padding-right: 90px;padding-left: 90px;float: left;">
-				  				今日订单数：{$today.today_order}
+				  				<div style="position: relative;min-height: 1px;padding-right: 60px;padding-left: 60px;float: left;">
+									<span class="notice" title="仅含已经付款的订单，未付款的不算入"></span>今日订单数：{$today.today_order}
 				  			</div>
-				  				<div style="position: relative;min-height: 1px;padding-right: 90px;padding-left: 90px;float: left;">
-				  				今日取消订单：{$today.cancel_order}
+				  				<div style="position: relative;min-height: 1px;padding-right: 60px;padding-left: 60px;float: left;">
+									<span class="notice" title="买家拉取订单后尚未付款，3分钟后将自动取消该订单，或由买家手动取消"></span>今日取消订单：{$today.cancel_order}
 				  			</div>
-						    <div style="position: relative;min-height: 1px;padding-right: 90px;padding-left: 90px;float: left;">
-							    可提现金额：￥<empty name="today.reflect">0<else/>{$today.reflect}</empty>
+						    <div style="position: relative;min-height: 1px;padding-right: 60px;padding-left: 60px;float: left;">
+								<span class="notice" title="待发货订单包含单买发货订单和团购发货订单"></span>待发货订单：<span style="color:red;"><empty name="today.undelivered_order">0<else/>{$today.undelivered_order}</empty></span>
+						    </div>
+							<div style="position: relative;min-height: 1px;padding-right: 90px;padding-left: 90px;float: left;">
+								<span class="notice" title="待处理的退换货订单"></span>待售后订单：<span style="color:red;"><empty name="today.service_order">0<else/>{$today.service_order}</empty></span>
 						    </div>
 			  			</div>
 		  			</div>
