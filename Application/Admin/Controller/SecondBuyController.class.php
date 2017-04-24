@@ -18,59 +18,69 @@ class SecondBuyController extends Controller {
     // 秒杀商品列表
     public function goodsList()
     {
-        $dateTime = (C('SecondBuy'));
-        $this->assign('time', $dateTime['time']);
-        $this->assign('date', $dateTime['date']);
+        $dateTime = C('SecondBuy');
+        $this->assign('time', $dateTime['times']);
+        $this->assign('date', $dateTime['dates']);
         $this->display();
     }
 
-    // 添加秒杀商品页
+    // 选择秒杀商品页
     public function selectGoods()
     {
-        $dateTime = (C('SecondBuy'));
-
+        $dateTime = C('SecondBuy');
         $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
         $this->assign('store', $store);
-        $this->assign('startTimes', $dateTime['time']);
-        $this->assign('startDates', $dateTime['date']);
+        $this->assign('startTimes', $dateTime['times']);
+        $this->assign('startDates', $dateTime['dates']);
         $this->display();
     }
 
     // 保存秒杀商品
     public function save()
     {
-        $data = I('post.');
-        $data['start_date'] = strtotime($data['start_date']);
+        $data['start_date'] = strtotime(I('post.date'));
+        $data['start_time'] = I('post.time');
         $data['create_time'] = time();
-        $data['type'] = 1;  // 标识 0.1 秒杀商品类型
-        foreach ($data['goods_id'] as $value) {
-            $data['goods_id'] = $value;
-            $res = M('goods_activity')->data($data)->add();
+        $data['type'] = 1;
+
+//        $start_date = strtotime(I('post.date'));
+//        $start_time = I('post.time');
+//        $create_time = time();
+
+        $goods = I('post.goods')['goods'];
+        foreach ($goods as $value) {
+            $dataList[] = array_merge($data, $value);
+            //$sql[] = "INSERT INTO tp_goods_activity (`goods_id`,`quantity`,`start_date`,`start_time`,`create_time`,`type`) VALUES('".$value['goods_id']."','".$value['quantity']."','".$start_date."','".$start_time."','".$create_time."','1')";
         }
-        if($res)
-        {
-            $this->success("添加成功",U('SecondBuy/goodsList'));
-        }else{
-            $this->success("添加失败",U('SecondBuy/goodsList'));
-        }
+        //file_put_contents('data.txt', print_r($sql, true), FILE_APPEND);
+//        foreach ($sql as $value) {
+//            if (mysqli_query($value)) {
+//                $count ++;
+//            }
+//        }
+        M('goods_activity')->addAll($dataList);
+        $this->success("添加成功", U('SecondBuy/goodsList'));
+//        if($count > 0) {
+//            $this->success("添加成功", U('SecondBuy/goodsList'));
+//        } else {
+//            $this->error("添加失败", U('SecondBuy/goodsList'));
+//        }
     }
 
+    // ajax 返回商品列表
     public function ajaxindex()
     {
         $where = 'WHERE ga.type=1';
-        if($store_name = I('store_name'))
-        {
+        if($store_name = I('store_name')) {
             $this->assign('store_name', I('store_name'));
             //$where = $this->getStoreWhere($where,I('store_name'));
             $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->getField('id');
             $where .= ' AND g.store_id='.$store_id;
         }
-
         if ($date = I('date')) {
             $startDate = strtotime($date);
             $where .= ' AND ga.start_date='.$startDate;
         }
-
         if ($time = I('time')) {
             $startTime = intval($time);
             $where .= ' AND ga.start_time='.$startTime;
@@ -94,13 +104,13 @@ class SecondBuyController extends Controller {
 
         $this->assign('goods', $goodsList);
         $this->assign('page', $show);// 赋值分页输出
-        $dateTime = (C('SecondBuy'));
-        $this->assign('time', $dateTime['time']);
-        $this->assign('date', $dateTime['date']);
+        $dateTime = C('SecondBuy');
+        $this->assign('time', $dateTime['times']);
+        $this->assign('date', $dateTime['dates']);
         $this->display();
     }
 
-    // 搜索商品，添加到秒杀
+    // 搜索商品，以添加到秒杀
     public function search_goods()
     {
         $where = ' is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0';//搜索条件
@@ -145,33 +155,7 @@ class SecondBuyController extends Controller {
         $this->display($tpl);
     }
 
-    function getSortCategory()
-    {
-        $categoryList = M("GoodsCategory")->where('`is_show`=1')->getField('id,name,parent_id,level');
-        $nameList = array();
-        foreach ($categoryList as $k => $v) {
-
-            //$str_pad = str_pad('',($v[level] * 5),'-',STR_PAD_LEFT);
-            $name = getFirstCharter($v['name']) . ' ' . $v['name']; // 前面加上拼音首字母
-            //$name = getFirstCharter($v['name']) .' '. $v['name'].' '.$v['level']; // 前面加上拼音首字母
-            /*
-            // 找他老爸
-            $parent_id = $v['parent_id'];
-            if($parent_id)
-                $name .= '--'.$categoryList[$parent_id]['name'];
-            // 找他 爷爷
-            $parent_id = $categoryList[$v['parent_id']]['parent_id'];
-            if($parent_id)
-                $name .= '--'.$categoryList[$parent_id]['name'];
-            */
-            $nameList[] = $v['name'] = $name;
-            $categoryList[$k] = $v;
-        }
-        array_multisort($nameList, SORT_STRING, SORT_ASC, $categoryList);
-
-        return $categoryList;
-    }
-
+    // 删除单个商品
     public function delete()
     {
         // 判断此商品是否有订单
@@ -191,7 +175,6 @@ class SecondBuyController extends Controller {
     public function deleteBatch()
     {
         $data = I('post.');
-        //print_r($data);exit;
         foreach ($data['id'] as $value) {
             $res = M('goods_activity')->where('id='.$value)->delete();
         }
@@ -328,5 +311,29 @@ class SecondBuyController extends Controller {
         $this->assign("URL_imageManager", U('Admin/Ueditor/imageManager', array('savepath' => 'article'))); // 图片管理
         $this->assign("URL_getMovie", U('Admin/Ueditor/getMovie', array('savepath' => 'article'))); // 视频上传
         $this->assign("URL_Home", "");
+    }
+
+    /*
+     * 用商户名关键字做检索
+     * */
+    public function getStoreWhere($where,$store_name)
+    {
+        $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->select();
+        $store_ids =null;
+        $num = count($store_id);
+        for($i=0;$i<$num;$i++)
+        {
+            if($num==1){
+                $store_ids = $store_ids."('".$store_id[$i]['id']."')";
+            }elseif($i==$num-1) {
+                $store_ids = $store_ids."'".$store_id[$i]['id']."')";
+            }elseif($i==0){
+                $store_ids = $store_ids."('".$store_id[$i]['id']."',";
+            }else{
+                $store_ids = $store_ids."'".$store_id[$i]['id']."',";
+            }
+        }
+        $where = "$where and store_id IN $store_ids";
+        return $where;
     }
 }

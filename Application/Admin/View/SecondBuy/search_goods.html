@@ -52,13 +52,16 @@
 			            <tbody id="goos_table">
 			                <volist name="goodsList" id="list">
                                <tr>
-                               	<td class="text-left">                
+								   <td class="text-left">
                                         <input type="checkbox" name="goods_id[]" value="{$list.goods_id}"/>
                                    </td>
                                    <td class="text-left">{$list.goods_name|getSubstr=0,33}</td>
 	                               <td class="text-left">{$list.store_name|getSubstr=0,33}</td>
                                    <td class="text-left">{$list.shop_price}</td>
                                    <td class="text-left">{$list.store_count}</td>
+								   <td class="text-left" id="quantity" style="display:none;">
+									   <input type="text" name="quantity" style="width: 100%;" />
+								   </td>
                                    <td><a href="javascript:void(0)" onclick="javascript:$(this).parent().parent().remove();">删除</a></td>
                                </tr>                              
 			            	</volist>   
@@ -97,8 +100,10 @@
 			   $(this).attr("checked","checked");
 		   }
 		   //$(this).siblings().show();
+            $(this).parent().siblings('#quantity').css('display', 'block'); // 显示商品活动数量字段
 	    });
-		$(".btn-info").remove();	
+
+		$(".btn-info").remove();
         javascript:window.parent.call_back($('#goos_table').html());
   }    
   </script>

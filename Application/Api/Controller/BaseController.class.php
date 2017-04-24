@@ -416,15 +416,56 @@ class BaseController extends Controller {
     }
 
     /**
-     * 定时更新订单状态
+     *快递单打印信息
      */
-    public function CheckOrderStatus(){
-        //超过三十分钟的未支付订单修改为过期
-        $condition['pay_status'] = 0;
-        $condition['_string'] = " `add_time` <= CURRENT_TIMESTAMP - INTERVAL 30 MINUTE ";
-        M('order')->where($condition)->select();
-        echo M()->getLastSql();
+    public function print_kuaidi(){
+        $url = 'http://api.kuaidi100.com/eorderapi.do?method=getElecOrder';
+
+        $data='{"partnerId":"15269563802","partnerKey":"15269563802","net":"","kuaidicom":"yuantong","kuaidinum":"883470537892631971","orderId":"278","recMan":{"name":"冯鸿飞","mobile":"13543390771","tel":"","zipCode":"","province":"","city":"","district":"","addr":"","printAddr":"广东省深圳市宝安区西乡街道圣淘沙骏园5B1603","company":""},"sendMan":{"name":"苗先生","mobile":"18002540807","tel":"","zipcode":"","province":"","city":"","district":"","addr":"","printAddr":"广东省深圳市龙岗区龙珠花园C区9栋","company":""},"cargo":"","count":"1","weight":"0.5","volumn":"","payType":"MONTHLY","expType":"标准快递","remark":"","valinsPay":"","collection":"","needChild":"0","needBack":"0","needTemplate":"1"}';
+
+        //加密sign   parma.key.cunstomer
+        $sign_data = $data.'ewAfmDpi4749'.'CDAC209E6F84C0834E546E86C23C6621';
+
+        $time = time();
+        $param= '&p='.$data;
+        $param.= '&sign='.md5($sign_data);
+        $param.= '&customer=CDAC209E6F84C0834E546E86C23C6621';
+        $param.= '&t='.$time;
+        echo $url.$param;
         die;
+
+        /*
+        http://api.kuaidi100.com/eorderapi.do?method=getElecOrder&param={"recMan":{"name":"向刚","mobile":"13590479355","tel":"","zipCode":"","province":"广东省","city":"深圳市","district":"南山区","addr":"高新南一道2号","company":""},"sendMan":{"name":"向刚","mobile":"13590479355","tel":"","zipCode":"","province":"广东省","city":"深圳市","district":"南山区","addr":"高新南一道2号","company":""},"kuaidicom":"shunfeng","partnerId":"7554070512","partnerKey":"","net":"","kuaidinum":"","orderId":"A2147","payType":"SHIPPER","expType":"标准快递","weight":"1","volumn":"0","count":1,"remark":"备注","valinsPay":"0","collection":"0","needChild":"0","needBack":"0","cargo":"书","needTemplate":"1"}&sign=0df88f6aca30b81130c82420c4c2aafb&t=1480337087&key=ewAfmDpi4749
+        */
+
+        $post_data['partnerId'] = 'DLTlUmMA8292';
+        $post_data['kuaidicom'] = 'shunfeng';
+        $post_data['kuaidinum'] = '928378873999';
+        $post_data['recMan']['name'] = '冯鸿飞';  //收件人名称
+        $post_data['recMan']['mobile'] = '13543390771'; //收件人手机
+        $post_data['recMan']['tel'] = '';
+        $post_data['recMan']['zipCode']  = '';
+        $post_data['recMan']['province'] = '广东省';
+        $post_data['recMan']['city'] = '深圳市';
+        $post_data['recMan']['district'] = '宝安区';
+        $post_data['recMan']['addr'] = '众里创业社区410';
+        $post_data['sendMan']['name'] = '苗先生';
+        $post_data['sendMan']['mobile'] = '18002540807';
+        $post_data['sendMan']['province'] = '广东省';
+        $post_data['sendMan']['city'] = '深圳市';
+        $post_data['sendMan']['district'] = '龙岗区';
+        $post_data['sendMan']['addr'] = '龙珠花园C区9栋';
+        $post_data['cargo'] = '手表';
+        $post_data['count'] = 1;
+        $post_data['needBack'] = 1;
+        $post_data['needTemplate'] = 1;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+        $result = curl_exec($ch);		//返回提交结果，格式与指定的格式一致（result=true代表成功）
     }
 
     /*
@@ -531,10 +572,10 @@ class BaseController extends Controller {
     }
     //版本2.0.0
     //调度商品列表
-    function getGoodsList($where,$page=1,$pagesize=10)
+    function getGoodsList($where,$page=1,$pagesize=10,$order='is_recommend desc,sort asc')
     {
         $count = M('goods')->where($where)->count();
-        $goods = M('goods')->where($where)->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
             $v['original'] = TransformationImgurl($v['original_img']);
