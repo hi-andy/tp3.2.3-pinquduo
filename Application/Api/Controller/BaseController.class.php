@@ -416,15 +416,56 @@ class BaseController extends Controller {
     }
 
     /**
-     * 定时更新订单状态
+     *快递单打印信息
      */
-    public function CheckOrderStatus(){
-        //超过三十分钟的未支付订单修改为过期
-        $condition['pay_status'] = 0;
-        $condition['_string'] = " `add_time` <= CURRENT_TIMESTAMP - INTERVAL 30 MINUTE ";
-        M('order')->where($condition)->select();
-        echo M()->getLastSql();
+    public function print_kuaidi(){
+        $url = 'http://api.kuaidi100.com/eorderapi.do?method=getElecOrder';
+
+        $data='{"partnerId":"15269563802","partnerKey":"15269563802","net":"","kuaidicom":"yuantong","kuaidinum":"883470537892631971","orderId":"278","recMan":{"name":"冯鸿飞","mobile":"13543390771","tel":"","zipCode":"","province":"","city":"","district":"","addr":"","printAddr":"广东省深圳市宝安区西乡街道圣淘沙骏园5B1603","company":""},"sendMan":{"name":"苗先生","mobile":"18002540807","tel":"","zipcode":"","province":"","city":"","district":"","addr":"","printAddr":"广东省深圳市龙岗区龙珠花园C区9栋","company":""},"cargo":"","count":"1","weight":"0.5","volumn":"","payType":"MONTHLY","expType":"标准快递","remark":"","valinsPay":"","collection":"","needChild":"0","needBack":"0","needTemplate":"1"}';
+
+        //加密sign   parma.key.cunstomer
+        $sign_data = $data.'ewAfmDpi4749'.'CDAC209E6F84C0834E546E86C23C6621';
+
+        $time = time();
+        $param= '&p='.$data;
+        $param.= '&sign='.md5($sign_data);
+        $param.= '&customer=CDAC209E6F84C0834E546E86C23C6621';
+        $param.= '&t='.$time;
+        echo $url.$param;
         die;
+
+        /*
+        http://api.kuaidi100.com/eorderapi.do?method=getElecOrder&param={"recMan":{"name":"向刚","mobile":"13590479355","tel":"","zipCode":"","province":"广东省","city":"深圳市","district":"南山区","addr":"高新南一道2号","company":""},"sendMan":{"name":"向刚","mobile":"13590479355","tel":"","zipCode":"","province":"广东省","city":"深圳市","district":"南山区","addr":"高新南一道2号","company":""},"kuaidicom":"shunfeng","partnerId":"7554070512","partnerKey":"","net":"","kuaidinum":"","orderId":"A2147","payType":"SHIPPER","expType":"标准快递","weight":"1","volumn":"0","count":1,"remark":"备注","valinsPay":"0","collection":"0","needChild":"0","needBack":"0","cargo":"书","needTemplate":"1"}&sign=0df88f6aca30b81130c82420c4c2aafb&t=1480337087&key=ewAfmDpi4749
+        */
+
+        $post_data['partnerId'] = 'DLTlUmMA8292';
+        $post_data['kuaidicom'] = 'shunfeng';
+        $post_data['kuaidinum'] = '928378873999';
+        $post_data['recMan']['name'] = '冯鸿飞';  //收件人名称
+        $post_data['recMan']['mobile'] = '13543390771'; //收件人手机
+        $post_data['recMan']['tel'] = '';
+        $post_data['recMan']['zipCode']  = '';
+        $post_data['recMan']['province'] = '广东省';
+        $post_data['recMan']['city'] = '深圳市';
+        $post_data['recMan']['district'] = '宝安区';
+        $post_data['recMan']['addr'] = '众里创业社区410';
+        $post_data['sendMan']['name'] = '苗先生';
+        $post_data['sendMan']['mobile'] = '18002540807';
+        $post_data['sendMan']['province'] = '广东省';
+        $post_data['sendMan']['city'] = '深圳市';
+        $post_data['sendMan']['district'] = '龙岗区';
+        $post_data['sendMan']['addr'] = '龙珠花园C区9栋';
+        $post_data['cargo'] = '手表';
+        $post_data['count'] = 1;
+        $post_data['needBack'] = 1;
+        $post_data['needTemplate'] = 1;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+        $result = curl_exec($ch);		//返回提交结果，格式与指定的格式一致（result=true代表成功）
     }
 
     /*
@@ -512,6 +553,7 @@ class BaseController extends Controller {
         return $pin;
     }
 
+    //版本2.0.0
     //调度商品详情
     function  getGoodsInfo($goods_id)
     {
@@ -528,13 +570,12 @@ class BaseController extends Controller {
 
         return $goods;
     }
-
-
-
-    function getGoodsList($where,$page=1,$pagesize=10)
+    //版本2.0.0
+    //调度商品列表
+    function getGoodsList($where,$page=1,$pagesize=10,$order='is_recommend desc,sort asc')
     {
         $count = M('goods')->where($where)->count();
-        $goods = M('goods')->where($where)->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
             $v['original'] = TransformationImgurl($v['original_img']);
@@ -542,5 +583,98 @@ class BaseController extends Controller {
             $v['original_img'] = TransformationImgurl($v['original_img']);
         }
         return $result;
+    }
+
+    function get_OrderList($where,$page,$pagesize)
+    {
+        $count = M('order')->where($where)->count();
+        $all = M('order')->where($where)->order('order_id desc')->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
+        //团购订单处理
+        $num = count($all);
+        $all = $this->operationOrder($count,$all,$num);
+        return $all;
+    }
+
+    //团购订单处理
+    private function operationOrder($count,$all,$nums)
+    {
+        for ($i=0;$i<$nums;$i++){
+            $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
+            //判断是不是团购订单
+            if (!empty($all[$i]['prom_id'])) {
+                $mark = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,store_id,end_time,goods_num,order_id,goods_id,goods_price,mark,goods_num,end_time')->find();
+                $all[$i]['goods_num'] = $mark['goods_num'];
+                $all[$i]['end_time'] = $mark['end_time'];
+                $all[$i]['goods_price'] = $mark['goods_price'];
+                $all[$i]['mark'] = $mark['mark'];
+                if ($mark['mark'] == 0) {
+                    $num = M('group_buy')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
+                    $all[$i]['type'] = 1;
+                    $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $mark['goods_id'])->field('goods_name,original_img')->find();
+                    $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
+                    $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $mark['store_id'])->field('store_name,store_logo')->find();
+                    $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
+                    $all[$i]['goods_num'] = $mark['goods_num'];
+
+                    $order_status = $this->getPromStatus($all[$i], $mark, $num);
+                    $all[$i]['annotation'] = $order_status['annotation'];
+                    $all[$i]['order_type'] = $order_status['order_type'];
+                } elseif ($mark['mark'] != 0) {
+                    $perant = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
+                    $num = M('group_buy')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
+                    $all[$i]['type'] = 0;
+                    $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
+                    $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
+                    unset($all[$i]['goodsInfo']['shop_price']);
+                    $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
+                    $all[$i]['storeInfo'] = M('merchant')->where('`id`=' . $mark['store_id'])->field('store_name,store_logo')->find();
+                    $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
+
+                    $order_status = $this->getPromStatus($all[$i], $mark, $num);
+                    $all[$i]['annotation'] = $order_status['annotation'];
+                    $all[$i]['order_type'] = $order_status['order_type'];
+                }
+            } elseif (empty($all[$i]['prom_id'])) {
+                $all[$i]['type'] = 2;
+                $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
+                $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
+                unset($all[$i]['goodsInfo']['shop_price']);
+                $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
+                $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $all[$i]['store_id'])->field('store_name,store_logo')->find();
+                $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
+
+                $order_status = $this->getStatus($all[$i]);
+                $all[$i]['annotation'] = $order_status['annotation'];
+                $all[$i]['order_type'] = $order_status['order_type'];
+            }
+            $all[$i] = $this->FormatOrderInfo($all[$i]);
+        }
+        $all = $this->listPageData($count, $all);
+
+        return $all;
+    }
+
+    public function FormatOrderInfo($order){
+        $return['order_id'] = $order['order_id'];
+        $return['goods_id'] = $order['goods_id'];
+        $return['num'] = $order['num'];
+        $return['order_status'] = $order['order_status'];
+        $return['shipping_status'] = $order['shipping_status'];
+        $return['pay_status'] = $order['pay_status'];
+        $return['prom_id'] = $order['prom_id'];
+        $return['end_time'] = $order['end_time'];
+        $return['goods_num'] = $order['goods_num'];
+        $return['goods_price'] = $order['goods_price'];
+        $return['mark'] = $order['mark'];
+        $return['order_amount'] = $order['order_amount'];
+        $return['store_id'] = $order['store_id'];
+        $return['annotation'] = $order['annotation'];
+        $return['order_type'] = $order['order_type'];
+        $return['goodsInfo'] = $order['goodsInfo'];
+        $return['storeInfo'] = $order['storeInfo'];
+        $return['annotation'] = $order['annotation'];
+        $return['order_type'] = $order['order_type'];
+
+        return $return;
     }
 }

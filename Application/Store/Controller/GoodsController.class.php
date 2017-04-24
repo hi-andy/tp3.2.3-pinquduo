@@ -324,6 +324,7 @@ class GoodsController extends BaseController {
 
         if(IS_POST)
         {
+            //print_r($_POST);exit;
             $min_num = key($_POST['item']);
             $price = $_POST['item'][$min_num]['price'];
             if($price==0||empty($price))
@@ -351,7 +352,7 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
-            if($_POST['goods_images'] <= 0){
+            if(empty($_POST['goods_images'])){
                 $return_arr = array(
                     'status' => -1,
                     'msg'   => '请上传商品轮播图！',

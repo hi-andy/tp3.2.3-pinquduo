@@ -2,5 +2,8 @@
 Application/Runtime/
 Application/Common/Conf/db.php
 Uploads/
-/__MACOSX
+__MACOSX
 .DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
