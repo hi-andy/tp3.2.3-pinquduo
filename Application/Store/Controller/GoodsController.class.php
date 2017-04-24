@@ -321,6 +321,7 @@ class GoodsController extends BaseController {
         }
         $GoodsLogic = new GoodsLogic();
         $Goods = D('Goods'); //
+
         if(IS_POST)
         {
             $min_num = key($_POST['item']);
@@ -350,6 +351,22 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
+            if(empty($_POST['goods_images'][0])){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '请上传商品轮播图！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+            if($_POST['goods_content'] == ''){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '请填写商品详细描述！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
         }
 
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
@@ -373,6 +390,7 @@ class GoodsController extends BaseController {
                 //$Goods->cat_id = $_POST['cat_id_1'];
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
+
                 //详情图片
                 $Goods->goods_content = null;
                 $goodscontent = "";
@@ -381,7 +399,7 @@ class GoodsController extends BaseController {
                 }
                 $goodscontent = str_replace('<img src="">','',$goodscontent);
                 $Goods->goods_content = $goodscontent;
-                //
+
                 if ($type == 2)
                 {
                     $goods_id = $_POST['goods_id'];
@@ -418,13 +436,9 @@ class GoodsController extends BaseController {
         }
 
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
-        //$cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
-//        $brandList = $GoodsLogic->getSortBrands();
-        $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
-        if(empty($goodsType))
-            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+        $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
         $haitao = $goodsInfo['is_special'];
         if($haitao==1) {
             $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
@@ -441,6 +455,7 @@ class GoodsController extends BaseController {
         $level_cat = array_merge($level_cat);
         $level_cat = array_reverse($level_cat, TRUE);
         array_unshift($level_cat,array('id'=>'0','name'=>'null'));
+
         $this->assign('goodsContent',getImgs($goodsInfo['goods_content']));
         $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
@@ -858,9 +873,7 @@ class GoodsController extends BaseController {
      */
     public function ajaxGetSpecSelect(){
         $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
-        $GoodsLogic = new GoodsLogic();
-        //$_GET['spec_type'] =  13;
-        $specList = D('Spec')->where("type_id = ".$_GET['spec_type'])->order('`order` desc')->select();
+        $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type'])->order('`order` desc')->select();
         foreach($specList as $k => $v){
             $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
         }
@@ -895,6 +908,7 @@ class GoodsController extends BaseController {
     public function ajaxGetSpecInput(){
         $GoodsLogic = new GoodsLogic();
         $goods_id = $_REQUEST['goods_id'] ? $_REQUEST['goods_id'] : 0;
+        //print_r($_REQUEST);exit;
         $str = $GoodsLogic->getSpecInput($goods_id ,$_POST['spec_arr']);
         exit($str);
     }

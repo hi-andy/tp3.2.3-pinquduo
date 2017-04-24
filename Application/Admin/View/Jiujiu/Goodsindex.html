@@ -15,12 +15,6 @@
                 <div class="panel-body">
                     <div class="navbar navbar-default">
                             <form action="{:U('Admin/Jiujiu/ajaxindex')}" id="search-form2" class="navbar-form form-inline" method="post">
-                                <!--<div class="form-group">-->
-	                            <!--<label class="control-label" for="input-order-id">收货人</label>-->
-	                            <!--<div class="input-group">-->
-	                            <!--<input type="text" name="consignee" placeholder="收货人" id="input-member-id" class="input-sm" style="width:100px;">-->
-	                            <!--</div>-->
-	                            <!--</div>-->
 	                            <div class="form-group">
 		                            <select name="exclusive" id="exclusive" class="form-control">
 			                            <option value="">专场</option>
@@ -35,40 +29,10 @@
 			                            <input type="text" name="store_name" id="store_name" value="{$store_name}" placeholder="商户名"  class="form-control">
 		                            </div>
 	                            </div>
-	                            <!--<div class="form-group">-->
-		                            <!--<select name="date" id="date" class="form-control">-->
-			                            <!--<option value="">秒杀日期</option>-->
-			                            <!--<foreach name="date" item="v" key="k" >-->
-				                            <!--<option value="{$v['date']}">{$v['date']}</option>-->
-			                            <!--</foreach>-->
-		                            <!--</select>-->
-	                            <!--</div>-->
-	                            <!--<div class="form-group">-->
-	                            <!--<select name="time" id="time" class="form-control">-->
-		                            <!--<option value="">秒杀时间</option>-->
-		                            <!--<foreach name="time" item="v" key="k" >-->
-			                            <!--<option value="{$v['time']}">{$v['time']}</option>-->
-		                            <!--</foreach>-->
-	                            <!--</select>-->
-                            <!--</div>-->
-                                <!--<div class="form-group">-->
-                                    <!--<label class="control-label" for="input-order-id">订单编号</label>-->
-                                    <!--<div class="input-group">-->
-                                        <!--<input type="text" name="order_sn" placeholder="订单编号" id="input-order-id" class="input-sm" style="width:100px;">-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--<div class="form-group">-->
-                                    <!--<label class="control-label" for="input-date-added">秒杀时间</label>-->
-                                    <!--<div class="input-group">-->
-                                        <!--<input type="text" name="timegap" value="{$timegap}" placeholder="下单日期"  id="add_time" class="input-sm">-->
-					                 <!--</div>-->
-                                <!--</div>-->
                                 <div class="form-group">
                                 	<a href="javascript:void(0)" onclick="ajax_get_table('search-form2',1)" id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i> 筛选</a>
                                 </div>
 	                            <button type="button" onclick="location.href='{:U('Admin/Jiujiu/jiujiu_info')}'" class="btn btn-primary pull-right" style="margin-left: 25px"><i class="fa fa-plus" ></i>添加商户商品</button>
-	                            <!--<button type="button" onclick="location.href='{:U('Admin/Jiujiu/addEditGoods')}'" class="btn btn-primary pull-right"><i class="fa fa-plus"></i>添加专场商品</button>-->
-                                <!--<button type="submit" class="btn btn-default pull-right"><i class="fa fa-file-excel-o"></i>&nbsp;导出excel</button>                               -->
                             </form>
                     </div>
                     <div id="ajax_return">

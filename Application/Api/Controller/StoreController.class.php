@@ -26,7 +26,21 @@ class StoreController extends BaseController{
 			$goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
 
 			//合成商户logo的分享图
+<<<<<<< HEAD
+			if (file_exists('Public/upload/store_fenxiang/' . $store_id . '.jpg')) {
+				$store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.jpg';
+			} elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.png')) {
+				$store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.png';
+			} elseif (file_exists('Public/upload/store_fenxiang/' . $store_id . '.gif')) {
+				$store['logo_share_url'] = C('HTTP_URL') . '/Public/upload/store_fenxiang/' . $store_id . '.gif';
+			} else {
+				$goods_pic_url = $store['store_logo'];
+				$pin = $this->storeLOGO($goods_pic_url, $store_id);
+				$store['logo_share_url'] = C('HTTP_URL') . $pin;
+			}
+=======
 			$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0|imageslim/dissolve/100/gravity/South/dx/0/dy/0";
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
 			$store['store_logo'] = TransformationImgurl($store['store_logo']);
 			if (empty($count)) {
 				$count = null;
@@ -161,84 +175,107 @@ class StoreController extends BaseController{
 		}
 	}
 
-    function Y_orderlist()
-    {
-        $store_id = I('post.store_id');//商户ID
-        $page = I('post.page',1);//页码
-        $page_num = I('post.page_num',10);//分页变量
-        I('post.start_time') && $start_time = I('post.start_time');
-        I('post.end_time') && $end_time = I('post.end_time');
-        I('post.order_sn') && $order_sn = I('post.order_sn');
+	function Y_orderlist()
+	{
+		$store_id = I('post.store_id');//商户ID
+		$page = I('post.page',1);//页码
+		$page_num = I('post.page_num',10);//分页变量
+		I('post.start_time') && $start_time = I('post.start_time');
+		I('post.end_time') && $end_time = I('post.end_time');
+		I('post.order_sn') && $order_sn = I('post.order_sn');
 
-        $where = "o.store_id = $store_id and o.order_type in (2,14)";
-        if (!empty($start_time) && !empty($end_time)) {
-            $where = "$where and o.add_time between $start_time and $end_time ";
-        }
-        if (!empty($order_sn)){
-            $where = "$where and o.order_sn = $order_sn";
-            $order_info = M('order')->alias('o')
-                ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
-                ->where($where)
-                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
-                ->page($page,$page_num)
-                ->select();
-        }else{
-            $order_info = M('order')->alias('o')
-                ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
-                ->where($where)
-                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
-                ->page($page,$page_num)
-                ->order('order_id asc')
-                ->select();
-        }
-        /*处理订单数组的数据*/
-        if(!empty($order_info)){
-            //处理地址问题
-            $num = count($order_info);
-            for ($i=0;$i<$num;$i++){
-                $adress_info = $this->getAdress($order_info[$i]['address_base']);
-                $order_info[$i]['province'] =$adress_info['province'];//省
-                $order_info[$i]['city'] = $adress_info['city'];//市
-                $order_info[$i]['district'] = $adress_info['district'];//区
-                $order_info[$i]['street'] = $order_info[$i]['address'];//
+		$where = "o.store_id = $store_id and o.order_type in (2,14)";
+		if (!empty($start_time) && !empty($end_time)) {
+			$where = "$where and o.add_time between $start_time and $end_time ";
+		}
+		if (!empty($order_sn)){
+			$where = "$where and o.order_sn = $order_sn";
+			$order_info = M('order')->alias('o')
+				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+				->where($where)
+				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
+<<<<<<< HEAD
+=======
 
-                $goods_info = M('order_goods')->where('order_id = '.$order_info[$i]['order_id'])->field('goods_name,market_price,goods_price,goods_num,spec_key_name')->limit($page,$page_num)->order('order_id asc')->find();
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
+				->select();
+		}else{
+			$order_info = M('order')->alias('o')
+				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+				->where($where)
+				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name')
+<<<<<<< HEAD
+				->limit($page,$page_num)
+=======
+				->page($page,$page_num)
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
+				->order('order_id asc')
+				->select();
+		}
+		/*处理订单数组的数据*/
+		if(!empty($order_info)){
+			//处理地址问题
+			$num = count($order_info);
+			for ($i=0;$i<$num;$i++){
+				$adress_info = $this->getAdress($order_info[$i]['address_base']);
+				$order_info[$i]['province'] =$adress_info['province'];//省
+				$order_info[$i]['city'] = $adress_info['city'];//市
+				$order_info[$i]['district'] = $adress_info['district'];//区
+				$order_info[$i]['street'] = $order_info[$i]['address'];//
 
-                $order_info[$i]['goods'] = $goods_info;
-                //unset()掉多余数据
-                unset($order_info[$i]['address_base']);
-                unset($order_info[$i]['address']);
-                unset($order_info[$i]['goods_id']);
-                unset($order_info[$i]['user_id']);
-            }
-            exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$order_info)));
-        }else{
-            exit(json_encode(array('code'=>0,'Msg'=>'您暂时还有新的未发货订单哦！')));
-        }
-    }
+				$goods_info = M('order_goods')->where('order_id = '.$order_info[$i]['order_id'])->field('goods_name,market_price,goods_price,goods_num,spec_key_name')->limit($page,$page_num)->order('order_id asc')->find();
 
-    function Y_changestatus()
-    {
-        $store_id = I('post.store_id');
-        $data['order_sn'] = I('post.order_sn');
-        $data['shipping_order'] = base64_decode(I('post.deliverSn'));
-        $data['shipping_name'] = I('post.deliverName');
-        $data['shipping_code'] = I('post.deliverCode');
-        $data['y_time'] = I('post.timeStamp');
-        M()->startTrans();
-        $res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name']));
-        $res1 = $this->deliveryHandle($data);
-        if($res && $res1){
-            M()->commit();
-            exit(json_encode(array('code'=>1,'Msg'=>'发货成功！')));
-        }elseif (!$res){
-            M()->rollback();
-            exit(json_encode(array('code'=>0,'Msg'=>'订单修改失败')));
-        }else{
-            M()->rollback();
-            exit(json_encode(array('code'=>0,'Msg'=>'创建发货订单失败')));
-        }
-    }
+				$order_info[$i]['goods'] = $goods_info;
+				//unset()掉多余数据
+				unset($order_info[$i]['address_base']);
+				unset($order_info[$i]['address']);
+				unset($order_info[$i]['goods_id']);
+				unset($order_info[$i]['user_id']);
+			}
+			exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$order_info)));
+		}else{
+			exit(json_encode(array('code'=>0,'Msg'=>'您暂时还有新的未发货订单哦！')));
+		}
+	}
+
+	function Y_changestatus()
+	{
+		$store_id = I('post.store_id');
+		$data['order_sn'] = I('post.order_sn');
+<<<<<<< HEAD
+		$data['shipping_order'] = I('post.deliverSn');
+		$data['shipping_name'] = I('post.deliverName');
+		$data['shipping_code'] = I('post.deliverCode');
+		$data['y_time'] = I('post.timeStamp');
+=======
+		$data['shipping_order'] = (I('post.deliverSn'));
+		$code = $data['shipping_code'] = I('post.deliverCode');
+		$data['y_time'] = I('post.timeStamp');
+
+		$logistics = array('shunfeng'=>'顺丰','shentong'=>'申通','youzhengguonei'=>'邮政包裹/平邮','yuantong'=>'圆通','zhongtong'=>'中通','huitongkuaidi'=>'百世物流','yunda'=>'韵达','zhaijisong'=>'宅急送','tiantian'=>'天天','youzhengguoji'=>'国际包裹','ems'=>'EMS','emsguoji'=>'EMS-国际件','huitongkuaidi'=>'汇通','debangwuliu'=>'德邦','guotongkuaidi'=>'国通','zengyisudi'=>'增益','suer'=>'速尔','zhongtiewuliu'=>'中铁快运','ganzhongnengda'=>'能达','youshuwuliu'=>'优速','quanfengkuaidi'=>'全峰','kuaijiesudi'=>'快捷','wanxiangwuliu'=>'万象','tiandihuayu'=>'天地华宇','annengwuliu'=>'安能');
+
+		$data['shipping_name'] = $logistics[$code];
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
+		M()->startTrans();
+		$res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name']));
+		$res1 = $this->deliveryHandle($data);
+		if($res && $res1){
+			M()->commit();
+			exit(json_encode(array('code'=>1,'Msg'=>'发货成功！')));
+<<<<<<< HEAD
+		}else{
+			M()->rollback();
+			exit(json_encode(array('code'=>0,'Msg'=>'发货失败！')));
+=======
+		}elseif (!$res){
+			M()->rollback();
+			exit(json_encode(array('code'=>0,'Msg'=>'订单修改失败')));
+		}else{
+			M()->rollback();
+			exit(json_encode(array('code'=>0,'Msg'=>'创建发货订单失败')));
+>>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
+		}
+	}
 
 	function deliveryHandle($data)
 	{
@@ -275,7 +312,7 @@ class StoreController extends BaseController{
 			$updata['automatic_time'] = time()+15*24*60*60;
 		}
 		reserve_logistics($order['order_id']);
-		$res1 = M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
+		$res1 = M('order')->where("order_sn=".$data['order_sn'])->save($updata);//改变订单状态
 
 		return $did and $res1;
 	}

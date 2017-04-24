@@ -26,8 +26,9 @@
                                 <input type="text" readonly="readonly" value="{$store_name}" class="form-control" style="width:350px;"/>
                             </td>
                         </tr>
+                        <!--<span class="notice" title=""></span>-->
                         <tr>
-                            <td>提现金额:</td>
+                            <td><span>提现金额:</span><span class="notice" title="支付宝和微信在用户交易的时候会扣取千分之6的手续费，现由拼趣多提现的时候代收。"></span></td>
                             <td>
                                 <input type="text" value="" name="withdrawal_money" class="form-control" style="width:350px;"/>
                                 <label><a >可提现金额为:</a></label><label><a>{$reflect}</a></label>
@@ -43,9 +44,9 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>提现账号:</td>
+                            <td>提现账号:<span class="notice" title="第一次提现后锁定提现账号，提现时间通常为：非工作日48小时内 确认到账。"></span></td>
                             <td>
-                                <input type="text" name="withdrawal_code" class="form-control" style="width:350px;" <if condition="$suoding['withdrawal_money'] neq null">value="{$suoding['withdrawal_code']}" disabled="disabled"</if>/>
+                                <input type="text" name="withdrawal_code" class="form-control" style="width:350px;" <if condition="$suoding['withdrawal_type'] neq null">value="{$suoding['withdrawal_code']}" disabled="disabled"</if>/>
                             </td>
                         </tr>
                         </tbody>
