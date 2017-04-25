@@ -1663,19 +1663,19 @@ class UserController extends BaseController {
             $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->select();
             $orderLogic = new OrderLogic();
             for ($i = 0; $i < count($free_order); $i++) {
-                $order_sn = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->getField('order_sn');
+                $order = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->field('order_sn,user_id');
                 if ($free_order[$i]['code'] == 'weixin') {
                     if ($free_order[$i]['is_jsapi'] == 1) {
-                        $result = $orderLogic->weixinJsBackPay($order_sn, $free_order[$i]['price']);
+                        $result = $orderLogic->weixinJsBackPay($order['order_sn'], $free_order[$i]['price']);
                     } else {
-                        $result = $orderLogic->weixinBackPay($order_sn, $free_order[$i]['price']);
+                        $result = $orderLogic->weixinBackPay($order['order_sn'], $free_order[$i]['price']);
                     }
                     if ($result['status'] == 1) {
                         $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                         M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                     }
                 } elseif ($free_order[$i]['code'] == 'alipay') {
-                    $result = $orderLogic->alipayBackPay($order_sn, $free_order[$i]['price']);
+                    $result = $orderLogic->alipayBackPay($order['order_sn'], $free_order[$i]['price']);
                     if ($result['status'] == 1) {
                         $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                         M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
@@ -1686,15 +1686,17 @@ class UserController extends BaseController {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                 }
+                redisdelall("getOrderList".$order['user_id']."*");
             }
 
             //将单买超时支付的订单设置成取消
-            $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time')->select();
+            $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id')->select();
             if (count($self_cancel_order) > 0) {
                 for ($j = 0; $j < count($self_cancel_order); $j++) {
                     $data_time = $self_cancel_order[$j]['add_time'] + 3 * 60;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
+                        redisdelall("getOrderList".$self_cancel_order[$j]['user_id']."*");
                     }
                     {
                         //优惠卷回到原来的数量
@@ -1714,13 +1716,14 @@ class UserController extends BaseController {
 
             //将团购里超时支付的订单设置成取消
             $where = null;
-            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time')->select();
+            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id')->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
                     $data_time = $join_prom_order[$z]['start_time'] + 3 * 60;
                     if ($data_time <= time()) {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
+                        redisdelall("getOrderList".$self_cancel_order[$j]['user_id']."*");
                     }
                 }
                 $where['id'] = array('IN', array_column($id, 'id'));
@@ -1790,6 +1793,9 @@ class UserController extends BaseController {
                 $data['order_status'] = 2;
                 $data['order_type'] = 4;
                 M('order')->where($ids)->data($data)->save();
+                for ($oi=0; $oi<$one_buy_number; $oi++){
+                    redisdelall("getOrderList".$one_buy[$oi]['user_id']."*");
+                }
             }
 
             //拿出团购的订单
@@ -1802,6 +1808,9 @@ class UserController extends BaseController {
                 $data['order_status'] = 2;
                 $data['order_type'] = 4;
                 M('order')->where($order_id_array)->data($data)->save();
+                for ($gi=0; $gi<$group_nuy_number; $gi++){
+                    redisdelall("getOrderList".$group_nuy[$gi]['user_id']."*");
+                }
             }
 
             echo 'successful';
