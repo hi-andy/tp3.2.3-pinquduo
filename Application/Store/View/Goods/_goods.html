@@ -262,24 +262,24 @@
                         </div>
                          <!--其他信息-->
                          
-                        <!-- 商品相册-->
+                        <!-- 商品相册/轮播图-->
                         <div class="tab-pane" id="tab_goods_images">
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>                                    
                                     <td>                                    
-                                    <foreach name="goodsImages" item="vo" key="k" >
-                                        <div style="width:100px; text-align:center; margin: 5px; display:inline-block;" class="goods_xc">
-                                            <input type="hidden" value="{$vo['image_url']}" name="goods_images[]">
-                                            <a onclick="" href="{$vo['image_url']}" target="_blank"><img width="100" height="100" src="{$vo['image_url']}"></a>
-                                            <br>
-                                            <a href="javascript:void(0)" onclick="ClearPicArr2(this,'{$vo['image_url']}','{$goodsInfo['goods_id']}')">删除</a>
-                                        </div>
-                                    </foreach>
+                                        <foreach name="goodsImages" item="vo" key="k" >
+                                            <div style="width:100px; text-align:center; margin: 5px; display:inline-block;" class="goods_xc">
+                                                <input type="hidden" value="{$vo['image_url']}" name="goods_images[]">
+                                                <a onclick="" href="{$vo['image_url']}" target="_blank"><img width="100" height="100" src="{$vo['image_url']}"></a>
+                                                <br>
+                                                <a href="javascript:void(0)" onclick="ClearPicArr2(this,'{$vo['image_url']}','{$goodsInfo['goods_id']}')">删除</a>
+                                            </div>
+                                        </foreach>
 
                                         <div class="goods_xc" style="width:100px; text-align:center; margin: 5px; display:inline-block;">
                                             <input type="hidden" name="goods_images[]" value="" />
-                                            <a href="javascript:void(0);" onclick="GetUploadify(5,'','goods','call_back2');"><img src="/Public/images/add-button.jpg" width="100" height="100" /></a>
+                                            <a href="javascript:void(0);" onclick="GetUploadify(5,'','goods1','call_back2');"><img src="/Public/images/add-button.jpg" width="100" height="100" /></a>
                                             <br/>
                                             <a href="javascript:void(0)">&nbsp;&nbsp;</a>
                                         </div>
@@ -295,7 +295,7 @@
    
                         <!-- 商品描述-->
                         <div class="tab-pane" id="tab_goods_desc">
-                                <p style="padding: 15px 0 0 0;"><span style="font-weight:bold;">商品详情描述:</span>  &nbsp;&nbsp;&nbsp; </p>
+                                <p style="padding: 15px 0 0 0;"><span style="font-weight:bold;">商品详情描述:</span>  &nbsp;&nbsp; </p>
                                 <div width="85%">
                                     <!--<textarea class="span12 ckeditor" id="goods_content" name="goods_content" title="">{$goodsInfo.goods_content}</textarea>-->
                                     <!--<span id="err_goods_content" style="color:#F00; display:none;"></span>-->
@@ -304,7 +304,7 @@
                                         <tr>
                                             <td>
                                                 <foreach name="goodsContent" item="vo" key="k" >
-                                                    <div style="width:100px; text-align:center; margin: 5px; display:inline-block;" class="goods_xc">
+                                                    <div style="width:100px; text-align:center; margin: 5px; display:inline-block;" class="goods_xc2">
                                                         <input type="hidden" value="{$vo}" name="goods_content[]">
                                                         <a onclick="" href="{$vo}" target="_blank"><img width="100" height="100" src="{$vo}"></a>
                                                         <br>
@@ -314,7 +314,7 @@
 
                                                 <div class="goods_xc2" style="width:100px; text-align:center; margin: 5px; display:inline-block;">
                                                     <input type="hidden" name="goods_content[]" value="" />
-                                                    <a href="javascript:void(0);" onclick="GetUploadify(5,'','goods','call_back4');"><img src="/Public/images/add-button.jpg" width="100" height="100" /></a>
+                                                    <a href="javascript:void(0);" onclick="GetUploadify(20,'','goods2','call_back4');"><img src="/Public/images/add-button.jpg" width="100" height="100" /></a>
                                                     <br/>
                                                     <a href="javascript:void(0)">&nbsp;&nbsp;</a>
                                                 </div>

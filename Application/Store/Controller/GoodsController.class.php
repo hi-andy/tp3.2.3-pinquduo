@@ -362,7 +362,7 @@ class GoodsController extends BaseController {
             if(empty($_POST['goods_content'][0])){
                 $return_arr = array(
                     'status' => -1,
-                    'msg'   => '请填写商品详细描述！',
+                    'msg'   => '请填上传商品详细描述图片！',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
@@ -414,7 +414,7 @@ class GoodsController extends BaseController {
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                     $rdsname = "getGoodsDetails".$goods_id."*";
-                    redisdelall($rdsname);//删除商品详情缓存
+                    REDIS_SWITCH && redisdelall($rdsname);//删除商品详情缓存
                 }
                 else
                 {

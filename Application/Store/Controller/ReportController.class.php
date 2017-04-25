@@ -52,8 +52,8 @@ class ReportController extends BaseController{
         //待发货订单数     order_type=2 OR order_type=14 //待发货；已成团待发货
         $today['undelivered_order'] = M('order')->where($where."(order_type=2 OR order_type=14)")->count();
 
-        //售后订单数      6、待退款 8、待退货
-        $today['service_order'] = M('order')->where($where."(order_type=6 OR order_type=8)")->count();
+        //售后订单数      0 待处理
+        $today['service_order'] = M('return_goods')->where($where."(status=0)")->count();
 
 		//拿到总共能体现的资金
 //		$one = M('order')->where('order_type in (4,16) and store_id='.$_SESSION['merchant_id'])->select();

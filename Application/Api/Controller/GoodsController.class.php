@@ -479,29 +479,17 @@ class GoodsController extends BaseController {
             if (empty($banner)) {
                 $banner = null;
             }
-            $details = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
+            $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
 
             //商品详情
-            $goods['goods_id'] = $details['goods_id'];
-            $goods['goods_name'] = $details['goods_name'];
-            $goods['market_price'] = $details['market_price'];
-            $goods['shop_price'] = $details['shop_price'];
-            $goods['prom'] = $details['prom'];
-            $goods['goods_remark'] = $details['goods_remark'];
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
             $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-            $goods['sales'] = $details['sales'];
-            $goods['is_support_buy'] = $details['is_support_buy'];
-            $goods['free'] = $details['free'];
-            $goods['the_raise'] = $details['the_raise'];
-            $store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
+            $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
             $store['store_logo'] = TransformationImgurl($store['store_logo']);
             $goods['store'] = $store;
-            $goods['is_special'] = $details['is_special'];
-            $goods['goods_content'] = $details['goods_content'];
-            $goods['original_img'] = TransformationImgurl($details['original_img']);
+            $goods['original_img'] = TransformationImgurl($goods['original_img']);
 
-            $goods['fenxiang_url'] = $details['original_img'] . "?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/0/0";
+            $goods['fenxiang_url'] = $goods['original_img'] . "?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/0/0";
 
             //获取已经开好的团
             $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
@@ -535,7 +523,7 @@ class GoodsController extends BaseController {
                 $group_buy = null;
             }
             //计算团购价
-            $goods['prom_price'] = (string)($details['prom_price']);
+            $goods['prom_price'] = (string)($goods['prom_price']);
             //是否收藏
             $goods['collect'] = 0;//默认没收藏
             if (!empty($user_id)) {
@@ -560,11 +548,14 @@ class GoodsController extends BaseController {
                 $new_filter_spec[] = array('title' => $key, 'items' => $filter);
             }
             for ($i = 0; $i < count($new_filter_spec); $i++) {
-                foreach ($new_filter_spec[$i]['items'] as &$v) {
+                foreach ($new_filter_spec[$i]['items'] as $k => &$v) {
                     if (!empty($v['src'])) {
                         $v['src'] = TransformationImgurl($v['src']);
                     }
                 }
+                //商品规格为数字的，顺序显示，比如：尺码
+                asort($new_filter_spec[$i]['items']);
+                $new_filter_spec[$i]['items'] = array_values($new_filter_spec[$i]['items']);
             }
             //如果有传规格过来就改变商品名字
             if (!empty($spec_key)) {
@@ -573,7 +564,7 @@ class GoodsController extends BaseController {
             }
 
             if (!empty($ajax_get)) {
-                $goods['html'] = htmlspecialchars_decode($details['goods_content']);
+                $goods['html'] = htmlspecialchars_decode($goods['goods_content']);
             }
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
