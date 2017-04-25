@@ -9,7 +9,7 @@ define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
-	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
+	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
@@ -242,9 +242,9 @@ return array(
         'transport'=> 'http',
 		'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
 		//这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
-		'notify_url'=>'http://pinquduo.cn/Store/Alipayapi/notify_url',
+		'notify_url'=>'http://api.hn.pinquduo.cn/Store/Alipayapi/notify_url',
 		//这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
-		'return_url'=>'http://pinquduo.cn/Store/Alipayapi/returnurl',
+		'return_url'=>'http://api.hn.pinquduo.cn/Store/Alipayapi/returnurl',
 		//这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
 		'seller_email'=>'2660357732@qq.com',
 		//支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
@@ -260,9 +260,9 @@ return array(
 		'transport'=> 'http',
 		'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
 		//这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
-		'notify_url'=>'http://pinquduo.cn/Store/Index/notify_url',
+		'notify_url'=>'http://api.hn.pinquduo.cn/Store/Index/notify_url',
 		//这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
-		'return_url'=>'http://pinquduo.cn/Store/Index/returnurl',
+		'return_url'=>'http://api.hn.pinquduo.cn/Store/Index/returnurl',
 		//这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
 		'seller_email'=>'2660357732@qq.com',
 		//支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
