@@ -1723,7 +1723,7 @@ class UserController extends BaseController {
                     if ($data_time <= time()) {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
-                        redisdelall("getOrderList".$self_cancel_order[$j]['user_id']."*");
+                        redisdelall("getOrderList".$join_prom_order[$z]['user_id']."*");
                     }
                 }
                 $where['id'] = array('IN', array_column($id, 'id'));
@@ -1766,6 +1766,7 @@ class UserController extends BaseController {
                             $n['id'][] = "'" . $v['id'] . "',";
                             $n['order_id'][] = "'" . $v['order_id'] . "',";
                         }
+                        redisdelall("getOrderList".$v1['user_id']."*");
                     }
                     $prom_man[$k] = $n;
                 }
