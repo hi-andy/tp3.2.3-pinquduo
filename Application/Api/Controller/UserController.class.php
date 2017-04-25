@@ -1663,7 +1663,7 @@ class UserController extends BaseController {
             $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->select();
             $orderLogic = new OrderLogic();
             for ($i = 0; $i < count($free_order); $i++) {
-                $order = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->field('order_sn,user_id,goods_id');
+                $order = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->field('order_sn,user_id,goods_id')->find();
                 if ($free_order[$i]['code'] == 'weixin') {
                     if ($free_order[$i]['is_jsapi'] == 1) {
                         $result = $orderLogic->weixinJsBackPay($order['order_sn'], $free_order[$i]['price']);
