@@ -1686,7 +1686,8 @@ class UserController extends BaseController {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                 }
-                redisdelall("getOrderList".$order['user_id']."*");
+                redisdelall("getOrderList".$order['user_id']."*");//删除订单缓存
+                redisdelall("TuiSong*");//删除推送缓存
             }
 
             //将单买超时支付的订单设置成取消
@@ -1696,7 +1697,8 @@ class UserController extends BaseController {
                     $data_time = $self_cancel_order[$j]['add_time'] + 3 * 60;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
-                        redisdelall("getOrderList".$self_cancel_order[$j]['user_id']."*");
+                        redisdelall("getOrderList".$self_cancel_order[$j]['user_id']."*");//删除订单缓存
+                        redisdelall("TuiSong*");//删除推送缓存
                     }
                     {
                         //优惠卷回到原来的数量
@@ -1723,7 +1725,8 @@ class UserController extends BaseController {
                     if ($data_time <= time()) {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
-                        redisdelall("getOrderList".$join_prom_order[$z]['user_id']."*");
+                        redisdelall("getOrderList".$join_prom_order[$z]['user_id']."*");//删除订单缓存
+                        redisdelall("TuiSong*");//删除推送缓存
                     }
                 }
                 $where['id'] = array('IN', array_column($id, 'id'));
@@ -1766,7 +1769,8 @@ class UserController extends BaseController {
                             $n['id'][] = "'" . $v['id'] . "',";
                             $n['order_id'][] = "'" . $v['order_id'] . "',";
                         }
-                        redisdelall("getOrderList".$v1['user_id']."*");
+                        redisdelall("getOrderList".$v1['user_id']."*");//删除订单缓存
+                        redisdelall("TuiSong*");//删除推送缓存
                     }
                     $prom_man[$k] = $n;
                 }
@@ -1795,7 +1799,8 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($ids)->data($data)->save();
                 for ($oi=0; $oi<$one_buy_number; $oi++){
-                    redisdelall("getOrderList".$one_buy[$oi]['user_id']."*");
+                    redisdelall("getOrderList".$one_buy[$oi]['user_id']."*");//删除订单缓存
+                    redisdelall("TuiSong*");//删除推送缓存
                 }
             }
 
@@ -1810,7 +1815,8 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($order_id_array)->data($data)->save();
                 for ($gi=0; $gi<$group_nuy_number; $gi++){
-                    redisdelall("getOrderList".$group_nuy[$gi]['user_id']."*");
+                    redisdelall("getOrderList".$group_nuy[$gi]['user_id']."*");//删除订单缓存
+                    redisdelall("TuiSong*");//删除推送缓存
                 }
             }
 
