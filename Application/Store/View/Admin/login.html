@@ -154,8 +154,9 @@
 				}
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				layer.alert('网络失败，请刷新页面后重试', {icon: 2});
-			}
+				//layer.alert('网络失败，请刷新页面后重试', {icon: 2});
+              window.location.reload();
+            }
           })
       }
     </script>
