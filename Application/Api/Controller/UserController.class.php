@@ -1656,174 +1656,156 @@ class UserController extends BaseController {
     /*
      *  自动执行脚本（免单退款和订单到时间就取消和改变未成团的订单）
      */
-    public function automation()
+    public function automation($action="")
     {
-        //把所有免单自动退款
-        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->select();
-        $orderLogic = new OrderLogic();
-        for($i=0;$i<count($free_order);$i++)
-        {
-            $order_sn = M('order')->where('`order_id`='.$free_order[$i]['order_id'])->getField('order_sn');
-            if($free_order[$i]['code']=='weixin')
-            {
-                if ($free_order[$i]['is_jsapi']==1){
-                    $result = $orderLogic->weixinJsBackPay($order_sn, $free_order[$i]['price']);
-                }else{
-                    $result = $orderLogic->weixinBackPay($order_sn, $free_order[$i]['price']);
-                }
-                if($result['status'] == 1){
+        if ($action=="restart") {
+            //把所有免单自动退款
+            $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->select();
+            $orderLogic = new OrderLogic();
+            for ($i = 0; $i < count($free_order); $i++) {
+                $order_sn = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->getField('order_sn');
+                if ($free_order[$i]['code'] == 'weixin') {
+                    if ($free_order[$i]['is_jsapi'] == 1) {
+                        $result = $orderLogic->weixinJsBackPay($order_sn, $free_order[$i]['price']);
+                    } else {
+                        $result = $orderLogic->weixinBackPay($order_sn, $free_order[$i]['price']);
+                    }
+                    if ($result['status'] == 1) {
+                        $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
+                        M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
+                    }
+                } elseif ($free_order[$i]['code'] == 'alipay') {
+                    $result = $orderLogic->alipayBackPay($order_sn, $free_order[$i]['price']);
+                    if ($result['status'] == 1) {
+                        $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
+                        M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
+                    }
+                } elseif ($free_order[$i]['code'] == 'qpay') {
+                    $qqPay = new QQPayController();
+                    $qqPay->doRefund($free_order[$i]['order_sn'], $free_order[$i]['order_amount']);
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                    M('getwhere')->where('`id`='.$free_order[$i]['id'])->data($data)->save();
+                    M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                 }
-            }elseif($free_order[$i]['code']=='alipay')
-            {
-                $result = $orderLogic->alipayBackPay($order_sn,$free_order[$i]['price']);
-                if($result['status'] == 1){
-                    $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                    M('getwhere')->where('`id`='.$free_order[$i]['id'])->data($data)->save();
-                }
-            }elseif($free_order[$i]['code']=='qpay'){
-                $qqPay = new QQPayController();
-                $qqPay->doRefund($free_order[$i]['order_sn'], $free_order[$i]['order_amount']);
-                $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                M('getwhere')->where('`id`='.$free_order[$i]['id'])->data($data)->save();
             }
-        }
 
-        //将单买超时支付的订单设置成取消
-        $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time')->select();
-        if(count($self_cancel_order)>0)
-        {
-            for($j=0;$j<count($self_cancel_order);$j++)
-            {
-                $data_time = $self_cancel_order[$j]['add_time']+3*60;
-                if($data_time<=time())
-                {
-                    $ids[]['id'] = $self_cancel_order[$j]['order_id'];
-                }
-                {
-                    //优惠卷回到原来的数量
-                    if($self_cancel_order[$j]['coupon_id']!=0)
+            //将单买超时支付的订单设置成取消
+            $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time')->select();
+            if (count($self_cancel_order) > 0) {
+                for ($j = 0; $j < count($self_cancel_order); $j++) {
+                    $data_time = $self_cancel_order[$j]['add_time'] + 3 * 60;
+                    if ($data_time <= time()) {
+                        $ids[]['id'] = $self_cancel_order[$j]['order_id'];
+                    }
                     {
-                        M('coupon')->where('`id`='.$self_cancel_order[$j]['coupon_id'])->setDec('use_num');
+                        //优惠卷回到原来的数量
+                        if ($self_cancel_order[$j]['coupon_id'] != 0) {
+                            M('coupon')->where('`id`=' . $self_cancel_order[$j]['coupon_id'])->setDec('use_num');
+                            //把优惠卷还给用户
+                            $data['use_time'] = 0;
+                            $data['is_use'] = 0;
+                            $data['order_id'] = 0;
+                            M('coupon_list')->where('`id`=' . $self_cancel_order[$j]['coupon_list_id'])->data($data)->save();
+                        }
+                    }
+                }
+                $where['order_id'] = array('IN', array_column($ids, 'id'));
+                $res = M('order')->where($where)->data(array('order_status' => 3, 'order_type' => 5, 'is_cancel' => 1))->save();
+            }
+
+            //将团购里超时支付的订单设置成取消
+            $where = null;
+            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time')->select();
+            if (count($join_prom_order) > 0) {
+                for ($z = 0; $z < count($join_prom_order); $z++) {
+                    $data_time = $join_prom_order[$z]['start_time'] + 3 * 60;
+                    if ($data_time <= time()) {
+                        $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
+                        $id[]['id'] = $join_prom_order[$z]['id'];
+                    }
+                }
+                $where['id'] = array('IN', array_column($id, 'id'));
+                $conditon['order_id'] = array('IN', array_column($order_id, 'order_id'));
+                $res = M('group_buy')->where($where)->data(array('is_cancel' => 1))->save();
+                $res1 = M('order')->where($conditon)->data(array('order_status' => 3, 'order_type' => 5, 'is_cancel' => 1))->save();
+                $r = M('order')->where($conditon)->select();
+                for ($t = 0; $t < count($res1); $t++) {
+                    //优惠卷回到原来的数量
+                    if ($r[$t]['coupon_id'] != 0) {
+                        M('coupon')->where('`id`=' . $r[$t]['coupon_id'])->setDec('use_num');
                         //把优惠卷还给用户
                         $data['use_time'] = 0;
                         $data['is_use'] = 0;
                         $data['order_id'] = 0;
-                        M('coupon_list')->where('`id`='.$self_cancel_order[$j]['coupon_list_id'])->data($data)->save();
+                        M('coupon_list')->where('`id`=' . $r[$t]['coupon_list_id'])->data($data)->save();
                     }
                 }
             }
-            $where['order_id'] = array('IN',array_column($ids,'id'));
-            $res =  M('order')->where($where)->data(array('order_status'=>3,'order_type'=>5,'is_cancel'=>1))->save();
-        }
 
-        //将团购里超时支付的订单设置成取消
-        $where = null;
-        $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time')->select();
-        if(count($join_prom_order)>0)
-        {
-            for($z=0;$z<count($join_prom_order);$z++)
-            {
-                $data_time = $join_prom_order[$z]['start_time']+3*60;
-                if($data_time<=time())
-                {
-                    $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
-                    $id[]['id'] = $join_prom_order[$z]['id'];
-                }
-            }
-            $where['id'] = array('IN',array_column($id,'id'));
-            $conditon['order_id'] =  array('IN',array_column($order_id,'order_id'));
-            $res = M('group_buy')->where($where)->data(array('is_cancel'=>1))->save();
-            $res1 = M('order')->where($conditon)->data(array('order_status'=>3,'order_type'=>5,'is_cancel'=>1))->save();
-            $r = M('order')->where($conditon)->select();
-            for($t=0;$t<count($res1);$t++)
-            {
-                //优惠卷回到原来的数量
-                if($r[$t]['coupon_id']!=0)
-                {
-                    M('coupon')->where('`id`='.$r[$t]['coupon_id'])->setDec('use_num');
-                    //把优惠卷还给用户
-                    $data['use_time'] = 0;
-                    $data['is_use'] = 0;
-                    $data['order_id'] = 0;
-                    M('coupon_list')->where('`id`='.$r[$t]['coupon_list_id'])->data($data)->save();
-                }
-            }
-        }
+            //将时间到了团又没有成团的团解散
+            $where = null;
+            $conditon = null;
+            $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . time())->field('id,order_id,start_time,end_time,goods_num')->select();
+            if (count($prom_order) > 0) {
+                //将团ＩＤ一次性拿出来
+                $where = $this->getPromid($prom_order);
+                //找出这个团的团长和团员
+                $join_proms = M('group_buy')->where($where)->select();
 
-        //将时间到了团又没有成团的团解散
-        $where = null;
-        $conditon = null;
-        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<='.time())->field('id,order_id,start_time,end_time,goods_num')->select();
-        if(count($prom_order)>0)
-        {
-            //将团ＩＤ一次性拿出来
-            $where = $this->getPromid($prom_order);
-            //找出这个团的团长和团员
-            $join_proms = M('group_buy')->where($where)->select();
-
-            //统计每个团的人数
-            $prom_man = array();
-            foreach($join_proms as $k=>$v)
-            {
-                $n = array();
-                foreach($join_proms as $k1=>$v1)
-                {
-                    if($v['id']==$v1['mark'])
-                    {
-                        $n['id'][]="'".$v1['id']."',";
-                        $n['order_id'][]="'".$v1['order_id']."',";
-                    }elseif($v['id']==$v1['id'])
-                    {
-                        $n['id'][]="'".$v['id']."',";
-                        $n['order_id'][]="'".$v['order_id']."',";
+                //统计每个团的人数
+                $prom_man = array();
+                foreach ($join_proms as $k => $v) {
+                    $n = array();
+                    foreach ($join_proms as $k1 => $v1) {
+                        if ($v['id'] == $v1['mark']) {
+                            $n['id'][] = "'" . $v1['id'] . "',";
+                            $n['order_id'][] = "'" . $v1['order_id'] . "',";
+                        } elseif ($v['id'] == $v1['id']) {
+                            $n['id'][] = "'" . $v['id'] . "',";
+                            $n['order_id'][] = "'" . $v['order_id'] . "',";
+                        }
                     }
+                    $prom_man[$k] = $n;
                 }
-                $prom_man[$k]=$n;
+
+                $wheres = $this->ReturnSQL($prom_man);
+                $i_d = $wheres['id'];
+                $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
+                $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
+
+                if ($res && $result1) {
+                    //给未成团订单退款
+                    $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
+                    $this->BackPay($pay_cod);
+                }
             }
 
-            $wheres = $this->ReturnSQL($prom_man);
-            $i_d = $wheres['id'];
-            $res = M('group_buy')->where("`id` IN ".$i_d)->data(array('is_dissolution'=>1))->save();
-            $result1 = M('order')->where("`order_id` IN ".$wheres['order_id'])->data(array('order_status'=>9,'order_type'=>12))->save();
-
-            if($res&&$result1)
-            {
-                //给未成团订单退款
-                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
-                $this->BackPay($pay_cod);
+            //将自动确认收货的订单的状态进行修改
+            //单买的订单拿出来
+            $one_buy = M('order')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
+            $one_buy_number = count($one_buy);
+            if ($one_buy_number > 0) {
+                $data = null;
+                $ids['order_id'] = array('IN', array_column($one_buy, 'order_id'));
+                $data['confirm_time'] = time();
+                $data['order_status'] = 2;
+                $data['order_type'] = 4;
+                M('order')->where($ids)->data($data)->save();
             }
-        }
 
-        //将自动确认收货的订单的状态进行修改
-        //单买的订单拿出来
-        $one_buy = M('order')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<='.time())->select();
-        $one_buy_number = count($one_buy);
-        if($one_buy_number>0)
-        {
-            $data = null;
-            $ids['order_id'] = array('IN',array_column($one_buy,'order_id'));
-            $data['confirm_time'] = time();
-            $data['order_status'] = 2;
-            $data['order_type'] = 4;
-            M('order')->where($ids)->data($data)->save();
-        }
+            //拿出团购的订单
+            $group_nuy = M('order')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
+            $group_nuy_number = count($group_nuy);
+            if ($group_nuy_number > 0) {
+                $data = null;
+                $order_id_array['order_id'] = array('IN', array_column($group_nuy, 'order_id'));
+                $data['confirm_time'] = time();
+                $data['order_status'] = 2;
+                $data['order_type'] = 4;
+                M('order')->where($order_id_array)->data($data)->save();
+            }
 
-        //拿出团购的订单
-        $group_nuy = M('order')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<='.time())->select();
-        $group_nuy_number = count($group_nuy);
-        if($group_nuy_number>0)
-        {
-            $data=null;
-            $order_id_array['order_id'] = array('IN',array_column($group_nuy,'order_id'));
-            $data['confirm_time'] = time();
-            $data['order_status'] = 2;
-            $data['order_type'] = 4;
-            M('order')->where($order_id_array)->data($data)->save();
+            echo 'successful';
         }
-
-        echo  'successful';
     }
 
 
