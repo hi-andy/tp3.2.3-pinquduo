@@ -36,7 +36,7 @@ class GroupController extends BaseController {
             session('m_id',I('merchant_id'));
         }
         $this->assign('order_type',$this->order_type);
-        $this->show();
+        $this->display();
     }
 
     /**
