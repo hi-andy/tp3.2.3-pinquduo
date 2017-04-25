@@ -1359,7 +1359,7 @@ class GoodsController extends BaseController {
 				}
 			}elseif($order['pay_code'] == 'alipay'){
 				$AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
+				$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
 			}elseif($order['pay_code'] == 'qpay'){
 				// Begin code by lcy
 				$qqPay = new QQPayController();
@@ -1555,7 +1555,7 @@ class GoodsController extends BaseController {
 				}
 			}elseif($order['pay_code'] == 'alipay'){
 				$AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
+				$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
 			}elseif($order['pay_code'] == 'qpay'){
                 // Begin code by lcy
                 $qqPay = new QQPayController();
