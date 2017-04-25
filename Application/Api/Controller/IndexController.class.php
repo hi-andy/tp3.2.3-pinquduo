@@ -11,6 +11,8 @@ class IndexController extends BaseController {
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getUserPromList".$user_id."*";
             redisdelall($rdsname);//删除我的拼团缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
         }
     }
 
