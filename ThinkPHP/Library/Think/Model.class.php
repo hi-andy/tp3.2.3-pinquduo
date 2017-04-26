@@ -59,7 +59,7 @@ class Model {
     // 是否批处理验证
     protected $patchValidate    =   false;
     // 链操作方法列表
-    protected $methods          =   array('strict','order','alias','having','group','lock','distinct','auto','filter','validate','result','token','index','force');
+    protected $methods          =   array('strict','order','alias','having','group','lock','distinct','auto','filter','validate','result','token','index','force','master');
 
     /**
      * 架构函数
@@ -1907,4 +1907,40 @@ class Model {
         return $this;
     }
 
+    /**
+     * 是否从主库读取数据
+     * @param string $type
+     * @return \Think\Model
+     * @auth byron sampson
+     */
+    public function master($type=false){
+        // 分布式数据库支持
+        $deploy    = C('DB_DEPLOY_TYPE');
+        // 如果手动指定主库读取，并且开启了分布式数据库支持
+        if ($type && !empty($deploy)){
+
+            // 分布式数据库配置解析
+            $_config['username']    =   explode(',',C('DB_USER'));
+            $_config['password']    =   explode(',',C('DB_PWD'));
+            $_config['hostname']    =   explode(',',C('DB_HOST'));
+            $_config['hostport']    =   explode(',',C('DB_PORT'));
+            $_config['database']    =   explode(',',C('DB_NAME'));
+            $_config['charset']     =   explode(',',C('DB_CHARSET'));
+
+            $m     =   floor(mt_rand(0,C('DB_MASTER_NUM')-1));
+
+            $db_master  =   array(
+                'DB_TYPE'    =>  C('DB_TYPE'),
+                'DB_USER'    =>  isset($_config['username'][$m])?$_config['username'][$m]:$_config['username'][0],
+                'DB_PWD'    =>  isset($_config['password'][$m])?$_config['password'][$m]:$_config['password'][0],
+                'DB_HOST'    =>  isset($_config['hostname'][$m])?$_config['hostname'][$m]:$_config['hostname'][0],
+                'DB_PORT'    =>  isset($_config['hostport'][$m])?$_config['hostport'][$m]:$_config['hostport'][0],
+                'DB_NAME'    =>  isset($_config['database'][$m])?$_config['database'][$m]:$_config['database'][0],
+                'DB_CHARSET'   =>  isset($_config['charset'][$m])?$_config['charset'][$m]:$_config['charset'][0],
+            );
+
+            $this->db(0, $db_master, true);
+        }
+        return $this;
+    }
 }
