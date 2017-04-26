@@ -401,7 +401,7 @@
             $.ajax({
                 type:'GET',
                 data:{goods_id:goods_id,type_id:type_id},
-                url:"/Store/Goods/ajaxGetAttrInput",
+                url:"/Store/Special/ajaxGetAttrInput",
                 success:function(data){
                     $("#goods_attr_table tr:gt(0)").remove()
                     $("#goods_attr_table").append(data);
@@ -437,7 +437,7 @@
             $.ajax({
                 type:'GET',
                 data:{goods_id:goods_id,spec_type:spec_type},
-                url:"{:U('Store/Goods/ajaxGetSpecSelect')}",
+                url:"{:U('Store/Special/ajaxGetSpecSelect')}",
                 success:function(data){
                     $("#ajax_spec_data").html('')
                     $("#ajax_spec_data").append(data);
