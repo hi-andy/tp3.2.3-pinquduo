@@ -464,7 +464,7 @@ class GoodsController extends BaseController {
         I('user_id') && $user_id = I('user_id');
         I('spec_key') && $spec_key = I('spec_key');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $rdsname = "getGoodsDetails".$goods_id;
+        $rdsname = "getGoodsDetails".$goods_id.$ajax_get;
         if (empty(redis($rdsname))) {//判断是否有缓存
             //轮播图
             $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
