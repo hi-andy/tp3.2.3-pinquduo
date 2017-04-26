@@ -2,7 +2,7 @@
 return array(
    'API_SECRET_KEY'=>'zuoapp.la', // app 调用的签名秘钥// app 调用的签名秘钥
 	'PAGE_SIZE' =>20,
-	'HTTP_URL'=>'http://pinquduo.cn',
+	'HTTP_URL'=>'http://api.hn.pinquduo.cn',
 	'SIGN_KEY' => 'pinquduo',
 	'order_sn'         => date('YmdHis').rand(1000,9999), // 订单编号
 	'automatic_time' => 5*24*60*60,

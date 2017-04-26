@@ -1691,7 +1691,7 @@ class UserController extends BaseController {
                 //跨区同步订单、推送、详情缓存
                 $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
                 async_get_url($url);
-                $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
+                $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
                 async_get_url($url);
             }
 
@@ -1699,7 +1699,7 @@ class UserController extends BaseController {
             $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
             if (count($self_cancel_order) > 0) {
                 for ($j = 0; $j < count($self_cancel_order); $j++) {
-                    $data_time = $self_cancel_order[$j]['add_time'] + 30;
+                    $data_time = $self_cancel_order[$j]['add_time'] + 3 * 60;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
                         redisdelall("getOrderList".$self_cancel_order[$j]['user_id']."*");//删除订单缓存
@@ -1707,7 +1707,7 @@ class UserController extends BaseController {
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
                         async_get_url($url);
-                        $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
+                        $url = array("http://139.196.255.40/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
                         async_get_url($url);
                     }
                     {
@@ -1731,7 +1731,7 @@ class UserController extends BaseController {
             $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id')->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
-                    $data_time = $join_prom_order[$z]['start_time'] + 30;
+                    $data_time = $join_prom_order[$z]['start_time'] + 3 * 60;
                     if ($data_time <= time()) {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
@@ -1740,7 +1740,7 @@ class UserController extends BaseController {
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
                         async_get_url($url);
-                        $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
+                        $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
                         async_get_url($url);
                     }
                 }
@@ -1789,7 +1789,7 @@ class UserController extends BaseController {
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
                         async_get_url($url);
-                        $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
+                        $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
                         async_get_url($url);
                     }
                     $prom_man[$k] = $n;
@@ -1824,7 +1824,7 @@ class UserController extends BaseController {
                     //跨区同步订单、推送、详情缓存
                     $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
                     async_get_url($url);
-                    $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
+                    $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
                     async_get_url($url);
                 }
             }
@@ -1845,7 +1845,7 @@ class UserController extends BaseController {
                     //跨区同步订单、推送、详情缓存
                     $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
                     async_get_url($url);
-                    $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
+                    $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
                     async_get_url($url);
                 }
             }

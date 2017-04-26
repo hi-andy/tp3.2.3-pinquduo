@@ -207,6 +207,7 @@ EOF;
 
         //存储微信的回调
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+        if(!$xml) $xml=file_get_contents("php://input");
         $notify->saveData($xml);
 
         //以log文件形式记录回调信息
@@ -283,6 +284,7 @@ EOF;
 
         //存储微信的回调
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+        if(!$xml) $xml=file_get_contents("php://input");
         $notify->saveData($xml);
 
         //以log文件形式记录回调信息
