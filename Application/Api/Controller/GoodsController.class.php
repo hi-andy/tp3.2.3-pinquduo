@@ -737,143 +737,142 @@ class GoodsController extends BaseController {
 //            */
 //		}
 
-		$parameter['order_id'] = $order_id;
-		$parameter['prom'] = $prom;
-		$parameter['user_id'] = $user_id;
-		$parameter['address_id'] = $address_id;
-		$parameter['goods_id'] = $goods_id;
-		$parameter['store_id'] = $store_id;
-		$parameter['num'] = $num;
-		$parameter['free'] = $free;
-		$parameter['latitude'] = $latitude;
-		$parameter['longitude'] = $longitude;
-		$parameter['coupon_id'] = $coupon_id;
-		$parameter['spec_key'] = $spec_key;
-		$parameter['ajax_get'] = $ajax_get;
-		$parameter['coupon_list_id'] = $coupon_list_id;
+        if (empty(redis("getBuy".$goods_id))) {//判断是否有锁
+            redis("getBuy".$goods_id, "1", 5);//写入锁
+            $parameter['order_id'] = $order_id;
+            $parameter['prom'] = $prom;
+            $parameter['user_id'] = $user_id;
+            $parameter['address_id'] = $address_id;
+            $parameter['goods_id'] = $goods_id;
+            $parameter['store_id'] = $store_id;
+            $parameter['num'] = $num;
+            $parameter['free'] = $free;
+            $parameter['latitude'] = $latitude;
+            $parameter['longitude'] = $longitude;
+            $parameter['coupon_id'] = $coupon_id;
+            $parameter['spec_key'] = $spec_key;
+            $parameter['ajax_get'] = $ajax_get;
+            $parameter['coupon_list_id'] = $coupon_list_id;
 
-		if(!empty($spec_key)) {
-				$spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-			}else{
-				$spec_res = M('goods')->where('`goods_id`='.$goods_id)->find();
-			}
-			if ($spec_res['store_count'] <= 0) {
-				$json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-				if (!empty($ajax_get))
-					$this->getJsonp($json);
-			exit(json_encode($json));
-		}
-		//参团购物
-		if($type == 0)
-		{
-			$result = M('group_buy')->where("`order_id` = $order_id")->find();
-			if($result['end_time']<time())
-			{
-				$json = array('status'=>-1,'msg'=>'该团已结束了，请选择别的团参加');
-				if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-			//为我点赞只允许每个人参团一次
-			if($result['is_raise']==1)
-			{
-				$raise = M('group_buy')->where('(end_time>'.time().' or is_successful=1) and mark!=0 and is_raise=1')->order('id desc')->select();
-				$raise_id_array = array_column($raise,'user_id');
-				if(in_array("$user_id",$raise_id_array))
-				{
-					$json =array('status'=>-1,'msg'=>'您已参加过该拼团活动，不能再参团，只能继续开团');
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
+            if (!empty($spec_key)) {
+                $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
+            } else {
+                $spec_res = M('goods')->where('`goods_id`=' . $goods_id)->find();
+            }
+            if ($spec_res['store_count'] <= 0) {
+                $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
+            //参团购物
+            if ($type == 0) {
+                $result = M('group_buy')->where("`order_id` = $order_id")->find();
+                if ($result['end_time'] < time()) {
+                    $json = array('status' => -1, 'msg' => '该团已结束了，请选择别的团参加');
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
                         exit;
                     }
-					exit(json_encode($json));
-				}
-			}
-			//每个团的最后一个人直接将订单锁住防止出现错误
-			$num = M('group_buy')->where('`id`='.$result['id'].' or `mark`='.$result['id'].' and `is_pay`=1 and `is_cancel`=0')->count();
-			if($num+1==$result['goods_num'])
-			{
-				$on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `is_pay`=0 and `is_cancel`=0' )->find();
-				if(!empty($on_buy))
-				{
-					$json =array('status'=>-1,'msg'=>'有用户尚未支付，您可以在他取消订单后进行支付');
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
+                    exit(json_encode($json));
+                }
+                //为我点赞只允许每个人参团一次
+                if ($result['is_raise'] == 1) {
+                    $raise = M('group_buy')->where('(end_time>' . time() . ' or is_successful=1) and mark!=0 and is_raise=1')->order('id desc')->select();
+                    $raise_id_array = array_column($raise, 'user_id');
+                    if (in_array("$user_id", $raise_id_array)) {
+                        $json = array('status' => -1, 'msg' => '您已参加过该拼团活动，不能再参团，只能继续开团');
+                        if (!empty($ajax_get)) {
+                            echo "<script> alert('" . $json['msg'] . "') </script>";
+                            exit;
+                        }
+                        exit(json_encode($json));
+                    }
+                }
+                //每个团的最后一个人直接将订单锁住防止出现错误
+                $num = M('group_buy')->where('`id`=' . $result['id'] . ' or `mark`=' . $result['id'] . ' and `is_pay`=1 and `is_cancel`=0')->count();
+                if ($num + 1 == $result['goods_num']) {
+                    $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `is_pay`=0 and `is_cancel`=0')->find();
+                    if (!empty($on_buy)) {
+                        $json = array('status' => -1, 'msg' => '有用户尚未支付，您可以在他取消订单后进行支付');
+                        if (!empty($ajax_get)) {
+                            echo "<script> alert('" . $json['msg'] . "') </script>";
+                            exit;
+                        }
+                        exit(json_encode($json));
+                    }
+                } elseif ($num == $result['goods_num']) {
+                    $json = array('status' => -1, 'msg' => '该团已经满员开团了，请选择别的团参加');
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
                         exit;
                     }
-					exit(json_encode($json));
-				}
-			}elseif($num==$result['goods_num']){
-				$json =array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
+                    exit(json_encode($json));
                 }
-				exit(json_encode($json));
-			}
-			//判断该用户是否参团了
-			$self = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=1')->find();
-			if(!empty($self))
-			{
-				$json =array('status'=>-1,'msg'=>'你已经参团了');
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
+                //判断该用户是否参团了
+                $self = M('group_buy')->where('`mark`=' . $result['id'] . ' and `user_id`=' . $user_id . ' and `is_pay`=1')->find();
+                if (!empty($self)) {
+                    $json = array('status' => -1, 'msg' => '你已经参团了');
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
                 }
-				exit(json_encode($json));
-			}
-			//判断用户是否已经生成未付款订单
-			$on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=0 and `is_cancel`=0' )->find();
-			if(!empty($on_buy))
-			{
-				$json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
+                //判断用户是否已经生成未付款订单
+                $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `user_id`=' . $user_id . ' and `is_pay`=0 and `is_cancel`=0')->find();
+                if (!empty($on_buy)) {
+                    $json = array('status' => -1, 'msg' => '该团你有未付款订单，请前往支付再进行操作');
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
                 }
-				exit(json_encode($json));
-			}
-			$num2 = M('group_buy')->where('`id`='.$result['id'].' `mark` = '.$order_id.' and `is_pay`=1')->count();
-			if($num2==$result['goods_num'])
-			{
-				$json =	array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
+                $num2 = M('group_buy')->where('`id`=' . $result['id'] . ' `mark` = ' . $order_id . ' and `is_pay`=1')->count();
+                if ($num2 == $result['goods_num']) {
+                    $json = array('status' => -1, 'msg' => '该团已经满员开团了，请选择别的团参加');
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
                 }
-				exit(json_encode($json));
-			}
 
-			$this->joinGroupBuy($parameter);
-		}
-		else if($type == 1)	//开团
-		{
-			$this->openGroup($parameter);
-		}
-		//自己买
-		else if($type == 2)
-		{
-			$this->buyBymyself($parameter);
-		}
-        $rdsname = "getUserOrderList".$user_id."*";
-        redisdelall($rdsname);//删除用户订单缓存
-        $rdsname = "getGoodsDetails".$goods_id."*";
-        redisdelall($rdsname);//删除商品详情缓存
-        $rdsname = "TuiSong*";
-        redisdelall($rdsname);//删除推送缓存
-        //跨区同步订单、推送、详情缓存
-        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-        async_get_url($url);
-        $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-        async_get_url($url);
-        $rdsname = "getUserOrderList".$user_id."*";
-        redisdelall($rdsname);//删除用户订单缓存
-        $rdsname = "getGoodsDetails".$goods_id."*";
-        redisdelall($rdsname);//删除商品详情缓存
-        $rdsname = "TuiSong*";
-        redisdelall($rdsname);//删除推送缓存
+                $this->joinGroupBuy($parameter);
+            } else if ($type == 1)    //开团
+            {
+                $this->openGroup($parameter);
+            } //自己买
+            else if ($type == 2) {
+                $this->buyBymyself($parameter);
+            }
+            $rdsname = "getUserOrderList" . $user_id . "*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails" . $goods_id . "*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
+            //跨区同步订单、推送、详情缓存
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
+            $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            async_get_url($url);
+            $rdsname = "getUserOrderList" . $user_id . "*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails" . $goods_id . "*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
+            redisdelall("getBuy".$goods_id);//删除锁
+        } else {
+            $json = array('status' => -1, 'msg' => '可能很多人在抢，狂戳一下试试');
+            if (!empty($ajax_get)) {
+                echo "<script> alert('" . $json['msg'] . "') </script>";
+                exit;
+            }
+            exit(json_encode($json));
+        }
 	}
 
 	/**

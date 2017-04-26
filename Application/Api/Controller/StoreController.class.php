@@ -182,14 +182,14 @@ class StoreController extends BaseController{
                 ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
                 ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
                 ->where($where)
-                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img')
+                ->field('o.order_id,o.goods_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img,o.add_time')
                 ->select();
         }else{
             $order_info = M('order')->alias('o')
                 ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
                 ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
                 ->where($where)
-                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img')
+                ->field('o.order_id,o.goods_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img,o.add_time')
                 ->page($page,$page_num)
                 ->order('order_id asc')
                 ->select();
