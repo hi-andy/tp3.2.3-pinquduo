@@ -858,12 +858,6 @@ class GoodsController extends BaseController {
             async_get_url($url);
             $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
             async_get_url($url);
-            $rdsname = "getUserOrderList" . $user_id . "*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails" . $goods_id . "*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
             redisdelall("getBuy".$goods_id);//删除锁
         } else {
             $json = array('status' => -1, 'msg' => '可能很多人在抢，狂戳一下试试');
