@@ -303,6 +303,13 @@ class GoodsLogic extends RelationModel
      */
     public function getSpecInput($goods_id, $spec_arr)
     {
+        // <input name="item[2_4_7][price]" value="100" /><input name="item[2_4_7][name]" value="蓝色_S_长袖" />        
+        /*$spec_arr = array(         
+            20 => array('7','8','9'),
+            10=>array('1','2'),
+            1 => array('3','4'),
+            
+        );  */        
         // 排序
         foreach ($spec_arr as $k => $v)
         {
@@ -313,7 +320,7 @@ class GoodsLogic extends RelationModel
         {
             $spec_arr2[$key] = $spec_arr[$key];
         }
-//print_r($spec_arr2);exit;
+
          $clo_name = array_keys($spec_arr2);         
          $spec_arr2 = combineDika($spec_arr2); //  获取 规格的 笛卡尔积                 
                        
@@ -322,6 +329,7 @@ class GoodsLogic extends RelationModel
          $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code,prom_price');//规格项
                           
        $str = "<table class='table table-bordered' id='spec_input_tab'>";
+       $str .="<tr ><td colspan='4'><a style='color: red;font-size: 15px'>单列价格一致的，可以填入第一行的数值之后勾选中批量填写后点击保存即可</a></td>";$str .="<tr>";
        // 显示第一行的数据
        foreach ($clo_name as $k => $v) 
        {

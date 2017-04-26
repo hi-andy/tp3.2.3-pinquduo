@@ -98,50 +98,51 @@ class StoreController extends BaseController{
      *提现申请提交
      */
     public function post_withdrawal(){
-        $data = $_POST;
+        if(empty(redis("post_withdrawal".$_SESSION['merchant_id']))) {//判断是否有锁
+            redis("post_withdrawal".$_SESSION['merchant_id'], "1", 5);//写入锁
+            $data = $_POST;
 
-        if($data['withdrawal_money'] == 0 ||$data['withdrawal_money']<0 )
-        {
-            echo json_encode(array('status'=>0,'msg'=>'输入金额必须大于0'));
+            if ($data['withdrawal_money'] == 0 || $data['withdrawal_money'] < 0) {
+                echo json_encode(array('status' => 0, 'msg' => '输入金额必须大于0'));
+                die;
+            }
+            if ($data['withdrawal_money'] % 500 != 0) {
+                echo json_encode(array('status' => 0, 'msg' => '请输入500的倍数的体现金额'));
+                die;
+            }
+            if ($data['withdrawal_money'] > $_SESSION['reflect']) {
+                echo json_encode(array('status' => 0, 'msg' => '提现余额不足'));
+                die;
+            }
+
+            $withdrawal_total = M('store_withdrawal')->where('store_id=' . $_SESSION['merchant_id'])->order('id desc')->find();
+            $datetime = strtotime(date('Y-m-d', strtotime($withdrawal_total['datetime'])));
+            $new = strtotime(date('Y-m-d', time()));
+            if ($datetime == $new) {
+                echo json_encode(array('status' => 0, 'msg' => '一天只能提现一次'));
+                die;
+            }
+
+            $store_info = M('merchant')->where(array('id' => $_SESSION['merchant_id']))->find();
+            $data['store_id'] = $store_info['id'];
+            $data['store_name'] = $store_info['store_name'];
+            $data['datetime'] = date('Y-m-d H:i:s');
+            $data['end_time'] = time();
+            $data['status'] = 0;
+            $order_total = M('order')->where(array('store_id' => $store_info['id']))->sum('order_amount');
+            $withdrawal_total = M('store_withdrawal')->where(array('store_id' => $store_info['id']))->sum('order_amount');
+            $data['total_money'] = $order_total;
+            $data['balance_money'] = $order_total - $withdrawal_total;
+
+            $res = M('store_withdrawal')->add($data);
+            if ($res) {
+                echo json_encode(array('status' => 1, 'msg' => '申请成功,请等待平台审核'));
+            } else {
+                echo json_encode(array('status' => 0, 'msg' => '提交失败，请联系管理员'));
+            }
+            redisdelall("post_withdrawal".$_SESSION['merchant_id']);//删除锁
             die;
         }
-        if($data['withdrawal_money']%500 != 0)
-        {
-            echo json_encode(array('status'=>0,'msg'=>'请输入500的倍数的体现金额'));
-            die;
-        }
-        if($data['withdrawal_money']>$_SESSION['reflect'])
-        {
-            echo json_encode(array('status'=>0,'msg'=>'提现余额不足'));
-            die;
-        }
-
-        $withdrawal_total = M('store_withdrawal')->where('store_id='.$_SESSION['merchant_id'])->order('id desc')->find();
-        $datetime = strtotime(date('Y-m-d',strtotime($withdrawal_total['datetime'])));
-        $new = strtotime(date('Y-m-d',time()));
-        if($datetime==$new){
-            echo json_encode(array('status'=>0,'msg'=>'一天只能提现一次'));
-            die;
-        }
-
-        $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->find();
-        $data['store_id'] = $store_info['id'];
-        $data['store_name'] = $store_info['store_name'];
-        $data['datetime'] = date('Y-m-d H:i:s');
-        $data['end_time'] = time();
-        $data['status'] = 0;
-        $order_total = M('order')->where(array('store_id'=>$store_info['id']))->sum('order_amount');
-        $withdrawal_total = M('store_withdrawal')->where(array('store_id'=>$store_info['id']))->sum('order_amount');
-        $data['total_money'] = $order_total;
-        $data['balance_money'] = $order_total - $withdrawal_total;
-
-        $res = M('store_withdrawal')->add($data);
-        if($res){
-            echo json_encode(array('status'=>1,'msg'=>'申请成功,请等待平台审核'));
-        }else{
-            echo json_encode(array('status'=>0,'msg'=>'提交失败，请联系管理员'));
-        }
-        die;
     }
 
     /**

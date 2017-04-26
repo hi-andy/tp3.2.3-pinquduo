@@ -58,8 +58,8 @@ class IndexController extends BaseController {
         $sys_info['version']   		= file_get_contents('./Application/Admin/Conf/version.txt');
         $dbPort = C("DB_PORT"); $dbHost = C("DB_HOST");
         $dbHost = empty($dbPort) || $dbPort == 3306 ? $dbHost : $dbHost.':'.$dbPort;
-		mysql_connect($dbHost, C("DB_USER"), C("DB_PWD"));
-		$sys_info['mysql_version']   = mysql_get_server_info();
+		//mysql_connect($dbHost, C("DB_USER"), C("DB_PWD"));
+		//$sys_info['mysql_version']   = mysql_get_server_info();
 		if(function_exists("gd_info")){
 			$gd = gd_info();
 			$sys_info['gdinfo'] 	= $gd['GD Version'];

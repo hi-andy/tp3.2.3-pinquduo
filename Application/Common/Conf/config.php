@@ -9,8 +9,8 @@ define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
-	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
-	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
+	'SERVER_HTTP' => 'http://pinquduo.cn/',
+	'HTTP_URL'=>'http://pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
