@@ -89,7 +89,7 @@ function ajaxGetSpecInput2(spec_arr)
 	$.ajax({
 			type:'POST',
 			data:{'spec_arr':spec_arr},
-			url:"/Store/Goods/ajaxGetSpecInput/goods_id/"+goods_id,
+			url:"/Store/Special/ajaxGetSpecInput/goods_id/"+goods_id,
 			success:function(data){
 				   $("#goods_spec_table2").html('')
 				   $("#goods_spec_table2").append(data);
