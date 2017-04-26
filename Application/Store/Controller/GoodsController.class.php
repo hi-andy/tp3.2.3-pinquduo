@@ -326,14 +326,22 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
-            if(empty($_POST['goods_content'][0])){
+            if(empty($_POST['goods_content'])){
                 $return_arr = array(
                     'status' => -1,
-                    'msg'   => '请填上传商品详细描述图片！',
+                    'msg'   => '请填写商品详细描述！',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
+//            if(empty($_POST['goods_content'][0])){
+//                $return_arr = array(
+//                    'status' => -1,
+//                    'msg'   => '请上传商品详细描述图片！',
+//                    'data'  => $Goods->getError(),
+//                );
+//                $this->ajaxReturn(json_encode($return_arr));
+//            }
         }
 
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
@@ -359,13 +367,13 @@ class GoodsController extends BaseController {
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
 
                 //详情图片
-                $Goods->goods_content = null;
-                $goodscontent = "";
-                foreach ($_POST['goods_content'] as $v){
-                    $goodscontent .= '<img src="'.$v.'">';
-                }
-                $goodscontent = str_replace('<img src="">','',$goodscontent);
-                $Goods->goods_content = $goodscontent;
+//                $Goods->goods_content = null;
+//                $goodscontent = "";
+//                foreach ($_POST['goods_content'] as $v){
+//                    $goodscontent .= '<img src="'.$v.'">';
+//                }
+//                $goodscontent = str_replace('<img src="">','',$goodscontent);
+//                $Goods->goods_content = $goodscontent;
 
                 if ($type == 2)
                 {
@@ -430,7 +438,7 @@ class GoodsController extends BaseController {
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情
         $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
         $this->assign('goodsImages',$goodsImages);  // 商品相册
-        //$this->initEditor(); // 编辑器 // 商品详情已采用图片上传的方式。
+        $this->initEditor(); // 编辑器 //
         $this->display('_goods');
     }
 

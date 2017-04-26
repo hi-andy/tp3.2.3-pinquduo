@@ -76,16 +76,16 @@ class File
     }
 
 
-    /**
-     * @param $filename
-     * @return bool
-     */
-    public static function delFile($filename)
-    {
-        $Storage = new Storage();
-        $Storage::connect();
-        return $Storage::unlink($filename);
-    }
+//    /**
+//     * @param $filename
+//     * @return bool
+//     */
+//    public static function delFile($filename)
+//    {
+//        $Storage = new Storage();
+//        $Storage::connect();
+//        return $Storage::unlink($filename);
+//    }
 
 
     /**
