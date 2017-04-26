@@ -8,7 +8,7 @@ class JiujiuController extends BaseController{
 
 	public function SpeciallyList()
 	{
-		$this->show();
+		$this->display();
 	}
 
 	public function ajaxSpeciallyList()
