@@ -299,7 +299,7 @@ class ReportController extends BaseController{
 		$data['zong'] = M('order')->where('store_id='.$store_id['id'].' and pay_status=1')->sum('order_amount');//总销售额
 		$data['ding'] = M('order')->where('store_id='.$store_id['id'].' and add_time>'.$today.' and add_time<'.($today+24*3600).' and  pay_status=1')->count();//日订单数
 		$data['cancel'] = M('order')->where('store_id='.$store_id['id'].' and add_time>'.$today.' and add_time<'.($today+24*3600).' and  is_cancel=1')->count();//日取消订单数
-		$data['month'] = M('order')->where('store_id='.$store_id['id'].' and add_time>'.$month.' and add_time<'.$nextmonth.' and  (order_type=4 or order_type = 19)')->sum('order_amount');//月销售额
+		$data['month'] = M('order')->where('store_id='.$store_id['id'].' and add_time>'.$month.' and add_time<'.$nextmonth.' and  (order_type=4 or order_type = 19 or order_type=7 or order_type=6)')->sum('order_amount');//月销售额
 		$data['ti'] = M('store_withdrawal')->where('store_id='.$store_id['id'].' and status=1')->sum('withdrawal_money');//提现金额
 		$data['ti']>0 && $data['ti']=$this->operationPrice($data['ti']);
 

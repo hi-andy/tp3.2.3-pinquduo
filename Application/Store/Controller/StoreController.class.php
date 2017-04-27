@@ -61,7 +61,7 @@ class StoreController extends BaseController{
         $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->find();
 
         //拿到总共能体现的资金
-        $one = M('order')->where('(order_type =4 or order_type = 16) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
+        $one = M('order')->where('(order_type=4 or order_type = 19 or order_type=7 or order_type=6) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
         $reflect = null;
         foreach($one as $v)
         {
