@@ -57,8 +57,36 @@
     
     function selectAll(name,obj){
     	$('input[name*='+name+']').prop('checked', $(obj).checked);
-    }    
+    }
+    //显示小提示
+    $(function(){
+        $(".notice").each(function (i, o) {
+            var msg = $(o).attr('notice');
+            $(o).hover(function(){
+                $('#notice').css({
+                    'display' : 'inline-block',
+                    'left' : event.clientX + 10,
+                    'top'  : event.clientY + -45
+                }).html(msg).show();
+            },function(){
+                $("#notice").hide();
+            })
+        })
+    });
+
     </script>        
   </head>
   <body style="background-color:#ecf0f5;">
+  <style type="text/css">
+    #notice{
+      display: none;
+      padding:.1rem .5rem;
+      position : absolute;
+      background : lightyellow;
+      border:1px solid gold;
+      border-radius:.5rem;
+      z-index : 9999;
+    }
+  </style>
+  <div id="notice"></div>
  
