@@ -182,14 +182,14 @@ class StoreController extends BaseController{
                 ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
                 ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
                 ->where($where)
-                ->field('o.order_id,o.goods_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img,o.add_time')
+                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img')
                 ->select();
         }else{
             $order_info = M('order')->alias('o')
                 ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
                 ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
                 ->where($where)
-                ->field('o.order_id,o.goods_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img,o.add_time')
+                ->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img')
                 ->page($page,$page_num)
                 ->order('order_id asc')
                 ->select();
@@ -203,9 +203,10 @@ class StoreController extends BaseController{
                 $order_info[$i]['province'] =$adress_info['province'];//省
                 $order_info[$i]['city'] = $adress_info['city'];//市
                 $order_info[$i]['district'] = $adress_info['district'];//区
-                $order_info[$i]['street'] = $order_info[$i]['address'];//
+                $order_info[$i]['street'] = $order_info[$i]['address'];
 
-                $goods_info = M('order_goods')->where('order_id = '.$order_info[$i]['order_id'])->field('goods_name,market_price,goods_price,goods_num,spec_key_name')->limit($page,$page_num)->order('order_id asc')->find();
+                $goods_info = M('order_goods')->alias('og')
+                    ->join('INNER JOIN tp_order o on og.goods_id = o.goods_id')->where('order_id = '.$order_info[$i]['order_id'])->field('og.goods_name,og.goods_id,og.market_price,og.goods_price,og.goods_num,og.spec_key_name,o.add_time')->limit($page,$page_num)->order('order_id asc')->find();
 
                 $order_info[$i]['goods'] = $goods_info;
                 //unset()掉多余数据
