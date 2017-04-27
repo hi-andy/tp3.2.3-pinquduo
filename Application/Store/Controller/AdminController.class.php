@@ -167,9 +167,6 @@ class AdminController extends BaseController {
 	                }elseif($merchant_info['is_check']==2){
 		                exit(json_encode(array('status'=>0,'msg'=>'您的申请未通过审核，有疑问可与客服联系')));
 	                }
-	                $lifeTime = 24 * 3600;
-	                session_set_cookie_params($lifeTime);
-	                session_start();
 	                session('merchant_id',$merchant_info['id']);
 	                session('trade_no',$haitao['trade_no']);
 	                if($haitao['is_pay']==0)

@@ -6,15 +6,11 @@
  * Time: 18:08
  *
  * 商品规格控制器
- *
  */
-
 namespace Store\Controller;
 
-use Admin\Logic\HaitaoLogic;
 use Store\Logic\GoodsLogic;
 use Think\AjaxPage;
-use Think\Page;
 class SpecialController extends BaseController
 {
 
@@ -80,7 +76,6 @@ class SpecialController extends BaseController
         $this->assign('goodsTypeList',$goodsTypeList);
         $this->display();
     }
-
     /**
      *  ajax 返回商品规格列表
      */
@@ -120,11 +115,12 @@ class SpecialController extends BaseController
         $id = I('id');
         $store_id = $_SESSION['merchant_id'];
         $count = M("SpecItem")->where("spec_id = $id and is_show = 1")->count("1");
-        //echo $id;exit;
+        echo $store_id;exit;
         if ($count > 0 ) {
             //$this->error('清空规格项后才可以删除!',U('Store/Goods/specList'));
             $data[is_show] = 0;
-            M('Spec')->where("id = ".$id)->save($data);
+            M('Spec')->where("id = $id AND store_id = $store_id")->save($data);
+            M('SpecItem')->where('spec_id = '.$id)->save($data);
         } else {
             //删除分类 将它下面的所有规格删除
             $id = M('spec')->where("id = $id AND store_id = $store_id")->find();
