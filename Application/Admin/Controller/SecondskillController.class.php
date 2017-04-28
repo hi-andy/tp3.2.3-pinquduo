@@ -387,7 +387,6 @@ class SecondskillController extends BaseController
 			}
 		}
 
-
 		for ($i = 0; $i < 5; $i++) {
 			$date[$i]['id'] = $i + 1;$date1 = time();
 			if($i==0)  {
@@ -418,14 +417,14 @@ class SecondskillController extends BaseController
 		$goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
 		$level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 		$cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
-		$brandList = $GoodsLogic->getSortBrands();
+		//$brandList = $GoodsLogic->getSortBrands();
 		$merchantList = $GoodsLogic->getSortMerchant();
 		$goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
 		if(empty($goodsType))
 			$goodsType = M("GoodsType")->select();
 		$this->assign('level_cat',$level_cat);
 		$this->assign('cat_list',$cat_list);
-		$this->assign('brandList',$brandList);
+		//$this->assign('brandList',$brandList);
 		$this->assign('merchantList',$merchantList);
 		$this->assign('goodsType',$goodsType);
 		$this->assign('goodsInfo',$goodsInfo);  // 商品详情
