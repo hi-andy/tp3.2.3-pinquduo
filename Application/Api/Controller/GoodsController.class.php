@@ -10,6 +10,200 @@ class GoodsController extends BaseController {
         $this->display();
     }
 
+	//获取用户地址列表
+	function getUserAddressList()
+	{
+		$user_id = I('user_id');
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		$a = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
+		$b = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` != 1')->field('address_id,consignee,address_base,address,mobile,is_default')->select();
+
+		if(!empty($a))
+		{
+			$address[0] = $a;//把数组第一个放入默认地址
+			for($i = 0;$i<count($b);$i++)
+			{
+				$address[$i+1] = $b[$i];
+			}
+		}else{
+			$address = $b;
+		}
+		if(!empty($address))
+		{
+			$json = array('status'=>1,'msg'=>'获取成功','result'=>array('address'=>$address));
+			if(!empty($ajax_get))
+				$this->getJsonp($json);
+			exit(json_encode($json));
+		}else{
+			$json = array('status'=>0,'msg'=>'还没有收货地址哦，先添加吧','result'=>array('address'=>[]));
+			if(!empty($ajax_get))
+				$this->getJsonp($json);
+			exit(json_encode($json));
+		}
+	}
+
+	//查看全部
+	function getMore()
+	{
+		$id = I('id');
+		$type = I('type');
+		$page=I('page',1);
+		$pagesize = I('pagesize',20);
+		$version = I('version');
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		$rdsname = "getMore".$id.$type.$page.$pagesize;
+		if (empty(redis($rdsname))) {//判断是否有缓存
+			$data = $this->getOtheyMore($id,$type,$page,$pagesize,$version,$ajax_get);
+			$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+			redis($rdsname, serialize($json), REDISTIME);//写入缓存
+		} else {
+			$json = unserialize(redis($rdsname));//读取缓存
+		}
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
+	}
+
+	function getOtheyMore($id,$type,$page,$pagesize,$version,$ajax_get)
+	{
+		if($type==0)
+		{
+			$parent_id = M('goods_category')->where('`parent_id`=0 and id != 10044 ')->field('id')->select();
+			$ids =array(array_column($parent_id,'id'));
+			if(in_array("$id", $ids[0]))
+			{
+				$data = $this->getNextCat($id,$version);
+				return $data;
+			}else{
+				$condition['parent_id'] = $ids =array('in',array_column($parent_id,'id'));
+				$parent_id2 = M('goods_category')->where($condition)->field('id')->select();
+				$ids2 =array(array_column($parent_id2,'id'));
+				if(in_array("$id", $ids2[0]))//确定为二级分类id
+				{
+					//找到一级菜单的下级id
+					$parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
+					$condition2['cat_id'] =array('in',array_column($parent_cat,'id'));
+					$condition2['is_on_sale']=1;
+					$condition2['is_show'] = 1;
+					$condition2['is_audit'] =1;
+					$condition2['show_type'] =0;
+					$condition2['the_raise'] =0;
+					if($version=='2.0.0'){
+						$data = $this->getGoodsList($condition2,$page.$pagesize);
+					}else {
+						$count = M('goods')->where($condition2)->count();
+						$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('sales desc')->select();
+						foreach ($goods as &$v) {
+							$v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+						}
+						$data = $this->listPageData($count, $goods);
+					}
+					return $data;
+				}else{
+					if($version=='2.0.0'){
+						$where = "`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1";
+						$data = $this->getGoodsList($where,$page,$pagesize);
+					}else {
+						$count = M('goods')->where('`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1')->count();
+						$goods = M('goods')->where('`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->page($page, $pagesize)->select();
+						foreach ($goods as &$v) {
+							$v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+						}
+						$data = $this->listPageData($count, $goods);
+					}
+					return $data;
+				}
+			}
+		}
+		elseif($type==1)
+		{
+			if($id==0)//全部
+			{
+				if($version=='2.0.0'){
+					$where = '`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0';
+					$data = $this->getGoodsList($where,$page,$pagesize);
+				}else {
+					$count = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0')->count();
+					$goods = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0')->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->select();
+					foreach($goods as &$v)
+					{
+						$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
+					}
+					$data = $this->listPageData($count,$goods);
+				}
+			}
+			else
+			{
+				$cat = M('haitao')->where('`parent_id` = '.$id)->field('id')->select();
+				$condition['is_on_sale']=1;
+				$condition['is_show'] = 1;
+				$condition['is_audit'] = 1;
+				$condition['show_type'] =0;
+				$condition['the_raise'] =0;
+				if(empty($cat))
+				{
+					$condition['haitao_cat'] = $id;
+				}else{
+
+					//array_column()将二维数组转成一维
+					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
+				}
+				if($version=='2.0.0'){
+					$data = $this->getGoodsList($condition,$page,$pagesize);
+				}else{
+
+					$count = M('goods')->where($condition)->count();
+					$goods = M('goods')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
+					foreach($goods as &$v)
+					{
+						$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
+					}
+					$data = $this->listPageData($count,$goods);
+				}
+			}
+		}
+		else
+		{
+			$json = array('status'=>-1,'msg'=>'参数错误');
+			if(!empty($ajax_get))
+				$this->getJsonp($json);
+			exit(json_encode($json));
+		}
+
+		return $data;
+	}
+
+	function getNextCat($id,$version)
+	{
+		$page = I('page',1);
+		$pagesize = I('pagesize',20);
+		//找到一级菜单的下级id
+		$parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
+		$condition['parent_id'] =array('in',array_column($parent_cat,'id'));
+		$parent_cat2 = M('goods_category')->where($condition)->field('id')->select();
+		$condition2['cat_id'] =array('in',array_column($parent_cat2,'id'));
+		$condition2['is_on_sale']=1;
+		$condition2['is_show'] = 1;
+		$condition2['is_audit'] = 1;
+		$condition2['show_type'] =0;
+		$condition2['the_raise'] =0;
+
+		if ($version=='2.0.0'){
+			$data = $this->getGoodsList($condition2,$page,$pagesize);
+		}else{
+			$count = M('goods')->where($condition2)->count();
+			$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
+
+			foreach($goods as &$v)
+			{
+				$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
+			}
+			$data = $this->listPageData($count,$goods);
+		}
+
+		return $data;
+	}
     /**
      * 获取商品分类列表
      */
@@ -109,72 +303,6 @@ class GoodsController extends BaseController {
         exit($json_str);
     }
 
-     /**
-     * 商品搜索列表页
-     */
-    public function search(){
-
-    	$filter_param = array(); // 筛选数组
-    	$id = I('get.id',0); // 当前分类id
-    	$brand_id = I('brand_id',0);
-    	$sort = I('sort','goods_id'); // 排序
-    	$sort_asc = I('sort_asc','asc'); // 排序
-    	$price = I('price',''); // 价钱
-    	$start_price = trim(I('start_price','0')); // 输入框价钱
-    	$end_price = trim(I('end_price','0')); // 输入框价钱
-    	if($start_price && $end_price) $price = $start_price.'-'.$end_price; // 如果输入框有价钱 则使用输入框的价钱
-    	$filter_param['id'] = $id; //加入筛选条件中
-    	$brand_id  && ($filter_param['brand_id'] = $brand_id); //加入筛选条件中
-    	$price  && ($filter_param['price'] = $price); //加入筛选条件中
-        $q = urldecode(trim(I('q',''))); // 关键字搜索
-        $q  && ($_GET['q'] = $filter_param['q'] = $q); //加入筛选条件中
-        if(empty($q))
-            $this->error ('请输入搜索关键词');
-
-    	$goodsLogic = new \Home\Logic\GoodsLogic(); // 前台商品操作逻辑类
-    	$filter_goods_id = M('goods')->where("is_on_sale=1 and `is_audit`=1 and goods_name like '%{$q}%'  ")->cache(true)->getField("goods_id",true);
-
-    	// 过滤筛选的结果集里面找商品
-    	if($brand_id || $price)// 品牌或者价格
-    	{
-    		$goods_id_1 = $goodsLogic->getGoodsIdByBrandPrice($brand_id,$price); // 根据 品牌 或者 价格范围 查找所有商品id
-    		$filter_goods_id = array_intersect($filter_goods_id,$goods_id_1); // 获取多个筛选条件的结果 的交集
-    	}
-
-    	$filter_menu  = $goodsLogic->get_filter_menu($filter_param,'goodsList'); // 获取显示的筛选菜单
-    	$filter_price = $goodsLogic->get_filter_price($filter_goods_id,$filter_param,'goodsList'); // 筛选的价格期间
-    	$filter_brand = $goodsLogic->get_filter_brand($filter_goods_id,$filter_param,'goodsList',1); // 获取指定分类下的筛选品牌
-
-    	$count = count($filter_goods_id);
-    	$page = new Page($count,4);
-    	if($count > 0)
-    	{
-    		$goods_list = M('goods')->where("goods_id in (".  implode(',', $filter_goods_id).")")->order("$sort $sort_asc")->limit($page->firstRow.','.$page->listRows)->select();
-    		$filter_goods_id2 = get_arr_column($goods_list, 'goods_id');
-    		if($filter_goods_id2)
-    			$goods_images = M('goods_images')->where("goods_id in (".  implode(',', $filter_goods_id2).")")->cache(true)->select();
-    	}
-    	$goods_category = M('goods_category')->where('is_show=1')->cache(true)->getField('id,name,parent_id,level'); // 键值分类数组
-
-    	$list['goods_list'] = $goods_list;
-    	//$list['goods_category'] = $goods_category;
-    	//$list['goods_images'] = $goods_images;  // 相册图片
-    	//$list['filter_menu'] = $filter_menu;  // 筛选菜单
-    	$list['filter_brand'] = $filter_brand;// 列表页筛选属性 - 商品品牌
-    	$list['filter_price'] = $filter_price;// 筛选的价格期间
-    	//$list['goodsCate'] = $goodsCate;
-    	//$list['cateArr'] = $cateArr;
-    	$list['filter_param'] = $filter_param; // 筛选条件
-    	$list['cat_id'] = $id;
-    	$list['sort_asc'] =  $sort_asc == 'asc' ? 'desc' : 'asc';
-    	C('TOKEN_ON',false);
-	    I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $json_arr = array('status'=>1,'msg'=>'获取成功','result'=>$list );
-        $json_str = json_encode($json_arr,true);
-        exit($json_str);
-
-    }
-
 	/*
 	 * H5显示
 	 */
@@ -234,8 +362,6 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
     }
 
-
-
 	//详情页
     function getGoodsDetails()
     {
@@ -252,7 +378,7 @@ class GoodsController extends BaseController {
 
 		    foreach ($banner as &$v) {
 			    //TODO 缩略图处理
-			    $v['small'] = goods_thum_images($v['image_url']);
+			    $v['small'] = TransformationImgurl($v['image_url']);
 			    $v['origin'] = TransformationImgurl($v['image_url']);
 			    unset($v['image_url']);
 		    }
@@ -260,29 +386,30 @@ class GoodsController extends BaseController {
 		    if (empty($banner)) {
 			    $banner = null;
 		    }
-		    $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
-
+		    $details = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,free,the_raise,is_special,original_img')->find();
 		    //商品详情
+		    $goods['goods_id'] = $details['goods_id'];
+		    $goods['goods_name'] = $details['goods_name'];
+		    $goods['market_price'] = $details['market_price'];
+		    $goods['shop_price'] = $details['shop_price'];
+		    $goods['prom_price'] = $details['prom_price'];
+		    $goods['prom'] = $details['prom'];
+		    $goods['goods_remark'] = $details['goods_remark'];
 		    $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
 		    $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-
-		    $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+		    $goods['sales'] = $details['sales'];
+		    $goods['is_support_buy'] = $details['is_support_buy'];
+		    $goods['free'] = $details['free'];
+		    $goods['the_raise'] = $details['the_raise'];
+		    $store = M('merchant')->where(' `id` = ' . $details['store_id'])->field('id,store_name,store_logo,sales')->find();
 		    $store['store_logo'] = TransformationImgurl($store['store_logo']);
 		    $goods['store'] = $store;
-		    $goods['original_img'] = TransformationImgurl($goods['original_img']);
-
-		    if (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg')) {
-			    $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.jpg';
-		    } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png')) {
-			    $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.png';
-		    } elseif (file_exists('Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif')) {
-			    $goods['fenxiang_url'] = C('HTTP_URL') . '/Public/upload/fenxiang/' . $goods_id . '_' . $goods['store_id'] . '.gif';
-		    } else {
-			    $goods_pic_url = goods_thum_images($goods['goods_id'], 400, 400);
-			    $pin = $this->fenxiangLOGO($goods_pic_url, $goods['goods_id'], $goods['store_id']);
-			    $goods['fenxiang_url'] = C('HTTP_URL') . $pin;
-		    }
-
+		    $goods['is_special'] = $details['is_special'];
+		    $goods['goods_content'] = $details['goods_content'];
+		    $goods['original_img'] = TransformationImgurl($details['original_img']);
+			$goods['img_arr'] = getImgs($details['goods_content']);
+		    $goods['img_arr'] = getImgSize($goods['img_arr']);
+		    $goods['fenxiang_url'] = $details['original_img'] . "?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
 		    //获取已经开好的团
 		    $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
 		    if (!empty($group_buy)) {
@@ -342,7 +469,7 @@ class GoodsController extends BaseController {
 		    for ($i = 0; $i < count($new_filter_spec); $i++) {
 			    foreach ($new_filter_spec[$i]['items'] as &$v) {
 				    if (!empty($v['src'])) {
-					    $v['src'] = TransformationImgurl($v['src']);
+					    $v['src'] =$v['src'];
 				    }
 			    }
 		    }
@@ -356,10 +483,9 @@ class GoodsController extends BaseController {
 		    }
 
 		    //提供保障
-		    $security = array('包邮','7天退换','假一赔十','48小时发货');
+		    $security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
 
-
-		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'security'=>$security,'store' => $store,  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+		    $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'img_arr'=>$goods['img_arr'],'security'=>$security,'store' => $store,  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
 		    redis($rdsname, serialize($json), REDISTIME);//写入缓
 		    if (!empty($ajax_get))
 			    $this->getJsonp($json);
@@ -585,26 +711,14 @@ class GoodsController extends BaseController {
                         exit;
                     }
 
-					if(!empty($ajax_get)){
-						echo "<script> alert('".$json['msg']."') </script>";
-						exit;
-					}
-
 					exit(json_encode($json));
 				}
 			}elseif($num==$result['goods_num']){
 				$json =array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-
-				if(!empty($ajax_get)){
-					echo "<script> alert('".$json['msg']."') </script>";
-					exit;
-				}
-
 				exit(json_encode($json));
 			}
 			//判断该用户是否参团了
@@ -612,15 +726,10 @@ class GoodsController extends BaseController {
 			if(!empty($self))
 			{
 				$json =array('status'=>-1,'msg'=>'你已经参团了');
-
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				if(!empty($ajax_get)){
-					echo "<script> alert('".$json['msg']."') </script>";
-					exit;
-				}
 				exit(json_encode($json));
 			}
 			//判断用户是否已经生成未付款订单
@@ -632,10 +741,6 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				if(!empty($ajax_get)){
-					echo "<script> alert('".$json['msg']."') </script>";
-					exit;
-				}
 				exit(json_encode($json));
 			}
 			$num2 = M('group_buy')->where('`id`='.$result['id'].' `mark` = '.$order_id.' and `is_pay`=1')->count();
@@ -647,10 +752,6 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				if(!empty($ajax_get)){
-					echo "<script> alert('".$json['msg']."') </script>";
-					exit;
-				}
 				exit(json_encode($json));
 			}
 			$this->joinGroupBuy($parameter);
@@ -675,12 +776,6 @@ class GoodsController extends BaseController {
         async_get_url($url);
         $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
         async_get_url($url);
-		$rdsname = "getUserOrderList".$user_id."*";
-		redisdelall($rdsname);//删除用户订单缓存
-		$rdsname = "getGoodsDetails".$goods_id."*";
-		redisdelall($rdsname);//删除商品详情缓存
-		$rdsname = "TuiSong*";
-		redisdelall($rdsname);//删除推送缓存
 	}
 
 	/**
@@ -692,7 +787,6 @@ class GoodsController extends BaseController {
 		$data = array();
 		$order = array();
 		$address_id = $parameter['address_id'];
-		//$goods_id = $parameter['goods_id'];
 		$spec_key = $parameter['spec_key'];
 		$coupon_id = $parameter['coupon_id'];
 		$ajax_get =  $parameter['ajax_get'];
@@ -879,7 +973,6 @@ class GoodsController extends BaseController {
 					//微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
 					if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
 						$order['order_id'] = $order_id;
-
 						$code_str = $weixinPay->getJSAPI($order);
 						$pay_detail = $code_str;
 					}else{
@@ -1124,10 +1217,6 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			if(!empty($ajax_get)){
-				echo "<script> alert('".$json['msg']."') </script>";
-				exit;
-			}
 			exit(json_encode($json));
 		}
 
@@ -1398,8 +1487,6 @@ class GoodsController extends BaseController {
 		}else{
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'购买失败');
-//			if(!empty($ajax_get))
-//				$this->getJsonp($json);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1506,41 +1593,35 @@ class GoodsController extends BaseController {
 	/*
 	 * type:  0、参团、1、开团、2、单买
 	 */
-	function getOrder()
-	{
-		header("Access-Control-Allow-Origin:*");
-		$user_id = I('user_id');
-		$goods_id = I('goods_id');
-		$store_id = I('store_id');
-		$num = I('num',1);
-		$type = I('type');
-		$spec_key = I('spec_key');
-		$order_id = I('order_id');
-
-		$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
-		if(empty($user_address))
+		function getOrder()
 		{
-			$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
-		}
-		//库存
-		$store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
+			header("Access-Control-Allow-Origin:*");
+			$user_id = I('user_id');
+			$goods_id = I('goods_id');
+			$store_id = I('store_id');
+			$num = I('num',1);
+			$type = I('type');
+			$spec_key = I('spec_key');
+			$order_id = I('order_id');
 
-		$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
-		$goods['original_img'] = goods_thum_images($goods['goods_id'],400,400);
+			$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
+			if(empty($user_address))
+			{
+				$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
+			}
+			//库存
+			$store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
+
+			$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
+		$goods['original_img'] = C('HTTP_URL').goods_thum_images($goods['goods_id'],400,400);
 		$goods['store'] = M('merchant')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
-		$goods['store']['store_logo'] = TransformationImgurl($goods['store']['store_logo']);
+		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
 
 		//获取商品规格
 		if(!empty($spec_key))
 		{
 			M('temporary_key')->add(array('goods_id'=>$goods_id,'goods_spec_key'=>$spec_key,'user_id'=>$user_id,'add_time'=>time()));
 			$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
-			if (empty($goods_spec))
-			{
-				$char = $spec_key;
-				$arr = explode('_', $char);
-				$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id.' and `key`= '".$arr[1].'_'.$arr[0]."'")->field('key_name,price,prom_price')->find();
-			}
 			$goods['shop_price']=$goods_spec['price'];
 			$goods['prom_price']=$goods_spec['prom_price'];
 			$goods['key_name'] = $goods_spec['key_name'];
@@ -1576,20 +1657,22 @@ class GoodsController extends BaseController {
 		//获取合适的店铺优惠卷
 		//找到该店铺里用户的全部优惠券
 		$user_coupon = M('coupon_list')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
-
 		if(!empty($user_coupon)) {
 			$id = array_column($user_coupon, 'cid');
 			//拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
 			$coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
 			if(!empty($coupon))
 			{
-			//根据获取的最佳优惠券在coupon_list里面的优惠券id
-			for ($i = 0; $i < count($user_coupon); $i++) {
-				$user_coupon_list_id = M('coupon_list')->where('`cid`=' . $user_coupon[$i]['cid'] . ' and `uid`=' . $user_id . ' and `is_use`=0')->find();
-				if ($coupon['id'] == $user_coupon_list_id['cid']) {
-					$coupon['coupon_list_id'] = $user_coupon[$i]['id'];
-					break;
+				//根据获取的最佳优惠券在coupon_list里面的优惠券id
+				for ($i = 0; $i < count($user_coupon); $i++) {
+					$user_coupon_list_id = M('coupon_list')->where('`cid`='.$user_coupon[$i]['cid'].' and `uid`='.$user_id.' and `is_use`=0')->find();
+					if ($coupon['id'] == $user_coupon_list_id['cid']) {
+						$coupon['coupon_list_id'] = $user_coupon[$i]['id'];
+						break;
+					}
 				}
+			}else{
+				$coupon = null;
 			}
 		}else{
 			$coupon = null;
@@ -1601,6 +1684,7 @@ class GoodsController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
 
 	//获取可用优惠券
 	function getCoupon()
@@ -1645,17 +1729,25 @@ class GoodsController extends BaseController {
 		$id = I('id');
 		$page = I('page',1);
 		$pagesize = I('pagesize',20);
+		$version = I('version');
 		$countries = M('haitao_style')->where('`id` = '.$id)->find();
 		$countries['img'] = TransformationImgurl($countries['img']);
-		$count = M('goods')->where('`is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->count();
-		$goods = M('goods')->where(' `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
 
-		foreach($goods as &$v)
-		{
-			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
+		if($version=='2.0.0'){
+			$where ='`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id;
+			$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+		}else{
+			$count = M('goods')->where('`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->count();
+			$goods = M('goods')->where('`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
+
+			foreach($goods as &$v)
+			{
+				$v['original_img'] =  TransformationImgurl($v['goods_id']);
+			}
+
+			$data = $this->listPageData($count,$goods);
 		}
 
-		$data = $this->listPageData($count,$goods);
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('countries'=>$countries,'goods'=>$data));
 		if(!empty($ajax_get))
@@ -1706,7 +1798,7 @@ class GoodsController extends BaseController {
 
 		foreach($goods as &$v)
 		{
-			$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+			$v['original_img'] = TransformationImgurl($v['goods_id']);
 		}
 		$data = $this->listPageData($count,$goods);
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -1714,204 +1806,6 @@ class GoodsController extends BaseController {
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
-	}
-
-	//查看全部
-	function getMore()
-	{
-		$id = I('id');
-		$type = I('type');
-        $page=I('page',1);
-        $pagesize = I('pagesize',20);
-        $rdsname = "getMore".$id.$type.$page.$pagesize;
-        if (empty(redis($rdsname))) {//判断是否有缓存
-            $data = $this->getOtheyMore($id,$type,$page,$pagesize);
-            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        } else {
-            $json = unserialize(redis($rdsname));//读取缓存
-        }
-		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		if(!empty($ajax_get))
-			$this->getJsonp($json);
-		exit(json_encode($json));
-	}
-
-	function getOtheyMore($id,$type,$page,$pagesize,$version)
-	{
-//		$id = I('id');//分类id
-//		$type = I('type');//0->不是海淘的  1->是海淘的
-		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		if($type==0)
-		{
-			$parent_id = M('goods_category')->where('`parent_id`=0 and id != 10044 ')->field('id')->select();
-			$ids =array(array_column($parent_id,'id'));
-			if(in_array("$id", $ids[0]))
-			{
-				$data = $this->getNextCat($id,$version);
-				return $data;
-			}else{
-				$condition['parent_id'] = $ids =array('in',array_column($parent_id,'id'));
-				$parent_id2 = M('goods_category')->where($condition)->field('id')->select();
-				$ids2 =array(array_column($parent_id2,'id'));
-				if(in_array("$id", $ids2[0]))//确定为二级分类id
-				{
-					//找到一级菜单的下级id
-					$parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
-					$condition2['cat_id'] =array('in',array_column($parent_cat,'id'));
-					$condition2['is_on_sale']=1;
-					$condition2['is_show'] = 1;
-					$condition2['is_audit'] =1;
-					$condition2['show_type'] =0;
-					$condition2['the_raise'] =0;
-					if($version=='2.0.0'){
-						$data = $this->getGoodsList($condition2,$page.$pagesize);
-					}else {
-						$count = M('goods')->where($condition2)->count();
-						$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('sales desc')->select();
-						foreach ($goods as &$v) {
-							$v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-						}
-						$data = $this->listPageData($count, $goods);
-					}
-					return $data;
-				}else{
-					if($version=='2.0.0'){
-						$where = "`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1";
-						$data = $this->getGoodsList($where,$page,$pagesize);
-					}else {
-						$count = M('goods')->where('`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1')->count();
-						$goods = M('goods')->where('`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->page($page, $pagesize)->select();
-						foreach ($goods as &$v) {
-							$v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-						}
-						$data = $this->listPageData($count, $goods);
-					}
-					return $data;
-				}
-			}
-		}
-		elseif($type==1)
-		{
-			if($id==0)//全部
-			{
-				if($version=='2.0.0'){
-					$where = '`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0';
-					$data = $this->getGoodsList($where,$page,$pagesize);
-				}else {
-					$count = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0')->count();
-					$goods = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0')->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->select();
-					foreach($goods as &$v)
-					{
-						$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
-					}
-					$data = $this->listPageData($count,$goods);
-				}
-			}
-			else
-			{
-				$cat = M('haitao')->where('`parent_id` = '.$id)->field('id')->select();
-				$condition['is_on_sale']=1;
-				$condition['is_show'] = 1;
-				$condition['is_audit'] = 1;
-				$condition['show_type'] =0;
-				$condition['the_raise'] =0;
-				if(empty($cat))
-				{
-					$condition['haitao_cat'] = $id;
-				}else{
-
-					//array_column()将二维数组转成一维
-					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
-				}
-				if($version=='2.0.0'){
-					$data = $this->getGoodsList($condition,$page,$pagesize);
-				}else{
-
-					$count = M('goods')->where($condition)->count();
-					$goods = M('goods')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
-					foreach($goods as &$v)
-					{
-						$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
-					}
-					$data = $this->listPageData($count,$goods);
-				}
-
-			}
-		}
-		else
-		{
-			$json = array('status'=>-1,'msg'=>'参数错误');
-			if(!empty($ajax_get))
-				$this->getJsonp($json);
-			exit(json_encode($json));
-		}
-
-		return $data;
-	}
-
-	function getNextCat($id,$version)
-	{
-		$page = I('page',1);
-		$pagesize = I('pagesize',20);
-		//找到一级菜单的下级id
-		$parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
-		$condition['parent_id'] =array('in',array_column($parent_cat,'id'));
-		$parent_cat2 = M('goods_category')->where($condition)->field('id')->select();
-		$condition2['cat_id'] =array('in',array_column($parent_cat2,'id'));
-		$condition2['is_on_sale']=1;
-		$condition2['is_show'] = 1;
-		$condition2['is_audit'] = 1;
-		$condition2['show_type'] =0;
-		$condition2['the_raise'] =0;
-
-		if ($version=='2.0.0'){
-			$data = $this->getGoodsList($condition2,$page,$pagesize);
-		}else{
-			$count = M('goods')->where($condition2)->count();
-			$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
-
-			foreach($goods as &$v)
-			{
-				$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
-			}
-			$data = $this->listPageData($count,$goods);
-		}
-
-		return $data;
-	}
-	//获取用户地址列表
-	function getUserAddressList()
-	{
-		$user_id = I('user_id');
-		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$a = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
-
-		$b = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` != 1')->field('address_id,consignee,address_base,address,mobile,is_default')->select();
-
-		if(!empty($a))
-		{
-			$address[0] = $a;//把数组第一个放入默认地址
-			for($i = 0;$i<count($b);$i++)
-			{
-				$address[$i+1] = $b[$i];
-			}
-		}else{
-				$address = $b;
-		}
-			if(!empty($address))
-			{
-				$json = array('status'=>1,'msg'=>'获取成功','result'=>array('address'=>$address));
-				if(!empty($ajax_get))
-					$this->getJsonp($json);
-				exit(json_encode($json));
-			}else{
-				$json = array('status'=>1,'msg'=>'还没有收货地址哦，先添加吧','result'=>array('address'=>[]));
-				if(!empty($ajax_get))
-					$this->getJsonp($json);
-				exit(json_encode($json));
-			}
-		}
 	}
 
 	/*
@@ -2032,6 +1926,7 @@ class GoodsController extends BaseController {
 	}
 
 	//商品特殊类型 1-海淘，2-限时秒杀，3-一元夺宝，4-99专场，5-多人拼团
+	//搜索
 	function getsearch()
 	{
 		$key = I('key');
@@ -2168,8 +2063,149 @@ class GoodsController extends BaseController {
 		$this->show();
 	}
 
-	function test()
+	//新版本详情 2.0.0
+	function getDetaile()
 	{
-		$this->display();
+        $goods_id = I('goods_id');
+
+		$rdsname = 'getDetaile'.$goods_id;
+		if(empty(redis($rdsname))){
+			//轮播图
+			$banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
+
+			foreach ($banner as &$v) {
+				//TODO 缩略图处理
+				$v['small'] = TransformationImgurl($v['image_url']);
+				$v['origin'] = TransformationImgurl($v['image_url']);
+				unset($v['image_url']);
+			}
+
+			if (empty($banner)) {
+				$banner = null;
+			}
+			$goods = $this->getGoodsInfo($goods_id);
+			//商品规格
+			$goodsLogic = new \Home\Logic\GoodsLogic();
+			$spec_goods_price = M('spec_goods_price')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
+			$filter_spec = $goodsLogic->get_spec($goods_id);//规格参数
+			$new_spec_goods = array();
+			foreach ($spec_goods_price as $spec) {
+				$new_spec_goods[] = $spec;
+			}
+			$new_filter_spec = array();
+
+			foreach ($filter_spec as $key => $filter) {
+				$new_filter_spec[] = array('title' => $key, 'items' => $filter);
+			}
+			for ($i = 0; $i < count($new_filter_spec); $i++) {
+				foreach ($new_filter_spec[$i]['items'] as &$v) {
+					if (!empty($v['src'])) {
+						$v['src'] =$v['src'];
+					}
+				}
+			}
+			//如果有传规格过来就改变商品名字
+			if (!empty($spec_key)) {
+				$key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
+				$goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
+			}
+			if (!empty($ajax_get)) {
+				$goods['html'] = htmlspecialchars_decode($goods['goods_content']);
+			}
+
+			//提供保障
+			$security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
+
+			$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'img_arr'=>$goods['img_arr'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+			redis($rdsname, serialize($json), REDISTIME);//写入缓
+
+		}else{
+			$json = unserialize(redis($rdsname));
+		}
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
+	}
+	
+	function getGenerateOrder(){
+		header("Access-Control-Allow-Origin:*");
+		$user_id = I('user_id');
+		$goods_id = I('goods_id');
+		$num = I('num',1);
+		$type = I('type');
+		$spec_key = I('spec_key');
+		$prom_id = I('prom_id');
+
+		$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
+		if(empty($user_address))
+		{
+			$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
+		}
+		$goods = $this->getGoodsInfo($goods_id);
+		//获取商品规格
+		if(!empty($spec_key))
+		{
+			M('temporary_key')->add(array('goods_id'=>$goods_id,'goods_spec_key'=>$spec_key,'user_id'=>$user_id,'add_time'=>time()));
+			$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
+			$goods['shop_price']=$goods_spec['price'];
+			$goods['prom_price']=$goods_spec['prom_price'];
+			$goods['key_name'] = $goods_spec['key_name'];
+		}else{
+			$goods['key_name']='默认';
+			$goods_spec['price']=$goods['shop_price'];
+			$goods_spec['price']=$goods['prom_price'];
+		}
+
+		//用来获取优惠券的价格
+		//0-》参团 1-》开团 2-》单买
+		if($type==0)
+		{
+			$price = $goods['prom_price']*$num;
+			$order_info = M('group_buy')->where(' id = '.$prom_id)->find();
+			$goods['prom_num'] = $order_info['goods_num'];
+			$goods['free_num'] = $order_info['free'];
+		}
+		elseif($type==1){
+			$price = $goods_spec['prom_price']*$num;;
+		}
+		elseif($type==2) {
+			$price = $goods_spec['price']*$num;
+		}
+		else
+		{
+			$json = array('status'=>-1,'msg'=>'参数错误');
+			if(!empty($ajax_get))
+				$this->getJsonp($json);
+			exit(json_encode($json));
+		}
+		//获取合适的店铺优惠卷
+		//找到该店铺里用户的全部优惠券
+		$user_coupon = M('coupon_list')->where('`uid`='.$user_id.' and `store_id`='.$goods['goods_id'].' and `is_use`=0')->field('id,cid')->select();
+		if(!empty($user_coupon)) {
+			$id = array_column($user_coupon, 'cid');
+			//拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
+			$coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
+			if(!empty($coupon))
+			{
+				//根据获取的最佳优惠券在coupon_list里面的优惠券id
+				for ($i = 0; $i < count($user_coupon); $i++) {
+					$user_coupon_list_id = M('coupon_list')->where('`cid`='.$user_coupon[$i]['cid'].' and `uid`='.$user_id.' and `is_use`=0')->find();
+					if ($coupon['id'] == $user_coupon_list_id['cid']) {
+						$coupon['coupon_list_id'] = $user_coupon[$i]['id'];
+						break;
+					}
+				}
+			}else{
+				$coupon = null;
+			}
+		}else{
+			$coupon = null;
+		}
+
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('user'=>$user_address,'goods'=>$goods,'coupon'=>$coupon));
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
 	}
 }

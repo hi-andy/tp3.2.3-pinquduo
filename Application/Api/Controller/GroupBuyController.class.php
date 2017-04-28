@@ -504,4 +504,198 @@ class GroupBuyController
             exit(json_encode($json));
         }
     }
+
+    /**
+     * 开团
+     */
+    public function openPay($parameter){
+        $goods_id = $parameter['goods_id'];
+        $user_id = $parameter['user_id'];
+        $store_id = $parameter['store_id'];
+        $address_id = $parameter['address_id'];
+        $num = $parameter['num'];
+        $spec_key = $parameter['spec_key'];
+        $coupon_id = $parameter['coupon_id'];
+        $free = $parameter['free'];
+        $ajax_get =  $parameter['ajax_get'];
+        $coupon_list_id = $parameter['coupon_list_id'];
+        $prom = $parameter['prom'];
+    }
+
+    //生成订单
+    function set_Order($parameter)
+    {
+        $goods_id = $parameter['goods_id'];
+        $user_id = $parameter['user_id'];
+        $store_id = $parameter['store_id'];
+        $address_id = $parameter['address_id'];
+        $num = $parameter['num'];
+        $spec_key = $parameter['spec_key'];
+        $coupon_id = $parameter['coupon_id'];
+        $free = $parameter['free'];
+        $ajax_get =  $parameter['ajax_get'];
+        $coupon_list_id = $parameter['coupon_list_id'];
+        $prom = $parameter['prom'];
+        if(!empty($coupon_id))
+        {
+            $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
+        }else{
+            $coupon['money'] = 0;
+        }
+        //找到开团的商品,并获取要用的数据
+        $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();
+        //获取商品规格和相应的价格
+        if(!empty($spec_key))
+        {
+            $goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,prom_price')->find();
+            $goods['prom_price']=(string)($goods_spec['prom_price']);
+        }else{
+            $goods_spec['key_name']= '默认';
+            $goods['prom_price']=(string)$goods['prom_price'];
+        }
+        if(!empty($free))//是否免单
+        {
+            if(!empty($prom))
+            {
+                $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
+                $count = $this->getFloatLength($goods['prom_price']);
+                if($count>3)
+                {
+                    $price = $this->operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price-$coupon['money'];
+                }
+            }else{
+                $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
+                $count = $this->getFloatLength($goods['prom_price']);
+                if($count>3)
+                {
+                    $price = $this->operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price-$coupon['money'];
+                }
+            }
+        }
+        elseif(!empty($goods['free']))
+        {
+            if(!empty($prom))
+            {
+                $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
+                $count = $this->getFloatLength($goods['prom_price']);
+                if($count>3)
+                {
+                    $price = $this->operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price-$coupon['money'];
+                }
+            }else{
+                $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
+                $count = $this->getFloatLength($goods['prom_price']);
+                if($count>3)
+                {
+                    $price = $this->operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price-$coupon['money'];
+                }
+            }
+        }
+
+        //在团购表加单
+        $data['start_time'] = time();
+        $data['end_time'] = time()+24*60*60;
+        $data['goods_id'] = $goods_id;
+        if(!empty($prom))
+        {
+            $data['goods_num'] = $prom;
+        }else{
+            $data['goods_num'] = $goods['prom'];
+        }
+        $data['order_num'] = 1;
+        $data['buy_num'] = $data['order_num'] = 1;
+        $data['price'] = $goods['prom_price']*$num;
+        $data['intro'] = $goods['goods_name'];
+        $data['goods_price'] = $goods['market_price'];
+        $data['goods_name'] = $goods['goods_name'];
+        $data['photo'] = '/Public/upload/logo/logo.jpg';
+//        $data['latitude'] = $latitude;
+//        $data['longitude'] = $longitude;
+        $data['mark'] = 0;
+        $data['user_id'] = $user_id;
+        $data['store_id'] = $store_id;
+        $data['address_id'] = $address_id;
+        $data['free'] = $free;
+        //如果是众筹订单
+        if($goods['the_raise']==1)
+        {
+            $data['is_raise']=1;
+        }
+        $group_buy = M('group_buy')->data($data)->add();
+
+//			var_dump($group_buy);
+        //在订单加一张单
+        $address = M('user_address')->where('`address_id` = '.$address_id)->find();//获取地址信息
+        $order['user_id'] = $user_id;
+        $order['order_sn'] = C('order_sn');
+        $order['invitation_num'] = $this->getInvitationNum();
+        $order['goods_id'] = $goods_id;
+        $order['pay_status'] = 0;
+        $order['order_status'] = 8;
+        $order['order_type'] = 10;
+        $order['consignee'] = $address['consignee'];
+        $order['country'] = 1;
+        $order['address_base'] = $address['address_base'];
+        $order['address'] = $address['address'];
+        $order['mobile'] = $address['mobile'];
+        if(I('code')=='weixin')
+        {
+            $order['pay_code'] = 'weixin' ;
+            $order['pay_name'] = '微信支付';
+        }
+        elseif(I('code')=='alipay')
+        {
+            $order['pay_code'] = 'alipay' ;
+            $order['pay_name'] = '支付宝支付';
+        }elseif(I('code')=='qpay')
+        {
+            $order['pay_code'] = 'qpay';
+            $order['pay_name'] = 'QQ钱包支付';
+        }
+        $order['goods_price'] = $goods['market_price'];
+        $order['total_amount'] = $goods['prom_price']*$num;
+        $order['order_amount'] = (string)($goods['prom_price']*$num-$coupon['money']);
+        $order['coupon_price'] = $coupon['money'];
+        I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
+        I('coupon_id') && $order['coupon_id'] = $coupon_id;
+        $order['add_time'] = $order['pay_time'] = time();
+        $order['store_id'] = $store_id;
+        $order['prom_id'] = $group_buy;
+        $order['free'] = $free;
+        $order['num'] = $num;
+        //如果是众筹订单
+        if($goods['the_raise']==1)
+        {
+            $order['the_raise']=1;
+        }
+        if(!empty($ajax_get))
+        {
+            $order['is_jsapi'] = 1;
+        }
+        $o_id = M('order')->data($order)->add();
+        $order['order_id'] = $o_id;
+
+        //在商品规格订单表加一条数据
+        $spec_data['order_id'] = $o_id;
+        $spec_data['goods_id'] = $goods_id;
+        $spec_data['goods_name'] =$goods['goods_name'];
+        $spec_data['goods_num'] = $num;
+        $spec_data['market_price'] = $goods['market_price'];
+        if(!empty($spec_key)){
+            $spec_data['goods_price'] = $goods_spec['prom_price'];
+        }else{
+            $spec_data['goods_price'] = $goods['prom_price'];
+        }
+        $coupon && $spec_data['coupon_price'] = $coupon['money'];
+        $spec_data['spec_key'] = $spec_key;
+        $spec_data['spec_key_name'] = $goods_spec['key_name'];
+        $spec_data['prom_type'] = 1;
+        $spec_data['prom_id'] = $group_buy;
+        $spec_data['store_id'] = $store_id;
+        $spec_res = M('order_goods')->data($spec_data)->add();
+    }
 }

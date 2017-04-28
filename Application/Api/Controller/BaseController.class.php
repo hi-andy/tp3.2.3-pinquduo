@@ -15,7 +15,7 @@ use Think\Controller;
 class BaseController extends Controller {
     public $http_url;
     public $user = array();
-    public $user_id = 0;    
+    public $user_id = 0;
     /**
      * 析构函数
      */
@@ -25,24 +25,24 @@ class BaseController extends Controller {
         {
             $test_str = 'POST'.print_r($_POST,true);
             $test_str .= 'GET'.print_r($_GET,true);
-            file_put_contents('a.html', $test_str);            
+            file_put_contents('a.html', $test_str);
         }
         $this->user_id = I("user_id",0); // 用户id   
         if($this->user_id)
         {
             $this->user = M('users')->where("user_id = {$this->user_id}")->find();
-        }        
-   }    
-    
+        }
+    }
+
     /*
      * 初始化操作
      */
     public function _initialize() {
-                 
-		//exit(array('status'=>-1,'msg'=>'请修改注释Application\Api\Controller\BaseController.class.php 文件42行打开手机接口','result'=>'')); //  开启后注释掉这行代码即可
-		
+
+        //exit(array('status'=>-1,'msg'=>'请修改注释Application\Api\Controller\BaseController.class.php 文件42行打开手机接口','result'=>'')); //  开启后注释掉这行代码即可
+
         $local_sign = $this->getSign();
-        $api_secret_key = C('API_SECRET_KEY');        
+        $api_secret_key = C('API_SECRET_KEY');
         // 不参与签名验证的方法
         /*
         if(!in_array(strtolower(ACTION_NAME), array('getservertime','getconfig','alipaynotify')))
@@ -54,45 +54,45 @@ class BaseController extends Controller {
 
             }
             if(time() - $_POST['time'] > 600)
-            {    
+            {
                 $json_arr = array('status'=>-1,'msg'=>'请求超时!!!','data'=>'' );
                 exit(json_encode($json_arr));
             }
         }
         */
     }
-    
+
     /**
      *  app 端万能接口 传递 sql 语句 sql 错误 或者查询 错误 result 都为 false 否则 返回 查询结果 或者影响行数
      */
     public function sqlApi()
-    {            
+    {
         exit(array('status'=>-1,'msg'=>'使用万能接口必须开启签名验证才安全','result'=>'')); //  开启后注释掉这行代码即可
-        
+
         C('SHOW_ERROR_MSG',1);
-            $Model = new \Think\Model(); // 实例化一个model对象 没有对应任何数据表
-            $sql = $_REQUEST['sql'];                        
-            try
-            {
-                 if(preg_match("/insert|update|delete/i", $sql))            
-                     $result = $Model->execute($sql);
-                 else             
-                     $result = $Model->query($sql);
-             }
-             catch (\Exception $e)
-             {
-                 $json_arr = array('status'=>-1,'msg'=>'系统错误','result'=>'');
-                 $json_str = json_encode($json_arr);            
-                 exit($json_str);            
-             }            
-                         
-            if($result === false) // 数据非法或者sql语句错误            
-                $json_arr = array('status'=>-1,'msg'=>'系统错误','result'=>'');
+        $Model = new \Think\Model(); // 实例化一个model对象 没有对应任何数据表
+        $sql = $_REQUEST['sql'];
+        try
+        {
+            if(preg_match("/insert|update|delete/i", $sql))
+                $result = $Model->execute($sql);
             else
-                $json_arr = array('status'=>1,'msg'=>'成功!','result'=>$result);
-                                   
-            $json_str = json_encode($json_arr);            
-            exit($json_str);            
+                $result = $Model->query($sql);
+        }
+        catch (\Exception $e)
+        {
+            $json_arr = array('status'=>-1,'msg'=>'系统错误','result'=>'');
+            $json_str = json_encode($json_arr);
+            exit($json_str);
+        }
+
+        if($result === false) // 数据非法或者sql语句错误
+            $json_arr = array('status'=>-1,'msg'=>'系统错误','result'=>'');
+        else
+            $json_arr = array('status'=>1,'msg'=>'成功!','result'=>$result);
+
+        $json_str = json_encode($json_arr);
+        exit($json_str);
     }
 
     /**
@@ -111,15 +111,15 @@ class BaseController extends Controller {
      */
     protected function getSign(){
         header("Content-type:text/html;charset=utf-8");
-        $data = $_POST;        
-        unset($data['time']);    // 删除这两个参数再来进行排序     
+        $data = $_POST;
+        unset($data['time']);    // 删除这两个参数再来进行排序
         unset($data['sign']);    // 删除这两个参数再来进行排序
         ksort($data);
-        $str = implode('', $data);        
-        $str = $str.$_POST['time'].C('API_SECRET_KEY');        
+        $str = implode('', $data);
+        $str = $str.$_POST['time'].C('API_SECRET_KEY');
         return md5($str);
     }
-        
+
     /**
      * 获取服务器时间
      */
@@ -127,7 +127,7 @@ class BaseController extends Controller {
     {
         $json_arr = array('status'=>1,'msg'=>'成功!','result'=>time());
         $json_str = json_encode($json_arr);
-        exit($json_str);       
+        exit($json_str);
     }
 
     /**
@@ -160,47 +160,47 @@ class BaseController extends Controller {
 
     function getStatus($order)//订单表详情
     {
-            if ($order['pay_status']==0 && ($order['order_status']==1 || $order['order_status']==8)) {
-                //待支付
-                $status['annotation'] = '待付款';
-                $status['order_type'] = '1';
-            } elseif ($order['pay_status']==1 && $order['order_status']==1 && $order['shipping_status']!=1) {
-                //待发货
-                $status['annotation'] = '待发货';
-                $status['order_type'] = '2';
-            } elseif ($order['shipping_status']==1 && $order['order_status']==1 && $order['pay_status']==1) {
-                //待收货
-                $status['annotation'] = '待收货';
-                $status['order_type'] = '3';
-            } elseif ($order['order_status']==2 && $order['pay_status']==1 && $order['shipping_status']==1) {
-                //'已完成'
-                $status['annotation'] = '已完成';
-                $status['order_type'] = '4';
-            } elseif ($order['order_status']==3) {
-                //'已取消'
-                $status['annotation'] = '已取消';
-                $status['order_type'] = '5';
-            } elseif ($order['order_status']==4 && $order['pay_status']==1) {
-                //'已完成'
-                $status['annotation'] = '待换货';
-                $status['order_type'] = '6';
-            } elseif ($order['order_status']==5 && $order['pay_status']==1) {
-                //'已完成'
-                $status['annotation'] = '已换货';
-                $status['order_type'] = '7';
-            }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==6) {
-                $status['annotation'] = '待退货';
-                $status['order_type'] = '8';
-            }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==7) {
-                $status['annotation'] = '已退货';
-                $status['order_type'] = '9';
-            }elseif($order['order_type']==16 || $order['order_status']==15){
-                $status['annotation'] = '拒绝受理';
-                $status['order_type'] = '16';
-            }else{
-                $status['annotation'] = '订单状态异常';
-                $status['order_type'] = null;
-            }
+        if ($order['pay_status']==0 && ($order['order_status']==1 || $order['order_status']==8)) {
+            //待支付
+            $status['annotation'] = '待付款';
+            $status['order_type'] = '1';
+        } elseif ($order['pay_status']==1 && $order['order_status']==1 && $order['shipping_status']!=1) {
+            //待发货
+            $status['annotation'] = '待发货';
+            $status['order_type'] = '2';
+        } elseif ($order['shipping_status']==1 && $order['order_status']==1 && $order['pay_status']==1) {
+            //待收货
+            $status['annotation'] = '待收货';
+            $status['order_type'] = '3';
+        } elseif ($order['order_status']==2 && $order['pay_status']==1 && $order['shipping_status']==1) {
+            //'已完成'
+            $status['annotation'] = '已完成';
+            $status['order_type'] = '4';
+        } elseif ($order['order_status']==3) {
+            //'已取消'
+            $status['annotation'] = '已取消';
+            $status['order_type'] = '5';
+        } elseif ($order['order_status']==4 && $order['pay_status']==1) {
+            //'已完成'
+            $status['annotation'] = '待换货';
+            $status['order_type'] = '6';
+        } elseif ($order['order_status']==5 && $order['pay_status']==1) {
+            //'已完成'
+            $status['annotation'] = '已换货';
+            $status['order_type'] = '7';
+        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==6) {
+            $status['annotation'] = '待退货';
+            $status['order_type'] = '8';
+        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==7) {
+            $status['annotation'] = '已退货';
+            $status['order_type'] = '9';
+        }elseif($order['order_type']==16 || $order['order_status']==15){
+            $status['annotation'] = '拒绝受理';
+            $status['order_type'] = '16';
+        }else{
+            $status['annotation'] = '订单状态异常';
+            $status['order_type'] = null;
+        }
         return $status;
     }
 
@@ -557,7 +557,7 @@ class BaseController extends Controller {
     //调度商品详情
     function  getGoodsInfo($goods_id)
     {
-        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
+        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
 
         //商品详情
         $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
@@ -565,9 +565,10 @@ class BaseController extends Controller {
         $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
-        $goods['original_img'] = TransformationImgurl($goods['original_img']);
+        $goods['original_img'] =$goods['original']= TransformationImgurl($goods['original_img']);
         $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0|imageslim";
-
+        $goods['img_arr'] = getImgs($goods['goods_content']);
+        $goods['img_arr'] = getImgSize($goods['img_arr']);
         return $goods;
     }
     //版本2.0.0
@@ -579,7 +580,6 @@ class BaseController extends Controller {
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
             $v['original'] = TransformationImgurl($v['original_img']);
-            $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
             $v['original_img'] = TransformationImgurl($v['original_img']);
         }
         return $result;
@@ -588,10 +588,31 @@ class BaseController extends Controller {
     function get_OrderList($where,$page,$pagesize)
     {
         $count = M('order')->where($where)->count();
-        $all = M('order')->where($where)->order('order_id desc')->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
+        $all = M('order')
+            ->where($where)
+            ->order('order_id desc')
+            ->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
         //团购订单处理
         $num = count($all);
         $all = $this->operationOrder($count,$all,$num);
+        return $all;
+    }
+
+    function getPromList($where,$page,$pagesize)
+    {
+        $count = M('group_buy')->where($where)->count();
+        $all = M('group_buy')->alias('b')
+            ->join('INNER JOIN tp_order o on b.order_id = o.order_id ')
+            ->join('INNER JOIN tp_goods g on g.goods_id = b.goods_id ')
+            ->where($where)
+            ->order('b.order_id desc')
+            ->page($page, $pagesize)
+            ->field('b.id,b.order_id,b.start_time,b.end_time,b.goods_id,o.num,o.prom,o.free')
+            ->select();
+        //团购订单处理
+        $num = count($all);
+        $all = $this->operationOrder($count,$all,$num);
+
         return $all;
     }
 

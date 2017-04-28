@@ -48,7 +48,6 @@ function redislist($key, $value=null){
         redisdelall("*");
     }
 }
-
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
  * @param $key
@@ -773,4 +772,33 @@ function async_get_url($url_array,$post_data = array(), $wait_usec = 0){
     }
     curl_multi_close($mh);
     return $data;
+}
+
+//提取内容中的图片地址
+function getImgs($content,$order='ALL'){
+	$pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg]))[\'|\"].*?[\/]?>/";
+	preg_match_all($pattern,$content,$match);
+	if(isset($match[1])&&!empty($match[1])){
+		if($order==='ALL'){
+			return $match[1];
+		}
+		if(is_numeric($order)&&isset($match[1][$order])){
+			return $match[1][$order];
+		}
+	}
+	return '';
+}
+
+//提取图片宽高
+function getImgSize($arr)
+{
+	$num = count($arr);
+	$res = array();
+	for($i=0;$i<$num;$i++){
+		$size = getimagesize($arr[$i]);
+		$res[$i]['origin'] = $arr[$i];
+		$res[$i]['width']=$size[0];
+		$res[$i]['height']=$size[1];
+	}
+	return $res;
 }
