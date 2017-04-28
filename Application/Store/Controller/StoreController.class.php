@@ -88,6 +88,7 @@ class StoreController extends BaseController{
         $reflect = $reflect-$total;
         if(empty($reflect))
             $reflect = 0;
+        $reflect = sprintf('%.2f', $reflect);
         $this->assign('reflect',$reflect);
         session('reflect',$reflect);
         $this->assign('store_name',$store_info['store_name']);
