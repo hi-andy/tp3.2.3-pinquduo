@@ -309,20 +309,20 @@ class SecondskillController extends BaseController
 		}
 	}
 
-	public function delete_goods()
-	{
-		// 判断此商品是否有订单
-		$goods_count = M('goods')->where("goods_id = {$_GET['id']}")->find();
-		if($goods_count['show_type']==1)
-		{
-			$return_arr = array('status' => -1,'msg' => '该商品已删除','data'  =>'',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
-			$this->ajaxReturn(json_encode($return_arr));
-		}
-		// 删除此商品
-		M("Goods")->where('goods_id =' . $_GET['id'])->save(array('show_type'=>1));
-		$return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
-		$this->ajaxReturn(json_encode($return_arr));
-	}
+    public function delete_goods()
+    {
+        // 判断此商品是否有订单
+        $goods_count = M('goods')->where("goods_id = {$_GET['id']}")->find();
+        if($goods_count['is_special']==0)
+        {
+            $return_arr = array('status' => -1,'msg' => '该商品已移除该活动','data'  =>'',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+            $this->ajaxReturn(json_encode($return_arr));
+        }
+        // 删除此商品
+        M("Goods")->where('goods_id =' . $_GET['id'])->save(array('is_special'=>0));
+        $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+        $this->ajaxReturn(json_encode($return_arr));
+    }
 
 	/**
 	 * 添加修改秒杀商品

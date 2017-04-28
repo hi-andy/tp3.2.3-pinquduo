@@ -26,7 +26,7 @@ class AlipayController extends BaseController
         else
             $ordernum =$order_sn;
 
-        $order = M('order')->where(array('order_sn'=>$ordernum))->find();
+        $order = M('order')->where(array('order_sn'=>$ordernum))->master(true)->find();
 
         if(!$order){
             exit(json_encode(array('status'=>-1,'msg'=>'订单不存在')));
@@ -47,7 +47,7 @@ class AlipayController extends BaseController
         $total_fee = $order['order_amount'];
         //必填
         //订单描述
-        $body = M('goods')->where(array('goods_id'=>$order['goods_id']))->getField('goods_name');
+        $body = M('goods')->where(array('goods_id'=>$order['goods_id']))->master(true)->getField('goods_name');
         //商品展示地址
 
         $alipay_config = C('alipay_config');
@@ -132,7 +132,7 @@ class AlipayController extends BaseController
             M()->startTrans();
 
             $where=array('order_sn'=>$order_sn);
-            $order=M('order')->where($where)->find();
+            $order=M('order')->where($where)->master(true)->find();
 
             if($order['pay_status']==1){
                 echo "success";        //如果支付成功 直接放回success
@@ -150,9 +150,9 @@ class AlipayController extends BaseController
                 $res2 = $this->Join_Prom($order['prom_id']);
                 if($res2){
                     M()->commit();
-                    $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+                    $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->master(true)->find();
                     if($group_info['mark'] > 0){
-                        $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
+                        $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->master(true)->count();
                         if(($nums)==$group_info['goods_num'])
                         {
                             $Goods = new GoodsController();
@@ -186,7 +186,7 @@ class AlipayController extends BaseController
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         //商品规格库存
-        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
+        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->master(true)->find();
         M('spec_goods_price')->where("`goods_id`=$order[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$order['num']);
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
