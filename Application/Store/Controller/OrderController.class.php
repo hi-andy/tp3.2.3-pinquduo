@@ -107,19 +107,21 @@ class OrderController extends BaseController {
 	    $order_sn = I('order_sn');
 	    $consignee && $condition['consignee'] = array('like',$consignee);
 	    $order_sn && $condition['order_sn'] = array('like',$order_sn);
-	    $condition['order_status'] = array('eq',1);
-	    $condition['pay_status'] = array('eq',1);
-	    $condition['is_cancel'] = array('neq',1);
-	    $condition['is_return_or_exchange'] = array('eq',0);
+	    //$condition['order_status'] = array('eq',1);
+	    $condition['order_type'] = array('eq',2);
+	    //$condition['pay_status'] = array('eq',1);
+	    //$condition['is_cancel'] = array('neq',1);
+	    //$condition['is_return_or_exchange'] = array('eq',0);
 		$condition['store_id'] = $_SESSION['merchant_id'];
-	    $shipping_status = I('shipping_status');
-	    if(I('shipping_status')==0)
-	    {
-		    $condition['automatic_time']=array('eq',0);
-	    }else{
-		    $condition['automatic_time']=array('neq',0);
-	    }
-	    $condition['shipping_status'] = empty($shipping_status) ? array('neq',1) : $shipping_status;
+
+//		$shipping_status = I('shipping_status');
+//	    if(I('shipping_status')==0)
+//	    {
+//		    $condition['automatic_time']=array('eq',0);
+//	    }else{
+//		    $condition['automatic_time']=array('neq',0);
+//	    }
+//	    $condition['shipping_status'] = empty($shipping_status) ? array('neq',1) : $shipping_status;
 
 	    $count = M('order')->where($condition)->count();
 	    $Page  = new AjaxPage($count,10);
@@ -263,97 +265,6 @@ class OrderController extends BaseController {
         $this->assign('payment_list',$payment_list);
         $this->display();
     }
-    
-//    /*
-//     * 拆分订单
-//     */
-//    public function split_order(){
-//    	$order_id = I('order_id');
-//    	$orderLogic = new OrderLogic();
-//    	$order = $orderLogic->getOrderInfo($order_id);
-//    	if($order['shipping_status'] != 0){
-//    		$this->error('已发货订单不允许编辑');
-//    		exit;
-//    	}
-//    	$orderGoods = $orderLogic->getOrderGoods($order_id);
-//    	if(IS_POST){
-//    		$data = I('post.');
-//    		//################################先处理原单剩余商品和原订单信息
-//    		$old_goods = I('goods');
-//    		foreach ($orderGoods as $val){
-//    			if(empty($old_goods[$val['rec_id']])){
-//    				M('order_goods')->where("rec_id=".$val['rec_id'])->delete();//删除商品
-//    			}else{
-//    				//修改商品数量
-//    				if($old_goods[$val['rec_id']] != $val['goods_num']){
-//    					$val['goods_num'] = $old_goods[$val['rec_id']];
-//    					M('order_goods')->where("rec_id=".$val['rec_id'])->save(array('goods_num'=>$val['goods_num']));
-//    				}
-//    				$oldArr[] = $val;//剩余商品
-//    			}
-//    			$all_goods[$val['rec_id']] = $val;//所有商品信息
-//    		}
-//    		$result = calculate_price($order['user_id'],$oldArr,$order['shipping_code'],0,$order['province'],$order['city'],$order['district'],0,0,0,0);
-//    		if($result['status'] < 0)
-//    		{
-//    			$this->error($result['msg']);
-//    		}
-//    		//修改订单费用
-//    		$res['goods_price']    = $result['result']['goods_price']; // 商品总价
-//    		$res['order_amount']   = $result['result']['order_amount']; // 应付金额
-//    		$res['total_amount']   = $result['result']['total_amount']; // 订单总价
-//    		M('order')->where("order_id=".$order_id)->save($res);
-//			//################################原单处理结束
-//
-//    		//################################新单处理
-//    		for($i=1;$i<20;$i++){
-//    			if(empty($_POST[$i.'_goods'])){
-//    				break;
-//    			}else{
-//    				$split_goods[] = $_POST[$i.'_goods'];
-//    			}
-//    		}
-//
-//    		foreach ($split_goods as $key=>$vrr){
-//    			foreach ($vrr as $k=>$v){
-//    				$all_goods[$k]['goods_num'] = $v;
-//    				$brr[$key][] = $all_goods[$k];
-//    			}
-//    		}
-//
-//    		foreach($brr as $goods){
-//    			$result = calculate_price($order['user_id'],$goods,$order['shipping_code'],0,$order['province'],$order['city'],$order['district'],0,0,0,0);
-//    			if($result['status'] < 0)
-//    			{
-//    				$this->error($result['msg']);
-//    			}
-//    			$new_order = $order;
-//    			$new_order['order_sn'] = date('YmdHis').mt_rand(1000,9999);
-//    			$new_order['parent_sn'] = $order['order_sn'];
-//    			//修改订单费用
-//    			$new_order['goods_price']    = $result['result']['goods_price']; // 商品总价
-//    			$new_order['order_amount']   = $result['result']['order_amount']; // 应付金额
-//    			$new_order['total_amount']   = $result['result']['total_amount']; // 订单总价
-//    			$new_order['add_time'] = time();
-//    			unset($new_order['order_id']);
-//    			$new_order_id = M('order')->add($new_order);//插入订单表
-//    			foreach ($goods as $vv){
-//    				$vv['order_id'] = $new_order_id;
-//    				$nid = M('order_goods')->add($vv);//插入订单商品表
-//    			}
-//    		}
-//    		//################################新单处理结束
-//    		$this->success('操作成功',U('Store/Order/detail',array('order_id'=>$order_id)));
-//    	}
-//
-//    	foreach ($orderGoods as $val){
-//    		$brr[$val['rec_id']] = array('goods_num'=>$val['goods_num'],'goods_name'=>getSubstr($val['goods_name'], 0, 35).$val['spec_key_name']);
-//    	}
-//    	$this->assign('order',$order);
-//    	$this->assign('goods_num_arr',json_encode($brr));
-//    	$this->assign('orderGoods',$orderGoods);
-//    	$this->display();
-//    }
     
     /*
      * 价钱修改

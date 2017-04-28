@@ -61,7 +61,11 @@ class StoreController extends BaseController{
         $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->find();
 
         //拿到总共能体现的资金
+<<<<<<< HEAD
         $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
+=======
+        $one = M('order')->where('(order_type=4 or order_type = 19 or order_type=7 or order_type=6) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
+>>>>>>> 0dd9c23c54d5848a846fb456ed8d03b7037d6058
         $reflect = null;
         foreach($one as $v)
         {
@@ -88,6 +92,7 @@ class StoreController extends BaseController{
         $reflect = $reflect-$total;
         if(empty($reflect))
             $reflect = 0;
+        $reflect = sprintf('%.2f', $reflect);
         $this->assign('reflect',$reflect);
         session('reflect',$reflect);
         $this->assign('store_name',$store_info['store_name']);
@@ -98,8 +103,13 @@ class StoreController extends BaseController{
      *提现申请提交
      */
     public function post_withdrawal(){
+<<<<<<< HEAD
         if (empty(redis("post_withdrawal".$_SESSION['merchant_id']))) {//判断是否有锁
             redis("post_withdrawal".$_SESSION['merchant_id'], 1, 5);//写入锁
+=======
+        if(empty(redis("post_withdrawal".$_SESSION['merchant_id']))) {//判断是否有锁
+            redis("post_withdrawal".$_SESSION['merchant_id'], "1", 5);//写入锁
+>>>>>>> 0dd9c23c54d5848a846fb456ed8d03b7037d6058
             $data = $_POST;
 
             if ($data['withdrawal_money'] == 0 || $data['withdrawal_money'] < 0) {

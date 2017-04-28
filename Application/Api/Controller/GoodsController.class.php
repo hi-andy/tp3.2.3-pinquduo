@@ -587,7 +587,7 @@ class GoodsController extends BaseController {
 				SendXinge($message,$val['user_id'],$custom);
 			}
 		}
-
+		exit ;
 	}
 
 	public function getWhere($order_id)
@@ -1002,11 +1002,6 @@ class GoodsController extends BaseController {
 				redisdelall($rdsname);//删除商品详情缓存
 				$rdsname = "TuiSong*";
 				redisdelall($rdsname);//删除推送缓存
-                //跨区同步订单、推送、详情缓存
-                $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-                async_get_url($url);
-                $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-                async_get_url($url);
 				if(!empty($ajax_get)){
 					echo "<script> alert('".$json['msg']."') </script>";
 					exit;
@@ -1234,10 +1229,6 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				if(!empty($ajax_get)){
-					echo "<script> alert('".$json['msg']."') </script>";
-					exit;
-				}
 				exit(json_encode($json));
 			}
 		}
@@ -1282,11 +1273,6 @@ class GoodsController extends BaseController {
 			redisdelall($rdsname);//删除商品详情缓存
 			$rdsname = "TuiSong*";
 			redisdelall($rdsname);//删除推送缓存
-            //跨区同步订单、推送、详情缓存
-            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-            async_get_url($url);
-            $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-            async_get_url($url);
 			if(!empty($ajax_get)){
 				echo "<script> alert('".$json['msg']."') </script>";
 				exit;
@@ -1301,10 +1287,6 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-			if(!empty($ajax_get)){
-				echo "<script> alert('".$json['msg']."') </script>";
-				exit;
-			}
 			exit(json_encode($json));
 		}
 	}
@@ -1443,10 +1425,6 @@ class GoodsController extends BaseController {
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
-				if(!empty($ajax_get)){
-					echo "<script> alert('".$json['msg']."') </script>";
-					exit;
-				}
 				exit(json_encode($json));
 			}
 		}
@@ -1468,10 +1446,8 @@ class GoodsController extends BaseController {
 			}elseif($order['pay_code'] == 'qpay'){
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
-            }else{
-				$qqPay = new QQPayController();
-				$pay_detail = $qqPay->getQQPay($order);
-			}
+                // End code by lcy
+            }
 			$json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
             $rdsname = "getUserOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
@@ -1491,7 +1467,6 @@ class GoodsController extends BaseController {
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-
 		}
 	}
 

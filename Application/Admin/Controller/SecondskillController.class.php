@@ -309,6 +309,7 @@ class SecondskillController extends BaseController
 		}
 	}
 
+<<<<<<< HEAD
 	public function delete_goods()
 	{
 		// 判断此商品是否有订单
@@ -323,6 +324,22 @@ class SecondskillController extends BaseController
 		$return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
 		$this->ajaxReturn(json_encode($return_arr));
 	}
+=======
+    public function delete_goods()
+    {
+        // 判断此商品是否有订单
+        $goods_count = M('goods')->where("goods_id = {$_GET['id']}")->find();
+        if($goods_count['is_special']==0)
+        {
+            $return_arr = array('status' => -1,'msg' => '该商品已移除该活动','data'  =>'',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+            $this->ajaxReturn(json_encode($return_arr));
+        }
+        // 删除此商品
+        M("Goods")->where('goods_id =' . $_GET['id'])->save(array('is_special'=>0));
+        $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+        $this->ajaxReturn(json_encode($return_arr));
+    }
+>>>>>>> 0dd9c23c54d5848a846fb456ed8d03b7037d6058
 
 	/**
 	 * 添加修改秒杀商品
@@ -387,7 +404,6 @@ class SecondskillController extends BaseController
 			}
 		}
 
-
 		for ($i = 0; $i < 5; $i++) {
 			$date[$i]['id'] = $i + 1;$date1 = time();
 			if($i==0)  {
@@ -418,14 +434,14 @@ class SecondskillController extends BaseController
 		$goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
 		$level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 		$cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
-		$brandList = $GoodsLogic->getSortBrands();
+		//$brandList = $GoodsLogic->getSortBrands();
 		$merchantList = $GoodsLogic->getSortMerchant();
 		$goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
 		if(empty($goodsType))
 			$goodsType = M("GoodsType")->select();
 		$this->assign('level_cat',$level_cat);
 		$this->assign('cat_list',$cat_list);
-		$this->assign('brandList',$brandList);
+		//$this->assign('brandList',$brandList);
 		$this->assign('merchantList',$merchantList);
 		$this->assign('goodsType',$goodsType);
 		$this->assign('goodsInfo',$goodsInfo);  // 商品详情

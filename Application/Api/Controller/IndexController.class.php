@@ -2,9 +2,20 @@
 namespace Api\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
-    public function index(){
-
+    public function index($getGoodsDetails="",$user_id="", $goods_id=""){
+        //跨域删除缓存
+        if ($getGoodsDetails == "1") {
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "getUserOrderList".$user_id."*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getUserPromList".$user_id."*";
+            redisdelall($rdsname);//删除我的拼团缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
+        }
     }
+
     /*
      * 获取首页数据
      */
@@ -34,12 +45,19 @@ class IndexController extends BaseController {
 //            $activity['H5_url'] = C('HTTP_URL').'/api/goods/test';
             }
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
-            $result = $this->getGoodsList($where,$page,$pagesize);
-            if($version=='2.0.0'){
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
-            }else{
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
+            
+            $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->count();
+            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+
+            $result2 = $this->listPageData($count, $goods);
+
+            foreach ($result2['items'] as &$v) {
+                $v['original'] = TransformationImgurl($v['original_img']);
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+                $v['original_img'] = TransformationImgurl($v['original_img']);
             }
+
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -699,25 +717,6 @@ class IndexController extends BaseController {
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
-        exit(json_encode($json));
-    }
-
-    function  getPreferentialgoods()
-    {
-        $page = I('page',1);
-        $pagesize = I('pagesize',10);
-
-        $count = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-        $goods = M('goods')->where('`is_special`=5 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('is_recommend desc,sort asc')->select();
-        foreach($goods as &$v)
-        {
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
-        }
-        $data = $this->listPageData($count,$goods);
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);

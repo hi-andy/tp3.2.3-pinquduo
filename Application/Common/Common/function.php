@@ -52,8 +52,8 @@ function redislist($key, $value=null){
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
  * @param $key
  */
-function redisdelall($key){
-	/*
+function redisdelall($key)
+{
     $redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
@@ -63,7 +63,6 @@ function redisdelall($key){
     while ($keys = $redis->scan($it, $match, $count)) {
         $redis->del($keys);
     }
-	*/
 }
 /**
  * @param $arr
@@ -776,6 +775,7 @@ function async_get_url($url_array,$post_data = array(), $wait_usec = 0){
 
 //提取内容中的图片地址
 function getImgs($content,$order='ALL'){
+<<<<<<< HEAD
 	$pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg]))[\'|\"].*?[\/]?>/";
 	preg_match_all($pattern,$content,$match);
 	if(isset($match[1])&&!empty($match[1])){
@@ -802,3 +802,17 @@ function getImgSize($arr)
 	}
 	return $res;
 }
+=======
+    $pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg]))[\'|\"].*?[\/]?>/";
+    preg_match_all($pattern,$content,$match);
+    if(isset($match[1])&&!empty($match[1])){
+        if($order==='ALL'){
+            return $match[1];
+        }
+        if(is_numeric($order)&&isset($match[1][$order])){
+            return $match[1][$order];
+        }
+    }
+    return '';
+}
+>>>>>>> 0dd9c23c54d5848a846fb456ed8d03b7037d6058

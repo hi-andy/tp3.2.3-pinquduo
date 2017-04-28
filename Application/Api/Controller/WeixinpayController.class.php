@@ -31,7 +31,7 @@ class WeixinpayController extends BaseController {
         else
             $ordernum =$order_sn;
 
-        $order = M('order')->where(array('order_sn'=>$ordernum))->find();
+        $order = M('order')->where(array('order_sn'=>$ordernum))->master(true)->find();
 
         if(!$order){
             exit(json_encode(array('status'=>-1,'msg'=>'订单不存在')));
@@ -166,13 +166,10 @@ EOF;
         //$this->display();
     }
 
-<<<<<<< HEAD
-=======
     public function test(){
         echo $this->get_real_ip();
     }
 
->>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
     public function get_real_ip(){
         $ip=false;
         if(!empty($_SERVER["HTTP_CLIENT_IP"]))
@@ -210,6 +207,7 @@ EOF;
 
         //存储微信的回调
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+        if(!$xml) $xml=file_get_contents("php://input");
         $notify->saveData($xml);
 
         //以log文件形式记录回调信息
@@ -226,7 +224,7 @@ EOF;
             $order_sn = $notify->data['out_trade_no'];
 
             $where="order_sn = $order_sn";
-            $order=M('order')->where($where)->find();
+            $order=M('order')->where($where)->master(true)->find();
 
             if($order['pay_status']==1){
                 $notify->setReturnParameter("return_code","SUCCESS");
@@ -245,11 +243,11 @@ EOF;
                 $res2 = $this->Join_Prom($order['prom_id']);
                 $log_->log_result($log_name,"【团修改】:\n".$res2."\n");
                 if($res2){
-                    $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+                    $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->master(true)->find();
                     M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
 
                     if($group_info['mark']>0){
-                        $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
+                        $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->master(true)->count();
                         M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
                         if(($nums)==$group_info['goods_num'])
                         {
@@ -286,6 +284,7 @@ EOF;
 
         //存储微信的回调
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+        if(!$xml) $xml=file_get_contents("php://input");
         $notify->saveData($xml);
 
         //以log文件形式记录回调信息
@@ -300,7 +299,7 @@ EOF;
         $order_sn = $notify->data['out_trade_no'];
 
         $where="order_sn = $order_sn";
-        $order=M('order')->where($where)->find();
+        $order=M('order')->where($where)->master(true)->find();
 
         if($order['pay_status']==1){
             $notify->setReturnParameter("return_code","SUCCESS");
@@ -320,15 +319,11 @@ EOF;
             $res2 = $this->Join_Prom($order['prom_id']);
             $log_->log_result($log_name,"【WX团修改】:\n".$res2."\n");
             if($res2){
-                $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+                $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->master(true)->find();
                 M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
-<<<<<<< HEAD
-                $log_->log_result($log_name,"【WX】:\n".$group_info['mark']."\n");
-=======
                 $log_->log_result($log_name,"【WX】:\n".$group_info."\n");
->>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
                 if($group_info['mark']>0){
-                    $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
+                    $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->master(true)->count();
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
                     if(($nums)==$group_info['goods_num'])
                     {
@@ -360,11 +355,7 @@ EOF;
         }else{
             $data['order_type'] = 2;
         }
-<<<<<<< HEAD
-        //销量
-=======
         //销量、库存
->>>>>>> 44c3e454e38aef84d0f55c0b669b1043b057c457
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         //商品规格库存

@@ -167,9 +167,6 @@ class AdminController extends BaseController {
 	                }elseif($merchant_info['is_check']==2){
 		                exit(json_encode(array('status'=>0,'msg'=>'您的申请未通过审核，有疑问可与客服联系')));
 	                }
-	                $lifeTime = 24 * 3600;
-	                session_set_cookie_params($lifeTime);
-	                session_start();
 	                session('merchant_id',$merchant_info['id']);
 	                session('trade_no',$haitao['trade_no']);
 	                if($haitao['is_pay']==0)
@@ -210,7 +207,6 @@ class AdminController extends BaseController {
 		if(empty($_COOKIE['user_name']) || empty($_COOKIE['pass_word']) || empty($_COOKIE['storeid']))
 		{
 			setcookie("user_name","$user_name",time()+1*7*24*3600);
-			setcookie("pass_word","$pass_word",time()+1*7*24*3600);
 			setcookie("storeid","$storeid",time()+1*7*24*3600);
 		}
 		if($storeid != $_COOKIE['storeid'])
