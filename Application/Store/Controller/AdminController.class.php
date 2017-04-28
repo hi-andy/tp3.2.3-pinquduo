@@ -207,7 +207,6 @@ class AdminController extends BaseController {
 		if(empty($_COOKIE['user_name']) || empty($_COOKIE['pass_word']) || empty($_COOKIE['storeid']))
 		{
 			setcookie("user_name","$user_name",time()+1*7*24*3600);
-			setcookie("pass_word","$pass_word",time()+1*7*24*3600);
 			setcookie("storeid","$storeid",time()+1*7*24*3600);
 		}
 		if($storeid != $_COOKIE['storeid'])

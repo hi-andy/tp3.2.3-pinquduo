@@ -394,13 +394,13 @@ class IndexController extends BaseController {
      *  限时秒杀
      *
      * */
-    function get_Seconds_Kill_time()
+    function get_seconds_kill_time()
     {
-        //$rdsname = "get_Seconds_Kill_time";
+        //$rdsname = "get_seconds_kill_time";
         //if(empty(redis($rdsname))) {//判断是否有缓存
-            $today_zero = strtotime(date('Y-m-d', time()));
-            $today_zero2 = strtotime(date('Y-m-d', (time() + 2 * 24 * 3600)));
-            $sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
+            $today_zero = strtotime(date('y-m-d', time()));
+            $today_zero2 = strtotime(date('y-m-d', (time() + 2 * 24 * 3600)));
+            $sql = "select from_unixtime(`on_time`,'%y-%m-%d %h') as datetime from " . c('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
             $time = M()->query($sql);
             if (empty($time)) {
                 for ($j = 1; ; $j++) {

@@ -115,7 +115,6 @@ class SpecialController extends BaseController
         $id = I('id');
         $store_id = $_SESSION['merchant_id'];
         $count = M("SpecItem")->where("spec_id = $id and is_show = 1")->count("1");
-        echo $store_id;exit;
         if ($count > 0 ) {
             //$this->error('清空规格项后才可以删除!',U('Store/Goods/specList'));
             $data[is_show] = 0;
