@@ -31,7 +31,7 @@ class WeixinpayController extends BaseController {
         else
             $ordernum =$order_sn;
 
-        $order = M('order')->where(array('order_sn'=>$ordernum))->find();
+        $order = M('order')->where(array('order_sn'=>$ordernum))->master(true)->find();
 
         if(!$order){
             exit(json_encode(array('status'=>-1,'msg'=>'订单不存在')));
@@ -224,7 +224,7 @@ EOF;
             $order_sn = $notify->data['out_trade_no'];
 
             $where="order_sn = $order_sn";
-            $order=M('order')->where($where)->find();
+            $order=M('order')->where($where)->master(true)->find();
 
             if($order['pay_status']==1){
                 $notify->setReturnParameter("return_code","SUCCESS");
@@ -243,11 +243,11 @@ EOF;
                 $res2 = $this->Join_Prom($order['prom_id']);
                 $log_->log_result($log_name,"【团修改】:\n".$res2."\n");
                 if($res2){
-                    $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+                    $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->master(true)->find();
                     M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
 
                     if($group_info['mark']>0){
-                        $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
+                        $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->master(true)->count();
                         M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
                         if(($nums)==$group_info['goods_num'])
                         {
@@ -299,7 +299,7 @@ EOF;
         $order_sn = $notify->data['out_trade_no'];
 
         $where="order_sn = $order_sn";
-        $order=M('order')->where($where)->find();
+        $order=M('order')->where($where)->master(true)->find();
 
         if($order['pay_status']==1){
             $notify->setReturnParameter("return_code","SUCCESS");
@@ -319,11 +319,11 @@ EOF;
             $res2 = $this->Join_Prom($order['prom_id']);
             $log_->log_result($log_name,"【WX团修改】:\n".$res2."\n");
             if($res2){
-                $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+                $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->master(true)->find();
                 M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
                 $log_->log_result($log_name,"【WX】:\n".$group_info."\n");
                 if($group_info['mark']>0){
-                    $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
+                    $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->master(true)->count();
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
                     if(($nums)==$group_info['goods_num'])
                     {

@@ -129,7 +129,7 @@ class QQPayController extends BaseController
         list($code, $data) = $this->unifyOrder($order['order_sn'], $order['order_amount']*100, $notifyUrl);
 
         if($order['prom_id']){
-            $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+            $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->master(true)->find();
             $type = $prom_info['mark']>0?1:0;
             $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
         }else{
@@ -168,7 +168,7 @@ class QQPayController extends BaseController
         $order_sn = $data['out_trade_no'];
 
         $where=array('order_sn'=>$order_sn);
-        $order=M('order')->where($where)->find();
+        $order=M('order')->where($where)->master(true)->find();
 
         if($order['pay_status']==1){
             $this->successAck();
@@ -188,11 +188,11 @@ class QQPayController extends BaseController
             $res2 = $this->Join_Prom($order['prom_id']);
             $this->log("【团修改】:\n".$res2."\n", "notify");
             if($res2){
-                $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+                $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->master(true)->find();
                 M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
 
                 if($group_info['mark']>0){
-                    $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
+                    $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->master(true)->count();
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
                     if(($nums)==$group_info['goods_num'])
                     {
@@ -286,7 +286,7 @@ class QQPayController extends BaseController
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         //商品规格库存
-        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
+        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->master(true)->find();
         M('spec_goods_price')->where("`goods_id`=$order[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$order['num']);
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
