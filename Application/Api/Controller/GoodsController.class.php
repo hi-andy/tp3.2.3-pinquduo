@@ -2105,7 +2105,7 @@ class GoodsController extends BaseController {
 		$gooods_id = I('goods_id');
 		$usre_id = I('user_id');
 
-
+		
 	}
 
 	function getGenerateOrder(){
