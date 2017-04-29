@@ -2190,4 +2190,74 @@ class GoodsController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
+    //秒杀抢购
+    public function panic_buying($user_id, $goods_id){
+        $return_arr = "";
+        if($user_id && $goods_id) {
+            if(!empty(redis('goods_stock'.$goods_id)) && intval(redis('goods_stock'.$goods_id)) >= 1){//如果有库存
+                $data['user_id'] = $user_id;
+                $data['goods_id'] = $goods_id;
+                redislist('getbuy_goods'.$goods_id, serialize($data));//写入队列
+                redis('goods_stock'.$goods_id, intval(redis('goods_stock'.$goods_id)) - 1);//减库存
+                $return_arr = array('status' => 1, 'msg' => '正在拼抢', 'data' => '',);
+            } else {
+                $return_arr = array('status' => -1, 'msg' => '还没开始', 'data' => '',);
+            }
+        } else {
+            $return_arr = array('status' => -1, 'msg' => '参数错误', 'data' => '',);
+        }
+        if(!empty($ajax_get))
+            $this->getJsonp($return_arr);
+        exit(json_encode($return_arr));
+    }
+
+    //返回抢购结果
+    public function stock_result($user_id, $goods_id){
+        $return_arr = "";
+        if($user_id && $goods_id) {
+            $order = unserialize(redis("goods_stock_order".$user_id.$goods_id));//读取结果
+            if ($order) {
+                if ($order["result"] === true){
+                    if($order['code'] == 'weixin')
+                    {
+                        $order['pay_code'] = 'weixin' ;
+                        $order['pay_name'] = '微信支付';
+                    }
+                    elseif($order['code'] == 'alipay')
+                    {
+                        $order['pay_code'] = 'alipay' ;
+                        $order['pay_name'] = '支付宝支付';
+                    }elseif($order['code'] == 'qpay')
+                    {
+                        $order['pay_code'] = 'qpay';
+                        $order['pay_name'] = 'QQ钱包支付';
+                    }
+                    if($order['pay_code']=='weixin'){
+                        $weixinPay = new WeixinpayController();
+                        //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
+                        if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
+                            $code_str = $weixinPay->getJSAPI($order);
+                            $pay_detail = $code_str;
+                        }else{
+                            $pay_detail = $weixinPay->addwxorder($order['order_sn']);
+                        }
+                    }elseif($order['pay_code'] == 'alipay'){
+                        $AliPay = new AlipayController();
+                        $pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+                    }elseif($order['pay_code'] == 'qpay'){
+                        $qqPay = new QQPayController();
+                        $pay_detail = $qqPay->getQQPay($order);
+                    }
+                } else {
+                    $return_arr = array('status' => -1, 'msg' => '已被抢光', 'data' => '',);
+                }
+            }
+        } else {
+            $return_arr = array('status' => -1, 'msg' => '参数错误', 'data' => '',);
+        }
+        if(!empty($ajax_get))
+            $this->getJsonp($return_arr);
+        exit(json_encode($return_arr));
+    }
 }
