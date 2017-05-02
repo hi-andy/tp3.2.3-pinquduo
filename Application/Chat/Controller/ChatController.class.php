@@ -6,10 +6,10 @@
  * Time: 上午11:12
  */
 
-namespace Api\Controller;
+namespace Chat\Controller;
 use Think\Controller;
 
-class ChatController extends BaseController
+class ChatController
 {
     /**
      * 服务器地址
