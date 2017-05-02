@@ -1592,6 +1592,7 @@ class UserController extends BaseController {
         $user_id = I('user_id');
         $page = I('page',1);
         $pagesize = I('pagesize',10);
+        $version = I('version');
 
         $count = M('order')->where('`pay_status`=1 and `the_raise`=1 and `user_id`='.$user_id)->count();
         $order = M('order')->where('`pay_status`=1 and `the_raise`=1 and `user_id`='.$user_id)->order('order_id desc')->page($page,$pagesize)->select();
