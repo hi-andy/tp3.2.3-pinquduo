@@ -212,9 +212,9 @@ class StoreController extends BaseController{
 				$order_info[$i]['district'] = $adress_info['district'];//区
 				$order_info[$i]['street'] = $order_info[$i]['address'];
 
-				$goods_info = M('order_goods')->alias('og')
-					->join('INNER JOIN tp_order o on og.goods_id = o.goods_id')
-                    ->where('order_id = '.$order_info[$i]['order_id'])
+                $goods_info = M('order_goods')->alias('og')
+                    ->join('INNER JOIN tp_order o on og.goods_id = o.goods_id')
+                    ->where('og.order_id = '.$order_info[$i]['order_id'])
                     ->field('og.goods_name,og.goods_id,og.market_price,og.goods_price,og.goods_num,og.spec_key_name,o.add_time')
                     ->limit($page,$page_num)
                     ->order('og.order_id asc')

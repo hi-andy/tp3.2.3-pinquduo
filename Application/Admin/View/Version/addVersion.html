@@ -30,6 +30,17 @@
 								</div>
 							</div>
 						</div>
+						<div class="box-body">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">强制更新:</label>
+								<div class="col-sm-6">
+									<select id="force" name="force">
+										<option value ="0">否</option>
+										<option value ="1">是</option>
+									</select>
+								</div>
+							</div>
+						</div>
 						<!--<div class="form-group">-->
 							<!--<label class="control-label col-sm-2">导航显示</label>-->
 
@@ -50,11 +61,13 @@
 								<div class="form-group">
 									<label class="control-label col-sm-2">上传文件:</label>
 									<div class="col-sm-10">
-										<input id="faile_upload" type="file" multiple="true">
-										<span id="loading"  style="display: none"></span>
-										<input type="hidden" id="file" name="file" value="">
-										<input type="hidden" name="filename" id="filename" value="" >
-										<div id="some_file_queue"></div>
+										<!--<input id="faile_upload" type="file" multiple="true">-->
+										<!--<span id="loading"  style="display: none"></span>-->
+										<!--<input type="hidden" id="file" name="file" value="">-->
+										<!--<input type="hidden" name="filename" id="filename" value="" >-->
+										<!--<div id="some_file_queue"></div>-->
+										<input type="button" value="上传APP"  onclick="GetUploadify(1,'','goods','call_back');"/>
+										<input type="text" class="input-sm"  name="file" id="file" value=""/>
 									</div>
 								</div>
 						</div>
@@ -72,6 +85,11 @@
 <script type="text/javascript" src="__PUBLIC__/js/uploadify/jquery.uploadify.min.js"></script>
 <script src="__PUBLIC__/js/layer/layer-min.js"></script><!-- 弹窗js 参考文档 http://layer.layui.com/-->
 <script type="text/javascript">
+	// 上传成功回调函数
+	function call_back(fileurl_tmp){
+		$("#file").val(fileurl_tmp);
+	}
+
 	$(function() {
 		$('#faile_upload').uploadify({
 			'swf': '__PUBLIC__/js/uploadify/uploadify.swf',
@@ -109,6 +127,7 @@
 	$("#submit_version").click(function(){
 		var version =  $("[name='version']").val(),
 			message = $("[name='message']").val(),
+				force = $("[name='force']").val(),
 			file = $("[name='file']").val(),
 			filename = $("[name='filename']").val();
 
@@ -122,10 +141,10 @@
 			msg += "请输入版本信息<br>";
 			is_true = false;
 		}
-//		if(!file){
-//			msg += "请上传APK文件";
-//			is_true = false;
-//		}
+		if(!file){
+			msg += "请上传APK文件";
+			is_true = false;
+		}
 
 		if(is_true == false){
 			layer.alert(msg);
@@ -135,7 +154,7 @@
 		$.ajax({
 			type : 'POST',
 			url : '/Admin/Version/addVersion',
-			data : {'version':version,'message':message,'file':file,'filename':filename},
+			data : {'version':version,'message':message,'force':force,'file':file,'filename':filename},
 			dataType : 'json',
 			success:function(res){
 				layer.alert(res);

@@ -112,7 +112,7 @@ class BaseController extends Controller {
 		$return_goods['imgs'] = array_values($return_goods['imgs']);
 		foreach($return_goods['imgs'] as &$v)
 		{
-			$v = C('HTTP_URL').$v;
+			$v = $v;
 		}
 		$nums = count($return_goods['imgs']);
 		for($j=0;$j<$nums;$j++)

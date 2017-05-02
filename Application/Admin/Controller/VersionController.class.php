@@ -58,6 +58,7 @@ class VersionController extends BaseController {
 			$data['username'] = $admin['user_name'];
 			$data['file'] = $_POST['file'];
 			$data['message'] = $_POST['message'];
+            $data['force'] = $_POST['force'];
 			$data['createtime'] = time();
 			$res = M('version')->data($data)->add();
 			if($res) {
