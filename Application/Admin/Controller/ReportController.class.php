@@ -326,6 +326,7 @@ class ReportController extends BaseController{
 		$data['reflect'] = $reflect-$total;
 		if(empty($data['reflect']))
 			$data['reflect'] = 0;
+        $data['reflect'] = sprintf('%.2f', $data['reflect']);
 		$data['keti']>0&& $data['keti']=$this->operationPrice($data['keti']);
 		$data['tuikuan'] = M('return_goods')->where('store_id='.$store_id['id'].' and status=3')->sum('gold');
 
