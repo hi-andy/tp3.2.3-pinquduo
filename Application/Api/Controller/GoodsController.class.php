@@ -411,15 +411,11 @@ class GoodsController extends BaseController {
 		    $goods['img_arr'] = getImgSize($goods['img_arr']);
 		    $goods['fenxiang_url'] = $details['original_img'] . "?watermark/3/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0";
 		    //获取已经开好的团
-		    $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,latitude,longitude,user_id,free')->order('start_time desc')->limit(3)->select();
+		    $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free')->order('start_time desc')->limit(3)->select();
 		    if (!empty($group_buy)) {
 			    for ($i = 0; $i < count($group_buy); $i++) {
 				    $order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
 				    $group_buy[$i]['id'] = $order_id['order_id'];
-
-				    $longitude = $group_buy[$i]['longitude'];
-				    $latitude = $group_buy[$i]['latitude'];
-				    $address = $this->getAddress($latitude, $longitude);
 
 				    $mens = M('group_buy')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
 
@@ -433,7 +429,6 @@ class GoodsController extends BaseController {
 					    $group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
 				    }
 
-				    $group_buy[$i]['address'] = $address;
 			    }
 			    foreach ($group_buy as &$v) {
 				    $v['photo'] = TransformationImgurl($v['photo']);
@@ -621,8 +616,6 @@ class GoodsController extends BaseController {
 		$address_id = I('address_id');
 		$goods_id = I('goods_id');
 		$store_id = I('store_id');
-		$latitude = I('latitude',0);  //纬度
-		$longitude = I('longitude',0);//经度
 		$num = I('num',1);
 		$free = I('free',0);
 		$type = I('type');
@@ -640,8 +633,6 @@ class GoodsController extends BaseController {
 		$parameter['store_id'] = $store_id;
 		$parameter['num'] = $num;
 		$parameter['free'] = $free;
-		$parameter['latitude'] = $latitude;
-		$parameter['longitude'] = $longitude;
 		$parameter['coupon_id'] = $coupon_id;
 		$parameter['spec_key'] = $spec_key;
 		$parameter['ajax_get'] = $ajax_get;
@@ -1026,8 +1017,6 @@ class GoodsController extends BaseController {
 		$goods_id = $parameter['goods_id'];
 		$data = array();
 		$order = array();
-		$latitude = $parameter['latitude'];
-		$longitude = $parameter['longitude'];
 		$user_id = $parameter['user_id'];
 		$store_id = $parameter['store_id'];
 		$address_id = $parameter['address_id'];
@@ -1117,8 +1106,6 @@ class GoodsController extends BaseController {
 		$data['goods_price'] = $goods['market_price'];
 		$data['goods_name'] = $goods['goods_name'];
 		$data['photo'] = '/Public/upload/logo/logo.jpg';
-		$data['latitude'] = $latitude;
-		$data['longitude'] = $longitude;
 		$data['mark'] = 0;
 		$data['user_id'] = $user_id;
 		$data['store_id'] = $store_id;
