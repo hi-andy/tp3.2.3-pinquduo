@@ -9,7 +9,7 @@
 namespace Chat\Controller;
 use Think\Controller;
 
-class ChatController
+class IndexController
 {
     /**
      * 服务器地址
