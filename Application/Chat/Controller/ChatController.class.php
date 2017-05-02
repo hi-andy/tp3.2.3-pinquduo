@@ -16,6 +16,7 @@ class ChatController extends BaseController
      */
     public function get_server_address(){
         $result = array(
+            "status" => 1,
             "action" => "get_server_address",
             "address" => "119.23.118.245:80"
         );
@@ -40,6 +41,12 @@ class ChatController extends BaseController
         echo $result;
     }
 
+    /**
+     * 发送信息
+     * @param string $class
+     * @param string $uid
+     * @param string $data
+     */
     public function set_private_chat($class="", $uid="", $data=""){
         if ($class && $uid && $data){
             $result = array(
@@ -52,6 +59,36 @@ class ChatController extends BaseController
             $result = $this->errjson("参数错误");
         }
         echo $result;
+    }
+
+    /**
+     * 上传
+     * @return array
+     */
+    public function upload(){
+        //调用七牛云上传
+        $suffix = substr(strrchr($_FILES['Filedata']['name'], '.'), 1);
+        $files = array(
+            "key" => time().rand(0,9).".".$suffix,
+            "filePath" => $_FILES['Filedata']['tmp_name'],
+            "mime" => $_FILES['Filedata']['type']
+        );
+        $qiniu = new \Admin\Controller\QiniuController();
+        $info = $qiniu->uploadfile("imgbucket", $files);
+        return array(
+            "status" => 1,
+            "action" => "upload",
+            "url" => CDN."/".$info[0]["key"]
+        );
+    }
+
+    /**
+     * 请求解密
+     * @param $str
+     */
+    public function get_decrypt($str){
+        $str = base64_json_decode($str);
+        echo json_encode($str);
     }
 
     /**
