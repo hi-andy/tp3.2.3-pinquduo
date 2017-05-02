@@ -17,11 +17,37 @@ class ChatController extends BaseController
                 "action" => "login",
                 "userid" => $class . $uid,
             );
-            $result = transposition(base64_encode(json_encode($result)));
-            //$result = base64_encode(json_encode($result));
+            $result = $this->base64_json($result);
         } else {
-            $result = json_encode(array('status' => -1, 'msg' => '参数错误'));
+            $result = $this->errjson("参数错误");
         }
         echo $result;
+    }
+
+    /**
+     * 加密
+     * @param string $str
+     * @return string
+     */
+    public function base64_json($str=""){
+        return transposition(base64_encode(json_encode($str)));
+    }
+
+    /**
+     * 解密
+     * @param string $str
+     * @return string
+     */
+    public function base64_json_decode($str=""){
+        return json_decode(base64_decode(transposition($str)));
+    }
+
+    /**
+     * 输出错误信息
+     * @param string $str
+     * @return string
+     */
+    public function errjson($str=""){
+        return json_encode(array('status' => -1, 'msg' => $str));
     }
 }
