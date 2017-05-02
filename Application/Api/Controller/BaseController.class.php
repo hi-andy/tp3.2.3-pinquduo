@@ -571,6 +571,8 @@ class BaseController extends Controller {
         $goods['img_arr'] = getImgSize($goods['img_arr']);
         return $goods;
     }
+
+
     //版本2.0.0
     //调度商品列表
     function getGoodsList($where,$page=1,$pagesize=10,$order='is_recommend desc,sort asc')
@@ -623,20 +625,11 @@ class BaseController extends Controller {
             $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
             //判断是不是团购订单
             if (!empty($all[$i]['prom_id'])) {
-                $mark = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,store_id,end_time,goods_num,order_id,goods_id,goods_price,mark,goods_num,end_time')->find();
+                $mark = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,end_time,goods_num,order_id,goods_id,mark,goods_num')->find();
                 $all[$i]['goods_num'] = $mark['goods_num'];
-                $all[$i]['end_time'] = $mark['end_time'];
-                $all[$i]['goods_price'] = $mark['goods_price'];
-                $all[$i]['mark'] = $mark['mark'];
                 if ($mark['mark'] == 0) {
                     $num = M('group_buy')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
                     $all[$i]['type'] = 1;
-                    $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $mark['goods_id'])->field('goods_name,original_img')->find();
-                    $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
-                    $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $mark['store_id'])->field('store_name,store_logo')->find();
-                    $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
-                    $all[$i]['goods_num'] = $mark['goods_num'];
-
                     $order_status = $this->getPromStatus($all[$i], $mark, $num);
                     $all[$i]['annotation'] = $order_status['annotation'];
                     $all[$i]['order_type'] = $order_status['order_type'];
@@ -644,31 +637,18 @@ class BaseController extends Controller {
                     $perant = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
                     $num = M('group_buy')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
                     $all[$i]['type'] = 0;
-                    $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
-                    $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
-                    unset($all[$i]['goodsInfo']['shop_price']);
-                    $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
-                    $all[$i]['storeInfo'] = M('merchant')->where('`id`=' . $mark['store_id'])->field('store_name,store_logo')->find();
-                    $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
-
                     $order_status = $this->getPromStatus($all[$i], $mark, $num);
                     $all[$i]['annotation'] = $order_status['annotation'];
                     $all[$i]['order_type'] = $order_status['order_type'];
                 }
             } elseif (empty($all[$i]['prom_id'])) {
                 $all[$i]['type'] = 2;
-                $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
-                $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
-                unset($all[$i]['goodsInfo']['shop_price']);
-                $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
-                $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $all[$i]['store_id'])->field('store_name,store_logo')->find();
-                $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
-
                 $order_status = $this->getStatus($all[$i]);
                 $all[$i]['annotation'] = $order_status['annotation'];
                 $all[$i]['order_type'] = $order_status['order_type'];
             }
-            $all[$i] = $this->FormatOrderInfo($all[$i]);
+            $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = ".$mark['id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
+            $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
         }
         $all = $this->listPageData($count, $all);
 
@@ -683,12 +663,10 @@ class BaseController extends Controller {
         $return['shipping_status'] = $order['shipping_status'];
         $return['pay_status'] = $order['pay_status'];
         $return['prom_id'] = $order['prom_id'];
-        $return['end_time'] = $order['end_time'];
+        $return['key_name'] = $order['key_name'];
         $return['goods_num'] = $order['goods_num'];
         $return['goods_price'] = $order['goods_price'];
-        $return['mark'] = $order['mark'];
         $return['order_amount'] = $order['order_amount'];
-        $return['store_id'] = $order['store_id'];
         $return['annotation'] = $order['annotation'];
         $return['order_type'] = $order['order_type'];
         $return['goodsInfo'] = $order['goodsInfo'];

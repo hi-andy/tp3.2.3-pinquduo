@@ -804,16 +804,3 @@ function getImgSize($arr)
 	return $res;
 }
 
-{
-    $pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg]))[\'|\"].*?[\/]?>/";
-    preg_match_all($pattern,$content,$match);
-    if(isset($match[1])&&!empty($match[1])){
-        if($order==='ALL'){
-            return $match[1];
-        }
-        if(is_numeric($order)&&isset($match[1][$order])){
-            return $match[1][$order];
-        }
-    }
-    return '';
-}

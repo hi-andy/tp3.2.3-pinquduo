@@ -1569,19 +1569,19 @@ class GoodsController extends BaseController {
 	 * type:  0、参团、1、开团、2、单买
 	 */
 		function getOrder()
-		{
-			header("Access-Control-Allow-Origin:*");
-			$user_id = I('user_id');
-			$goods_id = I('goods_id');
-			$store_id = I('store_id');
-			$num = I('num',1);
-			$type = I('type');
-			$spec_key = I('spec_key');
-			$order_id = I('order_id');
-
-			$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
-			if(empty($user_address))
 			{
+			header("Access-Control-Allow-Origin:*");
+				$user_id = I('user_id');
+				$goods_id = I('goods_id');
+				$store_id = I('store_id');
+				$num = I('num',1);
+				$type = I('type');
+				$spec_key = I('spec_key');
+				$order_id = I('order_id');
+
+				$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
+				if(empty($user_address))
+				{
 				$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
 			}
 			//库存
@@ -1841,7 +1841,7 @@ class GoodsController extends BaseController {
 			else
 			{
 				$json = array('status'=>-1,'msg'=>'添加失败');
-				if(!empty($ajax_get))
+				if(!empty($ajax_get));
 					$this->getJsonp($json);
 				exit(json_encode($json));
 			}
@@ -1910,14 +1910,17 @@ class GoodsController extends BaseController {
 		$version = I('version');
 		$rdsname = "getsearch".$key.$page.$pagesize.$version;
         if (empty(redis($rdsname))) {//判断是否有缓存
-            $count = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->count();
-            $goods = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->select();
-
-            foreach ($goods as &$v) {
-                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-            }
-
-            $data = $this->listPageData($count, $goods);
+	        if($version=='2.0.0'){
+		        $where = "`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+		        $data = $this->getGoodsList($where,$page,$pagesize,'');
+	        }else{
+		        $count = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->count();
+		        $goods = M('goods')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->select();
+		        foreach ($goods as &$v) {
+			        $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+		        }
+		        $data = $this->listPageData($count, $goods);
+	        }
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -2042,7 +2045,6 @@ class GoodsController extends BaseController {
 	function getDetaile()
 	{
         $goods_id = I('goods_id');
-
 		$rdsname = 'getDetaile'.$goods_id;
 		if(empty(redis($rdsname))){
 			//轮播图
@@ -2096,16 +2098,58 @@ class GoodsController extends BaseController {
 		}else{
 			$json = unserialize(redis($rdsname));
 		}
+		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
 
+	//获取当前商品的收藏状态
 	function getGoodCsolumn(){
-		$gooods_id = I('goods_id');
-		$usre_id = I('user_id');
+		$goods_id = I('goods_id');
+		$user_id = I('user_id');
+		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
+		$collect = M('goods_collect')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
+		$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('collect'=>$collect));
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
+	}
 
-		
+	//获取已经开好的团
+	function  getAvailableGroup(){
+		$goods_id = I('goods_id');
+		$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free')->order('start_time asc')->limit(3)->select();
+		if (!empty($group_buy)) {
+			for ($i = 0; $i < count($group_buy); $i++) {
+				$order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
+				$group_buy[$i]['id'] = $order_id['order_id'];
+
+				$mens = M('group_buy')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+
+				$group_buy[$i]['prom_mens'] = $group_buy[$i]['goods_num'] - $mens - 1;
+
+				$user_name = M('users')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
+				if (!empty($user_name['oauth'])) {
+					$group_buy[$i]['user_name'] = $user_name['nickname'];
+					$group_buy[$i]['photo'] = $user_name['head_pic'];
+				} else {
+					$group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
+				}
+
+			}
+			foreach ($group_buy as &$v) {
+				$v['photo'] = $v['photo'];
+			}
+		} else {
+			$group_buy = null;
+		}
+
+		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
+		$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('group_buy' => $group_buy));
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
 	}
 
 	function getGenerateOrder(){
@@ -2121,7 +2165,11 @@ class GoodsController extends BaseController {
 		if(empty($user_address))
 		{
 			$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
+			if(empty($user_address)){
+				$user_address = null;
+			}
 		}
+
 		$goods = $this->getGoodsInfo($goods_id);
 		//获取商品规格
 		if(!empty($spec_key))
@@ -2260,4 +2308,9 @@ class GoodsController extends BaseController {
             $this->getJsonp($return_arr);
         exit(json_encode($return_arr));
     }
+
+	function automatic_goods(){
+		//将限时秒杀的时间拿出来
+
+	}
 }

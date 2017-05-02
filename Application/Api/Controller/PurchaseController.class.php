@@ -13,9 +13,10 @@
 namespace Api\Controller;
 
 
-class GroupBuyController
-{
+use Admin\Controller\BaseController;
 
+class PurchaseController
+{
     /*
 	 * type:  0、参团、1、开团、2、单买
 	 */
@@ -26,9 +27,6 @@ class GroupBuyController
         $prom_id =I('prom_id');
         $address_id = I('address_id');
         $goods_id = I('goods_id');
-        $store_id = I('store_id');
-        $latitude = I('latitude',0);  //纬度
-        $longitude = I('longitude',0);//经度
         $num = I('num',1);
         $free = I('free',0);
         $type = I('type');
@@ -43,11 +41,8 @@ class GroupBuyController
         $parameter['user_id'] = $user_id;
         $parameter['address_id'] = $address_id;
         $parameter['goods_id'] = $goods_id;
-        $parameter['store_id'] = $store_id;
         $parameter['num'] = $num;
         $parameter['free'] = $free;
-        $parameter['latitude'] = $latitude;
-        $parameter['longitude'] = $longitude;
         $parameter['coupon_id'] = $coupon_id;
         $parameter['spec_key'] = $spec_key;
         $parameter['ajax_get'] = $ajax_get;
@@ -432,10 +427,7 @@ class GroupBuyController
         $goods_id = $parameter['goods_id'];
         $data = array();
         $order = array();
-        $latitude = $parameter['latitude'];
-        $longitude = $parameter['longitude'];
         $user_id = $parameter['user_id'];
-        $store_id = $parameter['store_id'];
         $address_id = $parameter['address_id'];
         $num = $parameter['num'];
         $spec_key = $parameter['spec_key'];
@@ -523,11 +515,11 @@ class GroupBuyController
         $data['goods_price'] = $goods['market_price'];
         $data['goods_name'] = $goods['goods_name'];
         $data['photo'] = '/Public/upload/logo/logo.jpg';
-        $data['latitude'] = $latitude;
-        $data['longitude'] = $longitude;
+//        $data['latitude'] = $latitude;
+//        $data['longitude'] = $longitude;
         $data['mark'] = 0;
         $data['user_id'] = $user_id;
-        $data['store_id'] = $store_id;
+        $data['store_id'] = $goods['store_id'];
         $data['address_id'] = $address_id;
         $data['free'] = $free;
         //如果是众筹订单
@@ -573,7 +565,7 @@ class GroupBuyController
         I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
         I('coupon_id') && $order['coupon_id'] = $coupon_id;
         $order['add_time'] = $order['pay_time'] = time();
-        $order['store_id'] = $store_id;
+        $order['store_id'] = $goods['store_id'];
         $order['prom_id'] = $group_buy;
         $order['free'] = $free;
         $order['num'] = $num;
@@ -606,7 +598,7 @@ class GroupBuyController
         $spec_data['spec_key_name'] = $goods_spec['key_name'];
         $spec_data['prom_type'] = 1;
         $spec_data['prom_id'] = $group_buy;
-        $spec_data['store_id'] = $store_id;
+        $spec_data['store_id'] = $goods['store_id'];
         $spec_res = M('order_goods')->data($spec_data)->add();
         if(empty($spec_res) || empty($group_buy) || empty($o_id))
         {
@@ -673,17 +665,6 @@ class GroupBuyController
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
-            $rdsname = "getUserOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-            exit(json_encode($json));
         }else{
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'开团失败');
@@ -705,7 +686,6 @@ class GroupBuyController
         $address_id = $parameter['address_id'];
         $user_id = $parameter['user_id'];
         $num = $parameter['num'];
-        $store_id = $parameter['store_id'];
         $spec_key = $parameter['spec_key'];
         $ajax_get = $parameter['ajax_get'];
         $coupon_id = $parameter['coupon_id'];
@@ -765,7 +745,7 @@ class GroupBuyController
         I('coupon_id') && $order['coupon_id'] = $coupon_id;
         $order['num'] = $num;
         $order['add_time'] = $order['pay_time'] = time();
-        $order['store_id'] = $store_id;
+        $order['store_id'] = $goods['store_id'];
         $o_id = M('order')->data($order)->add();
         if(!empty($ajax_get))
         {
@@ -803,7 +783,7 @@ class GroupBuyController
         $spec_data['spec_key_name'] = $goods_spec['key_name'];
         $spec_data['prom_type'] = 1;
         $spec_data['prom_id'] = 0;
-        $spec_data['store_id'] = $store_id;
+        $spec_data['store_id'] = $goods['store_id'];
         $spec_res = M('order_goods')->data($spec_data)->add();
         if(empty($spec_res))
         {
@@ -904,5 +884,21 @@ class GroupBuyController
         $coupon_data['order_id'] = $order_id;
         $res = M('coupon_list')->where('`id`='.$coupon_list_id)->data($coupon_data)->save();
         return $res;
+    }
+
+    public function getInvitationNum()//获取邀请码
+    {
+        $string = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $code='';
+        for($i=0;$i<6;$i++)
+        {
+            $end = rand(0,35);
+            $code = $code.substr($string,$end,1);
+        }
+
+        $test = M('order')->where('`invitation_num`='.$code)->find();
+        if(!empty($test))
+            $code = $this->getInvitationNum();
+        return $code;
     }
 }
