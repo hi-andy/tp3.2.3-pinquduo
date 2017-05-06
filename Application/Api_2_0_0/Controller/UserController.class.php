@@ -2126,7 +2126,7 @@ class UserController extends BaseController {
                 ->find();
         }
         $prom = M('group_buy')->where('id ='.$prom_id)->field('goods_num,free')->find();
-        $spec_price = M('spec_goods_price')->where('goods_id='.$order['goods_id'].' and `key` = '.$order['spec_key'])->getField('prom_price');
+        $spec_price = M('spec_goods_price')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
         if($order['free']>0){
             $price = ($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
             $c = $this->getFloatLength($price);

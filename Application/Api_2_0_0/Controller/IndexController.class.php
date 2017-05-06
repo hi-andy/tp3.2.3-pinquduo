@@ -434,7 +434,7 @@ class IndexController extends BaseController {
                 $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             }else{
                 $count = M('goods')->where("`on_time` > $starttime and `on_time` < $endtime and `is_show` = 1 `show_type`=0 and and `is_audit`=1 and `is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
-                $goods = M('goods')->where("`on_time` >= $starttime and `on_time` < $endtime and `is_show` = 1 and `show_type`=0 and `is_on_sale` = 1 and `is_special` = 2 and `is_audit`=1")->field("goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,sales,store_count,FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime,prom_price,free")->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+                $goods = M('goods')->where("`on_time` >= $starttime and `on_time` < $endtime and `is_show` = 1 and `show_type`=0 and `is_on_sale` = 1 and `is_special` = 2 and `is_audit`=1")->field("goods_id,goods_name,market_price,shop_price,original_img,store_count,prom,prom_price,sales,store_count,FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime,prom_price,free")->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
                 foreach ($goods as &$v) {
                     $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
                 }

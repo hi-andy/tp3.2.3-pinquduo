@@ -54,10 +54,11 @@ class VersionController extends BaseController {
 			$admin = M('admin')->where('`admin_id`='.$_SESSION['admin_id'])->find();
 
 			$data['version'] = $_POST['version'];
+            $data['versionname'] = $_POST['versionname'];
 			$data['userid'] = $admin['admin_id'];
 			$data['username'] = $admin['user_name'];
 			$data['file'] = $_POST['file'];
-			$data['message'] = $_POST['message'];
+			$data['versionDesc'] = $_POST['versiondesc'];
             $data['force'] = $_POST['force'];
             $data['terminal'] = $_POST['terminal'];
 			$data['createtime'] = time();

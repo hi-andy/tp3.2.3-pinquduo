@@ -24,9 +24,17 @@
 						</div>
 						<div class="box-body">
 							<div class="form-group">
+								<label class="col-sm-2 control-label">版本名称:</label>
+								<div class="col-sm-6">
+									<input type="text" placeholder="版本名称" class="form-control large" name="versionname" value="">
+								</div>
+							</div>
+						</div>
+						<div class="box-body">
+							<div class="form-group">
 								<label class="col-sm-2 control-label">版本信息:</label>
 								<div class="col-sm-6">
-									<input type="text" placeholder="版本信息" class="form-control large" name="message" value="">
+									<input type="text" placeholder="版本信息" class="form-control large" name="versiondesc" value="">
 								</div>
 							</div>
 						</div>
@@ -137,7 +145,8 @@
 
 	$("#submit_version").click(function(){
 		var version =  $("[name='version']").val(),
-			message = $("[name='message']").val(),
+				versionname = $("[name='versionname']").val(),
+				versiondesc = $("[name='versiondesc']").val(),
 				force = $("[name='force']").val(),
 				terminal = $("[name='terminal']").val(),
 			file = $("[name='file']").val(),
@@ -166,7 +175,7 @@
 		$.ajax({
 			type : 'POST',
 			url : '/Admin/Version/addVersion',
-			data : {'version':version,'message':message,'force':force,'terminal':terminal,'file':file,'filename':filename},
+			data : {'version':version,'versiondesc':versiondesc,'versionname':versionname,'force':force,'terminal':terminal,'file':file,'filename':filename},
 			dataType : 'json',
 			success:function(res){
 				layer.alert(res);

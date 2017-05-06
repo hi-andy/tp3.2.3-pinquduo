@@ -20,7 +20,8 @@ class VersionController extends BaseController {
         }
 		$item = M("version")->where($where)->order('createtime desc')->find();
         $data['version'] = $item['version'];
-        $data['versionDesc'] = $item['message'];
+        $data['versionName'] = $item['versionname'];
+        $data['versionDesc'] = $item['versiondesc'];
         $data['filepath'] = $item['file'];
         $data['force'] = $item['force'];
         $data['terminal'] = $item['terminal'];
