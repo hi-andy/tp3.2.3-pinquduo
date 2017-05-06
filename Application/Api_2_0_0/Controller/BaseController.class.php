@@ -10,7 +10,7 @@
  * ============================================================================
  * $Author: IT宇宙人 2015-08-10 $
  */ 
-namespace NewApi\Controller;
+namespace Api_2_0_0\Controller;
 use Think\Controller;
 class BaseController extends Controller {
     public $http_url;

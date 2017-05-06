@@ -2,7 +2,7 @@
 /**
  * api接口-商品管理模块
  */
-namespace NewApi\Controller;
+namespace Api_2_0_0\Controller;
 
 use Think\Page;
 class GoodsController extends BaseController {

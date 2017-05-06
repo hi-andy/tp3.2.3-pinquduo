@@ -10,7 +10,7 @@
  * 此控制器暂未使用，将来重构，相关功能迁移至此，请知悉。
  */
 
-namespace NewApi\Controller;
+namespace Api_2_0_0\Controller;
 
 
 use Admin\Controller\BaseController;

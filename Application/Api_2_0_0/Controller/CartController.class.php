@@ -2,7 +2,7 @@
 /**
  * ashop
  */ 
-namespace NewApi\Controller;
+namespace Api_2_0_0\Controller;
 use Think\Controller;
 use Api\Logic\GoodsLogic;
 use Think\Page;
