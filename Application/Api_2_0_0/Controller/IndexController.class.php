@@ -428,7 +428,7 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $rdsname = "get_Seconds_Kill".$starttime.$endtime.$page.$version;
-        //if(empty(redis($rdsname))) {//判断是否有缓存
+        if(empty(redis($rdsname))) {//判断是否有缓存
             $count = M('goods')->where("`on_time` > $starttime and `on_time` < $endtime and `is_show` = 1 `show_type`=0 and and `is_audit`=1 and `is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
             $goods = M('goods')->where("`on_time` >= $starttime and `on_time` < $endtime and `is_show` = 1 and `show_type`=0 and `is_on_sale` = 1 and `is_special` = 2 and `is_audit`=1")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,store_count,sales')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
             $data = $this->listPageData($count, $goods);
@@ -438,9 +438,9 @@ class IndexController extends BaseController {
             }
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        //} else {
-        //    $json = unserialize(redis($rdsname));//读取缓存
-        //}
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);

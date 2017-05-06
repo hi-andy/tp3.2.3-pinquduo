@@ -387,6 +387,15 @@ class PurchaseController
             if(!empty($res) )
             {
                 M()->commit();//都操作成功的时候才真的把数据放入数据库
+
+                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                $rdsname = "getOrderList".$user_id."*";
+                redisdelall($rdsname);//删除用户订单缓存
+                $rdsname = "getGoodsDetails".$goods_id."*";
+                redisdelall($rdsname);//删除商品详情缓存
+                $rdsname = "TuiSong*";
+                redisdelall($rdsname);//删除推送缓存
+
                 if($order['pay_code']=='weixin'){
                     $weixinPay = new WeixinpayController();
                     //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
@@ -410,14 +419,6 @@ class PurchaseController
                 $spec_name = M('order_goods')->where('`order_id`='.$goods_id)->field('spec_key,store_id')->find();
                 M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
                 M('merchant')->where('`id`='.$spec_name['store_id'])->setInc('sales',$num);
-
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
-                $rdsname = "getOrderList".$user_id."*";
-                redisdelall($rdsname);//删除用户订单缓存
-                $rdsname = "getGoodsDetails".$goods_id."*";
-                redisdelall($rdsname);//删除商品详情缓存
-                $rdsname = "TuiSong*";
-                redisdelall($rdsname);//删除推送缓存
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -655,6 +656,15 @@ class PurchaseController
         if(!empty($res))
         {
             M()->commit();//都插入成功的时候才真的把数据放入数据库
+
+            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            $rdsname = "getOrderList".$user_id."*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
+
             if($order['pay_code']=='weixin'){
                 $weixinPay = new WeixinpayController();
                 //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
@@ -674,13 +684,6 @@ class PurchaseController
                 // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'开团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -834,6 +837,15 @@ class PurchaseController
         if(!empty($o_id))
         {
             M()->commit();//都操作s成功的时候才真的把数据放入数据库
+
+            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            $rdsname = "getOrderList".$user_id."*";
+            redisdelall($rdsname);//删除用户订单缓存
+            $rdsname = "getGoodsDetails".$goods_id."*";
+            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "TuiSong*";
+            redisdelall($rdsname);//删除推送缓存
+
             if($order['pay_code'] == 'weixin'){
                 $weixinPay = new WeixinpayController();
                 //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
@@ -852,13 +864,6 @@ class PurchaseController
                 // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
