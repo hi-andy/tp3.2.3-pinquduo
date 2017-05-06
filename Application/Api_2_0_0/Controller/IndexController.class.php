@@ -821,5 +821,6 @@ class IndexController extends BaseController {
     //删除缓存
     public function redisdelall($rdsname = ""){
         redisdelall($rdsname);
+        echo "删除 ".$rdsname;
     }
 }
