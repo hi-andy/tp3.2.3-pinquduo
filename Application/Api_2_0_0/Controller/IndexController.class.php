@@ -818,8 +818,8 @@ class IndexController extends BaseController {
         return $price;
     }
 
-    function test(){
-        $rdsname = "getOrderList*";
-        redisdelall($rdsname);//删除用户订单缓存
+    //删除缓存
+    public function redisdelall($rdsname = ""){
+        redisdelall($rdsname);
     }
 }
