@@ -1955,6 +1955,7 @@ class GoodsController extends BaseController {
 	function getDetaile($refresh="")
 	{
         $goods_id = I('goods_id');
+        //自动脚本
         if ($refresh) {
             $page = empty(redis("getDetaile_page")) ? 0 : redis("getDetaile_page");
             $pagesize = 1;
@@ -1968,6 +1969,7 @@ class GoodsController extends BaseController {
             }
             print_r($goods_id);
         }
+        //////
         $rdsname = 'getDetaile'.$goods_id;
 		if(empty(redis($rdsname))){
 			//轮播图
