@@ -1139,20 +1139,20 @@ class UserController extends BaseController {
         $pagesize = I('pagesize',10);
         redis("getUserOrderList", $user_id, 6000);
         $rdsname = "getUserOrderList".$user_id.$type.$page.$pagesize;
-        //if(empty(redis($rdsname))) {//判断是否有缓存
-        if ($type == 1) {
-            $condition = 'order_type = 11 and `user_id`=' . $user_id;
-        } elseif ($type == 2) {//待发货
-            $condition = '(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
-        } elseif ($type == 3) {//待收货
-            $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
-        } elseif ($type == 4) {//待付款
-            $condition = '(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
-        } elseif ($type == 5) {//已完成
-            $condition = 'order_type = 4 and `user_id` = ' . $user_id;
-        } else {
-            $condition = '`user_id` = ' . $user_id;
-        }
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            if ($type == 1) {
+                $condition = 'order_type = 11 and `user_id`=' . $user_id;
+            } elseif ($type == 2) {//待发货
+                $condition = '(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
+            } elseif ($type == 3) {//待收货
+                $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
+            } elseif ($type == 4) {//待付款
+                $condition = '(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
+            } elseif ($type == 5) {//已完成
+                $condition = 'order_type = 4 and `user_id` = ' . $user_id;
+            } else {
+                $condition = '`user_id` = ' . $user_id;
+            }
             $count = M('order')->where($condition)->count();
             $all = M('order')->where($condition)->order('order_id desc')->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
 
@@ -1214,10 +1214,10 @@ class UserController extends BaseController {
             $all = $this->listPageData($count, $all);
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-        //    redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        //} else {
-        //    $json = unserialize(redis($rdsname));//读取缓存
-        //}
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);

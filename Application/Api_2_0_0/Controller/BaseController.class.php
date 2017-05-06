@@ -653,4 +653,8 @@ class BaseController extends Controller {
             exit(json_encode($json_arr));
         }
     }
+
+    public function getdb(){
+
+    }
 }
