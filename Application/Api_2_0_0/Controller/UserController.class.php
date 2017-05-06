@@ -2228,6 +2228,12 @@ class UserController extends BaseController {
             ->where('o.order_id = '.$order_id.' and o.user_id = '.$user_id)
             ->field('o.goods_id,o.store_id,o.order_sn,o.pay_name,o.add_time,o.consignee,o.address_base,o.address,o.mobile,o.store_id,o.shipping_order,o.shipping_name,g.cat_id,o.order_amount,o.num,o.prom_id,o.order_type,o.order_status,o.pay_status,o.shipping_status,o.automatic_time,o.delivery_time')->find();
         $prom_info = M('group_buy')->where('order_id = '.$order_id)->find();
+        //获取成团时间
+        if ($prom_info['mark']==0){
+            $res1 = M('group_buy')->where('id = '.$prom_info['id'].' or mark ='.$prom_info['id'])->order('id desc')->find();
+        }else{
+            $res1 = M('group_buy')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
+        }
         $goods_info= $goods = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
         $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales')->find();
         $spec_info = M('order_goods')->alias('og')
@@ -2277,7 +2283,7 @@ class UserController extends BaseController {
         unset($order_info['cat_id']);
         unset($order_info['goods_id']);
 
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>array('order_id'=>$order_id,'order_amount'=>$order_info['order_amount'],'order_sn'=>$order_info['order_sn'],'pay_name'=>$order_info['pay_name'],'add_time'=>$order_info['add_time'],'shipping_order'=>$order_info['shipping_order'],'shipping_name'=>$order_info['shipping_name'],'prom_id'=>$order_info['prom_id'],'order_type'=>$order_info['order_type'],'automatic_time'=>$order_info['automatic_time'],'prom'=>$order_info['prom'],'prom_mens'=>$order_info['prom_mens'],'annotation'=>$order_info['annotation'],'delivery_time'=>$order_info['delivery_time'],'key_name'=>$order_info['key_name'],'price'=>$order_info['price'],'num'=>$order_info['num'],'successful_time'=>$prom_info['start_time'],'is_oneself'=>$is_oneself,'goodsInfo'=>$goods_info,'user'=>$user,'like'=>$goods));
+        $json = array('status'=>1,'msg'=>'获取成功','result'=>array('order_id'=>$order_id,'order_amount'=>$order_info['order_amount'],'order_sn'=>$order_info['order_sn'],'pay_name'=>$order_info['pay_name'],'add_time'=>$order_info['add_time'],'shipping_order'=>$order_info['shipping_order'],'shipping_name'=>$order_info['shipping_name'],'prom_id'=>$order_info['prom_id'],'order_type'=>$order_info['order_type'],'automatic_time'=>$order_info['automatic_time'],'prom'=>$order_info['prom'],'prom_mens'=>$order_info['prom_mens'],'annotation'=>$order_info['annotation'],'delivery_time'=>$order_info['delivery_time'],'key_name'=>$order_info['key_name'],'price'=>$order_info['price'],'num'=>$order_info['num'],'successful_time'=>$res1['start_time'],'is_oneself'=>$is_oneself,'goodsInfo'=>$goods_info,'user'=>$user,'like'=>$goods));
 
         if(!empty($ajax_get))
             $this->getJsonp($json);

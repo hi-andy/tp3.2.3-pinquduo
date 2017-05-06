@@ -190,6 +190,7 @@ class PurchaseController
     public function joinGroupBuy($parameter){
         $prom_id = $parameter['prom_id'];
         $user_id = $parameter['user_id'];
+        $only_userid = $user_id;
         $data = array();
         $order = array();
         $address_id = $parameter['address_id'];
@@ -389,7 +390,7 @@ class PurchaseController
                 M()->commit();//都操作成功的时候才真的把数据放入数据库
 
                 redisdelall("getBuy_lock" . $goods_id);//删除锁
-                $rdsname = "getOrderList".$user_id."*";
+                $rdsname = "getOrderList".$only_userid."*";
                 redisdelall($rdsname);//删除用户订单缓存
                 $rdsname = "getGoodsDetails".$goods_id."*";
                 redisdelall($rdsname);//删除商品详情缓存
@@ -444,7 +445,7 @@ class PurchaseController
         $goods_id = $parameter['goods_id'];
         $data = array();
         $order = array();
-        $user_id = $parameter['user_id'];
+        $only_userid = $user_id = $parameter['user_id'];
         $address_id = $parameter['address_id'];
         $num = $parameter['num'];
         $spec_key = $parameter['spec_key'];
@@ -658,7 +659,7 @@ class PurchaseController
             M()->commit();//都插入成功的时候才真的把数据放入数据库
 
             redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getOrderList".$user_id."*";
+            $rdsname = "getOrderList".$only_userid."*";
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
             redisdelall($rdsname);//删除商品详情缓存
@@ -707,7 +708,7 @@ class PurchaseController
     public function buyBymyself($parameter){
         $goods_id = $parameter['goods_id'];
         $address_id = $parameter['address_id'];
-        $user_id = $parameter['user_id'];
+        $only_userid = $user_id = $parameter['user_id'];
         $num = $parameter['num'];
         $spec_key = $parameter['spec_key'];
         $ajax_get = $parameter['ajax_get'];
@@ -839,7 +840,7 @@ class PurchaseController
             M()->commit();//都操作s成功的时候才真的把数据放入数据库
 
             redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getOrderList".$user_id."*";
+            $rdsname = "getOrderList".$only_userid."*";
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
             redisdelall($rdsname);//删除商品详情缓存

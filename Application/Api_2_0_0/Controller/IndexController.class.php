@@ -817,4 +817,9 @@ class IndexController extends BaseController {
         $price = $price+0.01;
         return $price;
     }
+
+    function test(){
+        $rdsname = "getOrderList*";
+        redisdelall($rdsname);//删除用户订单缓存
+    }
 }

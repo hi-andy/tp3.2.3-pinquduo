@@ -1811,7 +1811,7 @@ class GoodsController extends BaseController {
 		$page = I('page',1);
 		$pagesize = I('pagesize',20);
 		$countries = M('haitao_style')->where('`id` = '.$id)->find();
-		$countries['img'] = C('HTTP_URL').$countries['img'];
+		$countries['img'] = TransformationImgurl($countries['img']);
 
 		$count = M('goods')->where('`is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->count();
 		$goods = M('goods')->where(' `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
@@ -2176,7 +2176,7 @@ class GoodsController extends BaseController {
 	function getsearch()
 	{
 		$key = I('key');
-		
+
 		// 记录搜索关键字，如果搜索记录已存在此关键字，则 increase + 1;
 		$result = D('keyword_search')->where(array('keyword'=>$key))->find();
 		if ($result) {

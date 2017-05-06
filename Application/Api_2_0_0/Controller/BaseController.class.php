@@ -38,7 +38,7 @@ class BaseController extends Controller {
      * 初始化操作
      */
     public function _initialize() {
-//        $this->encryption();
+        //$this->encryption();
     }
 
     /**
@@ -638,6 +638,7 @@ class BaseController extends Controller {
         return $return;
     }
 
+    //验签
     public function encryption(){
         $arr = empty($_GET) ? $_POST : $_GET;
         ksort ($arr);

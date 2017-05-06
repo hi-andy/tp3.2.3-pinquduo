@@ -1,5 +1,5 @@
 <?php
-namespace Api\Controller;
+namespace Api_2_0_0\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
     public function index(){
@@ -727,5 +727,35 @@ class IndexController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-    
+
+    //版本2.0.0
+    //中间展示免单的拼团
+    function get_Free_Order()
+    {
+        $free_num = I('free_num');
+        $page = I('page',1);
+        $pagesize = I('pagesize',10);
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        $condition['free'] = array('eq',$free_num);
+        $condition['is_successful'] = array('eq',0);
+        $condition['end_time'] = array('gt',time());
+        $condition['mark'] = array('eq',0);
+        $condition['is_pay'] = array('eq',1);
+        $condition['is_audit'] = array('eq',1);
+        $condition['is_on_sale'] = array('eq',1);
+        $condition['show_type'] = array('eq',0);
+
+        $count = M('group_buy')->where($condition)->count();
+        $prom = M('group_buy')->where($condition)->field('id as prom_id,goods_id,price,goods_num as prom,free,start_time,end_time')->page($page,$pagesize)->select();
+        for($i=0;$i<count($prom);$i++){
+            $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
+        }
+        $data=$this->listPageData($count,$prom);
+
+        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+        if(I('ajax_get')) {
+            $this->getJsonp($json);
+        }
+        exit(json_encode($json));
+    }
 }

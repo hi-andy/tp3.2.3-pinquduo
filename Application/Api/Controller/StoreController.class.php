@@ -3,58 +3,61 @@
  * User: admin
  */
 
-namespace Api\Controller;
+namespace Api_2_0_0\Controller;
 
 class StoreController extends BaseController{
 
-    /*
-     * 商户详情
-     * */
-    public function getStoreList()
-    {
-        $store_id = I('store_id');
-        $stor = I('stor','sales');//last_update
+	/*
+	 * 商户详情
+	 * */
+	public function getStoreList()
+	{
+		$store_id = I('store_id');
+		$stor = I('stor','sales');//last_update
+		$version = I('version');
+		$page = I('page',1);
+		$pagesize = I('pagesize',10);
+		$rdsname = "getStoreList".$store_id.$stor.$page.$pagesize.$version;
+		if(empty(redis($rdsname))) {//判断是否有缓存
+			$store = M('merchant')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
+			$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
+			$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0|imageslim/dissolve/100/gravity/South/dx/0/dy/0";
+			$store['store_logo'] = TransformationImgurl($store['store_logo']);
+			//获取店铺优惠卷store_logo_compression
+			$coupon = M('coupon')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+			if (empty($coupon)) {
+				$coupon = null;
+			}
+			if($version='2.0.0'){
+				$where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id;
+				$data = $this->getGoodsList($where,$page,$pagesize,"$stor desc ");
+				$store['coupon'] = $coupon;
+				$store['goods'] = $data;
+				$json = array('status' => 1, 'msg' => '', 'result' => array('id'=>$store_id,'store_name' => $store['store_name'],'mobile' => $store['mobile'],'store_logo' => $store['store_logo'],'sales' => $store['sales'],'introduce' => $store['introduce'],'store_share_url' => $store['store_share_url'],'logo_share_url' => $store['logo_share_url'], 'goods' => $data, 'coupon' => $coupon));
+			}else{
+				$count = M('goods')->where()->count();
+				$goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
+				if (empty($count)) {
+					$count = null;
+				} elseif (empty($goods)) {
+					$goods = null;
+				}
+				foreach ($goods as &$v) {
+					$v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+				}
+				$data = $this->listPageData($count, $goods);
+				$json = array('status' => 1, 'msg' => '', 'result' => array('store' => $store, 'goods' => $data, 'coupon' => $coupon));
+			}
 
-        $page = I('page',1);
-        $pagesize = I('pagesize',10);
-        $store = M('merchant')->where('`id` = '.$store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
-        $store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id='.$store_id;
-
-        $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->count();
-        $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
-
-        $store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
-        $store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0|imageslim/dissolve/100/gravity/South/dx/0/dy/0";
-        $store['store_logo'] = TransformationImgurl($store['store_logo']);
-
-        if(empty($count))
-        {
-            $count = null;
-        }
-        elseif(empty($goods))
-        {
-            $goods = null;
-        }
-        //获取店铺优惠卷store_logo_compression
-        $coupon = M('coupon')->where('`store_id` = '.$store_id.' and `send_start_time` <= '.time().' and `send_end_time` >= '.time().' and createnum!=send_num' )->select();
-        if(empty($coupon))
-        {
-            $coupon = null;
-        }
-
-        foreach($goods as &$v)
-        {
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
-        }
-
-        $data = $this->listPageData($count,$goods);
-
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $json = array('status'=>1,'msg'=>'','result'=>array('store'=>$store,'goods'=>$data,'coupon'=>$coupon));
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
-        exit(json_encode($json));
-    }
+			redis($rdsname, serialize($json), REDISTIME);//写入缓存
+		} else {
+			$json = unserialize(redis($rdsname));//读取缓存
+		}
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
+	}
 
 
 	function storeLOGO($path,$store_id)
@@ -164,12 +167,12 @@ class StoreController extends BaseController{
 
 	function Y_orderlist()
 	{
-		$store_id = I('post.store_id');//商户ID
-		$page = I('post.page',1);//页码
-		$page_num = I('post.page_num',10);//分页变量
-		I('post.start_time') && $start_time = I('post.start_time');
-		I('post.end_time') && $end_time = I('post.end_time');
-		I('post.order_sn') && $order_sn = I('post.order_sn');
+		$store_id = I('store_id',910);//商户ID
+		$page = I('page',1);//页码
+		$page_num = I('page_num',10);//分页变量
+		I('start_time') && $start_time = I('start_time');
+		I('end_time') && $end_time = I('end_time');
+		I('order_sn') && $order_sn = I('order_sn');
 
 		$where = "o.store_id = $store_id and o.order_type in (2,14)";
 		if (!empty($start_time) && !empty($end_time)) {
@@ -204,13 +207,13 @@ class StoreController extends BaseController{
 				$order_info[$i]['district'] = $adress_info['district'];//区
 				$order_info[$i]['street'] = $order_info[$i]['address'];
 
-                $goods_info = M('order_goods')->alias('og')
-                    ->join('INNER JOIN tp_order o on og.goods_id = o.goods_id')
-                    ->where('og.order_id = '.$order_info[$i]['order_id'])
-                    ->field('og.goods_name,og.goods_id,og.market_price,og.goods_price,og.goods_num,og.spec_key_name')
-                    ->limit($page,$page_num)
-                    ->order('og.order_id asc')
-                    ->find();
+				$goods_info = M('order_goods')->alias('og')
+					->join('INNER JOIN tp_order o on og.goods_id = o.goods_id')
+					->where('og.order_id = '.$order_info[$i]['order_id'])
+					->field('og.goods_name,og.goods_id,og.market_price,og.goods_price,og.goods_num,og.spec_key_name')
+					->limit($page,$page_num)
+					->order('og.order_id asc')
+					->find();
 
 				$order_info[$i]['goods'] = $goods_info;
 				//unset()掉多余数据
@@ -276,13 +279,6 @@ class StoreController extends BaseController{
 		$did = M('delivery_doc')->add($datas);
 
 		$goods = M('goods')->where('`goods_id`='.$order['goods_id'])->find();
-        $updata['shipping_code'] = $data['shipping_code'];
-        $updata['shipping_name'] = $data['shipping_name'];
-        $updata['shipping_order'] = $data['shipping_order'];
-        $updata['shipping_price'] = $order['shipping_price'];
-        $updata['order_status'] = 11;
-        $updata['order_type'] = 15;
-        $updata['shipping_status'] = 1;
 		if(!empty($order['prom_id'])){
 			$updata['order_status'] = $action['order_status'] = 11;
 			$updata['order_type'] = $action['order_type'] = 15;

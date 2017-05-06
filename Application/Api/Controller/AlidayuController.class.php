@@ -6,7 +6,7 @@
  * Time: 下午4:55
  */
 
-namespace Api\Controller;
+namespace Api_2_0_0\Controller;
 use Think\Controller;
 vendor("taobao-sdk.TopSdk");
 

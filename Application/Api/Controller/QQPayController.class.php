@@ -1,5 +1,5 @@
 <?php
-namespace Api\Controller;
+namespace Api_2_0_0\Controller;
 use Think\Controller;
 
 class QQPayController extends BaseController
