@@ -787,7 +787,7 @@ class IndexController extends BaseController {
             if($c>3){
                 $price = $this->operationPrice($price);
             }
-            $prom[$i]['price'] = $price;
+            $prom[$i]['price'] = sprintf("%.2f", $price);
             $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
         }
         $data=$this->listPageData($count,$prom);
