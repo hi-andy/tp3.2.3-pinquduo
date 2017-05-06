@@ -25,7 +25,7 @@ class CrowdfundController extends BaseController {
      * 显示众筹管理商品列表
      */
     public function goods_list(){
-        $this->show();
+        $this->display();
     }
 
     /**
@@ -257,8 +257,9 @@ class CrowdfundController extends BaseController {
 
     public function goods_save()
     {
+        $data['is_support_buy']=0;
+        $data['is_special']=8;
         $data['the_raise']=1;
-        $data['is_special']=3;
         for($i=0;$i<count($_POST['goods_id']);$i++)
         {
             $res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();

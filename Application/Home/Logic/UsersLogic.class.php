@@ -38,40 +38,43 @@ class UsersLogic extends RelationModel
     public function thirdLogin($data=array()){
         $openid = $data['openid']; //第三方返回唯一标识
         $oauth = $data['oauth']; //来源
-        if(!$openid || !$oauth)
-            return array('status'=>-1,'msg'=>'参数有误','result'=>'');
-        //获取用户信息
-        $user = get_user_info($openid,3,$oauth);
-        if($user['test']==0 && !empty($user['user_id']) && empty($user['mobile']))
-        {
-            //$map['head_pic'] = saveimage($data['head_pic']);
-            //拉去微信头像传到七牛云
-            $qiniu = new \Admin\Controller\QiniuController();
-            $qiniu_result = $qiniu->fetch($data['head_pic'],"imgbucket", time().rand(0,9).".jpg");
-            $map['head_pic'] = CDN."/".$qiniu_result[0]["key"];
-            $map['test'] = 1;
-            $row = M('users')->where('user_id='.$user['user_id'])->save($map);
-        }
-        if(!$user){
-            //账户不存在 注册一个
-            $map['password'] = '';
-            $map['openid'] = $openid;
-            $map['nickname'] = $data['nickname'];
-            $map['reg_time'] = time();
-            $map['oauth'] = $oauth;
-            $map['test'] = 1;
-            //$map['head_pic'] = saveimage($data['head_pic']);
-            //拉去微信头像传到七牛云
-            $qiniu = new \Admin\Controller\QiniuController();
-            $qiniu_result = $qiniu->fetch($data['head_pic'],"imgbucket", time().rand(0,9).".jpg");
-            $map['head_pic'] = CDN."/".$qiniu_result[0]["key"];
-            $row = M('users')->add($map);
-            $user = get_user_info($openid,3,$oauth);
-            $user['status'] = 1;
-        }
+        $unionid = $data['unionid'];
+        if(!$openid || !$oauth) {
+            return array('status' => -1, 'msg' => '参数有误', 'result' => '');
+        } else {
+            //获取用户信息
+            $user = get_user_info($openid, 3, $oauth, $unionid);
+            if ($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile'])) {
+                //$map['head_pic'] = saveimage($data['head_pic']);
+                //拉取微信头像传到七牛云
+                $qiniu = new \Admin\Controller\QiniuController();
+                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+                $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                $map['test'] = 1;
+                $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
+            }
+            if (!$user) {
+                //账户不存在 注册一个
+                $map['password'] = '';
+                $map['openid'] = $openid;
+                $map['unionid'] = $unionid;
+                $map['nickname'] = $data['nickname'];
+                $map['reg_time'] = time();
+                $map['oauth'] = $oauth;
+                $map['test'] = 1;
+                //$map['head_pic'] = saveimage($data['head_pic']);
+                //拉去微信头像传到七牛云
+                $qiniu = new \Admin\Controller\QiniuController();
+                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+                $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                $row = M('users')->add($map);
+                $user = get_user_info($openid, 3, $oauth, $unionid);
+                $user['status'] = 1;
+            }
             $BASE = new BaseController();
             $user['userdetails'] = $BASE->getCountUserOrder($user['user_id']);
             return $user;
+        }
     }
 
     /**

@@ -17,8 +17,8 @@ class IndexController
     public function get_server_address(){
         $result = array(
             "status" => 1,
-            "action" => "get_server_address",
-            "address" => "119.23.118.245:80"
+            "msg" => "get_server_address",
+            "result" => "119.23.118.245:80"
         );
         echo json_encode($result);
     }
@@ -35,6 +35,7 @@ class IndexController
                 "userid" => $class . $uid,
             );
             $result = $this->base64_json($result);
+            $result = $this->json("login", $result);
         } else {
             $result = $this->errjson("参数错误");
         }
@@ -55,6 +56,7 @@ class IndexController
                 "data" => $data
             );
             $result = $this->base64_json($result);
+            $result = $this->json("set_private_chat", $result);
         } else {
             $result = $this->errjson("参数错误");
         }
@@ -75,11 +77,56 @@ class IndexController
         );
         $qiniu = new \Admin\Controller\QiniuController();
         $info = $qiniu->uploadfile("imgbucket", $files);
-        return array(
+        echo json_encode(array(
             "status" => 1,
-            "action" => "upload",
-            "url" => CDN."/".$info[0]["key"]
-        );
+            "msg" => "upload",
+            "result" => base64_encode(CDN."/".$info[0]["key"])
+        ));
+    }
+
+    /**
+     * 拉取库存消息
+     * @param $class
+     * @param $uid
+     * @param int $page
+     * @param int $pagesize
+     */
+    public function get_msglist($class, $uid, $page=0, $pagesize=20){
+        if ($class && $uid) {
+            $where["userid"] = array("eq", $class.$uid);
+            $result = M("chat")->where($where)->order("time")->limit($page,$pagesize)->select();
+            $id = "";
+            foreach ($result as $v) {
+                $id .= $v['id'].",";
+            }
+            $id = substr($id, 0, -1);
+            $result = $this->json("get_msglist", $result);
+            $where['id'] = array('in', $id);
+            M("chat")->where($where)->save(array("status" => 1));
+        } else {
+            $result = $this->errjson("参数错误");
+        }
+        echo $result;
+    }
+
+    /**
+     * 保存消息队列
+     */
+    public function set_msglist(){
+        $num = 500;
+        $values  = "";
+        $sql = "INSERT INTO users(f_userid, userid, data, status) VALUES";
+        for ($i=0; $i<$num; $i++) {
+            $msg = (array) get_decrypt(redislist("msglist"));
+            if (!empty($msg)) {
+                $values .= "({$msg['f_userid']},{$msg['userid']},{$msg['data']},{$msg['status']}),";
+            }
+        }
+        $values = substr($values, 0, -1);
+        if ($values) {
+            $sql .= $values;
+            M("chat")->query($sql);
+        }
     }
 
     /**
@@ -87,8 +134,13 @@ class IndexController
      * @param $str
      */
     public function get_decrypt($str){
-        $str = base64_json_decode($str);
-        echo json_encode($str);
+        if ($str) {
+            $result = base64_json_decode($str);
+            $result = $this->json("get_decrypt", $result);
+        } else {
+            $result = $this->errjson("参数错误");
+        }
+        echo $result;
     }
 
     /**
@@ -109,12 +161,16 @@ class IndexController
         return json_decode(base64_decode(transposition($str)));
     }
 
+    public function json($msg="", $result=""){
+        return json_encode(array('status' => 1, 'msg' => $msg, 'result' => $result));
+    }
+
     /**
      * 输出错误信息
      * @param string $str
      * @return string
      */
-    public function errjson($str=""){
-        return json_encode(array('status' => -1, 'msg' => $str));
+    public function errjson($msg=""){
+        return json_encode(array('status' => -1, 'msg' => $msg));
     }
 }

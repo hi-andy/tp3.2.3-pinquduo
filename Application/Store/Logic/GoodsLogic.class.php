@@ -373,7 +373,7 @@ class GoodsLogic extends RelationModel
      * @param type $checked
      */
     function GetSpecCheckboxList($type_id, $checked = array()){
-        $list = M('Spec')->where("type_id = $type_id")->order('`order` desc')->select();        
+        $list = M('Spec')->where("type_id = $type_id AND is_show = 1")->order('`order` desc')->select();
         //$list = M('Spec')->where("1=1")->order('`order` desc')->select();        
         $str = '';
         

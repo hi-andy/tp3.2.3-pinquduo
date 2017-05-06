@@ -18,7 +18,10 @@ class UploadifyController extends BaseController{
         $this->assign('info',$info);
         $this->display();
     }
-
+    
+    /*
+              删除上传的图片
+     */
     /*
               删除上传的图片
      */

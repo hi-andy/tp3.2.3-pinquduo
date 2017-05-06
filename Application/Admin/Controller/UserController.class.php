@@ -30,8 +30,25 @@ class UserController extends BaseController {
     public function ajaxindex(){
         // 搜索条件
         $condition = array();
-        I('mobile') ? $condition['mobile'] = I('mobile') : false;
-        I('email') ? $condition['email'] = I('email') : false;
+//        I('mobile') ? $condition['mobile'] = I('mobile') : false;
+//        I('email') ? $condition['email'] = I('email') : false;
+        $reg_time = I('reg_time');
+        $reg_type = I('reg_type');
+        if ($reg_time == 'yesterday') {
+            $condition['reg_time'] = array("exp"," > ".strtotime('yesterday')." AND reg_time < ".strtotime('today'));
+        } elseif ($reg_time == 'today') {
+            $condition['reg_time'] = array('GT',strtotime($reg_time));
+        } elseif ($reg_time == 'month') {
+            $condition['reg_time'] = array('GT',strtotime('-30 day'));
+        }
+
+        if ($reg_type == 'weixin') {
+            $condition['oauth'] = 'weixin';
+        } elseif ($reg_type == 'qq') {
+            $condition['oauth'] = 'qq';
+        } elseif ($reg_type == 'mobile') {
+            $condition['oauth'] = '';
+        }
         $sort_order = I('order_by').' '.I('sort');
 
         $model = M('users');
@@ -42,8 +59,9 @@ class UserController extends BaseController {
             $Page->parameter[$key]   =   urlencode($val);
         }
         $show = $Page->show();
-        $orderList = $model->where($condition)->order($sort_order)->limit($Page->firstRow.','.$Page->listRows)->select();
+        $orderList = $model->field('user_id,nickname,reg_time,total_amount,oauth')->where($condition)->order($sort_order)->limit($Page->firstRow.','.$Page->listRows)->select();
         $this->assign('userList',$orderList);
+        $this->assign('count',$count);
         $this->assign('page',$show);// 赋值分页输出
         $this->display();
     }

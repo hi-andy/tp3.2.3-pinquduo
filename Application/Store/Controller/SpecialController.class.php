@@ -82,7 +82,7 @@ class SpecialController extends BaseController
     public function ajaxSpecList(){
         //ob_start('ob_gzhandler'); // 页面压缩输出
         $where = ' is_show=1 '; // 搜索条件
-        I('type_id')   && $where = "$where and type_id = ".I('type_id') ;
+        I('type_id')   && $where .= " and type_id = ".I('type_id') ;
         // 关键词搜索
         $model = D('spec');
 
@@ -158,7 +158,7 @@ class SpecialController extends BaseController
      */
     public function ajaxGetSpecSelect(){
         $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
-        $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type'])->order('`order` desc')->select();
+        $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
         foreach($specList as $k => $v){
             $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
         }

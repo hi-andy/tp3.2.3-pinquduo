@@ -41,7 +41,7 @@ class JsApiPay
 	public function GetOpenid()
 	{
 		//通过code获得openid
-		if (!isset($_GET['code'])){
+		if (!isset($_GET['code']) || $_GET['code'] == 'weixin'){
 			//触发微信返回code码
 			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
 			$url = $this->__CreateOauthUrlForCode($baseUrl);
@@ -93,6 +93,7 @@ class JsApiPay
 	public function GetOpenidFromMp($code)
 	{
 		$url = $this->__CreateOauthUrlForOpenid($code);
+        //echo $code.'here';exit;
 		//初始化curl
 		$ch = curl_init();
 		//设置超时

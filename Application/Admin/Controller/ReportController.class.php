@@ -406,4 +406,27 @@ class ReportController extends BaseController{
 
 		$this->display();
 	}
+
+	public function keywordSearch()
+    {
+        $where = ''; //时间段筛选
+        if ($time = I('time')) {
+            //list($start, $end) = explode('-', $times);
+            $where = ' update_time > '.strtotime($time).' AND update_time < '.(strtotime($time) + 86399);
+        }
+        $count =M('keyword_search')->count();
+        $Page  = new \Think\Page($count,15);
+        $show = $Page->show();
+        $list = M('keyword_search')->field('keyword,increase,update_time')->where($where)->order('increase desc, update_time desc')->limit($Page->firstRow,$Page->listRows)->select();
+
+        // 不间断排行
+        $start = $Page->nowPage > 1 ? ($Page->nowPage -1) * $Page->listRows : 0;
+        foreach ($list as $key=>&$value) {
+            $value['update_time'] = date('Y-m-d H:i:s', $value['update_time']);
+            $value['rank'] = $key + 1 + $start; //加入不间断排行字段
+        }
+        $this->assign('list', $list);
+        $this->assign('page', $show);
+        $this->display();
+    }
 }

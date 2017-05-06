@@ -20,7 +20,6 @@
                                     <td class="text-center">安卓更新的文件</td>
                                     <td class="text-center">版本信息</td>
                                     <td class="text-center">创建时间</td>
-                                    <td class="text-center">强制更新</td>
                                     <td class="text-center">操作</td>
                                 </tr>
                                 </thead>
@@ -38,7 +37,6 @@
                                         <td class="text-center">{$list.file}</td>
                                         <td class="text-center">{$list.message}</td>
                                         <td class="text-center">{$list.createtime|date='Y-m-d H:i',###}</td>
-                                        <td class="text-center"><if condition="$list.force eq 1">是<else />否</if></td>
                                         <!--<td class="text-center">{$list.pay_name}</td>-->
                                         <!--<td class="text-center">{$list.shipping_name}</td>-->
                                         <!--<td class="text-center">{$list.add_time|date='Y-m-d H:i',###}</td>-->

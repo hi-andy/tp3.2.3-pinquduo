@@ -46,7 +46,7 @@
                         <tr>
                             <td>提现账号:<span class="notice" notice="第一次提现后锁定提现账号，提现时间通常为：非工作日48小时内 确认到账。"></span></td>
                             <td>
-                                <input type="text" name="withdrawal_code" class="form-control" style="width:350px;" <if condition="$suoding['withdrawal_money'] neq null">value="{$suoding['withdrawal_code']}" disabled="disabled"</if>/>
+                                <input type="text" name="withdrawal_code" class="form-control" style="width:350px;" <if condition="$suoding['withdrawal_type'] neq null">value="{$suoding['withdrawal_code']}" disabled="disabled"</if>/>
                             </td>
                         </tr>
                         </tbody>

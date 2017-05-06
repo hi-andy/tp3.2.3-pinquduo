@@ -11,17 +11,19 @@ class VersionController extends BaseController {
 	/**
 	 * 获取最新的android版本信息
 	 */
-	public function getlastversion()
+	public function getlastversion($terminal="")
 	{
-		$item = M("version")->order('createtime desc')->find();
-		$version = $item['version'];
-		$message = $item['message'];
-		$packageUrl = $item['file'];
-        $force = $item['force'];
- 		$data['version'] = $version;
-		$data['versionDesc'] = $message;
-		$data['filepath'] = $packageUrl;
-        $data['force'] = $force;
+        if ($terminal) {
+            $where["terminal"] = array("eq", $terminal);
+        } else {
+            $where["terminal"] = array("eq", "a");
+        }
+		$item = M("version")->where($where)->order('createtime desc')->find();
+        $data['version'] = $item['version'];
+        $data['versionDesc'] = $item['message'];
+        $data['filepath'] = $item['file'];
+        $data['force'] = $item['force'];
+        $data['terminal'] = $item['terminal'];
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
 		if(!empty($ajax_get))

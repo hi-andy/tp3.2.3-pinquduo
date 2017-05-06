@@ -29,7 +29,7 @@ class WxPayConfig
 	 public static $appid = 'wxdbc22996638a2c73';
 	 public static $mchid = '1405319302';
 	 public static $key = 'ACABF43504C39F7BCB9ACB0EF70074AC';
-	 public static $appsecret = 'f26dcd0800b693c345e06ec7b9206592';
+	 public static $appsecret = 'd259ccee138067613a26971092c6e48d';
 
 	//=======【证书路径设置】=====================================
 	/**

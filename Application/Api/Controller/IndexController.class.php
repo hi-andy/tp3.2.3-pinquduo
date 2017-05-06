@@ -14,6 +14,11 @@ class IndexController extends BaseController {
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
         }
+        print_r(unserialize(redis("thirdLogin")));
+        print_r("<br>openid:");
+        print_r(redis("openid"));
+        print_r("<br>unionid:");
+        print_r(redis("unionid"));
     }
 
     /*

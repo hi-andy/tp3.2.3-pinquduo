@@ -32,6 +32,17 @@
 						</div>
 						<div class="box-body">
 							<div class="form-group">
+								<label class="col-sm-2 control-label">终端:</label>
+								<div class="col-sm-6">
+									<select id="terminal" name="terminal">
+										<option value ="a">安卓</option>
+										<option value ="i">IOS</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="box-body">
+							<div class="form-group">
 								<label class="col-sm-2 control-label">强制更新:</label>
 								<div class="col-sm-6">
 									<select id="force" name="force">
@@ -128,6 +139,7 @@
 		var version =  $("[name='version']").val(),
 			message = $("[name='message']").val(),
 				force = $("[name='force']").val(),
+				terminal = $("[name='terminal']").val(),
 			file = $("[name='file']").val(),
 			filename = $("[name='filename']").val();
 
@@ -154,7 +166,7 @@
 		$.ajax({
 			type : 'POST',
 			url : '/Admin/Version/addVersion',
-			data : {'version':version,'message':message,'force':force,'file':file,'filename':filename},
+			data : {'version':version,'message':message,'force':force,'terminal':terminal,'file':file,'filename':filename},
 			dataType : 'json',
 			success:function(res){
 				layer.alert(res);

@@ -2,15 +2,15 @@
 //  加载常量配置文件
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
-define("REDIS_SWITCH", false); //true、false
-define("REDISIP", "127.0.0.1");
+define("REDIS_SWITCH", true); //true、false
+define("REDISIP", "r-wz9ef37016b1fbd4.redis.rds.aliyuncs.com");
 define("PORT", 6379);
-define("REDISPASS", "");
+define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 return array(
-	'SERVER_HTTP' => 'http://www.pinquduo.cn/',
-	'HTTP_URL'=>'http://pinquduo.cn',
+	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
+	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
@@ -194,7 +194,7 @@ return array(
      */
     
     // 'site_url'=>'http://www.tp-shop.cn', // tpshop 网站域名 已经改写入数据库
-    'MODULE_ALLOW_LIST' => array('Home','Admin','Store','Api'),
+    'MODULE_ALLOW_LIST' => array('Home','Admin','Store','Api','Chat','Api_2_0_0'),
 
     'DEFAULT_MODULE'        =>  'Home',  // 默认模块
     //'DEFAULT_MODULE'        =>  'Index',  // 默认模块
