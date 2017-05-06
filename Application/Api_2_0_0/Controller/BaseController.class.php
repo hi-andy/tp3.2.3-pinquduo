@@ -516,7 +516,7 @@ class BaseController extends Controller {
     //调度商品详情
     function  getGoodsInfo($goods_id)
     {
-        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,sales,is_support_buy,is_special,original_img')->find();
+        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,is_support_buy,is_special,original_img')->find();
 
         //商品详情
         $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;

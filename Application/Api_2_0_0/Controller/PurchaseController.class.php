@@ -145,16 +145,16 @@ class PurchaseController
             }
             //判断用户是否已经生成未付款订单
             $on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=0 and `is_cancel`=0' )->find();
-//            if(!empty($on_buy))
-//            {
-//                $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
-//                redisdelall("getBuy_lock" . $goods_id);//删除锁
-//                if(!empty($ajax_get)){
-//                    echo "<script> alert('".$json['msg']."') </script>";
-//                    exit;
-//                }
-//                exit(json_encode($json));
-//            }
+            if(!empty($on_buy))
+            {
+                $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
+                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                if(!empty($ajax_get)){
+                    echo "<script> alert('".$json['msg']."') </script>";
+                    exit;
+                }
+                exit(json_encode($json));
+            }
             if($result['mark']!=0){
                 $num2 = M('group_buy')->where('`id`='.$result['mark'].' or `mark` = '.$result['mark'].' and `is_pay`=1')->count();
             }else{
@@ -182,17 +182,6 @@ class PurchaseController
         {
             $this->buyBymyself($parameter);
         }
-        $rdsname = "getUserOrderList".$user_id."*";
-        redisdelall($rdsname);//删除用户订单缓存
-        $rdsname = "getGoodsDetails".$goods_id."*";
-        redisdelall($rdsname);//删除商品详情缓存
-        $rdsname = "TuiSong*";
-        redisdelall($rdsname);//删除推送缓存
-        //跨区同步订单、推送、详情缓存
-        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-        async_get_url($url);
-        $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-        async_get_url($url);
     }
 
     /**
@@ -391,9 +380,7 @@ class PurchaseController
                     }else{
                         exit(json_encode($json));
                     }
-
                 }
-
             }
             //将订单号写会团购表
             $res = M('group_buy')->where("`id` = $group_buy")->data(array('order_id'=>$o_id))->save();
@@ -425,7 +412,7 @@ class PurchaseController
                 M('merchant')->where('`id`='.$spec_name['store_id'])->setInc('sales',$num);
 
                 redisdelall("getBuy_lock" . $goods_id);//删除锁
-                $rdsname = "getUserOrderList".$user_id."*";
+                $rdsname = "getOrderList".$user_id."*";
                 redisdelall($rdsname);//删除用户订单缓存
                 $rdsname = "getGoodsDetails".$goods_id."*";
                 redisdelall($rdsname);//删除商品详情缓存
@@ -688,7 +675,7 @@ class PurchaseController
             }
             $json = array('status'=>1,'msg'=>'开团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
             redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getUserOrderList".$user_id."*";
+            $rdsname = "getOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
             redisdelall($rdsname);//删除商品详情缓存
@@ -866,7 +853,7 @@ class PurchaseController
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
             redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getUserOrderList".$user_id."*";
+            $rdsname = "getOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
             redisdelall($rdsname);//删除商品详情缓存

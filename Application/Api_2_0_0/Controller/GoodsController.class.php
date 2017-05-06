@@ -1952,10 +1952,23 @@ class GoodsController extends BaseController {
 	}
 
 	//新版本详情 2.0.0
-	function getDetaile()
+	function getDetaile($refresh="")
 	{
         $goods_id = I('goods_id');
-		$rdsname = 'getDetaile'.$goods_id;
+        if ($refresh) {
+            $page = empty(redis("getDetaile_page")) ? 0 : redis("getDetaile_page");
+            $pagesize = 1;
+            $result = M('goods')->where(array('refresh'=>array('neq',1)))->limit($page, $pagesize)->field('goods_id')->find();
+            if ($result) {
+                $goods_id = $result['goods_id'];
+                M('goods')->where(array("goods_id" => array("eq", $goods_id)))->setField('refresh', 1);
+                redis("getDetaile_page", $page + $pagesize);
+            } else {
+                redisdelall("getDetaile_page");
+            }
+            print_r($goods_id);
+        }
+        $rdsname = 'getDetaile'.$goods_id;
 		if(empty(redis($rdsname))){
 			//轮播图
 			$banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
@@ -2003,8 +2016,8 @@ class GoodsController extends BaseController {
 			//提供保障
 			$security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
 
-			$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'sales' => $goods['sales'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'img_arr'=>$goods['img_arr'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
-			redis($rdsname, serialize($json), REDISTIME);//写入缓
+			$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'img_arr'=>$goods['img_arr'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+			redis($rdsname, serialize($json));//写入缓
 		}else{
 			$json = unserialize(redis($rdsname));
 		}
@@ -2020,7 +2033,11 @@ class GoodsController extends BaseController {
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
 		$collect = M('goods_collect')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
-		$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('collect'=>$collect));
+        $goods = M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->field('store_count,sales')->find();
+        $data['collect'] = $collect;
+        $data['store_count'] = $goods['store_count'];
+        $data['sales'] = $goods['sales'];
+		$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
