@@ -139,43 +139,35 @@ class BaseController extends Controller {
 
     function getStatus($order)//订单表详情
     {
-        if ($order['pay_status']==0 && ($order['order_status']==1 || $order['order_status']==8)) {
+        if ($order['order_type']==1) {
             //待支付
             $status['annotation'] = '待付款';
-            $status['order_type'] = '1';
-        } elseif ($order['pay_status']==1 && $order['order_status']==1 && $order['shipping_status']!=1) {
+        } elseif ($order['order_type']==2) {
             //待发货
             $status['annotation'] = '待发货';
-            $status['order_type'] = '2';
-        } elseif ($order['shipping_status']==1 && $order['order_status']==1 && $order['pay_status']==1) {
+        } elseif ($order['order_type']==3) {
             //待收货
             $status['annotation'] = '待收货';
-            $status['order_type'] = '3';
-        } elseif ($order['order_status']==2 && $order['pay_status']==1 && $order['shipping_status']==1) {
+        } elseif ($order['order_type']==4) {
             //'已完成'
             $status['annotation'] = '已完成';
-            $status['order_type'] = '4';
-        } elseif ($order['order_status']==3) {
+        } elseif ($order['order_type']==5) {
             //'已取消'
             $status['annotation'] = '已取消';
             $status['order_type'] = '5';
-        } elseif ($order['order_status']==4 && $order['pay_status']==1) {
+        } elseif ($order['order_type']==6) {
             //'已完成'
             $status['annotation'] = '待换货';
-            $status['order_type'] = '6';
-        } elseif ($order['order_status']==5 && $order['pay_status']==1) {
+        } elseif ($order['order_type']==7) {
             //'已完成'
             $status['annotation'] = '已换货';
-            $status['order_type'] = '7';
-        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==6) {
+        }elseif($order['order_type']==8) {
             $status['annotation'] = '待退货';
             $status['order_type'] = '8';
-        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==7) {
+        }elseif($order['order_type']==9) {
             $status['annotation'] = '已退货';
-            $status['order_type'] = '9';
-        }elseif($order['order_type']==16 || $order['order_status']==15){
+        }elseif($order['order_type']==16){
             $status['annotation'] = '拒绝受理';
-            $status['order_type'] = '16';
         }else{
             $status['annotation'] = '订单状态异常';
             $status['order_type'] = null;
@@ -514,20 +506,22 @@ class BaseController extends Controller {
 
     //版本2.0.0
     //调度商品详情
-    function  getGoodsInfo($goods_id)
+    function  getGoodsInfo($goods_id,$type='')
     {
         $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img')->find();
 
         //商品详情
         $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
         $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
         $goods['original_img'] =$goods['original']= TransformationImgurl($goods['original_img']);
         $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
-        $goods['img_arr'] = getImgs($goods['goods_content']);
-        $goods['img_arr'] = getImgSize($goods['img_arr']);
+        if($type!=1){
+            $goods['img_arr'] = getImgs($goods['goods_content']);
+            $goods['img_arr'] = getImgSize($goods['img_arr']);
+        }
         return $goods;
     }
 

@@ -2139,7 +2139,7 @@ class UserController extends BaseController {
 
         //提供保障
         $security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
-        $goodsInfo = $this->getGoodsInfo($order['goods_id']);
+        $goodsInfo = $this->getGoodsInfo($order['goods_id'],1);
         $goodsInfo['security'] =$security;
         //判断进来的是团长还是团员
         $res = M('group_buy')->where('(id='.$prom_id.' or mark = '.$prom_id.') and is_pay = 1' )->order('id asc')->select();
@@ -2235,7 +2235,7 @@ class UserController extends BaseController {
             $res1 = M('group_buy')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
         }
         $goods_info= $goods = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
-        $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales')->find();
+        $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $spec_info = M('order_goods')->alias('og')
             ->join('INNER JOIN tp_spec_goods_price sgp on sgp.`key` = og.`spec_key` ')
             ->where('order_id = '.$order_id)
