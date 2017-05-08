@@ -138,16 +138,13 @@ class OrderController extends BaseController {
 	    $order_sn = I('order_sn');
 	    $consignee && $condition['consignee'] = array('like',$consignee);
 	    $order_sn && $condition['order_sn'] = array('like',$order_sn);
-	    $condition['order_status'] = array('eq',1);
-	    $condition['pay_status'] = array('eq',1);
-	    $condition['is_cancel'] = array('neq',1);
 	    $condition['is_return_or_exchange'] = array('eq',0);
     	$shipping_status = I('shipping_status');
-	    if(I('shipping_status')==0)
+	    if(I('shipping_status')==0 && empty($order_sn))
 	    {
-		    $condition['automatic_time']=array('eq',0);
+		    $condition['order_type']=array('eq',2);
 	    }else{
-		    $condition['automatic_time']=array('neq',0);
+		    $condition['order_type']=array('eq',3);
 	    }
     	$condition['shipping_status'] = empty($shipping_status) ? array('neq',1) : $shipping_status;
     	

@@ -145,26 +145,17 @@ class PromController extends BaseController {
 //		$orderLogic = new OrderLogic();
 		//	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
 		$condition = array();
-//		$consignee = "%".I('consignee')."%";
 		$order_sn = I('order_sn');
-		$where =' `prom_id` is not null';
+		$where = '1=1 ';
 		I('consignee') && $where = $where." and consignee like '%".I('consignee')."%'";
 		$order_sn && $where = $where." and order_sn like '%$order_sn%' ";
 		if(I('shipping_status')==0)
 		{
 			$where = $where." and order_type = 14";
 		}elseif(I('shipping_status')==1){
-			$where = $where." and ( order_type = 15 or order_type = 4 ) ";
+			$where = $where." and order_type = 15 ";
 		}
-
 		$where = $where." and store_id = ".$_SESSION['merchant_id']." ";
-
-		if(I('shipping_status')==0)
-		{
-			$where = $where." and automatic_time = 0 ";
-		}else{
-			$where = $where." and automatic_time != 0 ";
-		}
 		$count = M('order')->where($where)->count();
 		$Page  = new AjaxPage($count,10);
 		//搜索条件下 分页赋值
@@ -177,6 +168,7 @@ class PromController extends BaseController {
 		$this->assign('page',$show);// 赋值分页输出
 		$this->display();
 	}
+
 
 	/**
 	 * 显示团购订单详情

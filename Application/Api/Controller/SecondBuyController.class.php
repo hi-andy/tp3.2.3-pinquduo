@@ -10,7 +10,7 @@
  * ============================================================================
  * $Author: IT宇宙人 2015-08-10 $
  */
-namespace Api_2_0_0\Controller;
+namespace Api\Controller;
 
 use Think\AjaxPage;
 use Think\Controller;

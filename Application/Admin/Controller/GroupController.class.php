@@ -202,19 +202,16 @@ class GroupController extends BaseController {
 //		$orderLogic = new OrderLogic();
         //	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
         $condition = array();
-        $consignee = "%".I('consignee')."%";
+        $consignee = I('consignee');
         $order_sn = I('order_sn');
         $consignee && $condition['consignee'] = array('like',$consignee);
         $order_sn && $condition['order_sn'] = array('like',$order_sn);
-        $condition['order_status'] = array('eq',11);
-        $condition['pay_status'] = array('eq',1);
-        $shipping_status = I('shipping_status');
         $condition['prom_id'] = array('neq',0);
-        if(I('shipping_status')==0)
+        if(I('shipping_status')==0 && empty($order_sn))
         {
-            $condition['automatic_time']=array('eq',0);
+            $condition['order_type']=array('eq',14);
         }else{
-            $condition['automatic_time']=array('neq',0);
+            $condition['order_type']=array('eq',15);
         }
         $condition['shipping_status'] = empty($shipping_status) ? array('neq',1) : $shipping_status;
 

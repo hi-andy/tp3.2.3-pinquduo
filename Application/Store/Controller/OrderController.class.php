@@ -99,42 +99,34 @@ class OrderController extends BaseController {
     /*
      * ajax 发货订单列表
     */
-    public function ajaxdelivery(){
+	public function ajaxdelivery(){
 //	    $orderLogic = new OrderLogic();
 //	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
-	    $condition = array();
-	    $consignee = I('consignee');
-	    $order_sn = I('order_sn');
-	    $consignee && $condition['consignee'] = array('like',$consignee);
-	    $order_sn && $condition['order_sn'] = array('like',$order_sn);
-	    //$condition['order_status'] = array('eq',1);
-	    $condition['order_type'] = array('eq',2);
-	    //$condition['pay_status'] = array('eq',1);
-	    //$condition['is_cancel'] = array('neq',1);
-	    //$condition['is_return_or_exchange'] = array('eq',0);
+		$condition = array();
+		$consignee = I('consignee');
+		$order_sn = I('order_sn');
+		$consignee && $condition['consignee'] = array('like',$consignee);
+		$order_sn && $condition['order_sn'] = array('like',$order_sn);
 		$condition['store_id'] = $_SESSION['merchant_id'];
+		if(I('shipping_status')==0&&empty($condition['order_sn']))
+		{
+			$condition['order_type'] = array('eq',2);
+		}else{
+			$condition['order_type'] = array('eq',3);
+		}
+		$count = M('order')->where($condition)->count();
+		$Page  = new AjaxPage($count,10);
+		//搜索条件下 分页赋值
+		foreach($condition as $key=>$val) {
+			$Page->parameter[$key]   =   urlencode($val);
+		}
+		$show = $Page->show();
+		$orderList = M('order')->where($condition)->where('`prom_id` is null')->limit($Page->firstRow.','.$Page->listRows)->order('add_time DESC')->select();
+		$this->assign('orderList',$orderList);
+		$this->assign('page',$show);// 赋值分页输出
+		$this->display();
 
-//		$shipping_status = I('shipping_status');
-//	    if(I('shipping_status')==0)
-//	    {
-//		    $condition['automatic_time']=array('eq',0);
-//	    }else{
-//		    $condition['automatic_time']=array('neq',0);
-//	    }
-//	    $condition['shipping_status'] = empty($shipping_status) ? array('neq',1) : $shipping_status;
-
-	    $count = M('order')->where($condition)->count();
-	    $Page  = new AjaxPage($count,10);
-	    //搜索条件下 分页赋值
-	    foreach($condition as $key=>$val) {
-		    $Page->parameter[$key]   =   urlencode($val);
-	    }
-	    $show = $Page->show();
-	    $orderList = M('order')->where($condition)->where('`prom_id` is null')->limit($Page->firstRow.','.$Page->listRows)->order('add_time DESC')->select();
-	    $this->assign('orderList',$orderList);
-	    $this->assign('page',$show);// 赋值分页输出
-	    $this->display();
-    }
+	}
     
     /**
      * 订单详情

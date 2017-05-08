@@ -3,7 +3,7 @@
  * User: admin
  */
 
-namespace Api_2_0_0\Controller;
+namespace Api\Controller;
 
 class StoreController extends BaseController{
 
