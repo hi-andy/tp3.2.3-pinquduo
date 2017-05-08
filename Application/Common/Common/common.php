@@ -41,10 +41,10 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
     }
 
     if ($oauth == 'weixin' && $unionid) {
-        $user = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
-        if (count($user) > 1) {
+        $users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
+        if (count($users) > 1) {
             $user_id = "";
-            foreach ($user as $v) {
+            foreach ($users as $v) {
                 $user_id .= $v['user_id'] . ",";
             }
             $user_id = substr($user_id, 0, -1);
