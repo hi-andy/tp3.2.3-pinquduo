@@ -27,24 +27,21 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
 //    if($type == 2)
 //        $map['mobile'] = $user_id_or_name;
     if($type == 3){
-        if ($oauth != 'weixin' && empty($unionid)) {
+        if ($oauth == 'weixin' && $unionid) {
+            $map = "(openid='{$user_id_or_name}' or unionid='{$unionid}') and oauth='{$oauth}'";
+        } else {
             $map['openid'] = $user_id_or_name;
             $map['oauth'] = array("eq", $oauth);
-            redis('get_user_info', 1, REDISTIME);
-        } else {
-            $map = "oauth='$oauth' and (unionid='oSzXzw2d2-O8RZb_P17eIudki41Q' or openid='oCuUzwDNk_DtB5nOMh8LAKiG8Ppk')";
-            redis('get_user_info', $map, REDISTIME);
         }
     }
     $user = M('users')->where($map)->find();
-    if ($user && !empty($unionid)) {
+    if ($user && $unionid) {
         $data['unionid'] = $unionid;
         $where['user_id'] = array("eq", $user['user_id']);
         M('users')->where($where)->save($data);
-        redis('get_user_info', 3, REDISTIME);
     }
 
-    if ($oauth == 'weixin' && !empty($unionid)) {
+    if ($oauth == 'weixin' && $unionid) {
         $users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
         if (count($users) > 1) {
             $user_id = "";
@@ -102,8 +99,8 @@ function update_user_level($user_id){
  */
 function goods_thum_images($goods_id,$width,$height){
 
-    if(empty($goods_id))
-        return '';
+     if(empty($goods_id))
+		 return '';
 
     $original_img = M('Goods')->where("goods_id = $goods_id")->getField('original_img');
     if (strstr($original_img, CDN) !== false) {
@@ -161,27 +158,27 @@ function goods_thum_images($goods_id,$width,$height){
  * 商品相册缩略图
  */
 function get_sub_images($sub_img,$goods_id,$width,$height){
-    //判断缩略图是否存在
-    $path = "Public/upload/goods/thumb/$goods_id/";
-    $goods_thumb_name ="goods_sub_thumb_{$sub_img['img_id']}_{$width}_{$height}";
-    //这个缩略图 已经生成过这个比例的图片就直接返回了
-    if(file_exists($path.$goods_thumb_name.'.jpg'))  return '/'.$path.$goods_thumb_name.'.jpg';
-    if(file_exists($path.$goods_thumb_name.'.jpeg')) return '/'.$path.$goods_thumb_name.'.jpeg';
-    if(file_exists($path.$goods_thumb_name.'.gif'))  return '/'.$path.$goods_thumb_name.'.gif';
-    if(file_exists($path.$goods_thumb_name.'.png'))  return '/'.$path.$goods_thumb_name.'.png';
-
-    $original_img = '.'.$sub_img['image_url']; //相对路径
-    if(!file_exists($original_img)) return '';
-
-    $image = new \Think\Image();
-    $image->open($original_img);
-
-    $goods_thumb_name = $goods_thumb_name. '.'.$image->type();
-    // 生成缩略图
-    if(!is_dir($path))
-        mkdir($path,777,true);
-    $image->thumb($width, $height,2)->save($path.$goods_thumb_name,NULL,100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
-    return '/'.$path.$goods_thumb_name;
+	//判断缩略图是否存在
+	$path = "Public/upload/goods/thumb/$goods_id/";
+	$goods_thumb_name ="goods_sub_thumb_{$sub_img['img_id']}_{$width}_{$height}";
+	//这个缩略图 已经生成过这个比例的图片就直接返回了
+	if(file_exists($path.$goods_thumb_name.'.jpg'))  return '/'.$path.$goods_thumb_name.'.jpg';
+	if(file_exists($path.$goods_thumb_name.'.jpeg')) return '/'.$path.$goods_thumb_name.'.jpeg';
+	if(file_exists($path.$goods_thumb_name.'.gif'))  return '/'.$path.$goods_thumb_name.'.gif';
+	if(file_exists($path.$goods_thumb_name.'.png'))  return '/'.$path.$goods_thumb_name.'.png';
+	
+	$original_img = '.'.$sub_img['image_url']; //相对路径
+	if(!file_exists($original_img)) return '';
+	
+	$image = new \Think\Image();
+	$image->open($original_img);
+	
+	$goods_thumb_name = $goods_thumb_name. '.'.$image->type();
+	// 生成缩略图
+	if(!is_dir($path))
+		mkdir($path,777,true);
+	$image->thumb($width, $height,2)->save($path.$goods_thumb_name,NULL,100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
+	return '/'.$path.$goods_thumb_name;
 }
 
 /**
@@ -211,12 +208,12 @@ function minus_stock($order_id){
             refresh_stock($val['goods_id']);
             //更新活动商品购买量
             if($val['prom_type']==1 || $val['prom_type']==2){
-                $prom = get_goods_promotion($val['goods_id']);
-                if($prom['is_end']==0){
-                    $tb = $val['prom_type']==1 ? 'flash_sale' : 'group_buy';
-                    M($tb)->where("id=".$val['prom_id'])->setInc('buy_num',$val['goods_num']);
-                    M($tb)->where("id=".$val['prom_id'])->setInc('order_num');
-                }
+            	$prom = get_goods_promotion($val['goods_id']);
+            	if($prom['is_end']==0){
+            		$tb = $val['prom_type']==1 ? 'flash_sale' : 'group_buy';
+            		M($tb)->where("id=".$val['prom_id'])->setInc('buy_num',$val['goods_num']);
+            		M($tb)->where("id=".$val['prom_id'])->setInc('order_num');
+            	}
             }
         }else{
             M('Goods')->where("goods_id = {$val['goods_id']}")->setDec('store_count',$val['goods_num']); // 直接扣除商品总数量
@@ -243,7 +240,7 @@ function send_email($to,$subject='',$content=''){
     // 2 = client and server messages
     $mail->SMTPDebug = 0;
     //调试输出格式
-    //$mail->Debugoutput = 'html';
+	//$mail->Debugoutput = 'html';
     //smtp服务器
     $mail->Host = $config['smtp_server'];
     //端口 - likely to be 25, 465 or 587
@@ -270,7 +267,7 @@ function send_email($to,$subject='',$content=''){
     //$mail->addAttachment('images/phpmailer_mini.png');
     //send the message, check for errors
     if (!$mail->send()) {
-        //var_dump($mail->ErrorInfo);exit;
+	//var_dump($mail->ErrorInfo);exit;
         return false;
     } else {
         return true;
@@ -419,7 +416,7 @@ function getGoodNum($goods_id,$key)
 function clear_cart(){
     $r = rand(1, 10);
     if($r == 1)
-    {
+    {        
         $time = time() - 3600; // 删除购物车数据  1小时以前的
         M("Cart")->where("user_id = 0 and  add_time < $time")->delete();
     }
@@ -506,7 +503,7 @@ function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = ''){
     $sql = "UPDATE __PREFIX__users SET user_money = user_money + $user_money," .
         " pay_points = pay_points + $pay_points WHERE user_id = $user_id";
     if( D('users')->execute($sql)){
-        M('account_log')->add($account_log);
+    	M('account_log')->add($account_log);
         return true;
     }else{
         return false;
@@ -652,7 +649,7 @@ function orderBtn($order_id = 0, $order = array())
         {
             $btn_arr['receive_btn'] = 1;  // 确认收货
             $btn_arr['return_btn'] = 1; // 退货按钮 (联系客服)
-        }
+        }       
     }
     // 非货到付款
     else
@@ -682,10 +679,10 @@ function orderBtn($order_id = 0, $order = array())
         $btn_arr['shipping_btn'] = 1; // 查看物流
     }
     if($order['shipping_status'] == 2 && $order['order_status'] == 1) // 部分发货
-    {
+    {            
         $btn_arr['return_btn'] = 1; // 退货按钮 (联系客服)
     }
-
+    
     return $btn_arr;
 }
 
@@ -731,48 +728,48 @@ function update_pay_status($order_sn,$pay_status = 1)
  */
 function order_give($order)
 {
-    $order_goods = M('order_goods')->where("order_id=".$order['order_id'])->cache(true)->select();
-    //查找购买商品送优惠券活动
-    foreach ($order_goods as $val){
-        if($val['prom_type'] == 3){
-            $prom = M('prom_goods')->where('type=3 and id='.$val['prom_id'])->find();
-            if($prom){
-                $coupon = M('coupon')->where("id=".$prom['expression'])->find();//查找优惠券模板
-                if($coupon){
-                    if($coupon['createnum']>0){
-                        $remain = $coupon['createnum'] - $coupon['send_num'];//剩余派发量
-                        if($remain<=0) return false;
-                    }else{
-                        $data = array('cid'=>$coupon['id'],'type'=>$coupon['type'],'uid'=>$order['user_id'],'send_time'=>time());
-                        return M('coupon_list')->add($data);
-                    }
-                }
-            }
-        }
-    }
-
-    //查找订单满额送优惠券活动
-    $pay_time = $order['pay_time'];
-    $prom = M('prom_order')->where("type>1 and end_time>$pay_time and start_time<$pay_time and money<=".$order['order_amount'])->order('money desc')->find();
-    if($prom){
-        if($prom['type']==3){
-            $coupon = M('coupon')->where("id=".$prom['expression'])->find();//查找优惠券模板
-            if($coupon){
-                if($coupon['createnum']>0){
-                    $remain = $coupon['createnum'] - $coupon['send_num'];//剩余派发量
-                    if($remain<=0) return false;
-                }else{
-                    $data = array('cid'=>$coupon['id'],'type'=>$coupon['type'],'uid'=>$order['user_id'],'send_time'=>time());
-                    return M('coupon_list')->add($data);
-                }
-            }
-        }else if($prom['type']==2){
-            accountLog($order['user_id'], 0 , $prom['expression'] ,"订单活动赠送积分");
-        }
-    }
-
+	$order_goods = M('order_goods')->where("order_id=".$order['order_id'])->cache(true)->select();
+	//查找购买商品送优惠券活动
+	foreach ($order_goods as $val){
+		if($val['prom_type'] == 3){
+			$prom = M('prom_goods')->where('type=3 and id='.$val['prom_id'])->find();
+			if($prom){
+				$coupon = M('coupon')->where("id=".$prom['expression'])->find();//查找优惠券模板
+				if($coupon){
+					if($coupon['createnum']>0){
+						$remain = $coupon['createnum'] - $coupon['send_num'];//剩余派发量
+						if($remain<=0) return false;
+					}else{
+						$data = array('cid'=>$coupon['id'],'type'=>$coupon['type'],'uid'=>$order['user_id'],'send_time'=>time());
+						return M('coupon_list')->add($data);
+					}
+				}
+			}
+		}
+	}
+	
+	//查找订单满额送优惠券活动
+	$pay_time = $order['pay_time'];
+	$prom = M('prom_order')->where("type>1 and end_time>$pay_time and start_time<$pay_time and money<=".$order['order_amount'])->order('money desc')->find();
+	if($prom){
+		if($prom['type']==3){
+			$coupon = M('coupon')->where("id=".$prom['expression'])->find();//查找优惠券模板
+			if($coupon){
+				if($coupon['createnum']>0){
+					$remain = $coupon['createnum'] - $coupon['send_num'];//剩余派发量
+					if($remain<=0) return false;
+				}else{
+					$data = array('cid'=>$coupon['id'],'type'=>$coupon['type'],'uid'=>$order['user_id'],'send_time'=>time());
+					return M('coupon_list')->add($data);
+				}
+			}
+		}else if($prom['type']==2){
+			accountLog($order['user_id'], 0 , $prom['expression'] ,"订单活动赠送积分");
+		}
+	}
+	
     $points = M('order_goods')->where("order_id = {$order[order_id]}")->sum("give_integral * goods_num");
-    $points && accountLog($order['user_id'], 0,$points,"下单赠送积分");
+	$points && accountLog($order['user_id'], 0,$points,"下单赠送积分");
 }
 
 
@@ -782,57 +779,57 @@ function order_give($order)
  */
 
 function get_goods_promotion($goods_id){
-    $now = time();
-    $goods = M('goods')->where("goods_id=$goods_id")->cache(true)->find();
-    $where = "end_time>$now and start_time<$now and id=".$goods['prom_id'];
-
-    $prom['price'] = $goods['shop_price'];
-    $prom['prom_type'] = $goods['prom_type'] ;
-    $prom['prom_id'] = $goods['prom_id'];
-    $prom['is_end'] = 0;
-
-    if($goods['prom_type'] == 1){//抢购
-        $prominfo = M('flash_sale')->where($where)->cache(true)->find();
-        if(!empty($prominfo)){
-            $prom['price'] = $prominfo['price'];
-            if($prominfo['goods_num'] == $prominfo['buy_num'])
-                $prom['is_end'] = 2;//已售馨
-        }
-    }
-    if($goods['prom_type']==2){//团购
-        $prominfo = M('group_buy')->where($where)->cache(true)->find();
-        if(!empty($prominfo)){
-            $prom['price'] = $prominfo['price'];
-            if($prominfo['goods_num'] == $prominfo['buy_num'])
-                $prom['is_end'] = 2;//已售馨
-        }
-    }
-    if($goods['prom_type'] == 3){//优惠促销
-        $parse_type = array('0'=>'直接打折','1'=>'减价优惠','2'=>'固定金额出售','3'=>'买就赠优惠券','4'=>'买M件送N件');
-        $prominfo = M('prom_goods')->where($where)->cache(true)->find();
-        if(!empty($prominfo)){
-            if($prominfo['type'] == 0){
-                $prom['price'] = $goods['shop_price']*$prominfo['expression']/100;//打折优惠
-            }elseif($prominfo['type'] == 1){
-                $prom['price'] = $goods['shop_price']-$prominfo['expression'];//减价优惠
-            }elseif($prominfo['type']==2){
-                $prom['price'] = $prominfo['expression'];//固定金额优惠
-            }
-        }
-    }
-
-    if(!empty($prominfo)){
-        $prom['start_time'] = $prominfo['start_time'];
-        $prom['end_time'] = $prominfo['end_time'];
-    }else{
-        $prom['prom_type'] = $prom['prom_id'] = 0 ;//活动已过期
-        $prom['is_end'] = 1;//已结束
-    }
-
-    if($prom['prom_id'] == 0){
-        M('goods')->where("goods_id=$goods_id")->save($prom);
-    }
-    return $prom;
+	$now = time();
+	$goods = M('goods')->where("goods_id=$goods_id")->cache(true)->find();
+	$where = "end_time>$now and start_time<$now and id=".$goods['prom_id'];
+	
+	$prom['price'] = $goods['shop_price'];
+	$prom['prom_type'] = $goods['prom_type'] ;
+	$prom['prom_id'] = $goods['prom_id'];
+	$prom['is_end'] = 0;
+	
+	if($goods['prom_type'] == 1){//抢购
+		$prominfo = M('flash_sale')->where($where)->cache(true)->find();
+		if(!empty($prominfo)){
+			$prom['price'] = $prominfo['price'];
+			if($prominfo['goods_num'] == $prominfo['buy_num']) 
+				$prom['is_end'] = 2;//已售馨
+		}
+	}
+	if($goods['prom_type']==2){//团购
+		$prominfo = M('group_buy')->where($where)->cache(true)->find();
+		if(!empty($prominfo)){
+			$prom['price'] = $prominfo['price'];
+			if($prominfo['goods_num'] == $prominfo['buy_num'])
+				$prom['is_end'] = 2;//已售馨
+		}
+	}
+	if($goods['prom_type'] == 3){//优惠促销
+		$parse_type = array('0'=>'直接打折','1'=>'减价优惠','2'=>'固定金额出售','3'=>'买就赠优惠券','4'=>'买M件送N件');
+		$prominfo = M('prom_goods')->where($where)->cache(true)->find();
+		if(!empty($prominfo)){
+			if($prominfo['type'] == 0){
+				$prom['price'] = $goods['shop_price']*$prominfo['expression']/100;//打折优惠
+			}elseif($prominfo['type'] == 1){
+				$prom['price'] = $goods['shop_price']-$prominfo['expression'];//减价优惠
+			}elseif($prominfo['type']==2){
+				$prom['price'] = $prominfo['expression'];//固定金额优惠
+			}
+		}
+	}
+	
+	if(!empty($prominfo)){
+		$prom['start_time'] = $prominfo['start_time'];
+		$prom['end_time'] = $prominfo['end_time'];
+	}else{
+		$prom['prom_type'] = $prom['prom_id'] = 0 ;//活动已过期
+		$prom['is_end'] = 1;//已结束
+	}
+	
+	if($prom['prom_id'] == 0){
+		M('goods')->where("goods_id=$goods_id")->save($prom);
+	}
+	return $prom;
 }
 
 /**
@@ -840,22 +837,22 @@ function get_goods_promotion($goods_id){
  * @param order_amount 订单应付金额
  */
 function get_order_promotion($order_amount){
-    $parse_type = array('0'=>'满额打折','1'=>'满额优惠金额','2'=>'满额送倍数积分','3'=>'满额送优惠券','4'=>'满额免运费');
-    $now = time();
-    $prom = M('prom_order')->where("type<2 and end_time>$now and start_time<$now and money<=$order_amount")->order('money desc')->find();
-    $res = array('order_amount'=>$order_amount,'order_prom_id'=>0,'order_prom_amount'=>0);
-    if($prom){
-        if($prom['type'] == 0){
-            $res['order_amount']  = round($order_amount*$prom['expression']/100,2);//满额打折
-            $res['order_prom_amount'] = $order_amount - $res['order_amount'] ;
-            $res['order_prom_id'] = $prom['id'];
-        }elseif($prom['type'] == 1){
-            $res['order_amount'] = $order_amount- $prom['expression'];//满额优惠金额
-            $res['order_prom_amount'] = $prom['expression'];
-            $res['order_prom_id'] = $prom['id'];
-        }
-    }
-    return $res;
+	$parse_type = array('0'=>'满额打折','1'=>'满额优惠金额','2'=>'满额送倍数积分','3'=>'满额送优惠券','4'=>'满额免运费');
+	$now = time();
+	$prom = M('prom_order')->where("type<2 and end_time>$now and start_time<$now and money<=$order_amount")->order('money desc')->find();
+	$res = array('order_amount'=>$order_amount,'order_prom_id'=>0,'order_prom_amount'=>0);
+	if($prom){
+		if($prom['type'] == 0){
+			$res['order_amount']  = round($order_amount*$prom['expression']/100,2);//满额打折
+			$res['order_prom_amount'] = $order_amount - $res['order_amount'] ;
+			$res['order_prom_id'] = $prom['id'];
+		}elseif($prom['type'] == 1){
+			$res['order_amount'] = $order_amount- $prom['expression'];//满额优惠金额
+			$res['order_prom_amount'] = $prom['expression'];
+			$res['order_prom_id'] = $prom['id'];
+		}
+	}
+	return $res;		
 }
 
 /**
@@ -872,85 +869,85 @@ function get_order_promotion($order_amount){
  * @param type $coupon_id  优惠券
  * @param type $couponCode  优惠码
  */
-
+ 
 function calculate_price($user_id=0,$order_goods,$shipping_code='',$shipping_price=0,$province=0,$city=0,$district=0,$pay_points=0,$user_money=0,$coupon_id=0,$couponCode='')
-{
-    $cartLogic = new \Home\Logic\CartLogic();
+{    
+    $cartLogic = new \Home\Logic\CartLogic();               
     $user = M('users')->where("user_id = $user_id")->find();// 找出这个用户
-
-    if(empty($order_goods))
-        return array('status'=>-1,'msg'=>'商品列表不能为空','result'=>'');
-
+    
+    if(empty($order_goods)) 
+        return array('status'=>-1,'msg'=>'商品列表不能为空','result'=>'');  
+    
     $goods_id_arr = get_arr_column($order_goods,'goods_id');
     $goods_arr = M('goods')->where("goods_id in(".  implode(',',$goods_id_arr).")")->getField('goods_id,weight,market_price'); // 商品id 和重量对应的键值对
-
-    foreach($order_goods as $key => $val)
-    {
-        // 如果传递过来的商品列表没有定义会员价
-        if(!array_key_exists('member_goods_price',$val))
+    
+        foreach($order_goods as $key => $val)
+        {       
+            // 如果传递过来的商品列表没有定义会员价
+            if(!array_key_exists('member_goods_price',$val))  
+            {
+                $user['discount'] = $user['discount'] ? $user['discount'] : 1; // 会员折扣 不能为 0
+                $order_goods[$key]['member_goods_price'] = $val['member_goods_price'] = $val['goods_price'] * $user['discount'];
+            }
+                        
+            $goods_weight += $goods_arr[$val['goods_id']]['weight'] * $val['goods_num']; //累积商品重量 每种商品的重量 * 数量                                                
+            $order_goods[$key]['goods_fee'] = $val['goods_num'] * $val['member_goods_price'];    // 小计            
+            $order_goods[$key]['store_count']  = getGoodNum($val['goods_id'],$val['spec_key']); // 最多可购买的库存数量                         
+            $goods_price += $order_goods[$key]['goods_fee']; // 商品总价
+            $cut_fee     += $val['goods_num'] * $val['market_price'] - $val['goods_num'] * $val['member_goods_price']; // 共节约
+            $anum        += $val['goods_num']; // 购买数量
+        }        
+        
+        // 优惠券处理操作
+        $coupon_price = 0;
+        if($coupon_id && $user_id)
         {
-            $user['discount'] = $user['discount'] ? $user['discount'] : 1; // 会员折扣 不能为 0
-            $order_goods[$key]['member_goods_price'] = $val['member_goods_price'] = $val['goods_price'] * $user['discount'];
+            $coupon_price = $cartLogic->getCouponMoney($user_id, $coupon_id,1); // 下拉框方式选择优惠券                    
+        }        
+        if($couponCode && $user_id)
+        {                 
+             $coupon_result = $cartLogic->getCouponMoneyByCode($couponCode,$goods_price); // 根据 优惠券 号码获取的优惠券             
+             if($coupon_result['status'] < 0) 
+               return $coupon_result;
+             $coupon_price = $coupon_result['result'];            
         }
+        // 处理物流
+        if($shipping_price == 0)
+        {
+            $shipping_price = $cartLogic->cart_freight2($shipping_code,$province,$city,$district,$goods_weight);        
+            $freight_free = tpCache('shopping.freight_free'); // 全场满多少免运费
+            if($freight_free > 0 && $goods_price >= $freight_free)
+               $shipping_price = 0;               
+        }
+        
+        if($pay_points && ($pay_points > $user['pay_points']))
+            return array('status'=>-5,'msg'=>"你的账户可用积分为:".$user['pay_points'],'result'=>''); // 返回结果状态                
+        if($user_money  && ($user_money > $user['user_money']))
+            return array('status'=>-6,'msg'=>"你的账户可用余额为:".$user['user_money'],'result'=>''); // 返回结果状态
 
-        $goods_weight += $goods_arr[$val['goods_id']]['weight'] * $val['goods_num']; //累积商品重量 每种商品的重量 * 数量
-        $order_goods[$key]['goods_fee'] = $val['goods_num'] * $val['member_goods_price'];    // 小计
-        $order_goods[$key]['store_count']  = getGoodNum($val['goods_id'],$val['spec_key']); // 最多可购买的库存数量
-        $goods_price += $order_goods[$key]['goods_fee']; // 商品总价
-        $cut_fee     += $val['goods_num'] * $val['market_price'] - $val['goods_num'] * $val['member_goods_price']; // 共节约
-        $anum        += $val['goods_num']; // 购买数量
-    }
-
-    // 优惠券处理操作
-    $coupon_price = 0;
-    if($coupon_id && $user_id)
-    {
-        $coupon_price = $cartLogic->getCouponMoney($user_id, $coupon_id,1); // 下拉框方式选择优惠券
-    }
-    if($couponCode && $user_id)
-    {
-        $coupon_result = $cartLogic->getCouponMoneyByCode($couponCode,$goods_price); // 根据 优惠券 号码获取的优惠券
-        if($coupon_result['status'] < 0)
-            return $coupon_result;
-        $coupon_price = $coupon_result['result'];
-    }
-    // 处理物流
-    if($shipping_price == 0)
-    {
-        $shipping_price = $cartLogic->cart_freight2($shipping_code,$province,$city,$district,$goods_weight);
-        $freight_free = tpCache('shopping.freight_free'); // 全场满多少免运费
-        if($freight_free > 0 && $goods_price >= $freight_free)
-            $shipping_price = 0;
-    }
-
-    if($pay_points && ($pay_points > $user['pay_points']))
-        return array('status'=>-5,'msg'=>"你的账户可用积分为:".$user['pay_points'],'result'=>''); // 返回结果状态
-    if($user_money  && ($user_money > $user['user_money']))
-        return array('status'=>-6,'msg'=>"你的账户可用余额为:".$user['user_money'],'result'=>''); // 返回结果状态
-
-    $order_amount = $goods_price + $shipping_price - $coupon_price; // 应付金额 = 商品价格 + 物流费 - 优惠券
-
-    $pay_points = ($pay_points / tpCache('shopping.point_rate')); // 积分支付 100 积分等于 1块钱
-    $pay_points = ($pay_points > $order_amount) ? $order_amount : $pay_points; // 假设应付 1块钱 而用户输入了 200 积分 2块钱, 那么就让 $pay_points = 1块钱 等同于强制让用户输入1块钱
-    $order_amount = $order_amount - $pay_points; //  积分抵消应付金额
-
-    $user_money = ($user_money > $order_amount) ? $order_amount : $user_money;  // 余额支付原理等同于积分
-    $order_amount = $order_amount - $user_money; //  余额支付抵应付金额
-
-    $total_amount = $goods_price + $shipping_price;
-    //订单总价  应付金额  物流费  商品总价 节约金额 共多少件商品 积分  余额  优惠券
-    $result = array(
-        'total_amount'      => $total_amount, // 商品总价
-        'order_amount'      => $order_amount, // 应付金额
-        'shipping_price'    => $shipping_price, // 物流费
-        'goods_price'       => $goods_price, // 商品总价
-        'cut_fee'           => $cut_fee, // 共节约多少钱
-        'anum'              => $anum, // 商品总共数量
-        'integral_money'    => $pay_points,  // 积分抵消金额
-        'user_money'        => $user_money, // 使用余额
-        'coupon_price'      => $coupon_price,// 优惠券抵消金额
-        'order_goods'       => $order_goods, // 商品列表 多加几个字段原样返回
-    );
+       $order_amount = $goods_price + $shipping_price - $coupon_price; // 应付金额 = 商品价格 + 物流费 - 优惠券
+       
+       $pay_points = ($pay_points / tpCache('shopping.point_rate')); // 积分支付 100 积分等于 1块钱                              
+       $pay_points = ($pay_points > $order_amount) ? $order_amount : $pay_points; // 假设应付 1块钱 而用户输入了 200 积分 2块钱, 那么就让 $pay_points = 1块钱 等同于强制让用户输入1块钱               
+       $order_amount = $order_amount - $pay_points; //  积分抵消应付金额       
+      
+       $user_money = ($user_money > $order_amount) ? $order_amount : $user_money;  // 余额支付原理等同于积分
+       $order_amount = $order_amount - $user_money; //  余额支付抵应付金额
+      
+       $total_amount = $goods_price + $shipping_price;
+           //订单总价  应付金额  物流费  商品总价 节约金额 共多少件商品 积分  余额  优惠券
+        $result = array(
+            'total_amount'      => $total_amount, // 商品总价
+            'order_amount'      => $order_amount, // 应付金额
+            'shipping_price'    => $shipping_price, // 物流费
+            'goods_price'       => $goods_price, // 商品总价
+            'cut_fee'           => $cut_fee, // 共节约多少钱
+            'anum'              => $anum, // 商品总共数量
+            'integral_money'    => $pay_points,  // 积分抵消金额
+            'user_money'        => $user_money, // 使用余额
+            'coupon_price'      => $coupon_price,// 优惠券抵消金额
+            'order_goods'       => $order_goods, // 商品列表 多加几个字段原样返回
+        );        
     return array('status'=>1,'msg'=>"计算价钱成功",'result'=>$result); // 返回结果状态
 }
 
@@ -959,32 +956,32 @@ function calculate_price($user_id=0,$order_goods,$shipping_code='',$shipping_pri
  * @return type
  */
 function get_goods_category_tree(){
-    $result = array();
-    $cat_list = M('goods_category')->where("is_show = 1")->order('sort_order')->cache(true)->select();//所有分类
+	$result = array();
+	$cat_list = M('goods_category')->where("is_show = 1")->order('sort_order')->cache(true)->select();//所有分类
+	
+	foreach ($cat_list as $val){
+		if($val['level'] == 2){
+			$arr[$val['parent_id']][] = $val;
+		}
+		if($val['level'] == 3){
+			$crr[$val['parent_id']][] = $val;
+		}
+		if($val['level'] == 1){
+			$tree[] = $val;
+		}
+	}
 
-    foreach ($cat_list as $val){
-        if($val['level'] == 2){
-            $arr[$val['parent_id']][] = $val;
-        }
-        if($val['level'] == 3){
-            $crr[$val['parent_id']][] = $val;
-        }
-        if($val['level'] == 1){
-            $tree[] = $val;
-        }
-    }
-
-    foreach ($arr as $k=>$v){
-        foreach ($v as $kk=>$vv){
-            $arr[$k][$kk]['sub_menu'] = empty($crr[$vv['id']]) ? array() : $crr[$vv['id']];
-        }
-    }
-
-    foreach ($tree as $val){
-        $val['tmenu'] = empty($arr[$val['id']]) ? array() : $arr[$val['id']];
-        $result[$val['id']] = $val;
-    }
-    return $result;
+	foreach ($arr as $k=>$v){
+		foreach ($v as $kk=>$vv){
+			$arr[$k][$kk]['sub_menu'] = empty($crr[$vv['id']]) ? array() : $crr[$vv['id']];
+		}
+	}
+	
+	foreach ($tree as $val){
+		$val['tmenu'] = empty($arr[$val['id']]) ? array() : $arr[$val['id']];
+		$result[$val['id']] = $val;
+	}
+	return $result;
 }
 
 /**

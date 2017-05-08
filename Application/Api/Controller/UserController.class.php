@@ -603,7 +603,7 @@ class UserController extends BaseController {
     /*
      * 你可能喜欢
      * */
-    public function if_you_like($cat_id,$page,$pagesize,$version)
+    public function if_you_like($cat_id='',$page,$pagesize,$version='')
     {
         if($version=='2.0.0'){
             $where = '`show_type`=0 and `cat_id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1';
