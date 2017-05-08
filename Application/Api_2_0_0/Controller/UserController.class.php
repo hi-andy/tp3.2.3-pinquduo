@@ -43,7 +43,6 @@ class UserController extends BaseController {
         $data['name'] = $data['nickname'];
         $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);
-
         $json = array('status'=>1,'msg'=>'登录成功','result'=>$data);
         if(!empty($ajax_get))
             $this->getJsonp($json);

@@ -154,7 +154,6 @@ class BaseController extends Controller {
         } elseif ($order['order_type']==5) {
             //'已取消'
             $status['annotation'] = '已取消';
-            $status['order_type'] = '5';
         } elseif ($order['order_type']==6) {
             //'已完成'
             $status['annotation'] = '待换货';
