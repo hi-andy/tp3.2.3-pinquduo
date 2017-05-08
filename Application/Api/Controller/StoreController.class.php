@@ -279,11 +279,19 @@ class StoreController extends BaseController{
 		$did = M('delivery_doc')->add($datas);
 
 		$goods = M('goods')->where('`goods_id`='.$order['goods_id'])->find();
+
+		$updata['shipping_code'] = $data['shipping_code'];
+		$updata['shipping_name'] = $data['shipping_name'];
+		$updata['shipping_order'] = $data['shipping_order'];
+		$updata['shipping_price'] = $order['shipping_price'];
+		$updata['order_status'] = 11;
+		$updata['order_type'] = 15;
+		$updata['shipping_status'] = 1;
 		if(!empty($order['prom_id'])){
 			$updata['order_status'] = $action['order_status'] = 11;
-			$updata['order_type'] = $action['order_type'] = 15;
+			$updata['order_type'] = 15;
 		}else{
-			$updata['order_type'] = $action['order_type'] = 3;
+			$updata['order_type'] = 3;
 		}
 		if($goods['is_special']==1)
 		{
