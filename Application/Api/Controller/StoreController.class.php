@@ -55,8 +55,7 @@ class StoreController extends BaseController{
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-
-
+	
 	function storeLOGO($path,$store_id)
 	{
 		$bigImgPath = $this->store_thum_images($path,$store_id,80,80);
