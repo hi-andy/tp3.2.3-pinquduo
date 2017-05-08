@@ -40,30 +40,30 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
         M('users')->where($where)->save($data);
     }
 
-    if ($oauth == 'weixin' && $unionid) {
-        $users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
-        if (count($users) > 1) {
-            $user_id = "";
-            foreach ($users as $v) {
-                $user_id .= $v['user_id'] . ",";
-            }
-            $user_id = substr($user_id, 0, -1);
-            M('user_address')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('temporary_key')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('signin')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('return_goods')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('order')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('group_buy')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('goods_collect')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('feedback')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('duiba_order')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('delivery_doc')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('comment')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('cart')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('account_log')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
-            M('users')->where(array("user_id"=>array("in",$user_id)))->delete();
-        }
-    }
+//    if ($oauth == 'weixin' && $unionid) {
+//        $users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
+//        if (count($users) > 1) {
+//            $user_id = "";
+//            foreach ($users as $v) {
+//                $user_id .= $v['user_id'] . ",";
+//            }
+//            $user_id = substr($user_id, 0, -1);
+//            M('user_address')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('temporary_key')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('signin')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('return_goods')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('order')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('group_buy')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('goods_collect')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('feedback')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('duiba_order')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('delivery_doc')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('comment')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('cart')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('account_log')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
+//            M('users')->where(array("user_id"=>array("in",$user_id)))->delete();
+//        }
+//    }
     return $user;
 }
 
