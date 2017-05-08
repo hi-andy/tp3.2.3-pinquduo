@@ -1967,7 +1967,6 @@ class GoodsController extends BaseController {
             } else {
                 redisdelall("getDetaile_page");
             }
-            print_r($goods_id);
         }
         //////
         $rdsname = 'getDetaile'.$goods_id;
