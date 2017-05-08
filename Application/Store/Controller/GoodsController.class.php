@@ -378,6 +378,7 @@ class GoodsController extends BaseController {
                 if ($type == 2)
                 {
                     $goods_id = $_POST['goods_id'];
+                    $_POST['refresh'] = 0;
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
                     if($_POST['original_img']!=$goods['original_img'])
                     {
@@ -388,7 +389,7 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    $rdsname = "getGoodsDetails".$goods_id."*";
+                    $rdsname = "getDetaile".$goods_id."*";
                     REDIS_SWITCH && redisdelall($rdsname);//删除商品详情缓存
                 }
                 else
@@ -749,6 +750,7 @@ class GoodsController extends BaseController {
                 if ($type == 2)
                 {
                     $goods_id = $_POST['goods_id'];
+                    $_POST['refresh'] = 0;
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
@@ -761,7 +763,7 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    $rdsname = "getGoodsDetails".$goods_id."*";
+                    $rdsname = "getDetaile".$goods_id."*";
                     redisdelall($rdsname);//删除商品详情缓存
 //					M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
                 }

@@ -349,7 +349,6 @@ class SecondskillController extends BaseController
 				//  form表单提交
 				// C('TOKEN_ON',true);
 				$Goods->on_time = time(); // 上架时间
-				//$Goods->cat_id = $_POST['cat_id_1'];
 				$_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
 				$_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
 				session('goods',$_POST);
@@ -357,6 +356,7 @@ class SecondskillController extends BaseController
 				if ($type == 2)
 				{
 					$goods_id = $_POST['goods_id'];
+					$_POST['refresh'] = 0;
 					$goods = M('goods')->where("goods_id = $goods_id")->find();
 					if($_POST['original_img']!=$goods['original_img'])
 					{
@@ -368,6 +368,8 @@ class SecondskillController extends BaseController
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
 					$this->prom_goods_save($_POST['date'],$_POST['time'],$goods_id);
+					$rdsname = "getDetaile".$goods_id."*";
+					redisdelall($rdsname);//删除商品详情缓存
 				}
 				else
 				{

@@ -156,7 +156,6 @@ class JiujiuController extends BaseController{
 				//  form表单提交
 				// C('TOKEN_ON',true);
 				$Goods->on_time = time(); // 上架时间
-				//$Goods->cat_id = $_POST['cat_id_1'];
 				$_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
 				$_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
 				session('goods',$_POST);
@@ -174,6 +173,9 @@ class JiujiuController extends BaseController{
 					}
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
+					$_POST['refresh'] = 0;
+					$rdsname = "getDetaile".$goods_id."*";
+					redisdelall($rdsname);//删除商品详情缓存
 				}
 				else
 				{
