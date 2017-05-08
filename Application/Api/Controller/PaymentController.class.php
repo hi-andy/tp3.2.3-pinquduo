@@ -1,5 +1,5 @@
 <?php
-namespace Api_2_0_0\Controller;
+namespace Api\Controller;
 use Think\Controller;
 use Api\Logic\GoodsLogic;
 use Think\Page;

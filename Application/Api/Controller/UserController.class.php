@@ -1,5 +1,5 @@
 <?php
-namespace Api_2_0_0\Controller;
+namespace Api\Controller;
 use Admin\Logic\OrderLogic;
 use Think\Controller;
 

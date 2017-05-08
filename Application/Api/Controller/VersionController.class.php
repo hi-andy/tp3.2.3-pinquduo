@@ -3,7 +3,7 @@
 /**
  * 版本接口
  */
-namespace Api_2_0_0\Controller;
+namespace Api\Controller;
 use Think\Controller;
 
 class VersionController extends BaseController {
