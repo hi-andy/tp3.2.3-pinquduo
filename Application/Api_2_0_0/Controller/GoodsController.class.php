@@ -2064,7 +2064,6 @@ class GoodsController extends BaseController {
 					$group_buy[$i]['photo'] = $user_name['head_pic'];
 					$group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
 				}
-
 			}
 			foreach ($group_buy as &$v) {
 				$v['photo'] = TransformationImgurl($v['photo']);
@@ -2098,7 +2097,7 @@ class GoodsController extends BaseController {
 			}
 		}
 
-		$goods = $this->getGoodsInfo($goods_id);
+		$goods = $this->getGoodsInfo($goods_id,1);
 		//获取商品规格
 		if(!empty($spec_key))
 		{
