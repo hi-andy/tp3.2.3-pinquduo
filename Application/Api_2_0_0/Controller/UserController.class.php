@@ -1555,6 +1555,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
+    //为我点赞
     public function getRaise()
     {
         $user_id = I('user_id');
@@ -1690,7 +1691,7 @@ class UserController extends BaseController {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                 }
-                redisdelall("getOrderList".$order['user_id']."*");//删除订单缓存
+                redisdelall("getOrderList_".$order['user_id']."*");//删除订单缓存
                 redisdelall("TuiSong*");//删除推送缓存
                 //跨区同步订单、推送、详情缓存
                 $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
@@ -2129,14 +2130,12 @@ class UserController extends BaseController {
         if($order['free']>0){
             $price = ($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
             $c = $this->getFloatLength($price);
-
             if($c>3){
                 $price = $this->operationPrice($price);
             }
         }else{
             $price= $spec_price;
         }
-        var_dump($price);die;
         //提供保障
         $security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
         $goodsInfo = $this->getGoodsInfo($order['goods_id'],1);
@@ -2259,7 +2258,6 @@ class UserController extends BaseController {
             if($order_info['prom_mens']!=0){
                 $res1['start_time'] = null;
             }
-
             $res = $this->getPromStatus($order_info,$prom_info,count($prom));
             $order_info['annotation'] = $res['annotation'];
             $order_info['key_name'] = $spec_info['key_name'];

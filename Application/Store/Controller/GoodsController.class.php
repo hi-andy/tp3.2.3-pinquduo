@@ -55,16 +55,13 @@ class GoodsController extends BaseController {
         {
             $goods_category_info = D('GoodsCategory')->where('id='.I('GET.id',0))->find();
             $level_cat = $GoodsLogic->find_parent_cat($goods_category_info['id']); // 获取分类默认选中的下拉框
-
             $cat_list = M('goods_category')->where("parent_id = 0" )->select(); // 已经改成联动菜单
-
             $this->assign('level_cat',$level_cat);
             $this->assign('cat_list',$cat_list);
             $this->assign('goods_category_info',$goods_category_info);
             $this->display('_category');
             exit;
         }
-
         $GoodsCategory = D('GoodsCategory'); //
 
         $type = $_POST['id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
@@ -389,7 +386,7 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    $rdsname = "getDetaile".$goods_id."*";
+                    $rdsname = "getDetaile".$goods_id;
                     REDIS_SWITCH && redisdelall($rdsname);//删除商品详情缓存
                 }
                 else
@@ -763,7 +760,7 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    $rdsname = "getDetaile".$goods_id."*";
+                    $rdsname = "getDetaile".$goods_id;
                     redisdelall($rdsname);//删除商品详情缓存
 //					M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
                 }

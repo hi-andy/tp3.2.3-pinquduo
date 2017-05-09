@@ -52,7 +52,7 @@ class GoodsController extends BaseController {
 		$version = I('version');
 		$ajax_get=null;
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$rdsname = "getMore".$id.$type.$page.$pagesize;
+		$rdsname = "getMore".$id.$type.$page.$pagesize.$ajax_get;
 		if (empty(redis($rdsname))) {//判断是否有缓存
 			$data = $this->getOtheyMore($id,$type,$page,$pagesize,$version,$ajax_get);
 			$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
@@ -91,7 +91,7 @@ class GoodsController extends BaseController {
 					$condition2['show_type'] =0;
 					$condition2['the_raise'] =0;
 					if($version=='2.0.0'){
-						$data = $this->getGoodsList($condition2,$page,$pagesize,null);
+						$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
 					}else {
 						$count = M('goods')->where($condition2)->count();
 						$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('sales desc')->select();
@@ -103,8 +103,8 @@ class GoodsController extends BaseController {
 					return $data;
 				}else{
 					if($version=='2.0.0'){
-						$where = "`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1";
-						$data = $this->getGoodsList($where,$page,$pagesize,null);
+						$where = '`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1';
+						$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
 					}else {
 						$count = M('goods')->where('`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1')->count();
 						$goods = M('goods')->where('`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->page($page, $pagesize)->select();
@@ -123,7 +123,7 @@ class GoodsController extends BaseController {
 			{
 				if($version=='2.0.0'){
 					$where = '`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0';
-					$data = $this->getGoodsList($where,$page,$pagesize,null);
+					$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
 				}else {
 					$count = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0')->count();
 					$goods = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0')->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->select();
@@ -151,7 +151,7 @@ class GoodsController extends BaseController {
 					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 				}
 				if($version=='2.0.0'){
-					$data = $this->getGoodsList($condition,$page,$pagesize,null);
+					$data = $this->getGoodsList($condition,$page,$pagesize,'sort asc,sales desc');
 				}else{
 
 					$count = M('goods')->where($condition)->count();
@@ -191,11 +191,10 @@ class GoodsController extends BaseController {
 		$condition2['the_raise'] =0;
 
 		if ($version=='2.0.0'){
-			$data = $this->getGoodsList($condition2,$page,$pagesize,null);
+			$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
 		}else{
 			$count = M('goods')->where($condition2)->count();
 			$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
-
 			foreach($goods as &$v)
 			{
 				$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
