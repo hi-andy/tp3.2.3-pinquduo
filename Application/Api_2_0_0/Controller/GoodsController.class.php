@@ -2054,7 +2054,6 @@ class GoodsController extends BaseController {
 				$group_buy[$i]['id'] = $order_id['prom_id'];
 
 				$mens = M('group_buy')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
-
 				$group_buy[$i]['prom_mens'] = $group_buy[$i]['goods_num'] - $mens - 1;
 
 				$user_name = M('users')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
@@ -2062,6 +2061,7 @@ class GoodsController extends BaseController {
 					$group_buy[$i]['user_name'] = $user_name['nickname'];
 					$group_buy[$i]['photo'] = $user_name['head_pic'];
 				} else {
+					$group_buy[$i]['photo'] = $user_name['head_pic'];
 					$group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
 				}
 
