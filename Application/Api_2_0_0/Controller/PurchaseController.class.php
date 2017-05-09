@@ -14,9 +14,9 @@ namespace Api_2_0_0\Controller;
 
 
 use Admin\Controller\BaseController;
-use Api\Controller\AlipayController;
-use Api\Controller\QQPayController;
-use Api\Controller\WeixinpayController;
+use Api_2_0_0\Controller\AlipayController;
+use Api_2_0_0\Controller\QQPayController;
+use Api_2_0_0\Controller\WeixinpayController;
 
 class PurchaseController
 {

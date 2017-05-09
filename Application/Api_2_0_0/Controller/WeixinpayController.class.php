@@ -42,7 +42,7 @@ class WeixinpayController extends BaseController {
 		$unifiedOrder->setParameter ( "out_trade_no", $order['order_sn'] ); // 商户订单号
 		$unifiedOrder->setParameter ( "total_fee",  $order['order_amount']*100); // 总金额，单位是分
 //		$unifiedOrder->setParameter ( "total_fee",  1);   // 总金额，单位是分  测试使用
-		$unifiedOrder->setParameter ( "notify_url", C('HTTP_URL').'/Api/Weixinpay/endpay'); // 通知地址
+		$unifiedOrder->setParameter ( "notify_url", C('HTTP_URL').'/Api_2_0_0/Weixinpay/endpay'); // 通知地址
 		$unifiedOrder->setParameter ("trade_type","APP"); // 交易类型
 		$unifiedOrder->setParameter ( "body", '商品支付' ); // 商品描述
 		$unifiedOrder->setParameter ( "time_start", date ( "YmdHis" ) ); // 交易起始时间

@@ -8,11 +8,7 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-<<<<<<< HEAD
- /*  if (REDIS_SWITCH) {
-=======
     if (REDIS_SWITCH) {
->>>>>>> 43b6fae3e77258e8c6d9373fe2cf4e64d8d6aaf3
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -30,7 +26,7 @@ function redis($key, $value=null, $time="", $del=null){
         }
     } else {
         redisdelall("*");
-    }*/
+    }
 }
 
 /**
