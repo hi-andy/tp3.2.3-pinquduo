@@ -1322,7 +1322,6 @@ class UserController extends BaseController {
             }else{
                 $count = M('order')->where($condition)->count();
                 $order = M('order')->where($condition)->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->order('order_id desc')->select();
-
                 for ($i = 0; $i < count($order); $i++) {
                     $prom = M('group_buy')->where('`id`=' . $order[$i]['prom_id'])->find();
                     $goods_spec = M('order_goods')->where('`prom_id`=' . $prom['id'])->field('spec_key_name')->find();
@@ -1555,6 +1554,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
+    //为我点赞
     public function getRaise()
     {
         $user_id = I('user_id');
@@ -1690,7 +1690,7 @@ class UserController extends BaseController {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                 }
-                redisdelall("getOrderList".$order['user_id']."*");//删除订单缓存
+                redisdelall("getOrderList_".$order['user_id']."*");//删除订单缓存
                 redisdelall("TuiSong*");//删除推送缓存
                 //跨区同步订单、推送、详情缓存
                 $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
@@ -2128,7 +2128,6 @@ class UserController extends BaseController {
         if($order['free']>0){
             $price = ($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
             $c = $this->getFloatLength($price);
-
             if($c>3){
                 $price = $this->operationPrice($price);
             }
@@ -2257,7 +2256,6 @@ class UserController extends BaseController {
             if($order_info['prom_mens']!=0){
                 $res1['start_time'] = null;
             }
-
             $res = $this->getPromStatus($order_info,$prom_info,count($prom));
             $order_info['annotation'] = $res['annotation'];
             $order_info['key_name'] = $spec_info['key_name'];

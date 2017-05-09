@@ -390,10 +390,8 @@ class PurchaseController
                 M()->commit();//都操作成功的时候才真的把数据放入数据库
 
                 redisdelall("getBuy_lock" . $goods_id);//删除锁
-                $rdsname = "getOrderList".$only_userid."*";
-                redisdelall($rdsname);//删除用户订单缓存
-                $rdsname = "getGoodsDetails".$goods_id."*";
-                redisdelall($rdsname);//删除商品详情缓存
+                $rdsname = "getOrderList_".$only_userid."*";
+                redisdelall($rdsname);//删除订单列表
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
 
@@ -659,10 +657,8 @@ class PurchaseController
             M()->commit();//都插入成功的时候才真的把数据放入数据库
 
             redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getOrderList".$only_userid."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "getOrderList_".$only_userid."*";
+            redisdelall($rdsname);//删除订单列表
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
 
@@ -845,10 +841,8 @@ class PurchaseController
             M()->commit();//都操作s成功的时候才真的把数据放入数据库
 
             redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getOrderList".$only_userid."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
+            $rdsname = "getOrderList_".$only_userid."*";
+            redisdelall($rdsname);//删除订单列表
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
 
