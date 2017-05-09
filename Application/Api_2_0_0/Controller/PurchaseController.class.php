@@ -51,8 +51,8 @@ class PurchaseController
         $parameter['ajax_get'] = $ajax_get;
         $parameter['coupon_list_id'] = $coupon_list_id;
 
-        if (empty(redis("getBuy_lock".$goods_id)))//如果无锁
-            redis("getBuy_lock" . $goods_id, "1", 5);//写入锁
+        if (empty(redis("getBuy_lock_".$goods_id)))//如果无锁
+            redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁
 
         if(!empty($spec_key)) {
             $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
@@ -61,7 +61,7 @@ class PurchaseController
         }
         if ($spec_res['store_count'] <= 0) {
             $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))
                 $this->getJsonp($json);
 
@@ -71,7 +71,7 @@ class PurchaseController
         }
         if ($spec_res['store_count'] <= 0) {
             $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))
                 $this->getJsonp($json);
             exit(json_encode($json));
@@ -83,7 +83,7 @@ class PurchaseController
             if($result['end_time']<time())
             {
                 $json = array('status'=>-1,'msg'=>'该团已结束了，请选择别的团参加');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -98,7 +98,7 @@ class PurchaseController
                 if(in_array("$user_id",$raise_id_array))
                 {
                     $json =array('status'=>-1,'msg'=>'您已参加过该拼团活动，不能再参团，只能继续开团');
-                    redisdelall("getBuy_lock" . $goods_id);//删除锁
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if(!empty($ajax_get)){
                         echo "<script> alert('".$json['msg']."') </script>";
                         exit;
@@ -114,7 +114,7 @@ class PurchaseController
                 if(!empty($on_buy))
                 {
                     $json =array('status'=>-1,'msg'=>'有用户尚未支付，您可以在他取消订单后进行支付');
-                    redisdelall("getBuy_lock" . $goods_id);//删除锁
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if(!empty($ajax_get)){
                         echo "<script> alert('".$json['msg']."') </script>";
                         exit;
@@ -124,7 +124,7 @@ class PurchaseController
                 }
             }elseif($num==$result['goods_num']){
                 $json =array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -136,7 +136,7 @@ class PurchaseController
             if(!empty($self))
             {
                 $json =array('status'=>-1,'msg'=>'你已经参团了');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -148,7 +148,7 @@ class PurchaseController
             if(!empty($on_buy))
             {
                 $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -164,7 +164,7 @@ class PurchaseController
             if($num2==$result['goods_num'])
             {
                 $json =	array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -226,12 +226,10 @@ class PurchaseController
         $prom = $result['goods_num'];
         if(!empty($free))//是否免单
         {
-            if(!empty($prom))
-            {
+            if(!empty($prom)){
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
-                {
+                if($count>3){
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
@@ -240,8 +238,7 @@ class PurchaseController
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
-                {
+                if($count>3){
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
@@ -251,8 +248,7 @@ class PurchaseController
         }
 
         //如果是众筹订单
-        if($result['is_raise']==1)
-        {
+        if($result['is_raise']==1){
             $data['is_raise']=1;
             $order['the_raise']=1;
         }else{
@@ -262,8 +258,7 @@ class PurchaseController
         if($result)
         {
             //是否使用优惠卷
-            if(!empty($coupon_id))
-            {
+            if(!empty($coupon_id)){
                 $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
             }else{
                 $coupon['money'] = 0;
@@ -359,7 +354,7 @@ class PurchaseController
             {
                 M()->rollback();//有数据库操作不成功时进行数据回滚
                 $json = array('status'=>-1,'msg'=>'参团失败');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -372,7 +367,7 @@ class PurchaseController
                 $this->changeCouponStatus($coupon_list_id, $o_id);
                 if (empty($coupon_Inc)) {
                     M()->rollback();//有数据库操作不成功时进行数据回滚
-                    redisdelall("getBuy_lock" . $goods_id);//删除锁
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     $json = array('status' => -1, 'msg' => '参团失败');
                     if($ajax_get){
                         $json = array('status' => -1, 'msg' => '参团失败');
@@ -389,9 +384,12 @@ class PurchaseController
             {
                 M()->commit();//都操作成功的时候才真的把数据放入数据库
 
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
-                $rdsname = "getOrderList_".$only_userid."*";
-                redisdelall($rdsname);//删除订单列表
+                redisdelall("getBuy_lock_".$goods_id);//删除锁
+                $user_id_arr = M('group_buy')->where('id = '.$result['mark'].' or mark ='.$result['mark'])->field('user_id')->select();
+                for($i=0;$i<count($user_id_arr);$i++){
+                    $rdsname = "getOrderList_".$user_id_arr[$i]['user_id']."*";
+                    redisdelall($rdsname);//删除订单列表
+                }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
 
@@ -426,7 +424,7 @@ class PurchaseController
             }else{
                 M()->rollback();//有数据库操作不成功时进行数据回滚
                 $json = array('status'=>-1,'msg'=>'参团失败');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -627,7 +625,7 @@ class PurchaseController
         {
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'开团失败');
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -643,7 +641,7 @@ class PurchaseController
             {
                 M()->rollback();//有数据库操作不成功时进行数据回滚
                 $json = array('status'=>-1,'msg'=>'开团失败');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -656,7 +654,7 @@ class PurchaseController
         {
             M()->commit();//都插入成功的时候才真的把数据放入数据库
 
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             $rdsname = "getOrderList_".$only_userid."*";
             redisdelall($rdsname);//删除订单列表
             $rdsname = "TuiSong*";
@@ -694,7 +692,7 @@ class PurchaseController
         }else{
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'开团失败');
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -782,7 +780,7 @@ class PurchaseController
         {
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'购买失败');
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -813,7 +811,7 @@ class PurchaseController
         {
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'购买失败');
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -828,7 +826,7 @@ class PurchaseController
             {
                 M()->rollback();//有数据库操作不成功时进行数据回滚
                 $json = array('status'=>-1,'msg'=>'购买失败');
-                redisdelall("getBuy_lock" . $goods_id);//删除锁
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -840,7 +838,7 @@ class PurchaseController
         {
             M()->commit();//都操作s成功的时候才真的把数据放入数据库
 
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             $rdsname = "getOrderList_".$only_userid."*";
             redisdelall($rdsname);//删除订单列表
             $rdsname = "TuiSong*";
@@ -877,7 +875,7 @@ class PurchaseController
         }else{
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'购买失败');
-            redisdelall("getBuy_lock" . $goods_id);//删除锁
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
