@@ -112,6 +112,7 @@ class ReportController extends BaseController{
 		rsort($list);
 		$this->assign('list',$list);
 		$result = array('order'=>$order_arr,'amount'=>$amount_arr,'sign'=>$sign_arr,'all'=>$all_arr,'time'=>$day);
+        redis("aaa",json_encode($result),REDISTIME);
 		$this->assign('result',json_encode($result));
 		$this->display();
 	}

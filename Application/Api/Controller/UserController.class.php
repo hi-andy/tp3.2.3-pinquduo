@@ -32,7 +32,9 @@ class UserController extends BaseController {
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        redis("get_user_info","1");
         $data = $this->userLogic->thirdLogin($map);
+        redis("thirdLogin", serialize($data));
         if($data['status'] ==1){
             $HXcall = new HxcallController();
             $username = $data['user_id'];
@@ -43,7 +45,6 @@ class UserController extends BaseController {
         $data['name'] = $data['nickname'];
         $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);
-
         $json = array('status'=>1,'msg'=>'登录成功','result'=>$data);
         if(!empty($ajax_get))
             $this->getJsonp($json);

@@ -43,6 +43,7 @@ class UsersLogic extends RelationModel
             return array('status' => -1, 'msg' => '参数有误', 'result' => '');
         } else {
             //获取用户信息
+            redis("get_user_info","2");
             $user = get_user_info($openid, 3, $oauth, $unionid);
             if ($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile'])) {
                 //$map['head_pic'] = saveimage($data['head_pic']);
@@ -54,6 +55,7 @@ class UsersLogic extends RelationModel
                 $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
             }
             if (!$user) {
+                redis("get_user_info","3");
                 //账户不存在 注册一个
                 $map['password'] = '';
                 $map['openid'] = $openid;

@@ -28,21 +28,20 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
 //    if($type == 2)
 //        $map['mobile'] = $user_id_or_name;
     if($type == 3){
-        if ($oauth != 'weixin' && empty($unionid)) {
+        if ($oauth != 'weixin' || empty($unionid)) {
             $map['openid'] = $user_id_or_name;
             $map['oauth'] = array("eq", $oauth);
+            redis("get_user_info","4");
         } else {
             $map = "oauth='$oauth' and (unionid='$unionid' or openid='$user_id_or_name')";
+            redis("get_user_info","5");
         }
     }
     $user = M('users')->where($map)->find();
-    if ($user && !empty($unionid)) {
+    if ($user && $oauth == 'weixin' && !empty($unionid)) {
         $data['unionid'] = $unionid;
         $where['user_id'] = array("eq", $user['user_id']);
         M('users')->where($where)->save($data);
-    }
-
-    if ($oauth == 'weixin' && !empty($unionid)) {
         $users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
         if (count($users) > 0) {
             $user_id = "";
@@ -65,6 +64,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
             M('account_log')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
             M('users')->where(array("user_id"=>array("in",$user_id)))->delete();
         }
+        redis("get_user_info","6");
     }
     return $user;
 }
