@@ -19,6 +19,7 @@ function is_login(){
  * @return mixed
  */
 function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
+    $unionid = I('unionid');
     $map = array();
     if($type == 0)
         $map['user_id'] = $user_id_or_name;
@@ -30,10 +31,8 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
         if ($oauth != 'weixin' && empty($unionid)) {
             $map['openid'] = $user_id_or_name;
             $map['oauth'] = array("eq", $oauth);
-            redis('get_user_info', 1, REDISTIME);
         } else {
-            $map = "oauth='$oauth' and (unionid='oSzXzw2d2-O8RZb_P17eIudki41Q' or openid='oCuUzwDNk_DtB5nOMh8LAKiG8Ppk')";
-            redis('get_user_info', $map, REDISTIME);
+            $map = "oauth='$oauth' and (unionid='$unionid' or openid='$user_id_or_name')";
         }
     }
     $user = M('users')->where($map)->find();
@@ -41,12 +40,11 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
         $data['unionid'] = $unionid;
         $where['user_id'] = array("eq", $user['user_id']);
         M('users')->where($where)->save($data);
-        redis('get_user_info', 3, REDISTIME);
     }
 
     if ($oauth == 'weixin' && !empty($unionid)) {
         $users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
-        if (count($users) > 1) {
+        if (count($users) > 0) {
             $user_id = "";
             foreach ($users as $v) {
                 $user_id .= $v['user_id'] . ",";
