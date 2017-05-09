@@ -2135,7 +2135,6 @@ class UserController extends BaseController {
         }else{
             $price= $spec_price;
         }
-        var_dump($price);die;
         //提供保障
         $security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
         $goodsInfo = $this->getGoodsInfo($order['goods_id'],1);

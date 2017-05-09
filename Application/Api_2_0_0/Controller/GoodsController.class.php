@@ -1962,14 +1962,15 @@ class GoodsController extends BaseController {
             $result = M('goods')->where(array('refresh'=>array('neq',1)))->limit($page, $pagesize)->field('goods_id')->find();
             if ($result) {
                 $goods_id = $result['goods_id'];
-                M('goods')->where(array("goods_id" => array("eq", $goods_id)))->setField('refresh', 1);
                 redis("getDetaile_page", $page + $pagesize);
+                redisdelall('getDetaile_'.$goods_id."*");
             } else {
                 redisdelall("getDetaile_page");
+                exit;
             }
         }
         //////
-        $rdsname = 'getDetaile'.$goods_id;
+        $rdsname = 'getDetaile_'.$goods_id;
 		if(empty(redis($rdsname))){
 			//轮播图
 			$banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
@@ -2019,6 +2020,7 @@ class GoodsController extends BaseController {
 
 			$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'img_arr'=>$goods['img_arr'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
 			redis($rdsname, serialize($json));//写入缓
+            M('goods')->where(array("goods_id" => array("eq", $goods_id)))->setField('refresh', 1);
 		}else{
 			$json = unserialize(redis($rdsname));
 		}
