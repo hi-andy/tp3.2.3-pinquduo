@@ -162,7 +162,6 @@ class BaseController extends Controller {
             $status['annotation'] = '已换货';
         }elseif($order['order_type']==8) {
             $status['annotation'] = '待退货';
-            $status['order_type'] = '8';
         }elseif($order['order_type']==9) {
             $status['annotation'] = '已退货';
         }elseif($order['order_type']==16){
@@ -521,6 +520,7 @@ class BaseController extends Controller {
             $goods['img_arr'] = getImgs($goods['goods_content']);
             $goods['img_arr'] = getImgSize($goods['img_arr']);
         }
+        unset($goods['goods_content']);
         return $goods;
     }
 

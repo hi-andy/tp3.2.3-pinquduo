@@ -2255,6 +2255,10 @@ class UserController extends BaseController {
                 $order_info['prom_mens'] = $prom_info['goods_num']-$mens-1;
                 $is_oneself = 2;
             }
+            if($order_info['prom_mens']!=0){
+                $res1['start_time'] = null;
+            }
+
             $res = $this->getPromStatus($order_info,$prom_info,count($prom));
             $order_info['annotation'] = $res['annotation'];
             $order_info['key_name'] = $spec_info['key_name'];
