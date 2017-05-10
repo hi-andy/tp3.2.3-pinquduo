@@ -18,15 +18,20 @@ class VersionController extends BaseController {
         } else {
             $where["terminal"] = array("eq", "a");
         }
-		$item = M("version")->where($where)->order('createtime desc')->find();
-        $data['version'] = $item['version'];
-        $data['versionName'] = $item['versionname'];
-        $data['versionDesc'] = $item['versiondesc'];
-        $data['filepath'] = $item['file'];
-        $data['force'] = $item['force'];
-        $data['terminal'] = $item['terminal'];
+        if (empty(redis("getlastversion"))) {
+            $item = M("version")->where($where)->order('createtime desc')->find();
+            $data['version'] = $item['version'];
+            $data['versionName'] = $item['versionname'];
+            $data['versionDesc'] = $item['versiondesc'];
+            $data['filepath'] = $item['file'];
+            $data['force'] = $item['force'];
+            $data['terminal'] = $item['terminal'];
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+            redis("getlastversion", serialize($json), REDISTIME);
+        } else {
+            $json = unserialize(redis("getlastversion"));
+        }
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));

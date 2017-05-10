@@ -32,7 +32,9 @@ class UserController extends BaseController {
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        redis("get_user_info","1");
         $data = $this->userLogic->thirdLogin($map);
+        redis("thirdLogin", serialize($data));
         if($data['status'] ==1){
             $HXcall = new HxcallController();
             $username = $data['user_id'];
@@ -43,7 +45,6 @@ class UserController extends BaseController {
         $data['name'] = $data['nickname'];
         $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);
-
         $json = array('status'=>1,'msg'=>'登录成功','result'=>$data);
         if(!empty($ajax_get))
             $this->getJsonp($json);
@@ -1132,8 +1133,8 @@ class UserController extends BaseController {
         $type = I('type',0);
         $page = I('page',1);
         $pagesize = I('pagesize',10);
-        $rdsname = "getUserOrderList".$user_id.$type.$page.$pagesize;
-        if(empty(redis($rdsname))) {//判断是否有缓存
+        //$rdsname = "getUserOrderList".$user_id.$type.$page.$pagesize;
+        //if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
                 $condition = '`order_status`=8 and `user_id`=' . $user_id;
             } elseif ($type == 2) {//待发货
@@ -1208,10 +1209,10 @@ class UserController extends BaseController {
             $all = $this->listPageData($count, $all);
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        } else {
-            $json = unserialize(redis($rdsname));//读取缓存
-        }
+        //    redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        //} else {
+        //    $json = unserialize(redis($rdsname));//读取缓存
+        //}
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);
