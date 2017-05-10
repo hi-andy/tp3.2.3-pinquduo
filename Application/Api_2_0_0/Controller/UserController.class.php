@@ -660,7 +660,7 @@ class UserController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
 
-        $rdsname = "getUserOrderList".$user_id."*";
+        $rdsname = "getOrderList_".$user_id."*";
         redisdelall($rdsname);//根据类型删除用户订单缓存
         exit(json_encode($returnjson));
     }
@@ -1706,7 +1706,7 @@ class UserController extends BaseController {
                     $data_time = $self_cancel_order[$j]['add_time'] + 2 * 60;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
-                        redisdelall("getOrderList".$self_cancel_order[$j]['user_id']."*");//删除订单缓存
+                        redisdelall("getOrderList_".$self_cancel_order[$j]['user_id']."*");//删除订单缓存
                         redisdelall("TuiSong*");//删除推送缓存
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
@@ -1739,7 +1739,7 @@ class UserController extends BaseController {
                     if ($data_time <= time()) {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
-                        redisdelall("getOrderList".$join_prom_order[$z]['user_id']."*");//删除订单缓存
+                        redisdelall("getOrderList_".$join_prom_order[$z]['user_id']."*");//删除订单缓存
                         redisdelall("TuiSong*");//删除推送缓存
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
@@ -1788,7 +1788,7 @@ class UserController extends BaseController {
                             $n['id'][] = "'" . $v['id'] . "',";
                             $n['order_id'][] = "'" . $v['order_id'] . "',";
                         }
-                        redisdelall("getOrderList".$v1['user_id']."*");//删除订单缓存
+                        redisdelall("getOrderList_".$v1['user_id']."*");//删除订单缓存
                         redisdelall("TuiSong*");//删除推送缓存
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
@@ -1823,7 +1823,7 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($ids)->data($data)->save();
                 for ($oi=0; $oi<$one_buy_number; $oi++){
-                    redisdelall("getOrderList".$one_buy[$oi]['user_id']."*");//删除订单缓存
+                    redisdelall("getOrderList_".$one_buy[$oi]['user_id']."*");//删除订单缓存
                     redisdelall("TuiSong*");//删除推送缓存
                     //跨区同步订单、推送、详情缓存
                     $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
@@ -1844,7 +1844,7 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($order_id_array)->data($data)->save();
                 for ($gi=0; $gi<$group_nuy_number; $gi++){
-                    redisdelall("getOrderList".$group_nuy[$gi]['user_id']."*");//删除订单缓存
+                    redisdelall("getOrderList_".$group_nuy[$gi]['user_id']."*");//删除订单缓存
                     redisdelall("TuiSong*");//删除推送缓存
                     //跨区同步订单、推送、详情缓存
                     $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
@@ -2071,7 +2071,7 @@ class UserController extends BaseController {
         $type = I('type',0);//0.全部 1.拼团中 2.待发货 3.待收货 4.待付款 5.已完成
         $page = I('page',1);
         $pagesize = I('pagesiaze',20);
-        $rdsname = "getOrderList".$user_id.$type.$page.$pagesize;
+        $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
 
         if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {

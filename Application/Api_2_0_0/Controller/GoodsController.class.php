@@ -1404,7 +1404,7 @@ class GoodsController extends BaseController {
 		$order_id = I('order_id');
 		$pay_code = I('code');
 
-		$order = M('order')->where('`order_id`='.$order_id)->field('order_sn')->find();
+		$order = M('order')->where('`order_id`='.$order_id)->field('order_sn,user_id')->find();
 		//当订单已经是取消状态是不能继续支付
 		if($order['order_status']==3)
 		{
@@ -1413,6 +1413,10 @@ class GoodsController extends BaseController {
 				$this->getJsonp($json);
 			exit(json_encode($json));
 		}
+		$rdsname = "getOrderList_".$order['user_id']."*";
+		redisdelall($rdsname);//删除订单列表
+		$rdsname = "TuiSong*";
+		redisdelall($rdsname);//删除推送缓存
 		if($pay_code!=$order['pay_code'])
 		{
 			if($pay_code=='alipay')
@@ -1955,16 +1959,10 @@ class GoodsController extends BaseController {
         $goods_id = I('goods_id');
         //自动脚本
         if ($refresh) {
-            $page = empty(redis("getDetaile_page")) ? 0 : redis("getDetaile_page");
-            $pagesize = 1;
-            $result = M('goods')->where(array('refresh'=>array('neq',1)))->limit($page, $pagesize)->field('goods_id')->find();
+            $result = M('goods')->where(array('refresh'=>array('eq',0)))->field('goods_id')->find();
             if ($result) {
                 $goods_id = $result['goods_id'];
-                redis("getDetaile_page", $page + $pagesize);
-                redisdelall('getDetaile_'.$goods_id."*");
-                print_r($goods_id);
             } else {
-                redisdelall("getDetaile_page");
                 exit;
             }
         }
