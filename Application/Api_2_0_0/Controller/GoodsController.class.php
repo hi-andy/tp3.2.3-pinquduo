@@ -1959,16 +1959,10 @@ class GoodsController extends BaseController {
         $goods_id = I('goods_id');
         //自动脚本
         if ($refresh) {
-            $page = empty(redis("getDetaile_page")) ? 0 : redis("getDetaile_page");
-            $pagesize = 1;
-            $result = M('goods')->where(array('refresh'=>array('neq',1)))->limit($page, $pagesize)->field('goods_id')->find();
+            $result = M('goods')->where(array('refresh'=>array('eq',0)))->field('goods_id')->find();
             if ($result) {
                 $goods_id = $result['goods_id'];
-                redis("getDetaile_page", $page + $pagesize);
-                redisdelall('getDetaile_'.$goods_id."*");
-                print_r($goods_id);
             } else {
-                redisdelall("getDetaile_page");
                 exit;
             }
         }
