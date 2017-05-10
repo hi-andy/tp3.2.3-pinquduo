@@ -41,9 +41,6 @@ class IndexController extends BaseController {
                 $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
                 $category[7]['cat_name'] = '省钱大法';
                 $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
-                //中间活动模块
-//                $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
-//            $activity['H5_url'] = C('HTTP_URL').'/api/goods/test';
             }
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             
@@ -58,7 +55,7 @@ class IndexController extends BaseController {
                 $v['original_img'] = TransformationImgurl($v['original_img']);
             }
 
-            $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -777,5 +774,11 @@ class IndexController extends BaseController {
             $this->getJsonp($json);
         }
         exit(json_encode($json));
+    }
+
+    //删除缓存
+    public function redisdelall($rdsname = ""){
+        redisdelall($rdsname);
+        echo "删除 ".$rdsname;
     }
 }
