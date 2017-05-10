@@ -18,8 +18,7 @@ class GoodsController extends BaseController {
 		$a = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
 		$b = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` != 1')->field('address_id,consignee,address_base,address,mobile,is_default')->select();
 
-		if(!empty($a))
-		{
+		if(!empty($a)){
 			$address[0] = $a;//把数组第一个放入默认地址
 			for($i = 0;$i<count($b);$i++)
 			{
