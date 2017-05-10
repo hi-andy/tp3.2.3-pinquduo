@@ -41,7 +41,7 @@ class SecondBuyController extends Controller {
         //$where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
         $count = M('goods_activity')->where($where)->count();
 
-        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
+        $sql = 'SELECT ga.id,ga.start_time,g.store_count status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
                 LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category c ON g.cat_id=c.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id 
