@@ -1963,6 +1963,7 @@ class GoodsController extends BaseController {
                 $goods_id = $result['goods_id'];
                 redis("getDetaile_page", $page + $pagesize);
                 redisdelall('getDetaile_'.$goods_id."*");
+                print_r($goods_id);
             } else {
                 redisdelall("getDetaile_page");
                 exit;
