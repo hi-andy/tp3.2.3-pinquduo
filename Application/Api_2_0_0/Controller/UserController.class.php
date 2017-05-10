@@ -660,7 +660,7 @@ class UserController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
 
-        $rdsname = "getOrderList".$user_id."*";
+        $rdsname = "getOrderList_".$user_id."*";
         redisdelall($rdsname);//根据类型删除用户订单缓存
         exit(json_encode($returnjson));
     }
@@ -2071,7 +2071,7 @@ class UserController extends BaseController {
         $type = I('type',0);//0.全部 1.拼团中 2.待发货 3.待收货 4.待付款 5.已完成
         $page = I('page',1);
         $pagesize = I('pagesiaze',20);
-        $rdsname = "getOrderList".$user_id.$type.$page.$pagesize;
+        $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
 
         if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
