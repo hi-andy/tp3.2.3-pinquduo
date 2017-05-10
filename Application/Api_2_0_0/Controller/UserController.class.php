@@ -2126,13 +2126,13 @@ class UserController extends BaseController {
         $prom = M('group_buy')->where('id ='.$prom_id)->field('goods_num,free')->find();
         $spec_price = M('spec_goods_price')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
         if($order['free']>0){
-            $price = ($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
+            $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
             $c = $this->getFloatLength($price);
             if($c>3){
                 $price = $this->operationPrice($price);
             }
         }else{
-            $price= $spec_price;
+            (string)$price=(string)$spec_price;
         }
         //提供保障
         $security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
@@ -2200,8 +2200,7 @@ class UserController extends BaseController {
 
     function getUserInfo($user_id,$prom_order){
         $user = M('users')->where('user_id = '.$user_id)->find();
-        if(!empty($user['oauth']))
-        {
+        if(!empty($user['oauth'])){
             $info['name'] = $user['nickname'];
         }else{
             $info['name'] =  substr_replace($user['mobile'], '****', 3, 4);
