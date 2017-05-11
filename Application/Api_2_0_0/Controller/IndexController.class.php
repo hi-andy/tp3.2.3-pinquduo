@@ -779,16 +779,45 @@ class IndexController extends BaseController {
             ->select();
 
         //将免单价格重新计算
+        $goods_id = "";
         for($i=0;$i<count($prom);$i++){
-            $spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
-            $price = ($spec_price*$prom[$i]['prom'])/($prom[$i]['prom']-$prom[$i]['free']);
+            $goods_id .= $prom[$i]['goods_id'].",";
+        }
+        $goods_id = substr($goods_id, 0, -1);
+        $spec_goods_price = M('spec_goods_price')->where(array("goods_id"=>array("in",$goods_id)))->field('key,prom_price')->select();
+        $arr = array();
+        for($i=0;$i<count($prom);$i++){
+            for($a=0;$a<count($spec_goods_price);$a++){
+                if ($prom[$i]['spec_key'] == $spec_goods_price[$a]['key']){
+                    $arr[$i]['prom_price'] = $spec_goods_price[$a]['prom_price'];
+                }
+            }
+        }
+        //将免单价格重新计算
+        for($i=0;$i<count($arr);$i++){
+            //$spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
+            $price = ($arr[$i]['prom_price'] * $prom[$i]['prom']) / ($prom[$i]['prom'] - $prom[$i]['free']);
             $c = $this->getFloatLength($price);
-            if($c>3){
+
+            if ($c > 3) {
                 $price = $this->operationPrice($price);
             }
             $prom[$i]['price'] = sprintf("%.2f", $price);
             $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
         }
+
+//        for($i=0;$i<count($prom);$i++){
+//            $spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
+//            $price = ($spec_price*$prom[$i]['prom'])/($prom[$i]['prom']-$prom[$i]['free']);
+//            $c = $this->getFloatLength($price);
+//            if($c>3){
+//                $price = $this->operationPrice($price);
+//            }
+//            $prom[$i]['price'] = sprintf("%.2f", $price);
+//            $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
+//        }
+
+
         $data=$this->listPageData($count,$prom);
 
         $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
