@@ -1238,7 +1238,7 @@ class UserController extends BaseController {
             ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
             ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id='.$user_id)
             ->where($ids)
-            ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.original_img,g.sales,g.store_count,g.prom_price,g.free')
+            ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.original_img,g.sales,g.store_count,g.prom_price,g.free,g.is_specials')
             ->order(' c.add_time desc')
             ->select();
 
