@@ -2028,13 +2028,32 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
-	//获取当前商品的收藏状态
-	function getGoodCsolumn(){
+	//获取当前商品的拓展数据
+	function getDetaile_expand(){
 		$goods_id = I('goods_id');
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
 		$collect = M('goods_collect')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
-        $goods = M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->field('store_count,sales')->find();
+        $goods = M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->field('store_count,sales,is_special,on_time')->find();
+		//判断特殊商品是否在可购买时间内
+		if($goods['is_special']==7){//0.1秒杀
+			$time = M('goods_activity')->where('goods_id='.$goods_id)->find();
+			if($time['start_time']<time()){
+				$data['buy_type'] = 1;
+				$data['prompt']=null;
+			}else{
+				$data['buy_type'] = 0;
+				$data['prompt']='本场未开始哦T_T';
+			}
+		}elseif ($goods['is_special']==2){//限时秒杀
+			if($goods['on_time']<time()){
+				$data['buy_type'] = 1;
+				$data['prompt']=null;
+			}else{
+				$data['buy_type'] = 0;
+				$data['prompt']='本场未开始哦T_T';
+			}
+		}
         $data['collect'] = $collect;
         $data['store_count'] = $goods['store_count'];
         $data['sales'] = $goods['sales'];
