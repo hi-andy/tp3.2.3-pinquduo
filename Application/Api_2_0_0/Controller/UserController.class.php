@@ -2075,7 +2075,7 @@ class UserController extends BaseController {
 
         if(empty(redis($rdsname)) || redis("getOrderList_status_".$user_id) == "1") {//判断是否有缓存
             if ($type == 1) {
-                $condition = 'order_type = 11 and `user_id`=' . $user_id;
+                $condition = '(order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
             } elseif ($type == 2) {//待发货
                 $condition = '(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
             } elseif ($type == 3) {//待收货
