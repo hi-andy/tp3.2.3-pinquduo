@@ -145,16 +145,16 @@ class PurchaseController
             }
             //判断用户是否已经生成未付款订单
             $on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=0 and `is_cancel`=0' )->find();
-            if(!empty($on_buy))
-            {
-                $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
-                redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-                exit(json_encode($json));
-            }
+//            if(!empty($on_buy))
+//            {
+//                $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
+//                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+//                if(!empty($ajax_get)){
+//                    echo "<script> alert('".$json['msg']."') </script>";
+//                    exit;
+//                }
+//                exit(json_encode($json));
+//            }
             if($result['mark']!=0){
                 $num2 = M('group_buy')->where('`id`='.$result['mark'].' or `mark` = '.$result['mark'].' and `is_pay`=1')->count();
             }else{

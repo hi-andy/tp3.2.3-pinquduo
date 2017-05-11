@@ -54,7 +54,7 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-    $redis = new Redis();
+   /* $redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
 
@@ -62,7 +62,7 @@ function redisdelall($key)
     $count = 1000;
     while ($keys = $redis->scan($it, $match, $count)) {
         $redis->del($keys);
-    }
+    }*/
 }
 /**
  * @param $arr

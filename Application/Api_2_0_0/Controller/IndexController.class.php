@@ -423,7 +423,6 @@ class IndexController extends BaseController {
     function get_Seconds_Kill()
     {
         $starttime =I('starttime');
-//        $endtime = I('endtime');
         $version= I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',20);
