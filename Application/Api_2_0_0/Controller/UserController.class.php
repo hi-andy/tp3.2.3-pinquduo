@@ -457,11 +457,11 @@ class UserController extends BaseController {
             $order['goodsInfo']['original_img'] =  goods_thum_images($order['goods_id'],400,400);
 
             //获取分享缩略图
-            if(file_exists('Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg'))
+            if(file_exists(CDN.'Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg'))
             {
-                $goods['fenxiang_url'] = C('HTTP_URL').'/Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg';
+                $goods['fenxiang_url'] = CDN.'/Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg';
             }else{
-                $goods_pic_url = C('HTTP_URL').goods_thum_images($order['goodsInfo']['goods_id'],400,400);
+                $goods_pic_url = goods_thum_images($order['goodsInfo']['goods_id'],400,400);
                 $this->fenxiangLOGO($goods_pic_url,$order['goodsInfo']['goods_id'],$order['goodsInfo']['store_id']);
                 $order['goodsInfo']['fenxiang_url'] = $order['goodsInfo']['original_img']."/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0|imageslim";
             }
