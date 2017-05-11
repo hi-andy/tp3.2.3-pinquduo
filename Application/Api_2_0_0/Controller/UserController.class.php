@@ -2089,7 +2089,7 @@ class UserController extends BaseController {
             }
             $all = $this->get_OrderList($condition,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+            redis($rdsname, serialize($json));//写入缓存
         }else{
             $json = unserialize(redis($rdsname));//读取缓存
         }

@@ -86,6 +86,7 @@ class GoodsController extends BaseController
                     'msg' => '操作成功',
                     'data' => array('url' => U('Admin/Goods/categoryList')),
                 );
+                redisdelall("getexplore");
                 $this->ajaxReturn(json_encode($return_arr));
 
             }
