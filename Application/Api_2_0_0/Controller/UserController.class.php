@@ -1706,7 +1706,7 @@ class UserController extends BaseController {
                     $data_time = $self_cancel_order[$j]['add_time'] + 2 * 60;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
-                        redisdelall("getOrderList_".$self_cancel_order[$j]['user_id']."*");//删除订单缓存
+                        redis("getOrderList_status_".$self_cancel_order[$j]['user_id'], "1");
                         redisdelall("TuiSong*");//删除推送缓存
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
@@ -1735,11 +1735,11 @@ class UserController extends BaseController {
             $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id')->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
-                    $data_time = $join_prom_order[$z]['start_time'] + 3 * 60;
+                    $data_time = $join_prom_order[$z]['start_time'] + 2 * 60;
                     if ($data_time <= time()) {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
-                        redisdelall("getOrderList_".$join_prom_order[$z]['user_id']."*");//删除订单缓存
+                        redis("getOrderList_status_".$join_prom_order[$z]['user_id'], "1");
                         redisdelall("TuiSong*");//删除推送缓存
                         //跨区同步订单、推送、详情缓存
                         $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);

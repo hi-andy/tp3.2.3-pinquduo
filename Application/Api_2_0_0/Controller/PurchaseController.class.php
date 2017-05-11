@@ -190,7 +190,6 @@ class PurchaseController
     public function joinGroupBuy($parameter){
         $prom_id = $parameter['prom_id'];
         $user_id = $parameter['user_id'];
-        $only_userid = $user_id;
         $data = array();
         $order = array();
         $address_id = $parameter['address_id'];
