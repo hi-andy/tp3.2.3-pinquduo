@@ -385,10 +385,10 @@ class PurchaseController
                 M()->commit();//都操作成功的时候才真的把数据放入数据库
 
                 redisdelall("getBuy_lock_".$goods_id);//删除锁
-                $user_id_arr = M('group_buy')->where('id = '.$result['mark'].' or mark ='.$result['mark'])->field('user_id')->select();
+                $user_id_arr = M('group_buy')->where('id = '.$result['id'].' or mark ='.$result['id'])->field('user_id')->select();
+                redis("group_buy", serialize($user_id_arr), 300);
                 for($i=0;$i<count($user_id_arr);$i++){
-                    $rdsname = "getOrderList_".$user_id_arr[$i]['user_id']."*";
-                    redisdelall($rdsname);//删除订单列表
+                    redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
                 }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存

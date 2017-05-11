@@ -2073,7 +2073,7 @@ class UserController extends BaseController {
         $pagesize = I('pagesiaze',20);
         $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
 
-        if(empty(redis($rdsname))) {//判断是否有缓存
+        if(empty(redis($rdsname)) || redis("getOrderList_status_".$user_id) == "1") {//判断是否有缓存
             if ($type == 1) {
                 $condition = 'order_type = 11 and `user_id`=' . $user_id;
             } elseif ($type == 2) {//待发货
@@ -2090,6 +2090,7 @@ class UserController extends BaseController {
             $all = $this->get_OrderList($condition,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
             redis($rdsname, serialize($json));//写入缓存
+            redisdelall("getOrderList_status_".$user_id);
         }else{
             $json = unserialize(redis($rdsname));//读取缓存
         }
