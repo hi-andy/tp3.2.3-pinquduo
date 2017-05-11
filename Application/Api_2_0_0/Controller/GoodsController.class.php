@@ -2029,7 +2029,7 @@ class GoodsController extends BaseController {
 	}
 
 	//获取当前商品的拓展数据
-	function getDetaile_expand(){
+	function getDetaile_expand(){//18083
 		$goods_id = I('goods_id');
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -2054,6 +2054,7 @@ class GoodsController extends BaseController {
 				$data['prompt']='本场未开始哦T_T';
 			}
 		}
+		$data['support_prompt'] = '该商品不支持单买哦T_T';
         $data['collect'] = $collect;
         $data['store_count'] = $goods['store_count'];
         $data['sales'] = $goods['sales'];
