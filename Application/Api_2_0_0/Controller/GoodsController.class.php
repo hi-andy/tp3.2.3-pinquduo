@@ -2057,6 +2057,7 @@ class GoodsController extends BaseController {
         $data['collect'] = $collect;
         $data['store_count'] = $goods['store_count'];
         $data['sales'] = $goods['sales'];
+		$data['is_special'] = $goods['is_special'];
 		$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
