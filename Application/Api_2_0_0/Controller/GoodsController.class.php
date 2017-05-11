@@ -1959,9 +1959,11 @@ class GoodsController extends BaseController {
         $goods_id = I('goods_id');
         //自动脚本
         if ($refresh) {
-            $result = M('goods')->where(array('refresh'=>array('eq',0)))->field('goods_id')->find();
+            $result = M('goods')->where(array('refresh'=>array('eq',0)))->field('goods_id')->order('goods_id desc')->find();
             if ($result) {
+                M('goods')->where(array("goods_id" => array("eq", $result['goods_id'])))->setField('refresh', 1);
                 $goods_id = $result['goods_id'];
+                redisdelall("getDetaile_".$goods_id);
             } else {
                 exit;
             }
@@ -2017,7 +2019,6 @@ class GoodsController extends BaseController {
 
 			$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'] , 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'], 'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'],'original_img'=>$goods['original_img'],'img_arr'=>$goods['img_arr'],'security'=>$security,'store' => $goods['store'],  'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
 			redis($rdsname, serialize($json));//写入缓
-            M('goods')->where(array("goods_id" => array("eq", $goods_id)))->setField('refresh', 1);
 		}else{
 			$json = unserialize(redis($rdsname));
 		}

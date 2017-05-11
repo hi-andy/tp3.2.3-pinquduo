@@ -44,14 +44,22 @@ class SecondBuyController extends Controller {
         $data['type'] = 1;
         $goods = I('post.goods')['goods'];
         foreach ($goods as $value) {
+            // 修改商品类型为7： 0.1秒杀商品。修改活动价格为：0.1
+            M('goods')->where('goods_id='.$value['goods_id'])->save(array('is_special'=>'7', 'shop_price'=>'0.1', 'prom_price'=>'0.1'));
+            // 修改所有商品规格和活动价格为：0.1元。
+            M('spec_goods_price')->where('goods_id='.$value['goods_id'])->save(array('price'=>'0.1', 'prom_price'=>'0.1'));
+            // 添加到商品活动表
             $data = array_merge($data, $value);
             $res = M('goods_activity')->data($data)->add();
         }
-        if($res) {
-            $this->success("添加成功",U('SecondBuy/goodsList'));
-        } else {
-            $this->success("添加失败",U('SecondBuy/goodsList'));
-        }
+
+        $this->success("添加成功",U('SecondBuy/goodsList'));
+
+//        if($res) {
+//            $this->success("添加成功",U('SecondBuy/goodsList'));
+//        } else {
+//            $this->success("添加失败",U('SecondBuy/goodsList'));
+//        }
     }
 
     // ajax 返回商品列表

@@ -82,7 +82,7 @@
 			                                        <th class="text-left">商户名称</th>
 									                <th class="text-left">价格</th>         
 									                <th class="text-left">库存</th>
-                                                    <th class="text-left" style="width:5%;">活动数量</th>
+                                                    <th class="text-left" style="width:5%;display: none;">活动数量</th>
 									                <th class="text-left">操作</th>
 									            </tr>
 									            </thead>
@@ -97,8 +97,8 @@
 											            <td class="text-left">{$vo.store_name}</td>
 											            <td class="text-left">{$vo.shop_price}</td>
 									                	<td class="text-left">{$vo.store_count}</td>
-                                                        <td class="text-left" style="width:5%;">
-                                                            <input type="text" name="quantity" value="" style="width:7%;" />
+                                                        <td class="text-left" style="width:5%;display: none;">
+                                                            <input type="text" name="quantity" value="" style="width:7%;display: none;" />
                                                         </td>
 									                	<td class="text-left"><a href="javascript:void(0)" onclick="javascript:$(this).parent().parent().remove();">删除</a></td>
 									           		</tr>
@@ -131,39 +131,45 @@
 
 
 function adsubmit(){
-	var pg = []; 
+	var pg = [];
+    var tag = true;
 	//过滤选择重复商品
 	$('input[name*="goods_id"]').each(function(i,o){
 		pg.push($(o).val());
 	});
 	if(pg.length==0){
 		layer.msg('请选择商品');
+        tag = false;
 		return false;
 	}
 
-	var tag = true;
+
     // 检查参加活动商品数量
-    $('input[name="quantity"]').each(function(i,o){
-        if ($(o).val() <= 0) {
-            layer.msg('请为每个商品指定参与活动数量');
-            tag = false;
-            return false;
-        }
-    });
+//    $('input[name="quantity"]').each(function(i,o){
+//        if ($(o).val() <= 0) {
+//            layer.msg('请为每个商品指定参与活动数量');
+//            tag = false;
+//            return false;
+//        }
+//    });
 
     if (tag) {
 
         var date = $('#date').val();
         var time = $('#time').val();
+        if( !(date && time) ){
+            layer.msg('请选择活动时间');
+            return false;
+        }
         data = '{"goods":['
         $('input[name*="goods_id"]').each(function(i,o){
             var goods_id = $(o).val();
             var quantity = 0;
-            $('input[name="quantity"]').each(function(j,k){
-                if (i == j) {
-                    quantity = $(k).val();
-                }
-            });
+//            $('input[name="quantity"]').each(function(j,k){
+//                if (i == j) {
+//                    quantity = $(k).val();
+//                }
+//            });
             data += '{"goods_id":'+goods_id+',"quantity":'+quantity+'},';
         });
         data = data.substr(0,data.length-1)

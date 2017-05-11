@@ -476,7 +476,7 @@ class IndexController extends BaseController {
                 array_unshift($haitao['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
             }
             $json = array('status' => 1, 'msg' => '', 'result' => array('haitao' => $haitao, 'cat' => $cat1));
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+            redis($rdsname, serialize($json));//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
