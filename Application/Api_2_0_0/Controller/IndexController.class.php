@@ -780,16 +780,17 @@ class IndexController extends BaseController {
 
         //将免单价格重新计算
         $goods_id = "";
-        for($i=0;$i<count($prom);$i++){
-            $goods_id .= $prom[$i]['goods_id'].",";
+        $key = "";
+        foreach($prom as $value){
+            $goods_id .= $value['goods_id'].",";
         }
         $goods_id = substr($goods_id, 0, -1);
         $spec_goods_price = M('spec_goods_price')->where(array("goods_id"=>array("in",$goods_id)))->field('key,prom_price')->select();
         $arr = array();
-        for($i=0;$i<count($prom);$i++){
-            for($a=0;$a<count($spec_goods_price);$a++){
-                if ($prom[$i]['spec_key'] == $spec_goods_price[$a]['key']){
-                    $arr[$i]['prom_price'] = $spec_goods_price[$a]['prom_price'];
+        foreach($prom as $v){
+            foreach($spec_goods_price as $value){
+                if ($v['spec_key'] == $value['key']){
+                    $arr[]['prom_price'] = $value['prom_price'];
                 }
             }
         }
