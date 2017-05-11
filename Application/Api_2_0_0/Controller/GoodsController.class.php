@@ -2038,7 +2038,8 @@ class GoodsController extends BaseController {
 		//判断特殊商品是否在可购买时间内
 		if($goods['is_special']==7){//0.1秒杀
 			$time = M('goods_activity')->where('goods_id='.$goods_id)->find();
-			if($time['start_time']<time()){
+			$res = $time['start_date']+$time['start_time']*3600;
+			if($res<time()){
 				$data['buy_type'] = 1;
 				$data['prompt']=null;
 			}else{
