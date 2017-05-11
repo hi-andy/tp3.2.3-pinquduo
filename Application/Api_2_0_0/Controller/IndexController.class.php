@@ -402,7 +402,6 @@ class IndexController extends BaseController {
                     break;
             }
         }
-
         for ($i = 0; $i < count($time); $i++) {
             if ($time[$i]['datetime'] == date('Y-m-d H')) {
                 $time[$i]['title'] = '抢购中';

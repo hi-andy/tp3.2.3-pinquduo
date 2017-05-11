@@ -2034,7 +2034,7 @@ class GoodsController extends BaseController {
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
 		$collect = M('goods_collect')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
-        $goods = M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->field('store_count,sales,is_special,on_time')->find();
+        $goods = M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->field('store_count,sales,is_special,on_time,is_support_buy')->find();
 		//判断特殊商品是否在可购买时间内
 		if($goods['is_special']==7){//0.1秒杀
 			$time = M('goods_activity')->where('goods_id='.$goods_id)->find();
@@ -2058,6 +2058,7 @@ class GoodsController extends BaseController {
         $data['store_count'] = $goods['store_count'];
         $data['sales'] = $goods['sales'];
 		$data['is_special'] = $goods['is_special'];
+		$data['is_support_buy'] = $goods['is_support_buy'];
 		$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
 		if(!empty($ajax_get))
 			$this->getJsonp($json);

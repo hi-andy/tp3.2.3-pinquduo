@@ -1690,7 +1690,7 @@ class UserController extends BaseController {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                 }
-                redisdelall("getOrderList_".$order['user_id']."*");//删除订单缓存
+                redis("getOrderList_status_".$order['user_id'], "1");
                 redisdelall("TuiSong*");//删除推送缓存
                 //跨区同步订单、推送、详情缓存
                 $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
