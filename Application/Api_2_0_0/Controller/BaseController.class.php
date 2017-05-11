@@ -297,7 +297,6 @@ class BaseController extends Controller {
     public function getCountUserOrder($user_id)
     {
         //获取订单信息
-
         $data['daifahuo'] = M('order')->where('(order_type = 2 or order_type = 14) and `user_id` = '.$user_id)->count();
         $data['daishouhuo'] = M('order')->where('(order_type = 3 or order_type = 15) and `user_id` = '.$user_id)->count();
         $data['daifukuan'] = M('order')->where('(order_type = 1 or order_type = 10) and `user_id` = '.$user_id)->count();
