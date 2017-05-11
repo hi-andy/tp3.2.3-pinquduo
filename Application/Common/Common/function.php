@@ -57,10 +57,7 @@ function redisdelall($key)
     $redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
-    $match = $key;
-    while ($keys = $redis->scan($match)) {
-        $redis->del($keys);
-    }
+    $redis->delete($redis->keys($key));
 }
 /**
  * @param $arr
