@@ -250,6 +250,7 @@ class GoodsController extends BaseController {
         if($type==1){
             M('goods_collect')->where("user_id = $user_id and goods_id = $goods_id")->delete();
 	        $json = array('status'=> 1 ,'msg'=>'成功取消收藏' );
+            redis("getUserCollection_status".$user_id, "1");//改变状态
 	        if(!empty($ajax_get))
 		        $this->getJsonp($json);
 	        exit(json_encode($json));
@@ -266,8 +267,8 @@ class GoodsController extends BaseController {
             'user_id'=>$user_id,
             'add_time'=>time(),
         ));
-
 	    $json = array('status'=> 1 ,'msg'=>'收藏成功' );
+        redis("getUserCollection_status".$user_id, "1");
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
@@ -433,6 +434,7 @@ class GoodsController extends BaseController {
 		//把所有人的状态改成发货
 		for($i=0;$i<$prom_num;$i++)
 		{
+            redis("getUserPromList_status".$join_num[$i]['id'], "1");
 			if(!empty($join_num[0]['is_raise']))
 			{
 				if($i==0)
