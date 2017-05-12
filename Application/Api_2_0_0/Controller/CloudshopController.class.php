@@ -14,6 +14,10 @@ class CloudshopController extends Controller {
 
     }
 
+    public function _initialize() {
+        $this->encryption();
+    }
+
     /**
      * 一元云购主页
      */

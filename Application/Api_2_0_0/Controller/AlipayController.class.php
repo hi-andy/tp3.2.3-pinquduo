@@ -167,12 +167,6 @@ class AlipayController extends BaseController
         }else{
             $data['order_type'] = 2;
         }
-//        //销量、库存
-//        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
-//        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
-//        //商品规格库存
-//        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
-//        M('spec_goods_price')->where("`goods_id`=$order[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$order['num']);
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }
@@ -183,22 +177,4 @@ class AlipayController extends BaseController
         $res = M('group_buy')->where('`id`='.$order_id)->data($data)->save();
         return $res;
     }
-//    public function TuiSong($order_id)
-//    {
-//        $order = M('order')->where('`order_id`='.$order_id)->find();
-//        $prom = M('group_buy')->where('`id`='.$order['prom_id'])->find();
-//        if($prom['mark']!=0)
-//        {
-//            return null;
-//        }
-//        $user = M('users')->where('`user_id`='.$order['user_id'])->field('mobile,niclname,head_pic')->find();
-//        if($user['nickname']!=null)
-//        {
-//            $name = $user['nickname'].' 刚刚发布了一个新订单';
-//        }else{
-//            $name = substr_replace($user['mobile'], '****', 3, 4);
-//            $name = $name.' 刚刚发布了一个新订单';
-//        }
-//        SendAllXinge($name,array('order_id'=>$order_id,'user_logo'=>$user['head_pic']));
-//    }
 }

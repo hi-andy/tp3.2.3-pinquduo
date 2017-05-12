@@ -7,6 +7,10 @@ namespace Api_2_0_0\Controller;
 
 class StoreController extends BaseController{
 
+    public function _initialize() {
+        $this->encryption();
+    }
+
 	/*
 	 * 商户详情
 	 * */

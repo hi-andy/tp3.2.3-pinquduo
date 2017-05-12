@@ -2,6 +2,11 @@
 namespace Api_2_0_0\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
+
+    public function _initialize() {
+        $this->encryption();
+    }
+
     public function index($getGoodsDetails="",$user_id="", $goods_id=""){
         //跨域删除缓存
         if ($getGoodsDetails == "1") {

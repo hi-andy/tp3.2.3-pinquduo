@@ -69,7 +69,7 @@ class CrowdfundController extends BaseController {
         $begin = date('Y/m/d',(time()-30*60*60*24));//30天前
         $end = date('Y/m/d',strtotime('+1 days'));
         $this->assign('timegap',$begin.'-'.$end);
-        $this->show();
+        $this->display();
     }
 
     /**
