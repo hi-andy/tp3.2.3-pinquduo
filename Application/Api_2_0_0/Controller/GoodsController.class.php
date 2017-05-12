@@ -1501,8 +1501,7 @@ class GoodsController extends BaseController {
 		$goods['store'] = M('merchant', '', 'DB_CONFIG2')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
 		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
 		//获取商品规格
-		if(!empty($spec_key))
-		{
+		if(!empty($spec_key)){
 			M('temporary_key')->add(array('goods_id'=>$goods_id,'goods_spec_key'=>$spec_key,'user_id'=>$user_id,'add_time'=>time()));
 			$goods_spec = M('spec_goods_price', '', 'DB_CONFIG2')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
 			$goods['shop_price']=$goods_spec['price'];
@@ -1540,16 +1539,15 @@ class GoodsController extends BaseController {
 		//获取合适的店铺优惠卷
 		//找到该店铺里用户的全部优惠券
 		$user_coupon = M('coupon_list', '', 'DB_CONFIG2')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
-		if(!empty($user_coupon)) {
+		if(!empty($user_coupon)){
 			$id = array_column($user_coupon, 'cid');
 			//拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
 			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
-			if(!empty($coupon))
-			{
+			if(!empty($coupon)){
 				//根据获取的最佳优惠券在coupon_list里面的优惠券id
 				for ($i = 0; $i < count($user_coupon); $i++) {
 					$user_coupon_list_id = M('coupon_list', '', 'DB_CONFIG2')->where('`cid`='.$user_coupon[$i]['cid'].' and `uid`='.$user_id.' and `is_use`=0')->find();
-					if ($coupon['id'] == $user_coupon_list_id['cid']) {
+					if ($coupon['id'] == $user_coupon_list_id['cid']){
 						$coupon['coupon_list_id'] = $user_coupon[$i]['id'];
 						break;
 					}

@@ -20,6 +20,7 @@ class PurchaseController extends  BaseController
 
     public function _initialize() {
         $this->encryption();
+        $this->encryption();
     }
 
     /*
@@ -80,6 +81,15 @@ class PurchaseController extends  BaseController
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
+        $result = M('group_buy')->where("`user_id` = $user_id and `is_pay`=1 and `goods_id`=$goods_id")->find();
+        if(!empty($result)){
+            $json =	array('status'=>-1,'msg'=>'您已购买过此宝贝T_T');
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
+            if(!empty($ajax_get)){
+                echo "<script> alert('".$json['msg']."') </script>";
+                exit;
+            }
+        }
         //参团购物
         if($type == 0)
         {
@@ -94,12 +104,10 @@ class PurchaseController extends  BaseController
                 exit(json_encode($json));
             }
             //为我点赞只允许每个人参团一次
-            if($result['is_raise']==1)
-            {
+            if($result['is_raise']==1){
                 $raise = M('group_buy')->where('(end_time>'.time().' or is_successful=1) and mark!=0 and is_raise=1')->order('id desc')->select();
                 $raise_id_array = array_column($raise,'user_id');
-                if(in_array("$user_id",$raise_id_array))
-                {
+                if(in_array("$user_id",$raise_id_array)){
                     $json =array('status'=>-1,'msg'=>'您已参加过该拼团活动，不能再参团，只能继续开团');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if(!empty($ajax_get)){
@@ -205,8 +213,7 @@ class PurchaseController extends  BaseController
         $result = M('group_buy')->where("`id` = $prom_id")->find();
 
         //是否使用优惠卷
-        if(!empty($coupon_id))
-        {
+        if(!empty($coupon_id)){
             $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
         }else{
             $coupon['money'] = 0;
@@ -215,8 +222,7 @@ class PurchaseController extends  BaseController
         $goods_id = $result['goods_id'];
         $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();
         //找到开团的商品,并获取要用的数据
-        if(!empty($spec_key))
-        {
+        if(!empty($spec_key)){
             $goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->find();
             $goods['prom_price']=(string)($goods_spec['prom_price']);
         }else{
@@ -225,8 +231,7 @@ class PurchaseController extends  BaseController
         }
         $free = $result['free'];
         $prom = $result['goods_num'];
-        if(!empty($free))//是否免单
-        {
+        if(!empty($free)){//是否免单
             redis("get_Free_Order_status", "1");
             if(!empty($prom)){
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
@@ -391,12 +396,12 @@ class PurchaseController extends  BaseController
                 redis("group_buy", serialize($user_id_arr), 300);
                 for($i=0;$i<count($user_id_arr);$i++){
                     redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
+                    redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
                 }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
                 if($order['pay_code']=='weixin'){
                     $weixinPay = new WeixinpayController();
-                    //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
                     if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
                         $order['order_id'] = $result['order_id'];
                         $code_str = $weixinPay->getJSAPI($order);
@@ -466,8 +471,7 @@ class PurchaseController extends  BaseController
         //找到开团的商品,并获取要用的数据
         $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();
         //获取商品规格和相应的价格
-        if(!empty($spec_key))
-        {
+        if(!empty($spec_key)){
             $goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,prom_price')->find();
             $goods['prom_price']=(string)($goods_spec['prom_price']);
         }else{
