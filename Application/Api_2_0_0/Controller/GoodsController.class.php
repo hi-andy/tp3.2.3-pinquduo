@@ -460,7 +460,6 @@ class GoodsController extends BaseController {
 			redis("get_Free_Order_status","1");
 			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
 			//给参团人和开团人推送信息
-//			$user_ids = M('order')->where(array('order_id'=>array('in',$order_ids)))->field('user_id')->select();
 			$message = "你参与的团购,即将揭晓免单人";
 			$custom = array('type' => '2','id'=>$join_num[0]['order_id']);
 			foreach($join_num as $val){
@@ -2031,7 +2030,7 @@ class GoodsController extends BaseController {
 	}
 
 	//获取当前商品的拓展数据
-	function getDetaile_expand(){//18083
+	function getDetaile_expand(){//加商户销量，
 		$goods_id = I('goods_id');
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -2041,22 +2040,36 @@ class GoodsController extends BaseController {
 			$collect = 0;
 		}
 
-        $goods = M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->field('store_count,sales,is_special,on_time,is_support_buy')->find();
+        $goods = M('goods')->alias('g')
+	        ->join('INNER JOIN tp_merchant m on m.id = g.store_id')
+	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
+	        ->field('g.store_count,g.sales,g.is_special,g.on_time,g.is_support_buy,m.sales as store_sales')
+	        ->find();
 		//判断特殊商品是否在可购买时间内
 		if($goods['is_special']==7){//0.1秒杀
 			$time = M('goods_activity')->where('goods_id='.$goods_id)->find();
 			$res = $time['start_date']+$time['start_time']*3600;
 			if($res<time()){
-				$data['buy_type'] = 1;
-				$data['prompt']=null;
+				if($goods['store_count']<=0){
+					$data['buy_type'] = 2;
+					$data['prompt']='该商品已售罄！^_^';
+				}else{
+					$data['buy_type'] = 1;
+					$data['prompt']=null;
+				}
 			}else{
 				$data['buy_type'] = 0;
 				$data['prompt']='本场未开始哦T_T';
 			}
 		}elseif ($goods['is_special']==2){//限时秒杀
 			if($goods['on_time']<time()){
-				$data['buy_type'] = 1;
-				$data['prompt']=null;
+				if($goods['store_count']<=0){
+					$data['buy_type'] = 2;
+					$data['prompt']='该商品已售罄！^_^';
+				}else{
+					$data['buy_type'] = 1;
+					$data['prompt']=null;
+				}
 			}else{
 				$data['buy_type'] = 0;
 				$data['prompt']='本场未开始哦T_T';
@@ -2068,6 +2081,7 @@ class GoodsController extends BaseController {
         $data['sales'] = $goods['sales'];
 		$data['is_special'] = $goods['is_special'];
 		$data['is_support_buy'] = $goods['is_support_buy'];
+		$data['store_sales'] = $goods['store_sales'];
 		$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
@@ -2265,13 +2279,6 @@ class GoodsController extends BaseController {
             $this->getJsonp($return_arr);
         exit(json_encode($return_arr));
     }
-
-	function automatic_goods(){
-		//将限时秒杀的时间拿出来
-
-
-
-	}
 
 	//将限时秒杀的商品id写成缓存
 	function  write_goodsid_RDS(){

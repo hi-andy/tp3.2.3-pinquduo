@@ -91,7 +91,6 @@ class WeixinpayController extends BaseController {
         }else{
             $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
         }
-
         $back_url = "http://wx.pinquduo.cn/goods_detail.html?goods_id={$order['goods_id']}";
 
         //①、获取用户openid
