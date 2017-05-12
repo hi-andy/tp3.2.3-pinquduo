@@ -792,11 +792,9 @@ class IndexController extends BaseController {
             }
             //将免单价格重新计算
             for ($i = 0; $i < count($arr); $i++) {
-                //$spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
                 $price = ($arr[$i]['prom_price'] * $prom[$i]['prom']) / ($prom[$i]['prom'] - $prom[$i]['free']);
                 $c = $this->getFloatLength($price);
-
-                if ($c > 3) {
+                if ($c >= 3) {
                     $price = $this->operationPrice($price);
                 }
                 $prom[$i]['price'] = sprintf("%.2f", $price);
@@ -830,8 +828,8 @@ class IndexController extends BaseController {
     //操作价格
     public function operationPrice($price)
     {
-        $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
-        $price = $price+0.01;
+	    $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
+	    $price = $price+0.01;
         return $price;
     }
 
@@ -858,5 +856,12 @@ class IndexController extends BaseController {
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
+	}
+
+	public  function test(){
+		$price = 0.0121;
+		$price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
+		$price = $price+0.01;
+		echo $price;
 	}
 }

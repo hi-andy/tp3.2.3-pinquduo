@@ -2110,7 +2110,7 @@ class UserController extends BaseController {
         if($order['free']>0){
             $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
             $c = $this->getFloatLength($price);
-            if($c>3){
+            if($c>=3){
                 $price = $this->operationPrice($price);
             }
         }else{
