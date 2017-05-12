@@ -6,6 +6,11 @@ namespace Api_2_0_0\Controller;
 
 use Think\Page;
 class GoodsController extends BaseController {
+
+    public function _initialize() {
+        $this->encryption();
+    }
+    
     public function index(){
         $this->display();
     }

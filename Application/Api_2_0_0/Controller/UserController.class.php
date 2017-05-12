@@ -8,7 +8,9 @@ class UserController extends BaseController {
     public function _initialize(){
         parent::_initialize();
         $this->userLogic = new \Home\Logic\UsersLogic();
+        $this->encryption();
     }
+
     /**
      *  登录
      */

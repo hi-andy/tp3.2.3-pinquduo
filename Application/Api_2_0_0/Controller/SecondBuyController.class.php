@@ -15,6 +15,11 @@ namespace Api_2_0_0\Controller;
 use Think\AjaxPage;
 use Think\Controller;
 class SecondBuyController extends Controller {
+
+    public function _initialize() {
+        $this->encryption();
+    }
+
 	public function index()
 	{
         $times = C('SecondBuy')['times']; //抢购时间段

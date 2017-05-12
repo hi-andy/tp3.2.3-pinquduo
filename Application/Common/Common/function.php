@@ -796,3 +796,23 @@ function getImgSize($arr)
 	}
 	return $res;
 }
+
+/**
+ * 将逗号、空格、回车分隔的字符串转换为数组的函数
+ * @param $strs
+ * @return array
+ */
+function strsToArray($strs) {
+    $result = array();
+    $strs = str_replace('，', ',', $strs);
+    $strs = str_replace("n", ',', $strs);
+    $strs = str_replace("rn", ',', $strs);
+    $strs = str_replace(' ', ',', $strs);
+    $array = explode(',', $strs);
+    foreach ($array as $key => $value) {
+        if ('' != ($value = trim($value))) {
+            $result[] = $value;
+        }
+    }
+    return $result;
+}

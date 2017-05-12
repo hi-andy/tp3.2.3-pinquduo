@@ -27,6 +27,10 @@ class CartController extends BaseController {
         
     }
 
+    public function _initialize() {
+        $this->encryption();
+    }
+
     /**
      * 将商品加入购物车
      */

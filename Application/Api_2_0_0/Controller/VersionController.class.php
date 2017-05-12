@@ -8,6 +8,10 @@ use Think\Controller;
 
 class VersionController extends BaseController {
 
+    public function _initialize() {
+        $this->encryption();
+    }
+    
 	/**
 	 * 获取最新的android版本信息
 	 */

@@ -24,6 +24,11 @@ class HxcallController
         $rs = json_decode($this->curl($url, $data), true);
         $this->token = $rs['access_token'];
     }
+
+    public function _initialize() {
+        $this->encryption();
+    }
+
     /*
      * 注册IM用户(授权注册)
      */

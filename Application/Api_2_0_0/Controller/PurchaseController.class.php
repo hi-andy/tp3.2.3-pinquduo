@@ -17,9 +17,11 @@ use Api_2_0_0\Controller;
 
 class PurchaseController extends  BaseController
 {
+
     public function _initialize() {
         $this->encryption();
     }
+
     /*
 	 * type:  0、参团、1、开团、2、单买
 	 */

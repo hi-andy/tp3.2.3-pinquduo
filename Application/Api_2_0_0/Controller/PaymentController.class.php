@@ -4,7 +4,11 @@ use Think\Controller;
 use Api\Logic\GoodsLogic;
 use Think\Page;
 class PaymentController extends BaseController {
-        
+
+    public function _initialize() {
+        $this->encryption();
+    }
+
     /**
      * 析构流函数
      */
