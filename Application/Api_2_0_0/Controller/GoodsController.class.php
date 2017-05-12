@@ -2045,7 +2045,6 @@ class GoodsController extends BaseController {
 	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
 	        ->field('g.store_count,g.sales,g.is_special,g.on_time,g.is_support_buy,m.sales as store_sales')
 	        ->find();
-
 		//默认
 		$data['buy_type'] = 1;
 		$data['prompt']=null;
