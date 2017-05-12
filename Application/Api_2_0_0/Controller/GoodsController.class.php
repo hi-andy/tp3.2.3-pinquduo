@@ -266,8 +266,8 @@ class GoodsController extends BaseController {
             'user_id'=>$user_id,
             'add_time'=>time(),
         ));
-
 	    $json = array('status'=> 1 ,'msg'=>'收藏成功' );
+        redis("getUserCollection_status".$user_id, "1");
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));

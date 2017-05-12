@@ -471,6 +471,7 @@ class PurchaseController
         }
         if(!empty($free))//是否免单
         {
+            redis("get_Free_Order_status", "1");
             if(!empty($prom))
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));

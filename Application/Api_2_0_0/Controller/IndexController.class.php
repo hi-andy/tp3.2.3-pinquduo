@@ -812,7 +812,7 @@ class IndexController extends BaseController {
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json));//写入缓存
-            redisdelall("get_Free_Order_status");//改变状态
+            redisdelall("get_Free_Order_status");
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }

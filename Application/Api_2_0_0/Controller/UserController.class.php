@@ -1225,31 +1225,37 @@ class UserController extends BaseController {
         $user_id = I('user_id');
         $page  = I('page',1);
         $pagesize = I('pagesize',20);
-        $goods_array = M('goods_collect')->where('`user_id` = '.$user_id)->order('collect_id desc')->page($page,$pagesize)->select();
-        $ids['g.goods_id'] = array('IN',array_column($goods_array,'goods_id'));
-        $count  = M('goods')
-            ->alias('g')
-            ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
-            ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id='.$user_id)
-            ->where($ids)
-            ->count();
-        $goods = M('goods')
-            ->alias('g')
-            ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
-            ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id='.$user_id)
-            ->where($ids)
-            ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.original_img,g.sales,g.store_count,g.prom_price,g.free,g.is_special')
-            ->order(' c.add_time desc')
-            ->select();
+        $rdsname = "getUserCollection".$user_id.$page.$pagesize;
+        if (empty($rdsname) || redis("getUserCollection_status".$user_id) == 1) {//是否有缓存
+            $goods_array = M('goods_collect')->where('`user_id` = ' . $user_id)->order('collect_id desc')->page($page, $pagesize)->select();
+            $ids['g.goods_id'] = array('IN', array_column($goods_array, 'goods_id'));
+            $count = M('goods')
+                ->alias('g')
+                ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
+                ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id=' . $user_id)
+                ->where($ids)
+                ->count();
+            $goods = M('goods')
+                ->alias('g')
+                ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
+                ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id=' . $user_id)
+                ->where($ids)
+                ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.original_img,g.sales,g.store_count,g.prom_price,g.free,g.is_special')
+                ->order(' c.add_time desc')
+                ->select();
 
-        foreach($goods as &$v)
-        {
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+            foreach ($goods as &$v) {
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+            }
+
+            $collection = $this->listPageData($count, $goods);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $collection);
+            redis($rdsname, serialize($json));//写入缓存
+            redisdelall("getUserCollection_status".$user_id);
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
         }
-
-        $collection = $this->listPageData($count,$goods);
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$collection);
+            I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
