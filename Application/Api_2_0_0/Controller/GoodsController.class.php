@@ -434,6 +434,7 @@ class GoodsController extends BaseController {
 		//把所有人的状态改成发货
 		for($i=0;$i<$prom_num;$i++)
 		{
+            redis("getUserPromList_status".$join_num[$i]['id'], "1");
 			if(!empty($join_num[0]['is_raise']))
 			{
 				if($i==0)

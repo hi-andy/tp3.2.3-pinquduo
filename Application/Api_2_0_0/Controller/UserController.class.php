@@ -1227,7 +1227,7 @@ class UserController extends BaseController {
         $pagesize = I('pagesize',20);
         $rdsname = "getUserCollection".$user_id.$page.$pagesize;
         if (redis("getUserCollection_status".$user_id) == "1"){
-            redisdelall($rdsname."*");
+            redisdelall("getUserCollection".$user_id."*");
             redisdelall("getUserCollection_status".$user_id);
         }
         if (empty(redis($rdsname))) {//是否有缓存
@@ -1314,6 +1314,10 @@ class UserController extends BaseController {
         $version = I('version');
         $pagesize = I('pagesize',10);
         $rdsname = "getUserPromList".$user_id.$type.$page.$pagesize.$version;
+        if (redis("getUserPromList_status".$user_id) == "1"){
+            redisdelall("getUserPromList".$user_id."*");
+            redisdelall("getUserPromList_status".$user_id);
+        }
         if (empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
                 $condition = '`order_status`=8 and `user_id`=' . $user_id;
@@ -1360,7 +1364,7 @@ class UserController extends BaseController {
             }
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+            redis($rdsname, serialize($json));//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
@@ -2082,7 +2086,7 @@ class UserController extends BaseController {
         $pagesize = I('pagesiaze',20);
         $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
         if (redis("getOrderList_status_".$user_id) == "1"){
-            redisdelall($rdsname);//删除旧缓存
+            redisdelall("getOrderList_".$user_id."*");//删除旧缓存
             redisdelall("getOrderList_status_".$user_id);//删除状态
         }
 
