@@ -697,8 +697,7 @@ class UserController extends BaseController {
         }
         $data = $this->userLogic->confirm_order($user_id,$id);
         $json = $data;
-        $rdsname = "getUserOrderList".$user_id."*";
-        redisdelall($rdsname);//删除用户订单缓存
+        $this->order_redis_status_ref($user_id);
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
