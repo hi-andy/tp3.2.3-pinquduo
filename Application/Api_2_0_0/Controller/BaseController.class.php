@@ -641,21 +641,112 @@ class BaseController extends Controller {
         return $return;
     }
 
+    public function getFree($prom_id)
+    {
+        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id')->order('mark asc')->select();
+
+        $prom_num = $join_num[0]['goods_num'];
+        $free_num = $join_num[0]['free'];
+        M()->startTrans();
+        //把所有人的状态改成发货
+        for($i=0;$i<$prom_num;$i++)
+        {
+            redis("getUserPromList_status".$join_num[$i]['user_id'], "1");
+            if(!empty($join_num[0]['is_raise']))
+            {
+                if($i==0)
+                {
+                    $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+                } else {
+                    $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
+                }
+            } else {
+                $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+            }
+            $res2 = M('group_buy')->where('`id`='.$join_num[$i]['id'])->data(array('is_successful'=>1))->save();
+            if($res && $res2)
+            {
+                M()->commit();
+            }else{
+                M()->rollback();
+            }
+        }
+
+        if($free_num>0)//如果有免单，才执行getRand操作
+        {
+            redis("get_Free_Order_status","1");
+            $order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
+            //给参团人和开团人推送信息
+            $message = "你参与的团购,即将揭晓免单人";
+            $custom = array('type' => '2','id'=>$join_num[0]['order_id']);
+            foreach($join_num as $val){
+                SendXinge($message,$val['user_id'],$custom);
+            }
+
+            $num = $this->getRand($free_num,($prom_num-1));//随机出谁免单
+            for($i=0;$i<count($num);$i++)
+            {
+                $j = $num[$i];
+                $order_id = $order_ids[$j];
+                $res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+                $res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+                if($res && $res2)
+                {
+                    $this->getWhere($order_id);
+                    M()->commit();
+                }else{
+                    M()->rollback();
+                }
+            }
+        }else{
+//			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
+
+            //给参团人和开团人推送信息
+//			$user_ids = M('order')->where(array('order_id'=>array('in',$order_ids)))->field('user_id')->select();
+            $message = "你参与的团购,团满开团成功";
+            $custom = array('type' => '1','id'=>$join_num[0]['order_id']);
+            foreach($join_num as $val){
+                SendXinge($message,$val['user_id'],$custom);
+            }
+        }
+        exit ;
+    }
+
+    public function getWhere($order_id)
+    {
+        $result = M('order')->where('`order_id`='.$order_id)->find();
+        if($result['is_jsapi']==1)
+            $data['is_jsapi'] = 1;
+        $data['order_id']=$order_id;
+        $data['price'] = $result['order_amount'];
+        $data['code'] = $result['pay_code'];
+        $data['add_time'] = time();
+        M('getwhere')->data($data)->add();
+    }
+
+    public function getRand($num,$max)//需要生成的个数，最大值
+    {
+        $rand_array=range(0,$max);
+        shuffle($rand_array);//调用现成的数组随机排列函数
+//		var_dump(array_slice($rand_array,0,$num));
+        return array_slice($rand_array,0,$num);//截取前$num个
+    }
+
     //验签
     public function encryption(){
-        $arr = empty($_GET) ? $_POST : $_GET;
-        ksort ($arr);
-        $sig = $arr['sig'];
-        unset($arr['sig']);
-        $str = "";
-        foreach ($arr as $k => $v){
-            $str .= $k . "=" . $v . "&";
-        }
-        $str .= "sig=pinquduo_sing";
-        if (md5($str) != $sig) {
-            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
-            exit(json_encode($json_arr));
-        }
+//        $arr = empty($_GET) ? $_POST : $_GET;
+//        ksort ($arr);
+//        $sig = $arr['sig'];
+//        unset($arr['sig']);
+//        $str = "";
+//        foreach ($arr as $k => $v){
+//            $str .= $k . "=" . $v . "&";
+//        }
+//        $str .= "sig=pinquduo_sing";
+//        if (md5($str) != $sig) {
+//            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
+//            exit(json_encode($json_arr));
+//        }
     }
 
     public function order_redis_status_ref($user_id){

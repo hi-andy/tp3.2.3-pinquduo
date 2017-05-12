@@ -140,7 +140,7 @@ class AlipayController extends BaseController
                         $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
                         if(($nums)==$group_info['goods_num'])
                         {
-                            $Goods = new GoodsController();
+                            $Goods = new BaseController();
                             $Goods->getFree($group_info['mark']);
                         }
                         M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
