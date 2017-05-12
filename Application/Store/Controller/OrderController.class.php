@@ -317,6 +317,8 @@ class OrderController extends BaseController {
 				    return array('status'=>-1,'msg'=>'支付状态或订单状态不允许','result'=>'');
 
 			    $row = M('order')->where(array('order_id'=>$data['order_id']))->save(array('order_status'=>3,'is_cancel'=>1,'order_type'=>5));
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($order['user_id']);
 			    if($order['prom_id']!=null) {
 				    $res = M('group_buy')->where(array('order_id' =>$data['order_id']))->save(array('is_cancel' => 1));
 			    }else{
@@ -511,6 +513,8 @@ class OrderController extends BaseController {
 		        $data['ok_time'] = time();//和完成共用一个时间
 		        //将order状态改变
 		        M('order')->where('order_id='.$return_goods['order_id'])->save(array('order_type'=>16,'order_status'=>15));
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($return_goods['user_id']);
 	        }
 
             $data['remark'] = I('remark');                                    

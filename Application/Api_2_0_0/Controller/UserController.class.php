@@ -660,8 +660,7 @@ class UserController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
 
-        $rdsname = "getOrderList_".$user_id."*";
-        redisdelall($rdsname);//根据类型删除用户订单缓存
+        $this->order_redis_status_ref($user_id);
         exit(json_encode($returnjson));
     }
 

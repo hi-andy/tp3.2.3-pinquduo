@@ -642,8 +642,8 @@ class PromController extends BaseController {
 		$num = count($return_goods['imgs']);
 		$return_goods = $this->getIMG($return_goods,$num);
 
-		$user = M('users')->where("user_id = {$return_goods[user_id]}")->find();
-		$goods = M('goods')->where("goods_id = {$return_goods[goods_id]}")->find();
+		$user = M('users')->where("user_id = {$return_goods['user_id']}")->find();
+		$goods = M('goods')->where("goods_id = {$return_goods['goods_id']}")->find();
 		$type_msg = array('退换','换货');
 		$status_msg = array('未处理','处理中','已完成');
 		if(IS_POST) {
@@ -674,6 +674,8 @@ class PromController extends BaseController {
 				$data['ok_time'] = time();//和完成共用一个时间
 				//将order状态改变
 				M('order')->where('order_id='.$return_goods['order_id'])->save(array('order_type'=>16,'order_status'=>15));
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($return_goods['user_id']);
 			}
 			$data['remark'] = I('remark');
 			$note ="退换货:{$type_msg[$data['type']]}, 状态:{$status_msg[$data['status']]},处理备注：{$data['remark']}";
@@ -763,7 +765,7 @@ class PromController extends BaseController {
 		$data['order_sn'] = $order['order_sn'];
 		$data['goods_id'] = $goods_id;
 		$data['addtime'] = time();
-		$data['user_id'] = $order[user_id];
+		$data['user_id'] = $order['user_id'];
 		$data['remark'] = '管理员申请退换货'; // 问题描述
 		M('return_goods')->add($data);
 		$this->success('申请成功,现在去处理退货',U('Store/Order/return_list'));
