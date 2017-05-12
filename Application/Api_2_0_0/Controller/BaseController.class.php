@@ -297,11 +297,11 @@ class BaseController extends Controller {
     public function getCountUserOrder($user_id)
     {
         //获取订单信息
-        $data['daifahuo'] = M('order')->where('(order_type = 2 or order_type = 14) and `user_id` = '.$user_id)->count();
-        $data['daishouhuo'] = M('order')->where('(order_type = 3 or order_type = 15) and `user_id` = '.$user_id)->count();
-        $data['daifukuan'] = M('order')->where('(order_type = 1 or order_type = 10) and `user_id` = '.$user_id)->count();
-        $data['refund'] = M('order')->where('(`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`='.$user_id)->count();//售后
-        $data['in_prom'] = M('order')->where('(order_type = 11 or order_type = 10) and `user_id`=' . $user_id)->count();
+        $data['daifahuo'] = M('order','','DB_CONFIG2')->where('(order_type = 2 or order_type = 14) and `user_id` = '.$user_id)->count();
+        $data['daishouhuo'] = M('order','','DB_CONFIG2')->where('(order_type = 3 or order_type = 15) and `user_id` = '.$user_id)->count();
+        $data['daifukuan'] = M('order','','DB_CONFIG2')->where('(order_type = 1 or order_type = 10) and `user_id` = '.$user_id)->count();
+        $data['refund'] = M('order','','DB_CONFIG2')->where('(`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`='.$user_id)->count();//售后
+        $data['in_prom'] = M('order','','DB_CONFIG2')->where('(order_type = 11 or order_type = 10) and `user_id`=' . $user_id)->count();
         return $data;
     }
 
