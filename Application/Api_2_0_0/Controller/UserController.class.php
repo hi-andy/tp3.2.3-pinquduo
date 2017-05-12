@@ -1226,7 +1226,11 @@ class UserController extends BaseController {
         $page  = I('page',1);
         $pagesize = I('pagesize',20);
         $rdsname = "getUserCollection".$user_id.$page.$pagesize;
-        if (empty($rdsname) || redis("getUserCollection_status".$user_id) == 1) {//是否有缓存
+        if (redis("getUserCollection_status".$user_id) == "1"){
+            redisdelall($rdsname."*");
+            redisdelall("getUserCollection_status".$user_id);
+        }
+        if (empty(redis($rdsname))) {//是否有缓存
             $goods_array = M('goods_collect')->where('`user_id` = ' . $user_id)->order('collect_id desc')->page($page, $pagesize)->select();
             $ids['g.goods_id'] = array('IN', array_column($goods_array, 'goods_id'));
             $count = M('goods')
@@ -1251,7 +1255,6 @@ class UserController extends BaseController {
             $collection = $this->listPageData($count, $goods);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $collection);
             redis($rdsname, serialize($json));//写入缓存
-            redisdelall("getUserCollection_status".$user_id);
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
@@ -2078,8 +2081,12 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesiaze',20);
         $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
+        if (redis("getOrderList_status_".$user_id) == "1"){
+            redisdelall($rdsname);//删除旧缓存
+            redisdelall("getOrderList_status_".$user_id);//删除状态
+        }
 
-        if(empty(redis($rdsname)) || redis("getOrderList_status_".$user_id) == "1") {//判断是否有缓存
+        if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
                 $condition = '(order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
             } elseif ($type == 2) {//待发货
@@ -2096,7 +2103,6 @@ class UserController extends BaseController {
             $all = $this->get_OrderList($condition,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
             redis($rdsname, serialize($json));//写入缓存
-            redisdelall("getOrderList_status_".$user_id);
         }else{
             $json = unserialize(redis($rdsname));//读取缓存
         }

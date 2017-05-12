@@ -250,6 +250,7 @@ class GoodsController extends BaseController {
         if($type==1){
             M('goods_collect')->where("user_id = $user_id and goods_id = $goods_id")->delete();
 	        $json = array('status'=> 1 ,'msg'=>'成功取消收藏' );
+            redis("getUserCollection_status".$user_id, "1");//改变状态
 	        if(!empty($ajax_get))
 		        $this->getJsonp($json);
 	        exit(json_encode($json));

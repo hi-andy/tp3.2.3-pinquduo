@@ -758,7 +758,11 @@ class IndexController extends BaseController {
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $rdsname = "get_Free_Order".$free_num.$page.$pagesize;
-        if (empty(redis($rdsname)) || redis("get_Free_Order_status") == "1") {//是否有缓存
+        if (redis("get_Free_Order_status") == "1"){
+            redisdelall($rdsname."*");
+            redisdelall("get_Free_Order_status");
+        }
+        if (empty(redis($rdsname))) {//是否有缓存
             $condition['gb.free'] = array('eq', $free_num);
             $condition['gb.is_successful'] = array('eq', 0);
             $condition['gb.end_time'] = array('gt', time());
@@ -812,7 +816,6 @@ class IndexController extends BaseController {
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json));//写入缓存
-            redisdelall("get_Free_Order_status");
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
