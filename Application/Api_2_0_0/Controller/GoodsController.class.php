@@ -2045,6 +2045,10 @@ class GoodsController extends BaseController {
 	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
 	        ->field('g.store_count,g.sales,g.is_special,g.on_time,g.is_support_buy,m.sales as store_sales')
 	        ->find();
+
+		//默认
+		$data['buy_type'] = 1;
+		$data['prompt']=null;
 		//判断特殊商品是否在可购买时间内
 		if($goods['is_special']==7){//0.1秒杀
 			$time = M('goods_activity')->where('goods_id='.$goods_id)->find();
