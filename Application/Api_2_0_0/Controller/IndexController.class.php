@@ -846,7 +846,7 @@ class IndexController extends BaseController {
 			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
 			$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存
-		} else {
+		}else{
 			$json = unserialize(redis($rdsname));//读取缓存
 		}
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示

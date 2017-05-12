@@ -158,8 +158,7 @@ class PurchaseController extends  BaseController
                 $num2 = M('group_buy')->where('`id`='.$prom_id.' or `mark` = '.$prom_id.' and `is_pay`=1')->count();
             }
 
-            if($num2==$result['goods_num'])
-            {
+            if($num2==$result['goods_num']){
                 $json =	array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
@@ -680,7 +679,6 @@ class PurchaseController extends  BaseController
                 // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-
             $this->order_redis_status_ref($user_id);
             //销量、库存
             M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);

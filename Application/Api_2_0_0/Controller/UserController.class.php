@@ -2228,7 +2228,7 @@ class UserController extends BaseController {
             }else{
                 $prom = M('group_buy')->where('mark = '.$prom_info['mark'].' and is_pay = 1')->select();
                 $order_info['prom'] = $prom[0]['goods_num'];
-                $mens = M('group_buy')->where('`mark` = ' . $order_info['mark'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+                $mens = M('group_buy')->where('`mark` = ' . $prom_info['mark'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
                 $order_info['prom_mens'] = $prom_info['goods_num']-$mens-1;
                 $is_oneself = 2;
             }
