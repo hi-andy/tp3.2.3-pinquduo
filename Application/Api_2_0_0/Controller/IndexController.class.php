@@ -757,71 +757,65 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $condition['gb.free'] = array('eq',$free_num);
-        $condition['gb.is_successful'] = array('eq',0);
-        $condition['gb.end_time'] = array('gt',time());
-        $condition['gb.mark'] = array('eq',0);
-        $condition['gb.is_pay'] = array('eq',1);
-        $condition['g.is_on_sale'] = array('eq',1);
-        $condition['g.show_type'] = array('eq',0);
-        $condition['g.is_audit'] = array('eq',1);
+        $rdsname = "get_Free_Order".$free_num.$page.$pagesize;
+        if (empty(redis($rdsname)) || redis("get_Free_Order_status") == "1") {//是否有缓存
+            $condition['gb.free'] = array('eq', $free_num);
+            $condition['gb.is_successful'] = array('eq', 0);
+            $condition['gb.end_time'] = array('gt', time());
+            $condition['gb.mark'] = array('eq', 0);
+            $condition['gb.is_pay'] = array('eq', 1);
+            $condition['g.is_on_sale'] = array('eq', 1);
+            $condition['g.show_type'] = array('eq', 0);
+            $condition['g.is_audit'] = array('eq', 1);
 
-        $count = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
-            ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
-            ->where($condition)->count();
-        $prom = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
-            ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
-            ->where($condition)
-            ->field('gb.id as prom_id,gb.goods_id,gb.price,gb.goods_num as prom,gb.free,gb.start_time,gb.end_time,gb.order_id,og.spec_key')
-            ->page($page,$pagesize)
-            ->select();
+            $count = M('group_buy')->alias('gb')
+                ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
+                ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
+                ->where($condition)->count();
+            $prom = M('group_buy')->alias('gb')
+                ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
+                ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
+                ->where($condition)
+                ->field('gb.id as prom_id,gb.goods_id,gb.price,gb.goods_num as prom,gb.free,gb.start_time,gb.end_time,gb.order_id,og.spec_key')
+                ->page($page, $pagesize)
+                ->select();
 
-        //将免单价格重新计算
-        $goods_id = "";
-        $key = "";
-        foreach($prom as $value){
-            $goods_id .= $value['goods_id'].",";
-        }
-        $goods_id = substr($goods_id, 0, -1);
-        $spec_goods_price = M('spec_goods_price')->where(array("goods_id"=>array("in",$goods_id)))->field('key,prom_price')->select();
-        $arr = array();
-        foreach($prom as $v){
-            foreach($spec_goods_price as $value){
-                if ($v['spec_key'] == $value['key']){
-                    $arr[]['prom_price'] = $value['prom_price'];
+            //将免单价格重新计算
+            $goods_id = "";
+            foreach ($prom as $value) {
+                $goods_id .= $value['goods_id'] . ",";
+            }
+            $goods_id = substr($goods_id, 0, -1);
+            $spec_goods_price = M('spec_goods_price')->where(array("goods_id" => array("in", $goods_id)))->field('key,prom_price')->select();
+            $arr = array();
+            foreach ($prom as $v) {
+                foreach ($spec_goods_price as $value) {
+                    if ($v['spec_key'] == $value['key']) {
+                        $arr[]['prom_price'] = $value['prom_price'];
+                    }
                 }
             }
-        }
-        //将免单价格重新计算
-        for($i=0;$i<count($arr);$i++){
-            //$spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
-            $price = ($arr[$i]['prom_price'] * $prom[$i]['prom']) / ($prom[$i]['prom'] - $prom[$i]['free']);
-            $c = $this->getFloatLength($price);
+            //将免单价格重新计算
+            for ($i = 0; $i < count($arr); $i++) {
+                //$spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
+                $price = ($arr[$i]['prom_price'] * $prom[$i]['prom']) / ($prom[$i]['prom'] - $prom[$i]['free']);
+                $c = $this->getFloatLength($price);
 
-            if ($c > 3) {
-                $price = $this->operationPrice($price);
+                if ($c > 3) {
+                    $price = $this->operationPrice($price);
+                }
+                $prom[$i]['price'] = sprintf("%.2f", $price);
+                $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
             }
-            $prom[$i]['price'] = sprintf("%.2f", $price);
-            $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
+
+            $data = $this->listPageData($count, $prom);
+
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json));//写入缓存
+            redisdelall("get_Free_Order_status");//改变状态
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
         }
-
-//        for($i=0;$i<count($prom);$i++){
-//            $spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
-//            $price = ($spec_price*$prom[$i]['prom'])/($prom[$i]['prom']-$prom[$i]['free']);
-//            $c = $this->getFloatLength($price);
-//            if($c>3){
-//                $price = $this->operationPrice($price);
-//            }
-//            $prom[$i]['price'] = sprintf("%.2f", $price);
-//            $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
-//        }
-
-
-        $data=$this->listPageData($count,$prom);
-
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
         if(I('ajax_get')) {
             $this->getJsonp($json);
         }
