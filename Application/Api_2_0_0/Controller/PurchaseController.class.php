@@ -13,12 +13,9 @@
 namespace Api_2_0_0\Controller;
 
 
-use Admin\Controller\BaseController;
-use Api_2_0_0\Controller\AlipayController;
-use Api_2_0_0\Controller\QQPayController;
-use Api_2_0_0\Controller\WeixinpayController;
+use Api_2_0_0\Controller;
 
-class PurchaseController
+class PurchaseController extends  BaseController
 {
     /*
 	 * type:  0、参团、1、开团、2、单买
@@ -145,16 +142,16 @@ class PurchaseController
             }
             //判断用户是否已经生成未付款订单
             $on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=0 and `is_cancel`=0' )->find();
-//            if(!empty($on_buy))
-//            {
-//                $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
-//                redisdelall("getBuy_lock_" . $goods_id);//删除锁
-//                if(!empty($ajax_get)){
-//                    echo "<script> alert('".$json['msg']."') </script>";
-//                    exit;
-//                }
-//                exit(json_encode($json));
-//            }
+            if(!empty($on_buy))
+            {
+                $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if(!empty($ajax_get)){
+                    echo "<script> alert('".$json['msg']."') </script>";
+                    exit;
+                }
+                exit(json_encode($json));
+            }
             if($result['mark']!=0){
                 $num2 = M('group_buy')->where('`id`='.$result['mark'].' or `mark` = '.$result['mark'].' and `is_pay`=1')->count();
             }else{
@@ -409,12 +406,16 @@ class PurchaseController
                     $qqPay = new QQPayController();
                     $pay_detail = $qqPay->getQQPay($order);
                 }
-                $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail)); //销量、库存
+                $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
+
+                $this->order_redis_status_ref($user_id);
+                //销量、库存
                 M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
                 //商品规格库存
                 $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
                 M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
                 M('merchant')->where('`id`='.$spec_name['store_id'])->setInc('sales',$num);
+
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -678,7 +679,10 @@ class PurchaseController
                 $pay_detail = $qqPay->getQQPay($order);
                 // End code by lcy
             }
-            $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail)); //销量、库存
+            $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
+
+            $this->order_redis_status_ref($user_id);
+            //销量、库存
             M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
             //商品规格库存
             $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
@@ -859,9 +863,10 @@ class PurchaseController
             }elseif($order['pay_code'] == 'qpay'){
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
-                // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
+
+            $this->order_redis_status_ref($only_userid);
             M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
             //商品规格库存
             $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();

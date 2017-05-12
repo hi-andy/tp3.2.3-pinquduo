@@ -434,7 +434,7 @@ class GoodsController extends BaseController {
 		//把所有人的状态改成发货
 		for($i=0;$i<$prom_num;$i++)
 		{
-            redis("getUserPromList_status".$join_num[$i]['id'], "1");
+            redis("getUserPromList_status".$join_num[$i]['user_id'], "1");
 			if(!empty($join_num[0]['is_raise']))
 			{
 				if($i==0)
@@ -457,8 +457,8 @@ class GoodsController extends BaseController {
 
 		if($free_num>0)//如果有免单，才执行getRand操作
 		{
+			redis("get_Free_Order_status","1");
 			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
-
 			//给参团人和开团人推送信息
 //			$user_ids = M('order')->where(array('order_id'=>array('in',$order_ids)))->field('user_id')->select();
 			$message = "你参与的团购,即将揭晓免单人";

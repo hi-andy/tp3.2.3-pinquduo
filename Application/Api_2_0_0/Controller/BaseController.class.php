@@ -140,25 +140,18 @@ class BaseController extends Controller {
     function getStatus($order)//订单表详情
     {
         if ($order['order_type']==1) {
-            //待支付
             $status['annotation'] = '待付款';
         } elseif ($order['order_type']==2) {
-            //待发货
             $status['annotation'] = '待发货';
         } elseif ($order['order_type']==3) {
-            //待收货
             $status['annotation'] = '待收货';
         } elseif ($order['order_type']==4) {
-            //'已完成'
             $status['annotation'] = '已完成';
         } elseif ($order['order_type']==5) {
-            //'已取消'
             $status['annotation'] = '已取消';
         } elseif ($order['order_type']==6) {
-            //'已完成'
             $status['annotation'] = '待换货';
         } elseif ($order['order_type']==7) {
-            //'已完成'
             $status['annotation'] = '已换货';
         }elseif($order['order_type']==8) {
             $status['annotation'] = '待退货';
@@ -665,7 +658,9 @@ class BaseController extends Controller {
         }
     }
 
-    public function getdb(){
-
+    public function order_redis_status_ref($user_id){
+        redis("getOrderList_status_".$user_id,"1");
+        redis("getCountUserOrder_status".$user_id,"1");
+        redisdelall("TuiSong*");//删除推送缓存
     }
 }

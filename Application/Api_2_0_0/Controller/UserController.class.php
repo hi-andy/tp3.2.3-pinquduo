@@ -650,13 +650,13 @@ class UserController extends BaseController {
         $data = $this->userLogic->cancel_order($user_id,$id);
         $json = $data;
         $returnjson = $json;
-        if(!$user_id > 0 || !$id > 0)
-        {
+        if(!$user_id > 0 || !$id > 0){
             $json = array('status'=>-1,'msg'=>'参数有误','result'=>'');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
             $returnjson = json_encode($json);
         }
+        $this->order_redis_status_ref($id);
         if(!empty($ajax_get))
             $this->getJsonp($json);
 
@@ -937,7 +937,7 @@ class UserController extends BaseController {
                 }
             M('goods')->where('`goods_id`='.$order_sn['goods_id'])->setInc('store_count',$order_sn['num']);
             M('order')->where('`order_id`='.$order_id)->data($return)->save();
-
+            $this->order_redis_status_ref($user_id);
             $json = array('status'=>1,'msg'=>'申请成功,客服第一时间会帮你处理!');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
@@ -1705,11 +1705,6 @@ class UserController extends BaseController {
                 }
                 redis("getOrderList_status_".$order['user_id'], "1");
                 redisdelall("TuiSong*");//删除推送缓存
-                //跨区同步订单、推送、详情缓存
-                $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
-                async_get_url($url);
-                $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
-                async_get_url($url);
             }
 
             //将单买超时支付的订单设置成取消
@@ -1719,13 +1714,7 @@ class UserController extends BaseController {
                     $data_time = $self_cancel_order[$j]['add_time'] + 2 * 60;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
-                        redis("getOrderList_status_".$self_cancel_order[$j]['user_id'], "1");
-                        redisdelall("TuiSong*");//删除推送缓存
-                        //跨区同步订单、推送、详情缓存
-                        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
-                        async_get_url($url);
-                        $url = array("http://139.196.255.40/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
-                        async_get_url($url);
+                        $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
                     }
                     {
                         //优惠卷回到原来的数量
@@ -1752,13 +1741,7 @@ class UserController extends BaseController {
                     if ($data_time <= time()) {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
-                        redis("getOrderList_status_".$join_prom_order[$z]['user_id'], "1");
-                        redisdelall("TuiSong*");//删除推送缓存
-                        //跨区同步订单、推送、详情缓存
-                        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
-                        async_get_url($url);
-                        $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
-                        async_get_url($url);
+                        $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
                     }
                 }
                 $where['id'] = array('IN', array_column($id, 'id'));
@@ -1801,13 +1784,7 @@ class UserController extends BaseController {
                             $n['id'][] = "'" . $v['id'] . "',";
                             $n['order_id'][] = "'" . $v['order_id'] . "',";
                         }
-                        redisdelall("getOrderList_".$v1['user_id']."*");//删除订单缓存
-                        redisdelall("TuiSong*");//删除推送缓存
-                        //跨区同步订单、推送、详情缓存
-                        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
-                        async_get_url($url);
-                        $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
-                        async_get_url($url);
+                        $this->order_redis_status_ref($v1['user_id']);
                     }
                     $prom_man[$k] = $n;
                 }
@@ -1836,13 +1813,7 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($ids)->data($data)->save();
                 for ($oi=0; $oi<$one_buy_number; $oi++){
-                    redisdelall("getOrderList_".$one_buy[$oi]['user_id']."*");//删除订单缓存
-                    redisdelall("TuiSong*");//删除推送缓存
-                    //跨区同步订单、推送、详情缓存
-                    $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
-                    async_get_url($url);
-                    $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
-                    async_get_url($url);
+                    $this->order_redis_status_ref($one_buy[$oi]['user_id']);
                 }
             }
 
@@ -1857,13 +1828,7 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($order_id_array)->data($data)->save();
                 for ($gi=0; $gi<$group_nuy_number; $gi++){
-                    redisdelall("getOrderList_".$group_nuy[$gi]['user_id']."*");//删除订单缓存
-                    redisdelall("TuiSong*");//删除推送缓存
-                    //跨区同步订单、推送、详情缓存
-                    $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
-                    async_get_url($url);
-                    $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
-                    async_get_url($url);
+                    $this->order_redis_status_ref($group_nuy[$gi]['user_id']);
                 }
             }
 
