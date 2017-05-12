@@ -392,7 +392,6 @@ class PurchaseController
                 }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
-
                 if($order['pay_code']=='weixin'){
                     $weixinPay = new WeixinpayController();
                     //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')

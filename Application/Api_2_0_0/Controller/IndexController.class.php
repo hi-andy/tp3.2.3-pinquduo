@@ -36,30 +36,19 @@ class IndexController extends BaseController {
             foreach ($category as &$v) {
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
-            if ($version == '1.3.0' || $version == '2.0.0') {
-                $category[4]['cat_name'] = '为我拼';
-                $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
-                $category[7]['cat_name'] = '省钱大法';
-                $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
-                //中间活动模块
-                $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
-                $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
-            }
-            if($version == '2.0.0'){
-                $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
-                $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
-            }else{
-                $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1')->count();
-                $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page,$pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free,the_raise')->select();
-                $result2 = $this->listPageData($count,$goods);
-                foreach ($result2['items'] as &$v) {
-                    $v['original'] = TransformationImgurl($v['original_img']);
-                    $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-                    $v['original_img'] = TransformationImgurl($v['original_img']);
-                }
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
-            }
+
+            $category[4]['cat_name'] = '为我拼';
+            $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
+            $category[7]['cat_name'] = '省钱大法';
+            $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
+            //中间活动模块
+            $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
+            $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
+
+            $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
+            $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
+
 
 
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -849,4 +838,23 @@ class IndexController extends BaseController {
         redisdelall($rdsname);
         echo "删除 ".$rdsname;
     }
+
+    //趣多严选
+	public function getStrict_selection(){
+		$page = I('page',1);
+		$pagesize = I('pagesize',10);
+		$rdsname = "getStrict_selection".$page.$pagesize;
+		if(empty(redis($rdsname))) {//判断是否有缓存
+			$where = '`is_special`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+			$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+			redis($rdsname, serialize($json), REDISTIME);//写入缓存
+		} else {
+			$json = unserialize(redis($rdsname));//读取缓存
+		}
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
+	}
 }
