@@ -17,6 +17,9 @@ use Api_2_0_0\Controller;
 
 class PurchaseController extends  BaseController
 {
+    public function _initialize() {
+        $this->encryption();
+    }
     /*
 	 * type:  0、参团、1、开团、2、单买
 	 */
@@ -61,13 +64,15 @@ class PurchaseController extends  BaseController
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))
                 $this->getJsonp($json);
-
-            $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-        }else{
-            $spec_res = M('goods')->where('`goods_id`='.$goods_id)->find();
-        }
-        if ($spec_res['store_count'] <= 0) {
-            $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+            exit(json_encode($json));
+        }elseif ($spec_key['store_count']<$num){
+            $json = array('status' => -1, 'msg' => '库存不足！');
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }elseif ($spec_res['store_count']<($spec_res['store_count']/2)&&$type==1){
+            $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))
                 $this->getJsonp($json);
@@ -77,8 +82,7 @@ class PurchaseController extends  BaseController
         if($type == 0)
         {
             $result = M('group_buy')->where("`id` = $prom_id")->find();
-            if($result['end_time']<time())
-            {
+            if($result['end_time']<time()){
                 $json = array('status'=>-1,'msg'=>'该团已结束了，请选择别的团参加');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if(!empty($ajax_get)){
@@ -225,7 +229,7 @@ class PurchaseController extends  BaseController
             if(!empty($prom)){
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3){
+                if($count>=3){
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
@@ -234,7 +238,7 @@ class PurchaseController extends  BaseController
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3){
+                if($count>=3){
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
@@ -475,7 +479,7 @@ class PurchaseController extends  BaseController
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
@@ -485,7 +489,7 @@ class PurchaseController extends  BaseController
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
@@ -500,7 +504,7 @@ class PurchaseController extends  BaseController
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
@@ -510,7 +514,7 @@ class PurchaseController extends  BaseController
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];

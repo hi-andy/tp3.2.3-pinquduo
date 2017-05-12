@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-    $redis = new Redis();
+    /*$redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
-    $redis->delete($redis->keys($key));
+    $redis->delete($redis->keys($key));*/
 }
 /**
  * @param $arr

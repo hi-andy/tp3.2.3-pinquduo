@@ -30,7 +30,7 @@ class BaseController extends Controller {
         $this->user_id = I("user_id",0); // 用户id   
         if($this->user_id)
         {
-            $this->user = M('users')->where("user_id = {$this->user_id}")->find();
+            $this->user = M('users', '', 'DB_CONFIG2')->where("user_id = {$this->user_id}")->find();
         }
     }
 
@@ -38,7 +38,7 @@ class BaseController extends Controller {
      * 初始化操作
      */
     public function _initialize() {
-        //$this->encryption();
+//        $this->encryption();
     }
 
     /**
@@ -78,7 +78,7 @@ class BaseController extends Controller {
      * 获取全部地址信息
      */
     public function allAddress(){
-        $data =  M('region')->select();
+        $data =  M('region', '', 'DB_CONFIG2')->select();
         $json_arr = array('status'=>1,'msg'=>'成功!','result'=>$data);
         $json_str = json_encode($json_arr);
         exit($json_str);
@@ -352,7 +352,7 @@ class BaseController extends Controller {
         $out_trade_no = $_GET['order_sn'];
         //商户退款单号，商户自定义，此处仅作举例
         $out_refund_no = "$out_trade_no".time();
-        $order_info = M('order')->where(array('order_sn'=>$out_trade_no))->find();
+        $order_info = M('order', '', 'DB_CONFIG2')->where(array('order_sn'=>$out_trade_no))->find();
         //总金额需与订单号out_trade_no对应，demo中的所有订单的总金额为1分
         $total_fee =  	$order_info['order_amount'] * 100;
         $refund_fee = $order_info['order_amount'] * 100;
@@ -452,7 +452,7 @@ class BaseController extends Controller {
      * */
     public function getStoreWhere($where,$store_name)
     {
-        $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->select();
+        $store_id = M('merchant', '', 'DB_CONFIG2')->where("`store_name` like '%".$store_name."%'")->select();
         $store_ids =null;
         $num = count($store_id);
         for($i=0;$i<$num;$i++)
@@ -516,12 +516,12 @@ class BaseController extends Controller {
     //调度商品详情
     function  getGoodsInfo($goods_id,$type='')
     {
-        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img')->find();
+        $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img')->find();
 
         //商品详情
         $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
         $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
+        $store = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
         $goods['original_img'] =$goods['original']= TransformationImgurl($goods['original_img']);
@@ -538,8 +538,8 @@ class BaseController extends Controller {
     //调度商品列表
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc,sort asc')
     {
-        $count = M('goods')->where($where)->count();
-        $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
+        $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
             $v['original'] = TransformationImgurl($v['original_img']);
@@ -550,8 +550,8 @@ class BaseController extends Controller {
 
     function get_OrderList($where,$page,$pagesize)
     {
-        $count = M('order')->where($where)->count();
-        $all = M('order')
+        $count = M('order', '', 'DB_CONFIG2')->where($where)->count();
+        $all = M('order', '', 'DB_CONFIG2')
             ->where($where)
             ->order('order_id desc')
             ->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
@@ -563,8 +563,8 @@ class BaseController extends Controller {
 
     function getPromList($where,$page,$pagesize)
     {
-        $count = M('group_buy')->where($where)->count();
-        $all = M('group_buy')->alias('b')
+        $count = M('group_buy', '', 'DB_CONFIG2')->where($where)->count();
+        $all = M('group_buy', '', 'DB_CONFIG2')->alias('b')
             ->join('INNER JOIN tp_order o on b.order_id = o.order_id ')
             ->join('INNER JOIN tp_goods g on g.goods_id = b.goods_id ')
             ->where($where)
@@ -586,31 +586,31 @@ class BaseController extends Controller {
             $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
             //判断是不是团购订单
             if (!empty($all[$i]['prom_id'])) {
-                $mark = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,end_time,goods_num,order_id,goods_id,mark,goods_num')->find();
+                $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,end_time,goods_num,order_id,goods_id,mark,goods_num')->find();
                 $all[$i]['goods_num'] = $mark['goods_num'];
                 if ($mark['mark'] == 0) {
-                    $num = M('group_buy')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
                     $all[$i]['type'] = 1;
                     $order_status = $this->getPromStatus($all[$i], $mark, $num);
                     $all[$i]['annotation'] = $order_status['annotation'];
                     $all[$i]['order_type'] = $order_status['order_type'];
                 } elseif ($mark['mark'] != 0) {
-                    $perant = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
-                    $num = M('group_buy')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
+                    $perant = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
                     $all[$i]['type'] = 0;
                     $order_status = $this->getPromStatus($all[$i], $mark, $num);
                     $all[$i]['annotation'] = $order_status['annotation'];
                     $all[$i]['order_type'] = $order_status['order_type'];
                 }
-                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = ".$mark['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
-                $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+                $all[$i]['goodsInfo'] = $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$mark['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
+                $all[$i]['goodsInfo']['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
             } elseif (empty($all[$i]['prom_id'])) {
                 $all[$i]['type'] = 2;
                 $order_status = $this->getStatus($all[$i]);
                 $all[$i]['annotation'] = $order_status['annotation'];
                 $all[$i]['order_type'] = $order_status['order_type'];
-                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = ".$all[$i]['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
-                $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $all[$i]['store_id'])->field('id,store_name,store_logo,sales')->find();
+                $all[$i]['goodsInfo'] = $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$all[$i]['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
+                $all[$i]['goodsInfo']['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $all[$i]['store_id'])->field('id,store_name,store_logo,sales')->find();
             }
 
         }
