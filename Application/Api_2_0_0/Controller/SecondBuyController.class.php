@@ -15,21 +15,16 @@ namespace Api_2_0_0\Controller;
 use Think\AjaxPage;
 use Think\Controller;
 class SecondBuyController extends Controller {
-
-    public function _initialize() {
-        $this->encryption();
-    }
-
-	public function index()
-	{
+    public function index()
+    {
         $times = C('SecondBuy')['times']; //抢购时间段
-		$currentTime    = 0;   //当前抢购时间
-		for ($i=0; $i<count($times); $i++) {
-		    $startTime = strtotime(date('Y-m-d').$times[$i]);
-		    if (time() > $startTime && time() < $startTime + 3600 * 3) {
+        $currentTime    = 0;   //当前抢购时间
+        for ($i=0; $i<count($times); $i++) {
+            $startTime = strtotime(date('Y-m-d').$times[$i]);
+            if (time() > $startTime && time() < $startTime + 3600 * 3) {
                 $currentTime = intval($times[$i]);
                 //echo $times[$i];exit;
-		        $times[$i] = array('time'=>$times[$i]);
+                $times[$i] = array('time'=>$times[$i]);
                 $times[$i]['notice'] = '正在抢';
             } elseif (time() < $startTime) {
                 $times[$i] = array('time'=>$times[$i]);
@@ -46,7 +41,7 @@ class SecondBuyController extends Controller {
         //$where = ' start_date=' . strtotime('2017-04-20') . ' AND start_time=' . $startTime;
         $count = M('goods_activity')->where($where)->count();
 
-        $sql = 'SELECT ga.id,ga.start_time,ga.status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
+        $sql = 'SELECT ga.id,ga.start_time,g.store_count status,g.goods_id,g.goods_name,g.shop_price,g.prom_price,g.original_img,c.name cat_name,m.id store_id FROM tp_goods_activity ga 
                 LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category c ON g.cat_id=c.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id 
@@ -65,10 +60,10 @@ class SecondBuyController extends Controller {
         $this->assign('pages', $count);// 赋值分页输出
         $this->assign('time',$times);
         $this->assign('notBuy',$notBuy);
-		$this->display();
-	}
+        $this->display();
+    }
 
-	/**
+    /**
      * ajax 返回秒杀商品列表
      */
     public function ajaxGetList ()

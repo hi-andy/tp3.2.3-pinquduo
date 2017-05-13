@@ -63,7 +63,11 @@ class PurchaseController extends  BaseController
         if(!empty($spec_key)) {
             $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
         }else{
-            $spec_res = M('goods')->where('`goods_id`='.$goods_id)->find();
+            $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
         }
         if ($spec_res['store_count'] <= 0) {
             $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
