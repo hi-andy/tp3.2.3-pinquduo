@@ -517,6 +517,7 @@ class OrderLogic extends RelationModel
 	    }
 	    M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
 	    $s = $this->orderActionLog($order['order_id'],'delivery',$data['note']);//操作日志
+        redis("getOrderList_status_".$order['user_id'], "1");
 	    return $s && $r;
     }
 
