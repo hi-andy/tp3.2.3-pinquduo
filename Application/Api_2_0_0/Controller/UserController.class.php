@@ -825,7 +825,7 @@ class UserController extends BaseController {
                         $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $order[$i]['goods_id'])->field('goods_name,original_img')->find();
                         $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'], 400, 400);
                         $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $order[$i]['store_id'])->field('store_name,store_logo')->find();
-                        $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $order[$i]['storeInfo']['store_logo'];
+                        $order[$i]['storeInfo']['store_logo'] = TransformationImgurl($order[$i]['storeInfo']['store_logo']);
                         $order[$i]['goods_num'] = $order[$i]['goods_num'];
 
                         $order_status = $this->getStatus($order[$i]);

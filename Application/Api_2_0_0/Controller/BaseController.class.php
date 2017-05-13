@@ -228,46 +228,63 @@ class BaseController extends Controller {
      */
     public function mobile_uploadimage($file='')
     {
-        $upload = new \Think\Upload();
-        //设置上传文件大小
-        $upload->maxSize=30120000;
-
-        $upload->rootPath = './'.C("UPLOADPATH") ; // 设置附件上传目录
-
-        //设置上传文件规则
-        $upload->saveRule='uniqid';
-        //设置需要生成缩略图，仅对图像文件有效
-        $upload->thumb = true;
-        // 设置引用图片类库包路径
-        $upload->imageClassPath ='@.ORG.Image';
-
+//        $upload = new \Think\Upload();
+//        //设置上传文件大小
+//        $upload->maxSize=30120000;
+//
+//        $upload->rootPath = './'.C("UPLOADPATH") ; // 设置附件上传目录
+//
+//        //设置上传文件规则
+//        $upload->saveRule='uniqid';
+//        //设置需要生成缩略图，仅对图像文件有效
+//        $upload->thumb = true;
+//        // 设置引用图片类库包路径
+//        $upload->imageClassPath ='@.ORG.Image';
+//
         if(!$file){
             $file=$_FILES;
         }
+//
+//        $result=$upload->upload($file);
+//
+//        if(!$result )
+//        {
+//            return array();      //不存在图片则返回空
+//        }else{
+//            $endreturn=array();
+//            foreach ($result as $file) {
+//                $src=$file['savepath'].$file['savename'];
+//                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
+//                /*生成缩略图*/
+//                $image = new \Think\Image();
+//                $image->open(C("UPLOADPATH") . $src);
+//                $namearr=explode('.',$file['savename']);
+//                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
+//                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
+//                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
+//                $src=$file['savepath'].$file['savename'];
+//                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
+//                $endreturn[]=$returnData;
+//            }
+//            return $endreturn;
+//        }
 
-        $result=$upload->upload($file);
+        //调用七牛云上传
+        redis("mobile_uploadimage", serialize($file),REDISTIME);
+        $suffix = substr(strrchr($file['picture']['name'], '.'), 1);
+        $files = array(
+            "key" => time().rand(0,9).".".$suffix,
+            "filePath" => $file['picture']['tmp_name'],
+            "mime" => $file['picture']['type']
+        );
+        $qiniu = new \Admin\Controller\QiniuController();
+        $info = $qiniu->uploadfile("imgbucket", $files);
 
-        if(!$result )
-        {
-            return array();      //不存在图片则返回空
-        }else{
-            $endreturn=array();
-            foreach ($result as $file) {
-                $src=$file['savepath'].$file['savename'];
-                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
-                /*生成缩略图*/
-                $image = new \Think\Image();
-                $image->open(C("UPLOADPATH") . $src);
-                $namearr=explode('.',$file['savename']);
-                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
-                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
-                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
-                $src=$file['savepath'].$file['savename'];
-                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
-                $endreturn[]=$returnData;
-            }
-            return $endreturn;
-        }
+        $return_data['origin'] = CDN."/".$info[0]["key"];
+        $return_data['width'] = '100';
+        $return_data['height'] = '100';
+        $return_data['small'] = CDN."/".$info[0]["key"];
+        return $return_data;
     }
 
     public function h5_uploadimage(){
@@ -733,19 +750,19 @@ class BaseController extends Controller {
 
     //验签
     public function encryption(){
-        $arr = empty($_GET) ? $_POST : $_GET;
-        ksort ($arr);
-        $sig = $arr['sig'];
-        unset($arr['sig']);
-        $str = "";
-        foreach ($arr as $k => $v){
-            $str .= $k . "=" . $v . "&";
-        }
-        $str .= "sig=pinquduo_sing";
-        if (md5($str) != $sig) {
-            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
-            exit(json_encode($json_arr));
-        }
+//        $arr = empty($_GET) ? $_POST : $_GET;
+//        ksort ($arr);
+//        $sig = $arr['sig'];
+//        unset($arr['sig']);
+//        $str = "";
+//        foreach ($arr as $k => $v){
+//            $str .= $k . "=" . $v . "&";
+//        }
+//        $str .= "sig=pinquduo_sing";
+//        if (md5($str) != $sig) {
+//            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
+//            exit(json_encode($json_arr));
+//        }
     }
 
     public function order_redis_status_ref($user_id){

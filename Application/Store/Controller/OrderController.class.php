@@ -537,7 +537,7 @@ class OrderController extends BaseController {
                 exit;
             }
         }
-        
+        $return_goods['imgs'] = str_replace("\\","",$return_goods['imgs']);
         $this->assign('id',$id); // 用户
         $this->assign('user',$user); // 用户
         $this->assign('goods',$goods);// 商品
