@@ -1831,7 +1831,12 @@ class UserController extends BaseController {
             }
 
             //更新限时秒杀列表
-            $is_special = M('goods','','')->where(array('is_special'=>array('eq',1),'on_time'=>array('egt',time())))->count();
+            $is_special = M('goods','','')
+                ->where(array(
+                    'is_special'=>array('EQ',1),
+                    'on_time'=>array('ELT',time()),
+                    'store_count'=>array('GT',0)))
+                ->count();
             if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
             
             echo 'successful';
