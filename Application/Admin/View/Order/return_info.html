@@ -82,13 +82,7 @@
                                     <td>用户上传照片：</td>
                                     <td>
                                         <volist name="return_goods[imgs]" id="item">
-                                            <a href="<PHP>
-                                              if(strstr($item,'200_200'))
-                                                 {
-                                                 $img= str_replace('200_200','',$item);
-                                                 echo $img;
-                                                 }
-                                             </PHP>" target="_blank"><img src="{$item}" width="85" height="85" /></a>&nbsp;&nbsp;&nbsp;
+                                            <a href="{$item}" target="_blank"><img src="{$item}" width="85" height="85" /></a>&nbsp;&nbsp;&nbsp;
                                         </volist>
                                     </td>
                                 </tr>                                    
