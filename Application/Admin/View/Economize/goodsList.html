@@ -114,7 +114,7 @@
     function delsubmit(){
         var pg = [];
         //过滤选择重复商品
-        $('input[name*="id"]').each(function(i,o){
+        $('input[name*="goods_id"]').each(function(i,o){
             pg.push($(o).val());
         });
         if(pg.length==0){

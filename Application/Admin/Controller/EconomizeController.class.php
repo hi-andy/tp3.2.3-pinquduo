@@ -133,10 +133,10 @@ class EconomizeController extends Controller {
         $data = I('post.');
         //print_r($data);exit;
         foreach ($data['id'] as $value) {
-            $res = M('goods_activity')->where('id='.$value)->delete();
+            $res = M('goods_activity')->where('goods_id='.$value)->delete();
+            $res = M('goods')->where('goods_id='.$value)->save(array('is_special'=>0,'is_show'=>0));
         }
-        if($res)
-        {
+        if($res){
             $this->success("删除成功",U('Economize/goodsList'));
         }else{
             $this->success("删除失败",U('Economize/goodsList'));
