@@ -1427,12 +1427,4 @@ class GoodsController extends BaseController {
 
 		return $time;
 	}
-
-	//操作价格
-	public function test($price=0.166666)
-	{
-		$price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
-		$price = $price+0.01;
-		echo $price;
-	}
 }

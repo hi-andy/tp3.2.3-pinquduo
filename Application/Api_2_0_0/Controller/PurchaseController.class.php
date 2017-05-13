@@ -20,7 +20,6 @@ class PurchaseController extends  BaseController
 
     public function _initialize() {
         $this->encryption();
-        $this->encryption();
     }
 
     /*
