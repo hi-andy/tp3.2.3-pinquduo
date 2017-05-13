@@ -752,6 +752,7 @@ class BaseController extends Controller {
     public function order_redis_status_ref($user_id){
         redis("getOrderList_status_".$user_id,"1");
         redis("getCountUserOrder_status".$user_id,"1");
+        redis("return_goods_list_status".$user_id,"1");
         redisdelall("TuiSong*");//删除推送缓存
     }
 }

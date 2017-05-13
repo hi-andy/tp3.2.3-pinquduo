@@ -785,53 +785,61 @@ class UserController extends BaseController {
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        $conditon = 'order_type in (6,7,8,9,12,13) and `user_id`='.$user_id;
-        if($version=='2.0.0'){
-            $data = $this->get_OrderList($conditon,$page,$pagesize);
-        }else{
-            $count = M('order', '', 'DB_CONFIG2')->where($conditon)->count();
-            $order = M('order', '', 'DB_CONFIG2')->where($conditon)->page($page,$pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,is_return_or_exchange,order_type')->order('add_time desc') ->select();
+        if (redis("return_goods_list_status".$user_id) == "1") {
+            redisdelall("return_goods_list".$user_id."*");
+            redisdelall("return_goods_list_status".$user_id);
+        }
+        $rdsname = "return_goods_list".$user_id.$page.$pagesize;
+        if(empty(redis($rdsname))) {
+            $conditon = 'order_type in (6,7,8,9,12,13) and `user_id`=' . $user_id;
+            if ($version == '2.0.0') {
+                $data = $this->get_OrderList($conditon, $page, $pagesize);
+            } else {
+                $count = M('order', '', 'DB_CONFIG2')->where($conditon)->count();
+                $order = M('order', '', 'DB_CONFIG2')->where($conditon)->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,is_return_or_exchange,order_type')->order('add_time desc')->select();
 
-            for($i=0;$i<count($order);$i++)
-            {
-                $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order[$i]['order_id'])->field('spec_key_name')->find();
-                if($order[$i]['prom_id']!=null)//团购订单
-                {
-                    $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$order[$i]['prom_id'])->find();
-                    $order[$i]['end_time'] = $mark['end_time'];
-                    $order[$i]['goods_price'] = $mark['goods_price'];
-                    $order[$i]['mark'] = $mark['mark'];
-                    if(!empty($mark['mark']))
+                for ($i = 0; $i < count($order); $i++) {
+                    $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`=' . $order[$i]['order_id'])->field('spec_key_name')->find();
+                    if ($order[$i]['prom_id'] != null)//团购订单
                     {
-                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark`='.$mark['mark'])->count();
-                    }else{
-                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark`='.$mark['id'])->count();
+                        $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id`=' . $order[$i]['prom_id'])->find();
+                        $order[$i]['end_time'] = $mark['end_time'];
+                        $order[$i]['goods_price'] = $mark['goods_price'];
+                        $order[$i]['mark'] = $mark['mark'];
+                        if (!empty($mark['mark'])) {
+                            $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=' . $mark['mark'])->count();
+                        } else {
+                            $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=' . $mark['id'])->count();
+                        }
+
+                        $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $order[$i]['goods_id'])->field('goods_name,original_img')->find();
+                        $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'], 400, 400);
+                        $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $order[$i]['store_id'])->field('store_name,store_logo')->find();
+                        $order[$i]['storeInfo']['store_logo'] = $order[$i]['storeInfo']['store_logo'];
+                        $order[$i]['goods_num'] = $mark['goods_num'];
+
+                        $order_status = $this->getPromStatus($order[$i], $mark, $num);
+                        $order[$i]['annotation'] = $order_status['annotation'];
+                        $order[$i]['order_type'] = $order_status['order_type'];
+                    } else {
+                        $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $order[$i]['goods_id'])->field('goods_name,original_img')->find();
+                        $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'], 400, 400);
+                        $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $order[$i]['store_id'])->field('store_name,store_logo')->find();
+                        $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $order[$i]['storeInfo']['store_logo'];
+                        $order[$i]['goods_num'] = $order[$i]['goods_num'];
+
+                        $order_status = $this->getStatus($order[$i]);
                     }
-
-                    $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order[$i]['goods_id'])->field('goods_name,original_img')->find();
-                    $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'],400,400);
-                    $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$order[$i]['store_id'])->field('store_name,store_logo')->find();
-                    $order[$i]['storeInfo']['store_logo'] = $order[$i]['storeInfo']['store_logo'];
-                    $order[$i]['goods_num'] = $mark['goods_num'];
-
-                    $order_status = $this->getPromStatus($order[$i],$mark,$num);
+                    $order[$i] = $this->FormatOrderInfo($order[$i]);
                     $order[$i]['annotation'] = $order_status['annotation'];
                     $order[$i]['order_type'] = $order_status['order_type'];
-                }else{
-                    $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order[$i]['goods_id'])->field('goods_name,original_img')->find();
-                    $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'],400,400);
-                    $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$order[$i]['store_id'])->field('store_name,store_logo')->find();
-                    $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
-                    $order[$i]['goods_num'] = $order[$i]['goods_num'];
-
-                    $order_status = $this->getStatus($order[$i]);
+                    $order[$i]['key_name'] = $goods_spec['spec_key_name'];
                 }
-                $order[$i] = $this->FormatOrderInfo($order[$i]);
-                $order[$i]['annotation'] = $order_status['annotation'];
-                $order[$i]['order_type'] = $order_status['order_type'];
-                $order[$i]['key_name']=$goods_spec['spec_key_name'];
+                $data = $this->listPageData($count, $order);
             }
-            $data = $this->listPageData($count,$order);
+            redis($rdsname, serialize($data));
+        } else {
+            $data = unserialize(redis($rdsname));
         }
 
 
@@ -1831,7 +1839,12 @@ class UserController extends BaseController {
             }
 
             //更新限时秒杀列表
-            $is_special = M('goods','','')->where(array('is_special'=>array('eq',1),'on_time'=>array('egt',time())))->count();
+            $is_special = M('goods','','')
+                ->where(array(
+                    'is_special'=>array('EQ',1),
+                    'on_time'=>array('ELT',time()),
+                    'store_count'=>array('GT',0)))
+                ->count();
             if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
 
             echo 'successful';
@@ -2051,13 +2064,13 @@ class UserController extends BaseController {
         $type = I('type',0);//0.全部 1.拼团中 2.待发货 3.待收货 4.待付款 5.已完成
         $page = I('page',1);
         $pagesize = I('pagesiaze',20);
-//        $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
-//        if (redis("getOrderList_status_".$user_id) == "1"){
-//            redisdelall("getOrderList_".$user_id."*");//删除旧缓存
-//            redisdelall("getOrderList_status_".$user_id);//删除状态
-//        }
-//
-//        if(empty(redis($rdsname))) {//判断是否有缓存
+        $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
+        if (redis("getOrderList_status_".$user_id) == "1"){
+            redisdelall("getOrderList_".$user_id."*");//删除旧缓存
+            redisdelall("getOrderList_status_".$user_id);//删除状态
+        }
+
+        if(empty(redis($rdsname))) {//判断是否有缓存
         if ($type == 1) {
             $condition = '(order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
         } elseif ($type == 2) {//待发货
@@ -2073,10 +2086,10 @@ class UserController extends BaseController {
         }
         $all = $this->get_OrderList($condition,$page,$pagesize);
         $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-//            redis($rdsname, serialize($json));//写入缓存
-//        }else{
-//            $json = unserialize(redis($rdsname));//读取缓存
-//        }
+            redis($rdsname, serialize($json));//写入缓存
+        }else{
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);
@@ -2203,7 +2216,7 @@ class UserController extends BaseController {
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
-        $order_info = M('order')->alias('o')
+        $order_info = M('order', '', 'DB_CONFIG2')->alias('o')
             ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id ')
             ->where('o.order_id = '.$order_id.' and o.user_id = '.$user_id)
             ->field('o.goods_id,o.store_id,o.order_sn,o.pay_name,o.add_time,o.consignee,o.address_base,o.address,o.mobile,o.store_id,o.shipping_order,o.shipping_name,g.cat_id,o.order_amount,o.num,o.prom_id,o.order_type,o.order_status,o.pay_status,o.shipping_status,o.automatic_time,o.delivery_time')->find();
