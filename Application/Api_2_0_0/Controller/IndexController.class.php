@@ -831,7 +831,7 @@ class IndexController extends BaseController {
     public function operationPrice($price)
     {
 	    $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
-	    $price = $price+0.01;
+//	    $price = $price+0.01;
         return $price;
     }
 
@@ -859,9 +859,4 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-    public  function test(){
-        $number = 23.43453;
-        $english_format_number ;
-        echo $english_format_number ;
-    }
 }

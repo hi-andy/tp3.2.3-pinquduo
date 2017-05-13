@@ -1592,7 +1592,6 @@ class GoodsController extends BaseController {
 	public function operationPrice($price)
 	{
 		$price = number_format($price, 2, '.', '');
-		$price = $price+0.01;
 		return $price;
 	}
 
