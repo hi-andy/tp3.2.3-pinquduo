@@ -531,7 +531,8 @@ class OrderController extends BaseController {
 //	            $status[2]='处理中';
 //	            $status[3]='已完成';
 //                $log = $orderLogic->orderActionLog($return_goods[order_id],$status[$data['status']],$note);
-                redis("getOrderList_status_".$return_goods['user_id'], "1");
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($return_goods['user_id']);
                 $this->success('修改成功!');
                 exit;
             }
