@@ -555,26 +555,28 @@ class OrderController extends BaseController {
 			echo json_encode(array('status'=>2,'msg'=>'已退款'));
 			die;
 		}
-		$Order_Logic = new OrderLogic();
-        if($order['pay_code']=='weixin')
-	    {
-		    if ($order['is_jsapi']==1){
-			    $res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
-		    }else{
-			    $res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
-		    }
-        }elseif($order['pay_code']=='alipay'){
-            $res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
-        }elseif($order['pay_code'] == 'qpay'){
-	        $qqPay = new QQPayController();
-	        $res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
-        }
+		if($order['order_type']==8){
+			$Order_Logic = new OrderLogic();
+			if($order['pay_code']=='weixin'){
+				if ($order['is_jsapi']==1){
+					$res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
+				}else{
+					$res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
+				}
+			}elseif($order['pay_code']=='alipay'){
+				$res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
+			}elseif($order['pay_code'] == 'qpay'){
+				$qqPay = new QQPayController();
+				$res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
+			}
+		}else{
+			$res['status'] = 1;
+		}
 		//找到退款的类型
 		$result = M('return_goods')->where('order_id='.$order_id)->field('type')->find();
         if($res['status'] == 1){
 	        if($result['type']==0)
-	        {
-				//退货
+	        {//退货
 		        $data['order_status'] = 7;
 		        $data['order_type'] = 9;
 		        $this->fallback($order);
