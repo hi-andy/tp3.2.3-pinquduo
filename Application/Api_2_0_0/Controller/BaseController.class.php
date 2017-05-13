@@ -599,7 +599,7 @@ class BaseController extends Controller {
     //团购订单处理
     private function operationOrder($count,$all,$nums)
     {
-        for ($i=0;$i<$nums;$i++){
+        for ($i=10;$i<$nums;$i++){
             $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
             //判断是不是团购订单
             if (!empty($all[$i]['prom_id'])) {
@@ -619,8 +619,8 @@ class BaseController extends Controller {
                     $all[$i]['annotation'] = $order_status['annotation'];
                     $all[$i]['order_type'] = $order_status['order_type'];
                 }
-                $all[$i]['goodsInfo'] = $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$mark['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
-                $all[$i]['goodsInfo']['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = ".$mark['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
+                $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
             } elseif (empty($all[$i]['prom_id'])) {
                 $all[$i]['type'] = 2;
                 $order_status = $this->getStatus($all[$i]);

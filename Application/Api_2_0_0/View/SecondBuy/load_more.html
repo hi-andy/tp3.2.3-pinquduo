@@ -13,11 +13,11 @@
         <h3>{$goods.goods_name}</h3>
         <h4>&yen; <i>0.1</i> <del>&yen;{$goods.shop_price}</del>
           <?php if($goods['status'] > 0 && $notBuy > 0) { ?>
-              <span onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看详情</span>
+              <span onclick="location.href='http://pinquduo.cn/api_2_0_0/goods/getDetaile/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看详情</span>
           <?php } else if($goods['status'] > 0) { ?>
-              <span onclick="location.href='http://pinquduo.cn/api/goods/getGoodsDetails/type/1/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">马上开抢</span>
+              <span onclick="location.href='http://pinquduo.cn/api_2_0_0/goods/getDetaile/type/1/goods_id/{$goods.goods_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">马上开抢</span>
           <?php } else { ?>
-            <span onclick="location.href='http://pinquduo.cn/api/Store/getStoreList/store_id/{$goods.store_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看更多</span>
+            <span onclick="location.href='http://pinquduo.cn/api_2_0_0/Store/getStoreList/store_id/{$goods.store_id}'" class="more" style="padding:.2rem .6rem;border-radius:3px;">查看更多</span>
           <?php } ?>
 
         </h4>

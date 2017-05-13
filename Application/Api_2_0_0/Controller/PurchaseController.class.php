@@ -41,6 +41,10 @@ class PurchaseController extends  BaseController
         I('prom') && $prom = I('prom');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
+//        if(){
+//
+//        }
+
         $parameter['prom_id'] = $prom_id;
         $parameter['prom'] = $prom;
         $parameter['user_id'] = $user_id;
