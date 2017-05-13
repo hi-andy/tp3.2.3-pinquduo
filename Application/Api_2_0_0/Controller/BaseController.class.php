@@ -750,19 +750,19 @@ class BaseController extends Controller {
 
     //验签
     public function encryption(){
-        $arr = empty($_GET) ? $_POST : $_GET;
-        ksort ($arr);
-        $sig = $arr['sig'];
-        unset($arr['sig']);
-        $str = "";
-        foreach ($arr as $k => $v){
-            $str .= $k . "=" . $v . "&";
-        }
-        $str .= "sig=pinquduo_sing";
-        if (md5($str) != $sig) {
-            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
-            exit(json_encode($json_arr));
-        }
+//        $arr = empty($_GET) ? $_POST : $_GET;
+//        ksort ($arr);
+//        $sig = $arr['sig'];
+//        unset($arr['sig']);
+//        $str = "";
+//        foreach ($arr as $k => $v){
+//            $str .= $k . "=" . $v . "&";
+//        }
+//        $str .= "sig=pinquduo_sing";
+//        if (md5($str) != $sig) {
+//            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
+//            exit(json_encode($json_arr));
+//        }
     }
 
     public function order_redis_status_ref($user_id){

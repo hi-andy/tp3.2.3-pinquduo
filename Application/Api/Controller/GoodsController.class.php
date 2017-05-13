@@ -587,7 +587,7 @@ class GoodsController extends BaseController {
 		$id=$_GET['id'];
 		$detail = M('goods')->where(array('goods_id'=>$id))->getField('goods_content');
 		$this->assign('detail',html_entity_decode($detail));
-		$this->show();
+		$this->display();
 	}
 
     /*
