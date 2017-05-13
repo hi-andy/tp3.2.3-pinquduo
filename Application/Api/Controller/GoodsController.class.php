@@ -1591,9 +1591,8 @@ class GoodsController extends BaseController {
 	//操作价格
 	public function operationPrice($price)
 	{
-		$price = sprintf('%.2f', $price);
-		$fix = floatval(pow(10, strlen(explode('.', strval($price))[1])));
-		$price = ($price*$fix)/$fix;
+		$price = number_format($price, 2, '.', '');
+		$price = $price+0.01;
 		return $price;
 	}
 
