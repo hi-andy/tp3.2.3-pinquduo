@@ -227,6 +227,7 @@ class PromLogic extends RelationModel
     public function deliveryHandle($data){
 		$order = M('order')->where('`order_id`='.$data['order_id'])->find();
 		$orderGoods = $this->getOrderGoods($data['order_id']);
+        redis("getOrderList_status_".$order['user_id'], "1");
 		$data['order_sn'] = $order['order_sn'];
 		$data['user_id'] = $order['user_id'];
 	    $data['store_id'] = session('merchant_id');

@@ -387,7 +387,7 @@ class GoodsController extends BaseController {
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                     $rdsname = "getDetaile".$goods_id;
-                    REDIS_SWITCH && redisdelall($rdsname);//删除商品详情缓存
+                    redisdelall($rdsname);//删除商品详情缓存
                 }
                 else
                 {

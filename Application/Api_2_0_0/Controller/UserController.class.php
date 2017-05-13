@@ -1734,7 +1734,7 @@ class UserController extends BaseController {
 
             //将团购里超时支付的订单设置成取消
             $where = null;
-            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id')->select();
+            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id,free')->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
                     $data_time = $join_prom_order[$z]['start_time'] + 2 * 60;
@@ -1743,6 +1743,7 @@ class UserController extends BaseController {
                         $id[]['id'] = $join_prom_order[$z]['id'];
                         $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
                     }
+                    if ($join_prom_order[$z]['free'] > 0) redis("get_Free_Order_status", "1");
                 }
                 $where['id'] = array('IN', array_column($id, 'id'));
                 $conditon['order_id'] = array('IN', array_column($order_id, 'order_id'));
@@ -2049,13 +2050,13 @@ class UserController extends BaseController {
         $type = I('type',0);//0.全部 1.拼团中 2.待发货 3.待收货 4.待付款 5.已完成
         $page = I('page',1);
         $pagesize = I('pagesiaze',20);
-//        $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
-//        if (redis("getOrderList_status_".$user_id) == "1"){
-//            redisdelall("getOrderList_".$user_id."*");//删除旧缓存
-//            redisdelall("getOrderList_status_".$user_id);//删除状态
-//        }
-//
-//        if(empty(redis($rdsname))) {//判断是否有缓存
+        $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
+        if (redis("getOrderList_status_".$user_id) == "1"){
+            redisdelall("getOrderList_".$user_id."*");//删除旧缓存
+            redisdelall("getOrderList_status_".$user_id);//删除状态
+        }
+
+        if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
                 $condition = '(order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
             } elseif ($type == 2) {//待发货
@@ -2071,10 +2072,10 @@ class UserController extends BaseController {
             }
             $all = $this->get_OrderList($condition,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
-//            redis($rdsname, serialize($json));//写入缓存
-//        }else{
-//            $json = unserialize(redis($rdsname));//读取缓存
-//        }
+            redis($rdsname, serialize($json));//写入缓存
+        }else{
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
             $this->getJsonp($json);
