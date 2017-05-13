@@ -1731,7 +1731,7 @@ class UserController extends BaseController {
 
             //将团购里超时支付的订单设置成取消
             $where = null;
-            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id')->select();
+            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id,free')->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
                     $data_time = $join_prom_order[$z]['start_time'] + 2 * 60;
@@ -1740,6 +1740,7 @@ class UserController extends BaseController {
                         $id[]['id'] = $join_prom_order[$z]['id'];
                         $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
                     }
+                    if ($join_prom_order[$z]['free'] > 0) redis("get_Free_Order_status", "1");
                 }
                 $where['id'] = array('IN', array_column($id, 'id'));
                 $conditon['order_id'] = array('IN', array_column($order_id, 'order_id'));

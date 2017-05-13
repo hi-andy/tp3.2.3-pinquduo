@@ -609,8 +609,8 @@ class OrderController extends BaseController {
 	    $num = count($return_goods['imgs']);
 	    $return_goods = $this->getIMG($return_goods,$num);
 
-	    $user = M('users')->where("user_id = {$return_goods[user_id]}")->find();
-	    $goods = M('goods')->where("goods_id = {$return_goods[goods_id]}")->find();
+	    $user = M('users')->where("user_id = {$return_goods['user_id']}")->find();
+	    $goods = M('goods')->where("goods_id = {$return_goods['goods_id']}")->find();
 	    $type_msg = array('退换','换货');
 	    $status_msg = array('拒绝退款','未处理','已确认','处理中','已完成');
 	    if(IS_POST)
@@ -660,6 +660,8 @@ class OrderController extends BaseController {
 //			    $status[2]='处理中';
 //			    $status[3]='已完成';
 //			    $log = $orderLogic->orderActionLog($return_goods[order_id],$status[$data['status']],$note);
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($return_goods['user_id']);
 			    $this->success('修改成功!');
 			    exit;
 		    }

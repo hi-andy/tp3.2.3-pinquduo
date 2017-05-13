@@ -80,12 +80,12 @@ class PurchaseController extends  BaseController
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        $result = M('group_buy')-alias('gb')
-                    ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id ')
-                    ->where("gb.`user_id`=$user_id and gb.`is_pay`=1 and gb.`goods_id`=$goods_id")
-                    ->field("g.is_special")
-                    ->find();
-        if(!empty($result) && $result['is_special']==7){
+        $res1 = M('group_buy')->alias('gb')
+            ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id ')
+            ->where("gb.`user_id`=$user_id and gb.`is_pay`=1 and gb.`goods_id`=$goods_id")
+            ->field("g.is_special")
+            ->find();
+        if(!empty($res1) && $res1['is_special']==7){
             $json =	array('status'=>-1,'msg'=>'您已购买过此宝贝T_T');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){

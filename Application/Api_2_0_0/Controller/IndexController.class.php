@@ -748,7 +748,7 @@ class IndexController extends BaseController {
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $rdsname = "get_Free_Order".$free_num.$page.$pagesize;
         if (redis("get_Free_Order_status") == "1"){
-            redisdelall($rdsname."*");
+            redisdelall("get_Free_Order"."*");
             redisdelall("get_Free_Order_status");
         }
         if (empty(redis($rdsname))) {//是否有缓存
