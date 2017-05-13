@@ -859,5 +859,9 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-    
+    public  function test(){
+        $number = 23.43453;
+        $english_format_number ;
+        echo $english_format_number ;
+    }
 }

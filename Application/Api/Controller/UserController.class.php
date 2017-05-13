@@ -2198,7 +2198,7 @@ class UserController extends BaseController {
     //操作价格
     public function operationPrice($price)
     {
-        $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
+        $price = number_format($price, 2, '.', '');
         $price = $price+0.01;
         return $price;
     }
