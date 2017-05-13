@@ -416,6 +416,10 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $rdsname = "get_Seconds_Kill".$starttime.$page.$version;
+        if (redis("get_Seconds_Kill_status") == "1"){
+            redisdelall("get_Seconds_Kill*");
+            redisdelall("get_Seconds_Kill_status");
+        }
         if(empty(redis($rdsname))) {//判断是否有缓存
             $count = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
             $goods = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,store_count,sales')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
