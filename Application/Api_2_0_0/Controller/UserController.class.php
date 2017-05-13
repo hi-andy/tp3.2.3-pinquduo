@@ -2220,13 +2220,16 @@ class UserController extends BaseController {
             ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id ')
             ->where('o.order_id = '.$order_id.' and o.user_id = '.$user_id)
             ->field('o.goods_id,o.store_id,o.order_sn,o.pay_name,o.add_time,o.consignee,o.address_base,o.address,o.mobile,o.store_id,o.shipping_order,o.shipping_name,g.cat_id,o.order_amount,o.num,o.prom_id,o.order_type,o.order_status,o.pay_status,o.shipping_status,o.automatic_time,o.delivery_time')->find();
-        $prom_info = M('group_buy')->where('order_id = '.$order_id)->find();
-        //获取成团时间
-        if ($prom_info['mark']==0){
-            $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['id'].' or mark ='.$prom_info['id'])->order('id desc')->find();
-        }else{
-            $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
+        if($order_info['prom_id']!=0){
+            $prom_info = M('group_buy')->where('order_id = '.$order_id)->find();
+            //获取成团时间
+            if ($prom_info['mark']==0){
+                $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['id'].' or mark ='.$prom_info['id'])->order('id desc')->find();
+            }else{
+                $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
+            }
         }
+
         $goods_info= $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
         $goods_info['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $spec_info = M('order_goods', '', 'DB_CONFIG2')->alias('og')
