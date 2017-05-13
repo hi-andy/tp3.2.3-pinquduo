@@ -8,7 +8,7 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-   /* if (REDIS_SWITCH) {
+   if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -26,7 +26,7 @@ function redis($key, $value=null, $time="", $del=null){
         }
     } else {
         redisdelall("*");
-    }*/
+    }
 }
 
 /**
@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-  /*  $redis = new Redis();
+    $redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
-    $redis->delete($redis->keys($key));*/
+    $redis->delete($redis->keys($key));
 }
 /**
  * @param $arr
