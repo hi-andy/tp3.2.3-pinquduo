@@ -39,6 +39,7 @@ class UsersLogic extends RelationModel
         $openid = $data['openid']; //第三方返回唯一标识
         $oauth = $data['oauth']; //来源
         $unionid = $data['unionid'];
+        $version = $data['version'];
         if(!$openid || !$oauth) {
             return array('status' => -1, 'msg' => '参数有误', 'result' => '');
         } else {
@@ -64,6 +65,7 @@ class UsersLogic extends RelationModel
                 $map['reg_time'] = time();
                 $map['oauth'] = $oauth;
                 $map['test'] = 1;
+                $map['version'] = $version;
                 //$map['head_pic'] = saveimage($data['head_pic']);
                 //拉去微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();

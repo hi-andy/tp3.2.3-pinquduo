@@ -33,6 +33,7 @@ class UserController extends BaseController {
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
+        $map['version'] = I('version');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $data = $this->userLogic->thirdLogin($map);
         if($data['status'] ==1){
