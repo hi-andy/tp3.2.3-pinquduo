@@ -122,8 +122,6 @@ class QQPayController extends BaseController
     public function getQQPay($order=array())
     {
 	file_put_contents("log.txt", $_SERVER['HTTP_USER_AGENT'], FILE_APPEND);
-	//echo "<script>alert('Sorry, QQ pay Currrently is not enabled!');</script>"; die();
-	//if(empty($order)){$order=array('order_sn' => date('YmdHis').mt_rand(1000,9999), 'order_amount' => 0.1);}
         $notifyUrl = C('HTTP_URL').'/Api_2_0_0/QQPay/notify';
         list($code, $data) = $this->unifyOrder($order['order_sn'], $order['order_amount']*100, $notifyUrl);
 
@@ -165,7 +163,13 @@ class QQPayController extends BaseController
 
         //更新商户状态
         $order_sn = $data['out_trade_no'];
-
+        $where="order_sn = $order_sn";
+        $order = $this->changStatus($where);
+        if($order['end_time']<time()){
+            $orderLogic = new OrderLogic();
+            $orderLogic->alipayBackPay($order['order_sn'],$order['order_amount']);
+            exit();
+        }
         $where=array('order_sn'=>$order_sn);
         $order=M('order')->where($where)->find();
 

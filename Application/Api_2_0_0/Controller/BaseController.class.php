@@ -771,4 +771,11 @@ class BaseController extends Controller {
         redis("return_goods_list_status".$user_id,"1");
         redisdelall("TuiSong*");//删除推送缓存
     }
+
+    function changStatus($where){
+        $order=M('order')->alias('o')
+            ->join('INNER JOIN tp_group_buy gb on gb.order_id = o.order_id ')
+            ->where($where)->find();
+        return $order;
+    }
 }
