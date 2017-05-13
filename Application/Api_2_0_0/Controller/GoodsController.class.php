@@ -137,9 +137,7 @@ class GoodsController extends BaseController {
 					}
 					$data = $this->listPageData($count,$goods);
 				}
-			}
-			else
-			{
+			}else{
 				$cat = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$id)->field('id')->select();
 				$condition['is_on_sale']=1;
 				$condition['is_show'] = 1;
@@ -253,14 +251,14 @@ class GoodsController extends BaseController {
         if($count == 0)  exit(json_encode(array('status'=> -1,'msg'=>'收藏商品不存在')));
         //删除收藏商品
         if($type==1){
-            M('goods_collect', '', 'DB_CONFIG2')->where("user_id = $user_id and goods_id = $goods_id")->delete();
+            M('goods_collect')->where("user_id = $user_id and goods_id = $goods_id")->delete();
 	        $json = array('status'=> 1 ,'msg'=>'成功取消收藏' );
             redis("getUserCollection_status".$user_id, "1");//改变状态
 	        if(!empty($ajax_get))
 		        $this->getJsonp($json);
 	        exit(json_encode($json));
         }
-	        $count = M('goods_collect', '', 'DB_CONFIG2')->where("user_id = $user_id and goods_id = $goods_id")->count();
+	        $count = M('goods_collect')->where("user_id = $user_id and goods_id = $goods_id")->count();
         if($count>0) {
 	        $json = array('status' => 0, 'msg' => '您已收藏过该商品');
 	        if(!empty($ajax_get))
@@ -431,7 +429,7 @@ class GoodsController extends BaseController {
 
 	public function getFree($prom_id)
 	{
-		$join_num = M('group_buy', '', 'DB_CONFIG2')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id')->order('mark asc')->select();
+		$join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id')->order('mark asc')->select();
 
 		$prom_num = $join_num[0]['goods_num'];
 		$free_num = $join_num[0]['free'];
@@ -502,7 +500,7 @@ class GoodsController extends BaseController {
 
 	public function getWhere($order_id)
 	{
-		$result = M('order', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->find();
+		$result = M('order')->where('`order_id`='.$order_id)->find();
 		if($result['is_jsapi']==1)
 			$data['is_jsapi'] = 1;
 		$data['order_id']=$order_id;
@@ -520,897 +518,12 @@ class GoodsController extends BaseController {
 		return array_slice($rand_array,0,$num);//截取前$num个
 	}
 
-	/*
-	 * type:  0、参团、1、开团、2、单买
-	 */
-	function getBuy()
-	{
-		header("Access-Control-Allow-Origin:*");
-		$user_id = I('user_id');
-		$order_id =I('order_id');
-		$address_id = I('address_id');
-		$goods_id = I('goods_id');
-		$store_id = I('store_id');
-		$num = I('num',1);
-		$free = I('free',0);
-		$type = I('type');
-		I('coupon_id') && $coupon_id = I('coupon_id');
-		I('coupon_list_id') && $coupon_list_id = I('coupon_list_id');
-		$spec_key = I('spec_key');
-		I('prom') && $prom = I('prom');
-		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-
-		$parameter['order_id'] = $order_id;
-		$parameter['prom'] = $prom;
-		$parameter['user_id'] = $user_id;
-		$parameter['address_id'] = $address_id;
-		$parameter['goods_id'] = $goods_id;
-		$parameter['store_id'] = $store_id;
-		$parameter['num'] = $num;
-		$parameter['free'] = $free;
-		$parameter['coupon_id'] = $coupon_id;
-		$parameter['spec_key'] = $spec_key;
-		$parameter['ajax_get'] = $ajax_get;
-		$parameter['coupon_list_id'] = $coupon_list_id;
-
-		if (empty(redis("getBuy_lock".$goods_id)))//如果无锁
-			redis("getBuy_lock" . $goods_id, "1", 5);//写入锁
-
-		//销量、库存
-		M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
-		M('merchant', '', 'DB_CONFIG2')->where('`id`='.$store_id)->setInc('sales',$num);
-		//商品规格库存
-		$spec_name = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$goods_id)->field('spec_key')->find();
-		M('spec_goods_price', '', 'DB_CONFIG2')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
-
-		if(!empty($spec_key)) {
-				$spec_res = M('spec_goods_price', '', 'DB_CONFIG2')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-			}else{
-				$spec_res = M('goods', '', 'DB_CONFIG2')->where('`goods_id`='.$goods_id)->find();
-			}
-			if ($spec_res['store_count'] <= 0) {
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-				$json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-				if (!empty($ajax_get))
-					$this->getJsonp($json);
-
-			$spec_res = M('spec_goods_price', '', 'DB_CONFIG2')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-		}else{
-			$spec_res = M('goods', '', 'DB_CONFIG2')->where('`goods_id`='.$goods_id)->find();
-		}
-		if ($spec_res['store_count'] <= 0) {
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-			$json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-			if (!empty($ajax_get))
-				$this->getJsonp($json);
-			exit(json_encode($json));
-		}
-		//参团购物
-		if($type == 0)
-		{
-			$result = M('group_buy', '', 'DB_CONFIG2')->where("`order_id` = $order_id")->find();
-			if($result['end_time']<time())
-			{
-				$json = array('status'=>-1,'msg'=>'该团已结束了，请选择别的团参加');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-				if(!empty($ajax_get)){
-
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-			//为我点赞只允许每个人参团一次
-			if($result['is_raise']==1)
-			{
-				$raise = M('group_buy', '', 'DB_CONFIG2')->where('(end_time>'.time().' or is_successful=1) and mark!=0 and is_raise=1')->order('id desc')->select();
-				$raise_id_array = array_column($raise,'user_id');
-				if(in_array("$user_id",$raise_id_array))
-				{
-					$json =array('status'=>-1,'msg'=>'您已参加过该拼团活动，不能再参团，只能继续开团');
-					redisdelall("getBuy_lock" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
-					exit(json_encode($json));
-				}
-			}
-			//每个团的最后一个人直接将订单锁住防止出现错误
-			$num = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$result['id'].' or `mark`='.$result['id'].' and `is_pay`=1 and `is_cancel`=0')->count();
-			if($num+1==$result['goods_num'])
-			{
-				$on_buy = M('group_buy', '', 'DB_CONFIG2')->where('`mark`='.$result['id'].' and `is_pay`=0 and `is_cancel`=0' )->find();
-				if(!empty($on_buy))
-				{
-					$json =array('status'=>-1,'msg'=>'有用户尚未支付，您可以在他取消订单后进行支付');
-					redisdelall("getBuy_lock" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
-
-					exit(json_encode($json));
-				}
-			}elseif($num==$result['goods_num']){
-				$json =array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-			//判断该用户是否参团了
-			$self = M('group_buy', '', 'DB_CONFIG2')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=1')->find();
-			if(!empty($self))
-			{
-				$json =array('status'=>-1,'msg'=>'你已经参团了');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-			//判断用户是否已经生成未付款订单
-			$on_buy = M('group_buy', '', 'DB_CONFIG2')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=0 and `is_cancel`=0' )->find();
-			if(!empty($on_buy))
-			{
-				$json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-			$num2 = M('group_buy')->where('`id`='.$result['id'].' `mark` = '.$order_id.' and `is_pay`=1')->count();
-			if($num2==$result['goods_num'])
-			{
-				$json =	array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-			$this->joinGroupBuy($parameter);
-		}
-		else if($type == 1)	//开团
-		{
-			$this->openGroup($parameter);
-		}
-		//自己买
-		else if($type == 2)
-		{
-			$this->buyBymyself($parameter);
-		}
-        $rdsname = "getUserOrderList".$user_id."*";
-        redisdelall($rdsname);//删除用户订单缓存
-        $rdsname = "getGoodsDetails".$goods_id."*";
-        redisdelall($rdsname);//删除商品详情缓存
-        $rdsname = "TuiSong*";
-        redisdelall($rdsname);//删除推送缓存
-        //跨区同步订单、推送、详情缓存
-        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-        async_get_url($url);
-        $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-        async_get_url($url);
-	}
-
-	/**
-	 * 参加拼团
-	 */
-	public function joinGroupBuy($parameter){
-		$order_id = $parameter['order_id'];
-		$user_id = $parameter['user_id'];
-		$data = array();
-		$order = array();
-		$address_id = $parameter['address_id'];
-		$spec_key = $parameter['spec_key'];
-		$coupon_id = $parameter['coupon_id'];
-		$ajax_get =  $parameter['ajax_get'];
-		$num = $parameter['num'];
-		$coupon_list_id = $parameter['coupon_list_id'];
-		M()->startTrans();//开启事务处理
-		//找到参加的这张单
-		$result = M('group_buy', '', 'DB_CONFIG2')->where("`order_id` = $order_id")->find();
-
-		//是否使用优惠卷
-		if(!empty($coupon_id))
-		{
-			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`id`='.$coupon_id)->field('money')->find();
-		}else{
-			$coupon['money'] = 0;
-		}
-		//找到开团的商品,并获取要用的数据
-		$goods_id = $result['goods_id'];
-		$goods = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$goods_id)->find();
-		//找到开团的商品,并获取要用的数据
-		if(!empty($spec_key))
-		{
-			$goods_spec = M('spec_goods_price', '', 'DB_CONFIG2')->where("`goods_id`=$goods_id and `key`='$spec_key'")->find();
-			$goods['prom_price']=(string)($goods_spec['prom_price']);
-		}else{
-			$goods_spec['key_name']= '默认';
-			$goods['prom_price']=(string)$goods['prom_price'];
-		}
-		$free = $result['free'];
-		$prom = $result['goods_num'];
-		if(!empty($free))//是否免单
-		{
-			if(!empty($prom))
-			{
-				$goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
-				$count = $this->getFloatLength($goods['prom_price']);
-				if($count>3)
-				{
-					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
-				}
-			}else{
-				$goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
-				$count = $this->getFloatLength($goods['prom_price']);
-				if($count>3)
-				{
-					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
-				}
-			}
-		}
-
-		//如果是众筹订单
-		if($result['is_raise']==1)
-		{
-			$data['is_raise']=1;
-			$order['the_raise']=1;
-		}else{
-			$data['is_raise']=0;
-			$order['the_raise']=0;
-		}
-		if($result)
-		{
-			//是否使用优惠卷
-			if(!empty($coupon_id))
-			{
-				$coupon = M('coupon', '', 'DB_CONFIG2')->where('`id`='.$coupon_id)->field('money')->find();
-			}else{
-				$coupon['money'] = 0;
-			}
-			//在团购表加一张单
-			$data['start_time'] = time();
-			$data['end_time'] = $result['end_time'];
-			$data['goods_id'] = $result['goods_id'];
-			$data['price'] = (string)($goods['prom_price']-$coupon['money'])*$num;
-			$data['goods_num'] = $result['goods_num'];
-			$data['order_num'] = (M('group_buy')->where("`mark`=". $result['id'])->count())+1;
-			$data['intro'] = $result['intro'];
-			$data['goods_price'] = $result['goods_price'];
-			$data['goods_name'] = $result['goods_name'];
-			$data['photo'] = '/Public/upload/logo/logo.jpg';
-			$data['mark'] = $result['id'];
-			$data['user_id'] = $user_id;
-			$data['store_id'] = $result['store_id'];
-			$data['address_id'] = $address_id;
-			$data['free'] = $result['free'];
-			$group_buy = M('group_buy')->data($data)->add();
-
-			//在订单表加一张单
-			$address = M('user_address', '', 'DB_CONFIG2')->where("`address_id` = $address_id")->find();//获取地址信息
-			$invitation_num = M('order', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->field('invitation_num')->find();
-			$order['user_id'] = $user_id;
-			$order['order_sn'] = C('order_sn');
-			$order['invitation_num'] = $invitation_num['invitation_num'];
-			$order['goods_id'] = $result['goods_id'];
-			$order['pay_status'] = 0;
-			$order['order_status'] = 8;
-			$order['order_type'] = 10;
-			$order['consignee'] = $address['consignee'];
-			$order['country'] = 1;
-			$order['address_base'] = $address['address_base'];
-			$order['address'] = $address['address'];
-			$order['mobile'] = $address['mobile'];
-			if(I('code')=='weixin')
-			{
-				$order['pay_code'] = 'weixin' ;
-				$order['pay_name'] = '微信支付';
-			}
-			elseif(I('code')=='alipay')
-			{
-				$order['pay_code'] = 'alipay' ;
-				$order['pay_name'] = '支付宝支付';
-			}elseif(I('code')=='qpay')
-			{
-				$order['pay_code'] = 'qpay';
-				$order['pay_name'] = 'QQ钱包支付';
-			}
-			$order['goods_price'] = $order['total_amount'] = $goods['prom_price']*$num;
-			if(empty($coupon_list_id)){
-				$order['order_amount'] = (string)($goods['prom_price']*$num-$coupon['money']);
-			}else{
-				$order['order_amount'] = (string)($goods['prom_price']);
-			}
-			$order['coupon_price'] = $coupon['money'];
-			I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
-			I('coupon_id') && $order['coupon_id'] = $coupon_id;
-			$order['add_time'] = $order['pay_time'] = time();
-			$order['prom_id'] = $group_buy;
-			$order['free'] = $result['free'];
-			$order['store_id'] = $result['store_id'];
-			$order['num'] = $num;
-			if(!empty($ajax_get))
-			{
-				$order['is_jsapi'] = 1;
-			}
-			$o_id = M('order')->data($order)->add();
-
-			//将参与的团id在订单规格表查出第一张单
-			$one_order = M('order_goods', '', 'DB_CONFIG2')->where("`order_id`=".$result['order_id'])->find();
-			$spec_data['order_id'] = $o_id;
-			$spec_data['goods_id'] = $goods_id;
-			$spec_data['goods_name'] = $one_order['goods_name'];
-			$spec_data['goods_num'] = $num;
-			$spec_data['market_price'] = $one_order['market_price'];
-			if(!empty($spec_key))
-			{
-				$spec_data['goods_price'] = $goods_spec['prom_price'];
-			}else{
-				$spec_data['goods_price'] = $goods['prom_price'];
-			}
-			$coupon && $spec_data['coupon_price'] = $coupon['money'];
-			$spec_data['spec_key'] = $spec_key;
-			$spec_data['spec_key_name'] = $goods_spec['key_name'];
-			$spec_data['prom_id'] = $group_buy;
-			$spec_data['store_id'] = $one_order['store_id'];
-			$spec_res = M('order_goods')->data($spec_data)->add();
-
-			if(empty($spec_res) || empty($group_buy) || empty($o_id))
-			{
-				M()->rollback();//有数据库操作不成功时进行数据回滚
-				$json = array('status'=>-1,'msg'=>'参团失败');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-			//优惠卷(有就使用··不然就直接跳过)
-			if(!empty(I('coupon_id'))) {
-				$coupon_Inc = M('coupon')->where('`id`=' . $coupon_id)->setInc('use_num');
-				$this->changeCouponStatus($coupon_list_id, $o_id);
-				$json = array('status'=>-1,'msg'=>'参团失败');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-				if (empty($coupon_Inc)) {
-					M()->rollback();//有数据库操作不成功时进行数据回滚
-					$json = array('status' => -1, 'msg' => '参团失败');
-					echo "<script> alert('" . $json['msg'] . "') </script>";
-					exit;
-				}
-				exit(json_encode($json));
-			}
-			//将订单号写会团购表
-			$res = M('group_buy')->where("`id` = $group_buy")->data(array('order_id'=>$o_id))->save();
-			if(!empty($res) )
-			{
-				M()->commit();//都操作成功的时候才真的把数据放入数据库
-				if($order['pay_code']=='weixin'){
-					$weixinPay = new WeixinpayController();
-					//微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
-					if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
-						$order['order_id'] = $order_id;
-						$code_str = $weixinPay->getJSAPI($order);
-						$pay_detail = $code_str;
-					}else{
-						$pay_detail = $weixinPay->addwxorder($order['order_sn']);
-					}
-				}elseif($order['pay_code'] == 'alipay'){
-					$AliPay = new AlipayController();
-					$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
-				}elseif($order['pay_code'] == 'qpay'){
-					$qqPay = new QQPayController();
-					$pay_detail = $qqPay->getQQPay($order);
-				}
-				$json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                $rdsname = "getUserOrderList".$user_id."*";
-                redisdelall($rdsname);//删除用户订单缓存
-                $rdsname = "getGoodsDetails".$goods_id."*";
-                redisdelall($rdsname);//删除商品详情缓存
-                $rdsname = "TuiSong*";
-                redisdelall($rdsname);//删除推送缓存
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}else{
-				M()->rollback();//有数据库操作不成功时进行数据回滚
-				$json = array('status'=>-1,'msg'=>'参团失败');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-		}
-	}
-
-	/**
-	 * 开团
-	 */
-	public function openGroup($parameter){
-		$goods_id = $parameter['goods_id'];
-		$data = array();
-		$order = array();
-		$user_id = $parameter['user_id'];
-		$store_id = $parameter['store_id'];
-		$address_id = $parameter['address_id'];
-		$num = $parameter['num'];
-		$spec_key = $parameter['spec_key'];
-		$coupon_id = $parameter['coupon_id'];
-		$free = $parameter['free'];
-		$ajax_get =  $parameter['ajax_get'];
-		$coupon_list_id = $parameter['coupon_list_id'];
-		$prom = $parameter['prom'];
-		M()->startTrans();
-		//是否使用优惠卷
-		if(!empty($coupon_id))
-		{
-			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`id`='.$coupon_id)->field('money')->find();
-		}else{
-			$coupon['money'] = 0;
-		}
-		//找到开团的商品,并获取要用的数据
-		$goods = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$goods_id)->find();
-		//获取商品规格和相应的价格
-		if(!empty($spec_key))
-		{
-			$goods_spec = M('spec_goods_price', '', 'DB_CONFIG2')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,prom_price')->find();
-			$goods['prom_price']=(string)($goods_spec['prom_price']);
-		}else{
-			$goods_spec['key_name']= '默认';
-			$goods['prom_price']=(string)$goods['prom_price'];
-		}
-		if(!empty($free))//是否免单
-		{
-			if(!empty($prom))
-			{
-				$goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
-				$count = $this->getFloatLength($goods['prom_price']);
-				if($count>3)
-				{
-					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
-				}
-			}else{
-				$goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
-				$count = $this->getFloatLength($goods['prom_price']);
-				if($count>3)
-				{
-					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
-				}
-			}
-		}
-		elseif(!empty($goods['free']))
-		{
-			if(!empty($prom))
-			{
-				$goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
-				$count = $this->getFloatLength($goods['prom_price']);
-				if($count>3)
-				{
-					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
-				}
-			}else{
-				$goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
-				$count = $this->getFloatLength($goods['prom_price']);
-				if($count>3)
-				{
-					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
-				}
-			}
-		}
-
-		//在团购表加单
-		$data['start_time'] = time();
-		$data['end_time'] = time()+24*60*60;
-		$data['goods_id'] = $goods_id;
-		if(!empty($prom))
-		{
-			$data['goods_num'] = $prom;
-		}else{
-			$data['goods_num'] = $goods['prom'];
-		}
-		$data['order_num'] = 1;
-		$data['buy_num'] = $data['order_num'] = 1;
-		$data['price'] = $goods['prom_price']*$num;
-		$data['intro'] = $goods['goods_name'];
-		$data['goods_price'] = $goods['market_price'];
-		$data['goods_name'] = $goods['goods_name'];
-		$data['photo'] = '/Public/upload/logo/logo.jpg';
-		$data['mark'] = 0;
-		$data['user_id'] = $user_id;
-		$data['store_id'] = $store_id;
-		$data['address_id'] = $address_id;
-		$data['free'] = $free;
-		//如果是众筹订单
-		if($goods['the_raise']==1)
-		{
-			$data['is_raise']=1;
-		}
-		$group_buy = M('group_buy')->data($data)->add();
-
-//			var_dump($group_buy);
-		//在订单加一张单
-		$address = M('user_address', '', 'DB_CONFIG2')->where('`address_id` = '.$address_id)->find();//获取地址信息
-		$order['user_id'] = $user_id;
-		$order['order_sn'] = C('order_sn');
-		$order['invitation_num'] = $this->getInvitationNum();
-		$order['goods_id'] = $goods_id;
-		$order['pay_status'] = 0;
-		$order['order_status'] = 8;
-		$order['order_type'] = 10;
-		$order['consignee'] = $address['consignee'];
-		$order['country'] = 1;
-		$order['address_base'] = $address['address_base'];
-		$order['address'] = $address['address'];
-		$order['mobile'] = $address['mobile'];
-		if(I('code')=='weixin')
-		{
-			$order['pay_code'] = 'weixin' ;
-			$order['pay_name'] = '微信支付';
-		}
-		elseif(I('code')=='alipay')
-		{
-			$order['pay_code'] = 'alipay' ;
-			$order['pay_name'] = '支付宝支付';
-		}elseif(I('code')=='qpay')
-		{
-			$order['pay_code'] = 'qpay';
-			$order['pay_name'] = 'QQ钱包支付';
-		}
-		$order['goods_price'] = $goods['market_price'];
-		$order['total_amount'] = $goods['prom_price']*$num;
-		if(empty($coupon_list_id)){
-			$order['order_amount'] = (string)($goods['prom_price']*$num-$coupon['money']);
-		}else{
-			$order['order_amount'] = (string)($goods['prom_price']);
-		}
-		$order['coupon_price'] = $coupon['money'];
-		I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
-		I('coupon_id') && $order['coupon_id'] = $coupon_id;
-		$order['add_time'] = $order['pay_time'] = time();
-		$order['store_id'] = $store_id;
-		$order['prom_id'] = $group_buy;
-		$order['free'] = $free;
-		$order['num'] = $num;
-		//如果是众筹订单
-		if($goods['the_raise']==1)
-		{
-			$order['the_raise']=1;
-		}
-		if(!empty($ajax_get))
-		{
-			$order['is_jsapi'] = 1;
-		}
-		$o_id = M('order')->data($order)->add();
-		$order['order_id'] = $o_id;
-
-		//在商品规格订单表加一条数据
-		$spec_data['order_id'] = $o_id;
-		$spec_data['goods_id'] = $goods_id;
-		$spec_data['goods_name'] =$goods['goods_name'];
-		$spec_data['goods_num'] = $num;
-		$spec_data['market_price'] = $goods['market_price'];
-		if(!empty($spec_key))
-		{
-			$spec_data['goods_price'] = $goods_spec['prom_price'];
-		}else{
-			$spec_data['goods_price'] = $goods['prom_price'];
-		}
-		$coupon && $spec_data['coupon_price'] = $coupon['money'];
-		$spec_data['spec_key'] = $spec_key;
-		$spec_data['spec_key_name'] = $goods_spec['key_name'];
-		$spec_data['prom_type'] = 1;
-		$spec_data['prom_id'] = $group_buy;
-		$spec_data['store_id'] = $store_id;
-		$spec_res = M('order_goods')->data($spec_data)->add();
-		if(empty($spec_res) || empty($group_buy) || empty($o_id))
-		{
-			M()->rollback();//有数据库操作不成功时进行数据回滚
-			$json = array('status'=>-1,'msg'=>'开团失败');
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-			exit(json_encode($json));
-		}
-
-		//优惠卷(有就使用··不然就直接跳过)
-		if(!empty(I('coupon_id'))) {
-
-			$coupon_Inc = $this->changeCouponStatus($coupon_list_id,$o_id);
-			if(empty($coupon_Inc))
-			{
-				M()->rollback();//有数据库操作不成功时进行数据回滚
-				$json = array('status'=>-1,'msg'=>'开团失败');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-		}
-		$res = M('group_buy')->where("`id` = $group_buy")->data(array('order_id'=>$o_id))->save();
-		if(!empty($res))
-		{
-			M()->commit();//都插入成功的时候才真的把数据放入数据库
-			if($order['pay_code']=='weixin'){
-				$weixinPay = new WeixinpayController();
-				//微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
-				if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
-					$code_str = $weixinPay->getJSAPI($order);
-					$pay_detail = $code_str;
-				}else{
-					$pay_detail = $weixinPay->addwxorder($order['order_sn']);
-				}
-			}elseif($order['pay_code'] == 'alipay'){
-				$AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-			}elseif($order['pay_code'] == 'qpay'){
-				// Begin code by lcy
-				$qqPay = new QQPayController();
-				$pay_detail = $qqPay->getQQPay($order);
-				// End code by lcy
-			}
-			$json = array('status'=>1,'msg'=>'开团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getUserOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-			exit(json_encode($json));
-		}else{
-			M()->rollback();//有数据库操作不成功时进行数据回滚
-			$json = array('status'=>-1,'msg'=>'开团失败');
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-			exit(json_encode($json));
-		}
-	}
-
-	/**
-	 * 自己购买
-	 */
-	public function buyBymyself($parameter){
-		$goods_id = $parameter['goods_id'];
-		$address_id = $parameter['address_id'];
-		$user_id = $parameter['user_id'];
-		$num = $parameter['num'];
-		$store_id = $parameter['store_id'];
-		$spec_key = $parameter['spec_key'];
-		$ajax_get = $parameter['ajax_get'];
-		$coupon_id = $parameter['coupon_id'];
-		$coupon_list_id = $parameter['coupon_list_id'];
-		M()->startTrans();
-		//是否使用优惠卷
-		if(!empty($coupon_id))
-		{
-			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`id`='.$coupon_id)->field('money')->find();
-		}else{
-			$coupon['money'] = 0;
-		}
-		$goods = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$goods_id)->find();//找到商品信息
-		//获取商品规格和相应的价格
-		if(!empty($spec_key))
-		{
-			$goods_spec = M('spec_goods_price', '', 'DB_CONFIG2')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
-			$price=(string)($goods_spec['price']);
-		}else{
-			$goods_spec['key_name']= '默认';
-			$price=(string)($goods['shop_price']);
-		}
-		$address = M('user_address', '', 'DB_CONFIG2')->where('`address_id` = '.$address_id)->find();//获取地址信息
-		$order['user_id'] = $user_id;
-		$order['goods_id'] = $goods_id;
-		$order['order_sn'] = C('order_sn');
-		$order['pay_status'] = 0;
-		$order['order_status'] = 1;
-		$order['order_type'] = 1;
-		$order['consignee'] = $address['consignee'];
-		$order['country'] = 1;
-		$order['address_base'] = $address['address_base'];
-		$order['address'] = $address['address'];
-		$order['mobile'] = $address['mobile'];
-		if(I('code')=='weixin')
-		{
-			$order['pay_code'] = 'weixin' ;
-			$order['pay_name'] = '微信支付';
-		}
-		elseif(I('code')=='alipay')
-		{
-			$order['pay_code'] = 'alipay' ;
-			$order['pay_name'] = '支付宝支付';
-		}
-        // Begin code by lcy
-        elseif(I('code')=='qpay')
-        {
-            $order['pay_code'] = 'qpay';
-            $order['pay_name'] = 'QQ钱包支付';
-        }
-		// End code by lcy
-		$order['goods_price'] = $price;
-		$order['total_amount'] = $price*$num;
-		$order['order_amount'] = (string)(($price*$num)-$coupon['money']);
-		$order['coupon_price'] = $coupon['money'];
-		I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
-		I('coupon_id') && $order['coupon_id'] = $coupon_id;
-		$order['num'] = $num;
-		$order['add_time'] = $order['pay_time'] = time();
-		$order['store_id'] = $store_id;
-		$o_id = M('order')->data($order)->add();
-		if(!empty($ajax_get))
-		{
-			$order['is_jsapi'] = 1;
-		}
-		$order['order_id'] = $o_id;
-
-		if(empty($o_id))
-		{
-			M()->rollback();//有数据库操作不成功时进行数据回滚
-			$json = array('status'=>-1,'msg'=>'购买失败');
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-			exit(json_encode($json));
-		}
-		//在商品规格订单表加一条数据
-		$spec_data['order_id'] = $o_id;
-		$spec_data['goods_id'] = $goods_id;
-		$spec_data['goods_name'] =$goods['goods_name'];
-		$spec_data['goods_num'] = $num;
-		$spec_data['market_price'] = $goods['market_price'];
-
-		if(!empty($spec_key))
-		{
-			$spec_data['goods_price'] = $goods_spec['price'];
-		}else{
-			$spec_data['goods_price'] = $goods['shop_price'];
-		}
-		$coupon && $spec_data['coupon_price'] = $coupon['money'];
-		$spec_data['spec_key'] = $spec_key;
-		$spec_data['spec_key_name'] = $goods_spec['key_name'];
-		$spec_data['prom_type'] = 1;
-		$spec_data['prom_id'] = 0;
-		$spec_data['store_id'] = $store_id;
-		$spec_res = M('order_goods')->data($spec_data)->add();
-		if(empty($spec_res))
-		{
-			M()->rollback();//有数据库操作不成功时进行数据回滚
-			$json = array('status'=>-1,'msg'=>'购买失败');
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-			exit(json_encode($json));
-		}
-		//优惠卷(有就使用··不然就直接跳过)
-		if(!empty(I('coupon_id'))) {
-			$coupon_Inc = M('coupon')->where('`id`=' . $coupon_id)->setInc('use_num');
-			$this->changeCouponStatus($coupon_list_id,$o_id);
-			if(empty($coupon_Inc))
-			{
-				M()->rollback();//有数据库操作不成功时进行数据回滚
-				$json = array('status'=>-1,'msg'=>'购买失败');
-				redisdelall("getBuy_lock" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-				exit(json_encode($json));
-			}
-		}
-		if(!empty($o_id))
-		{
-			M()->commit();//都操作s成功的时候才真的把数据放入数据库
-
-			if($order['pay_code'] == 'weixin'){
-				$weixinPay = new WeixinpayController();
-				if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1 ){
-					$code_str = $weixinPay->getJSAPI($order);
-					$pay_detail = $code_str;
-				}else{
-					$pay_detail = $weixinPay->addwxorder($order['order_sn']);
-				}
-			}elseif($order['pay_code'] == 'alipay'){
-				$AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-			}elseif($order['pay_code'] == 'qpay'){
-                $qqPay = new QQPayController();
-                $pay_detail = $qqPay->getQQPay($order);
-                // End code by lcy
-            }
-			$json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-            $rdsname = "getUserOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-			exit(json_encode($json));
-		}else{
-			M()->rollback();//有数据库操作不成功时进行数据回滚
-			$json = array('status'=>-1,'msg'=>'购买失败');
-			redisdelall("getBuy_lock" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
-		}
-	}
-
-	//获取小数点后面的长度
-	private function getFloatLength($num) {
-		$count = 0;
-		$temp = explode ( '.', $num );
-		if (sizeof ( $temp ) > 1) {
-			$decimal = end ( $temp );
-			$count = strlen ( $decimal );
-		}
-		return $count;
-	}
-
-	//操作价格
-	public function operationPrice($price)
-	{
-		$price = sprintf('%.2f', $price);
-		$fix = floatval(pow(10, strlen(explode('.', strval($price))[1])));
-		$price = ($price*$fix)/$fix;
-		return $price;
-	}
-
-	//获取coupon_list的id，将用户的优惠券状态改掉
-	public function changeCouponStatus($coupon_list_id,$order_id)
-	{
-		$coupon_data['is_use'] = 1;
-		$coupon_data['use_time'] = time();
-		$coupon_data['order_id'] = $order_id;
-		$res = M('coupon_list')->where('`id`='.$coupon_list_id)->data($coupon_data)->save();
-		return $res;
-	}
-
 	public function getCompleteBuy()
 	{
 		$order_id = I('order_id');
 		$pay_code = I('code');
 
-		$order = M('order', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->field('order_sn,user_id')->find();
+		$order = M('order')->where('`order_id`='.$order_id)->field('order_sn,user_id')->find();
 		//当订单已经是取消状态是不能继续支付
 		if($order['order_status']==3)
 		{
@@ -1488,22 +601,21 @@ class GoodsController extends BaseController {
 				$spec_key = I('spec_key');
 				$order_id = I('order_id');
 
-				$user_address = M('user_address', '', 'DB_CONFIG2')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
-				if(empty($user_address))
-				{
-				$user_address = M('user_address', '', 'DB_CONFIG2')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
+				$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
+				if(empty($user_address)){
+				$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
 			}
 			//库存
-			$store_count =  M('goods', '', 'DB_CONFIG2')->where("`goods_id` = $goods_id")->field('store_count')->find();
+			$store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
 
-			$goods = M('goods', '', 'DB_CONFIG2')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
+			$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
 		$goods['original_img'] = C('HTTP_URL').goods_thum_images($goods['goods_id'],400,400);
-		$goods['store'] = M('merchant', '', 'DB_CONFIG2')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
+		$goods['store'] = M('merchant')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
 		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
 		//获取商品规格
 		if(!empty($spec_key)){
 			M('temporary_key')->add(array('goods_id'=>$goods_id,'goods_spec_key'=>$spec_key,'user_id'=>$user_id,'add_time'=>time()));
-			$goods_spec = M('spec_goods_price', '', 'DB_CONFIG2')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
+			$goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,price,prom_price')->find();
 			$goods['shop_price']=$goods_spec['price'];
 			$goods['prom_price']=$goods_spec['prom_price'];
 			$goods['key_name'] = $goods_spec['key_name'];
@@ -1517,9 +629,8 @@ class GoodsController extends BaseController {
 		//0-》参团 1-》开团 2-》单买
 		if($type==0)
 		{
-//			$order = M('order')->where('`order_id`='.$order_id)->field('order_amount')->find();
 			$price = $goods['prom_price']*$num;
-			$order_info = M('group_buy', '', 'DB_CONFIG2')->where('order_id = '.$order_id)->find();
+			$order_info = M('group_buy')->where('order_id = '.$order_id)->find();
 			$goods['prom_num'] = $order_info['goods_num'];
 			$goods['free_num'] = $order_info['free'];
 		}
@@ -1538,15 +649,15 @@ class GoodsController extends BaseController {
 		}
 		//获取合适的店铺优惠卷
 		//找到该店铺里用户的全部优惠券
-		$user_coupon = M('coupon_list', '', 'DB_CONFIG2')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
+		$user_coupon = M('coupon_list')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
 		if(!empty($user_coupon)){
 			$id = array_column($user_coupon, 'cid');
 			//拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
-			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
+			$coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
 			if(!empty($coupon)){
 				//根据获取的最佳优惠券在coupon_list里面的优惠券id
 				for ($i = 0; $i < count($user_coupon); $i++) {
-					$user_coupon_list_id = M('coupon_list', '', 'DB_CONFIG2')->where('`cid`='.$user_coupon[$i]['cid'].' and `uid`='.$user_id.' and `is_use`=0')->find();
+					$user_coupon_list_id = M('coupon_list')->where('`cid`='.$user_coupon[$i]['cid'].' and `uid`='.$user_id.' and `is_use`=0')->find();
 					if ($coupon['id'] == $user_coupon_list_id['cid']){
 						$coupon['coupon_list_id'] = $user_coupon[$i]['id'];
 						break;
@@ -1575,8 +686,8 @@ class GoodsController extends BaseController {
 		$num = I('num',1);
 		$goods_id = I('goods_id');
 
-		$key = M('temporary_key')->where('goods_id='.$goods_id.' and user_id='.$user_id)->order('add_time desc')->find();
-		$spec_price = M('spec_goods_price')->where('goods_id='.$goods_id. " and `key`='".$key['goods_spec_key']."'")->find();
+		$key = M('temporary_key', '', 'DB_CONFIG2')->where('goods_id='.$goods_id.' and user_id='.$user_id)->order('add_time desc')->find();
+		$spec_price = M('spec_goods_price', '', 'DB_CONFIG2')->where('goods_id='.$goods_id. " and `key`='".$key['goods_spec_key']."'")->find();
 		if($type==1||$type==0) {
 			$price = $spec_price['prom_price']*$num;
 		} elseif($type==2) {
@@ -1621,7 +732,7 @@ class GoodsController extends BaseController {
 		$page = I('page',1);
 		$pagesize = I('pagesize',20);
 		$version = I('version');
-		$countries = M('haitao_style')->where('`id` = '.$id)->find();
+		$countries = M('haitao_style', '', 'DB_CONFIG2')->where('`id` = '.$id)->find();
 		$countries['img'] = TransformationImgurl($countries['img']);
 
 		if($version=='2.0.0'){
@@ -1771,18 +882,18 @@ class GoodsController extends BaseController {
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		M()->startTrans();
 		//先对要删除的地址进行一次检查是否为默认地址
-		$default = M('user_address', '', 'DB_CONFIG2')->where('`address_id` = '.$address_id)->find();
+		$default = M('user_address')->where('`address_id` = '.$address_id)->find();
 
 		if($default['is_default'])//如果是默认的，就将剩下的该用户的第一个地址设置默认
 		{
-			$address_list = M('user_address', '', 'DB_CONFIG2')->where("`user_id` = $user_id && `address_id` != $address_id")->field('address_id')->select();
+			$address_list = M('user_address')->where("`user_id` = $user_id && `address_id` != $address_id")->field('address_id')->select();
 			if(count($address_list)>=1)
 			{
-				$new = M('user_address', '', 'DB_CONFIG2')->where('`address_id` = '.$address_list[0]['address_id'])->data(array('is_default'=>1))->save();
+				$new = M('user_address')->where('`address_id` = '.$address_list[0]['address_id'])->data(array('is_default'=>1))->save();
 			}else{
 				$new = 1;
 			}
-			$res = M('user_address', '', 'DB_CONFIG2')->where("`user_id` = $user_id and `address_id` = $address_id")->delete();
+			$res = M('user_address')->where("`user_id` = $user_id and `address_id` = $address_id")->delete();
 			if($res && $new)
 			{
 				M()->commit();
@@ -1862,7 +973,7 @@ class GoodsController extends BaseController {
 			exit(json_encode($json));
 		}
 
-		$order = M('order')->where('`order_id` = '.$order_id)->field('shipping_code,shipping_order')->find();
+		$order = M('order', '', 'DB_CONFIG2')->where('`order_id` = '.$order_id)->field('shipping_code,shipping_order')->find();
 		if(empty($order)){
 			$json = array('status'=>-1,'msg'=>'订单不存在');
 			if(!empty($ajax_get))
@@ -1870,7 +981,7 @@ class GoodsController extends BaseController {
 			exit(json_encode($json));
 		}
 
-		$logistics = M('logistics')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
+		$logistics = M('logistics', '', 'DB_CONFIG2')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
 		$logistics['shipping_order']=$order['shipping_order'];
 		//参数设置
 		$post_data = array();
@@ -2011,7 +1122,7 @@ class GoodsController extends BaseController {
 			}
 			//如果有传规格过来就改变商品名字
 			if (!empty($spec_key)) {
-				$key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
+				$key_name = M('spec_goods_price', '', 'DB_CONFIG2')->where("`key`='$spec_key'")->field('key_name')->find();
 				$goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
 			}
 			if (!empty($ajax_get)) {
@@ -2038,12 +1149,12 @@ class GoodsController extends BaseController {
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($user_id)){
-			$collect = M('goods_collect')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
+			$collect = M('goods_collect', '', 'DB_CONFIG2')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
 		}else{
 			$collect = 0;
 		}
 
-        $goods = M('goods')->alias('g')
+        $goods = M('goods', '', 'DB_CONFIG2')->alias('g')
 	        ->join('INNER JOIN tp_merchant m on m.id = g.store_id')
 	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
 	        ->field('g.store_count,g.sales,g.is_special,g.on_time,g.is_support_buy,m.sales as store_sales')
@@ -2053,7 +1164,7 @@ class GoodsController extends BaseController {
 		$data['prompt']=null;
 		//判断特殊商品是否在可购买时间内
 		if($goods['is_special']==7){//0.1秒杀
-			$time = M('goods_activity')->where('goods_id='.$goods_id)->find();
+			$time = M('goods_activity', '', 'DB_CONFIG2')->where('goods_id='.$goods_id)->find();
 			$res = $time['start_date']+$time['start_time']*3600;
 			if($res<time()){
 				if($goods['store_count']<=0){
@@ -2188,11 +1299,11 @@ class GoodsController extends BaseController {
 		}
 		//获取合适的店铺优惠卷
 		//找到该店铺里用户的全部优惠券
-		$user_coupon = M('coupon_list', '', 'DB_CONFIG2')->where('`uid`='.$user_id.' and `store_id`='.$goods['store_id'].' and `is_use`=0')->field('id,cid')->select();
+		$user_coupon = M('coupon_list')->where('`uid`='.$user_id.' and `store_id`='.$goods['store_id'].' and `is_use`=0')->field('id,cid')->select();
 		if(!empty($user_coupon)) {
 			$id = array_column($user_coupon, 'cid');
 			//拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
-			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
+			$coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
 			if(!empty($coupon))
 			{
 				//根据获取的最佳优惠券在coupon_list里面的优惠券id
