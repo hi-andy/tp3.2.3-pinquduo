@@ -1744,6 +1744,7 @@ class UserController extends BaseController {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
                     $data_time = $join_prom_order[$z]['start_time'] + 2 * 60;
                     if ($data_time <= time()) {
+                        if ($join_prom_order[$z]['free'] > 0) $free_status = true;
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
                         $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
@@ -1766,6 +1767,7 @@ class UserController extends BaseController {
                         M('coupon_list')->where('`id`=' . $r[$t]['coupon_list_id'])->data($data)->save();
                     }
                 }
+                if ($free_status) redis("get_Seconds_Kill_status","1");
             }
 
             //将时间到了团又没有成团的团解散
