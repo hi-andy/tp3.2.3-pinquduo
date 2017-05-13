@@ -8,7 +8,7 @@ class UserController extends BaseController {
     public function _initialize(){
         parent::_initialize();
         $this->userLogic = new \Home\Logic\UsersLogic();
-        $this->encryption();
+//        $this->encryption();
     }
 
     /**
@@ -785,7 +785,7 @@ class UserController extends BaseController {
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        $conditon = '`is_return_or_exchange`=1 and `user_id`='.$user_id;
+        $conditon = 'order_type in (6,7,8,9,12,13) and `user_id`='.$user_id;
         if($version=='2.0.0'){
             $data = $this->get_OrderList($conditon,$page,$pagesize);
         }else{
@@ -1833,7 +1833,7 @@ class UserController extends BaseController {
             //更新限时秒杀列表
             $is_special = M('goods','','')->where(array('is_special'=>array('eq',1),'on_time'=>array('egt',time())))->count();
             if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
-            
+
             echo 'successful';
         }
     }
@@ -2203,7 +2203,7 @@ class UserController extends BaseController {
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
-        $order_info = M('order', '', 'DB_CONFIG2')->alias('o')
+        $order_info = M('order')->alias('o')
             ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id ')
             ->where('o.order_id = '.$order_id.' and o.user_id = '.$user_id)
             ->field('o.goods_id,o.store_id,o.order_sn,o.pay_name,o.add_time,o.consignee,o.address_base,o.address,o.mobile,o.store_id,o.shipping_order,o.shipping_name,g.cat_id,o.order_amount,o.num,o.prom_id,o.order_type,o.order_status,o.pay_status,o.shipping_status,o.automatic_time,o.delivery_time')->find();

@@ -711,7 +711,7 @@ class PromController extends BaseController {
 			$qqPay = new QQPayController();
 			$res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
 		}
-		$result = M('order_goods')->where('order_id='.$order_id)->field('type')->find();
+		$result = M('return_goods')->where('order_id='.$order_id)->field('type')->find();
 		if($res['status']==1){
 			if($result['type']==0)
 			{
@@ -725,6 +725,8 @@ class PromController extends BaseController {
 				$data['order_status'] = 5;
 				$data['order_type'] = 7;
 			}
+			$base = new \Api_2_0_0\Controller\BaseController();
+			$base->order_redis_status_ref($order['user_id']);
 			M('return_goods')->where('order_id='.$order_id)->save(array('status'=>3));
 			M('order')->where('`order_id`='.$order_id)->data($data)->save();
 			echo json_encode(array('status'=>1,'msg'=>'退款成功'));
