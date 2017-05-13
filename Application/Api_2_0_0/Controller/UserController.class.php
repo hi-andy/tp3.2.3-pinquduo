@@ -785,7 +785,7 @@ class UserController extends BaseController {
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        $conditon = '`is_return_or_exchange`=1 and `user_id`='.$user_id;
+        $conditon = 'order_type in (6,7,8,9,12,13) and `user_id`='.$user_id;
         if($version=='2.0.0'){
             $data = $this->get_OrderList($conditon,$page,$pagesize);
         }else{
