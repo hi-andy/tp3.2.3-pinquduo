@@ -580,7 +580,7 @@ class GoodsController extends BaseController {
 	function getShare()
 	{
 		$id=$_GET['id'];
-		$this->show();
+		$this->display();
 	}
 
 	public function get_goods_detail(){
