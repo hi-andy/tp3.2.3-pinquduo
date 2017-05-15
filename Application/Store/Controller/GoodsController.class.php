@@ -359,7 +359,7 @@ class GoodsController extends BaseController {
             }else {
                 //  form表单提交
                 // C('TOKEN_ON',true);
-                $Goods->on_time = time(); // 上架时间
+//                $Goods->on_time = time(); // 上架时间
                 //$Goods->cat_id = $_POST['cat_id_1'];
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
