@@ -525,18 +525,31 @@ class GoodsController extends BaseController {
 
 		$order = M('order')->where('`order_id`='.$order_id)->field('order_sn,user_id,add_time')->find();
 		//当订单已经是取消状态是不能继续支付
+<<<<<<< HEAD
+		if($order['order_status']==3){
+=======
 		if($order['order_status']==3 || ($order['add_time'] + ORDER_END_TIME - 30) < time())
 		{
+>>>>>>> a25addd248c9db420bd14b7aac358aa4e0828f6f
 			$json = array('status'=>-1,'msg'=>'当前订单已经取消，请重新下单');
 			if(!empty($ajax_get))
 				$this->getJsonp($json);
 			exit(json_encode($json));
 		}
+<<<<<<< HEAD
+		$rdsname = "getOrderList_".$order['user_id']."*";
+		redisdelall($rdsname);//删除订单列表
+		$rdsname = "TuiSong*";
+		redisdelall($rdsname);//删除推送缓存
+		if($pay_code!=$order['pay_code']){
+			if($pay_code=='alipay'){
+=======
         $this->order_redis_status_ref($order['user_id']);
 		if($pay_code!=$order['pay_code'])
 		{
 			if($pay_code=='alipay')
 			{
+>>>>>>> a25addd248c9db420bd14b7aac358aa4e0828f6f
 				$pay_name = '支付宝支付';
 			}elseif($pay_code=='weixin'){
 				$pay_name = '微信支付';
@@ -545,6 +558,11 @@ class GoodsController extends BaseController {
 			}
 			M('order')->where('order_id='.$order_id)->save(array('pay_code'=>$pay_code,'pay_name'=>$pay_name));
 		}
+<<<<<<< HEAD
+		if($pay_code=='weixin'){
+			$weixinPay = new WeixinpayController();
+			$pay_detail = $weixinPay->addwxorder($order['order_sn']);
+=======
 		if($pay_code=='weixin')
 		{
             $weixinPay = new WeixinpayController();
@@ -554,6 +572,7 @@ class GoodsController extends BaseController {
             }else{
                 $pay_detail = $weixinPay->addwxorder($order['order_sn']);
             }
+>>>>>>> a25addd248c9db420bd14b7aac358aa4e0828f6f
 		} elseif($pay_code=='alipay') {
 				$AliPay = new AlipayController();
 				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);

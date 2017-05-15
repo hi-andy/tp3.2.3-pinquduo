@@ -44,8 +44,16 @@ class SecondBuyController extends Controller {
         $data['type'] = 1;
         $goods = I('post.goods')['goods'];
         foreach ($goods as $value) {
+<<<<<<< HEAD
             // 修改商品类型为7： 0.1秒杀商品。修改活动价格为：0.1
-            M('goods')->where('goods_id='.$value['goods_id'])->save(array('is_special'=>'7', 'shop_price'=>'0.1', 'prom_price'=>'0.1'));
+            M('goods')->where('goods_id='.$value['goods_id'])->save(array('is_special'=>'7', 'shop_price'=>'0.1', 'prom_price'=>'0.1','is_support_buy'=>0));
+=======
+            $sGoods['is_special'] = 7; // 修改商品类型为7： 0.1秒杀商品。
+            $sGoods['shop_price'] = '0.1';  // 修改售价为：0.1
+            $sGoods['prom_price'] = '0.1';  // 修改活动价格为：0.1
+            $sGoods['is_support_buy'] = 0; // 不支持单买
+            M('goods')->where('goods_id='.$value['goods_id'])->save($sGoods);
+>>>>>>> a25addd248c9db420bd14b7aac358aa4e0828f6f
             // 修改所有商品规格和活动价格为：0.1元。
             M('spec_goods_price')->where('goods_id='.$value['goods_id'])->save(array('price'=>'0.1', 'prom_price'=>'0.1'));
             // 添加到商品活动表

@@ -728,8 +728,7 @@ class GoodsController extends BaseController {
         if(($_GET['is_ajax'] == 1) && IS_POST)
         {
             C('TOKEN_ON',false);
-            if(!$Goods->create(NULL,$type))// 根据表单提交的POST数据创建数据对象
-            {
+            if(!$Goods->create(NULL,$type)){// 根据表单提交的POST数据创建数据对象
                 //  编辑
                 $return_arr = array(
                     'status' => -1,
@@ -737,21 +736,18 @@ class GoodsController extends BaseController {
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
-            }else {
+            }else{
                 //  form表单提交
                 // C('TOKEN_ON',true);
                 $Goods->on_time = time(); // 上架时间
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 session('goods',$_POST);
-
-                if ($type == 2)
-                {
+                if ($type == 2){
                     $goods_id = $_POST['goods_id'];
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
-                    if($_POST['original_img']!=$goods['original_img'])
-                    {
+                    if($_POST['original_img']!=$goods['original_img']){
                         $link =  C('DATA_URL').goods_thum_images($_POST['goods_id'],400,400);
                         $res = unlink($link);
                         $link1 = C('DATA_URL').$goods['original_img'];
@@ -762,13 +758,10 @@ class GoodsController extends BaseController {
                     $rdsname = "getDetaile".$goods_id;
                     redisdelall($rdsname);//删除商品详情缓存
 //					M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
-                }
-                else
-                {
+                }else{
                     $Goods->is_on_sale = 0 ;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-
                 }
                 $HaitaoLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
                 M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
