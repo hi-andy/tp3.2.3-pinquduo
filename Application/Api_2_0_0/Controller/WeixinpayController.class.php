@@ -1,6 +1,5 @@
 <?php
 namespace Api_2_0_0\Controller;
-use Admin\Logic\OrderLogic;
 use Think\Controller;
 
 class WeixinpayController extends BaseController {
@@ -226,13 +225,8 @@ EOF;
             $order_sn = $notify->data['out_trade_no'];
 
             $where="order_sn = $order_sn";
-            $order = $this->changStatus($where);
-            if($order['end_time']<time()){
-                $orderLogic = new OrderLogic();
-                $orderLogic->weixinBackPay($order['order_sn'],$order['order_amount']);
-                $notify->setReturnParameter("return_code","SUCCESS");
-                exit();
-            }
+            $order=M('order')->where($where)->find();
+
             if($order['pay_status']==1){
                 $notify->setReturnParameter("return_code","SUCCESS");
                 exit();
@@ -304,15 +298,9 @@ EOF;
 
         //更新商户状态
         $order_sn = $notify->data['out_trade_no'];
-        
+
         $where="order_sn = $order_sn";
-        $order = $this->changStatus($where);
-        if($order['end_time']<time()){
-            $orderLogic = new OrderLogic();
-            $orderLogic->weixinJsBackPay($order['order_sn'],$order['order_amount']);
-            $notify->setReturnParameter("return_code","SUCCESS");
-            exit();
-        }
+        $order=M('order')->where($where)->find();
 
         if($order['pay_status']==1){
             $notify->setReturnParameter("return_code","SUCCESS");

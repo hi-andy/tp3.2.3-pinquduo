@@ -8,7 +8,7 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-   /*if (REDIS_SWITCH) {
+    if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -26,7 +26,7 @@ function redis($key, $value=null, $time="", $del=null){
         }
     } else {
         redisdelall("*");
-    }*/
+    }
 }
 
 /**
@@ -798,21 +798,15 @@ function getImgSize($arr)
 }
 
 /**
- * 将逗号、空格、回车分隔的字符串转换为数组的函数
- * @param $strs
+ * 获取只读库配置
  * @return array
  */
-function strsToArray($strs) {
-    $result = array();
-    $strs = str_replace('，', ',', $strs);
-    $strs = str_replace("n", ',', $strs);
-    $strs = str_replace("rn", ',', $strs);
-    $strs = str_replace(' ', ',', $strs);
-    $array = explode(',', $strs);
-    foreach ($array as $key => $value) {
-        if ('' != ($value = trim($value))) {
-            $result[] = $value;
-        }
-    }
-    return $result;
+function read_only_db() {
+    return array(
+        'DB_HOST' => 'rr-wz9gfg905xeq4ngi1o.mysql.rds.aliyuncs.com', //数据库主机
+        'DB_NAME' => 'pinquduo', //数据库名称
+        'DB_USER' => 'rootmost', //数据库用户名
+        'DB_PWD' => 'Zuoapp_la', //数据库密码
+        'DB_PORT' => '3306', //数据库端口
+    );
 }

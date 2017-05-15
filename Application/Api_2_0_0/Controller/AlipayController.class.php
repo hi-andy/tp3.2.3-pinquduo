@@ -1,6 +1,5 @@
 <?php
 namespace Api_2_0_0\Controller;
-use Admin\Logic\OrderLogic;
 use Think\Controller;
 
 class AlipayController extends BaseController
@@ -38,7 +37,6 @@ class AlipayController extends BaseController
 
         //商户订单号
         $out_trade_no = $order['order_sn'];
-
         //商户网站订单系统中唯一订单号，必填
 
         //订单名称

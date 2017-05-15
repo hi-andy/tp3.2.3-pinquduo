@@ -8,6 +8,7 @@ define("PORT", 6379);
 define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
+define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
 return array(
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
