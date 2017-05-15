@@ -1076,7 +1076,7 @@ class GoodsController extends BaseController {
         }
         //////
         $goodsstatus = M('goods')
-            ->where("goods_id=$goods_id or show_type=1 or is_show=0 or is_on_sale=0")
+            ->where("goods_id=$goods_id and (show_type=1 or is_show=0 or is_on_sale=0)")
             ->count();
         if ($goodsstatus >0){
             $json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
