@@ -1717,7 +1717,7 @@ class UserController extends BaseController {
             $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
             if (count($self_cancel_order) > 0) {
                 for ($j = 0; $j < count($self_cancel_order); $j++) {
-                    $data_time = $self_cancel_order[$j]['add_time'] + 2 * 60;
+                    $data_time = $self_cancel_order[$j]['add_time'] + ORDER_END_TIME;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
                         $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
@@ -1743,7 +1743,7 @@ class UserController extends BaseController {
             $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id,free')->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
-                    $data_time = $join_prom_order[$z]['start_time'] + 2 * 60;
+                    $data_time = $join_prom_order[$z]['start_time'] + ORDER_END_TIME;
                     if ($data_time <= time()) {
                         if ($join_prom_order[$z]['free'] > 0) $free_status = true;
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
