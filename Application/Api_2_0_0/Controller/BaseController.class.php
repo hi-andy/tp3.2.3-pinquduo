@@ -30,7 +30,7 @@ class BaseController extends Controller {
         $this->user_id = I("user_id",0); // 用户id   
         if($this->user_id)
         {
-            $this->user = M('users')->where("user_id = {$this->user_id}")->find();
+            $this->user = M('users', '', 'DB_CONFIG2')->where("user_id = {$this->user_id}")->find();
         }
     }
 
@@ -38,7 +38,7 @@ class BaseController extends Controller {
      * 初始化操作
      */
     public function _initialize() {
-        //$this->encryption();
+        header("Access-Control-Allow-Origin:*");
     }
 
     /**
@@ -78,7 +78,7 @@ class BaseController extends Controller {
      * 获取全部地址信息
      */
     public function allAddress(){
-        $data =  M('region')->select();
+        $data =  M('region', '', 'DB_CONFIG2')->select();
         $json_arr = array('status'=>1,'msg'=>'成功!','result'=>$data);
         $json_str = json_encode($json_arr);
         exit($json_str);
@@ -140,25 +140,18 @@ class BaseController extends Controller {
     function getStatus($order)//订单表详情
     {
         if ($order['order_type']==1) {
-            //待支付
             $status['annotation'] = '待付款';
         } elseif ($order['order_type']==2) {
-            //待发货
             $status['annotation'] = '待发货';
         } elseif ($order['order_type']==3) {
-            //待收货
             $status['annotation'] = '待收货';
         } elseif ($order['order_type']==4) {
-            //'已完成'
             $status['annotation'] = '已完成';
         } elseif ($order['order_type']==5) {
-            //'已取消'
             $status['annotation'] = '已取消';
         } elseif ($order['order_type']==6) {
-            //'已完成'
             $status['annotation'] = '待换货';
         } elseif ($order['order_type']==7) {
-            //'已完成'
             $status['annotation'] = '已换货';
         }elseif($order['order_type']==8) {
             $status['annotation'] = '待退货';
@@ -235,46 +228,63 @@ class BaseController extends Controller {
      */
     public function mobile_uploadimage($file='')
     {
-        $upload = new \Think\Upload();
-        //设置上传文件大小
-        $upload->maxSize=30120000;
-
-        $upload->rootPath = './'.C("UPLOADPATH") ; // 设置附件上传目录
-
-        //设置上传文件规则
-        $upload->saveRule='uniqid';
-        //设置需要生成缩略图，仅对图像文件有效
-        $upload->thumb = true;
-        // 设置引用图片类库包路径
-        $upload->imageClassPath ='@.ORG.Image';
-
+//        $upload = new \Think\Upload();
+//        //设置上传文件大小
+//        $upload->maxSize=30120000;
+//
+//        $upload->rootPath = './'.C("UPLOADPATH") ; // 设置附件上传目录
+//
+//        //设置上传文件规则
+//        $upload->saveRule='uniqid';
+//        //设置需要生成缩略图，仅对图像文件有效
+//        $upload->thumb = true;
+//        // 设置引用图片类库包路径
+//        $upload->imageClassPath ='@.ORG.Image';
+//
         if(!$file){
             $file=$_FILES;
         }
+//
+//        $result=$upload->upload($file);
+//
+//        if(!$result )
+//        {
+//            return array();      //不存在图片则返回空
+//        }else{
+//            $endreturn=array();
+//            foreach ($result as $file) {
+//                $src=$file['savepath'].$file['savename'];
+//                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
+//                /*生成缩略图*/
+//                $image = new \Think\Image();
+//                $image->open(C("UPLOADPATH") . $src);
+//                $namearr=explode('.',$file['savename']);
+//                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
+//                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
+//                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
+//                $src=$file['savepath'].$file['savename'];
+//                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
+//                $endreturn[]=$returnData;
+//            }
+//            return $endreturn;
+//        }
 
-        $result=$upload->upload($file);
+        //调用七牛云上传
+        redis("mobile_uploadimage", serialize($file),REDISTIME);
+        $suffix = substr(strrchr($file['picture']['name'], '.'), 1);
+        $files = array(
+            "key" => time().rand(0,9).".".$suffix,
+            "filePath" => $file['picture']['tmp_name'],
+            "mime" => $file['picture']['type']
+        );
+        $qiniu = new \Admin\Controller\QiniuController();
+        $info = $qiniu->uploadfile("imgbucket", $files);
 
-        if(!$result )
-        {
-            return array();      //不存在图片则返回空
-        }else{
-            $endreturn=array();
-            foreach ($result as $file) {
-                $src=$file['savepath'].$file['savename'];
-                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
-                /*生成缩略图*/
-                $image = new \Think\Image();
-                $image->open(C("UPLOADPATH") . $src);
-                $namearr=explode('.',$file['savename']);
-                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
-                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
-                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
-                $src=$file['savepath'].$file['savename'];
-                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
-                $endreturn[]=$returnData;
-            }
-            return $endreturn;
-        }
+        $return_data['origin'] = CDN."/".$info[0]["key"];
+        $return_data['width'] = '100';
+        $return_data['height'] = '100';
+        $return_data['small'] = CDN."/".$info[0]["key"];
+        return $return_data;
     }
 
     public function h5_uploadimage(){
@@ -285,16 +295,33 @@ class BaseController extends Controller {
         $this->getJsonp($res);
     }
 
-    public function getCountUserOrder($user_id)
-    {
-        //获取订单信息
-        $data['daifahuo'] = M('order')->where('`pay_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `shipping_status` != 1  and `user_id` = '.$user_id)->count();
+    /*
+     *
+     $data['daifahuo'] = M('order')->where('`pay_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `shipping_status` != 1  and `user_id` = '.$user_id)->count();
         $data['daishouhuo'] = M('order')->where('`pay_status` = 1 and `shipping_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `user_id` = '.$user_id)->count();
         $data['daifukuan'] = M('order')->where('`pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = '.$user_id)->count();
         $data['refund'] = M('order')->where('(`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`='.$user_id)->count();//售后
         $mark = M('group_buy')->where('`is_successful`=0 and `is_cancel`=0 and `user_id` = '.$user_id.' and `end_time`>='.time())->count();
-        $data['in_prom'] = $mark;
+     * */
 
+    public function getCountUserOrder($user_id)
+    {
+        $rdsname = "getCountUserOrder_status".$user_id;
+        if (redis("getCountUserOrder_status".$user_id) == 1){
+            redisdelall('getCountUserOrder'.$user_id);
+            redisdelall($rdsname."*");
+        }
+        if (empty(redis($rdsname))) {
+            //获取订单信息
+            $data['daifahuo'] = M('order', '', 'DB_CONFIG2')->where('(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id)->count();
+            $data['daishouhuo'] = M('order', '', 'DB_CONFIG2')->where('(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id)->count();
+            $data['daifukuan'] = M('order', '', 'DB_CONFIG2')->where('(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id)->count();
+            $data['refund'] = M('order', '', 'DB_CONFIG2')->where('(`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`=' . $user_id)->count();//售后
+            $data['in_prom'] = M('order', '', 'DB_CONFIG2')->where('(order_type = 11 or order_type = 10) and `user_id`=' . $user_id)->count();
+            redis($rdsname, serialize($data));
+        } else {
+            $data = unserialize(redis($rdsname));
+        }
         return $data;
     }
 
@@ -342,7 +369,7 @@ class BaseController extends Controller {
         $out_trade_no = $_GET['order_sn'];
         //商户退款单号，商户自定义，此处仅作举例
         $out_refund_no = "$out_trade_no".time();
-        $order_info = M('order')->where(array('order_sn'=>$out_trade_no))->find();
+        $order_info = M('order', '', 'DB_CONFIG2')->where(array('order_sn'=>$out_trade_no))->find();
         //总金额需与订单号out_trade_no对应，demo中的所有订单的总金额为1分
         $total_fee =  	$order_info['order_amount'] * 100;
         $refund_fee = $order_info['order_amount'] * 100;
@@ -442,7 +469,7 @@ class BaseController extends Controller {
      * */
     public function getStoreWhere($where,$store_name)
     {
-        $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->select();
+        $store_id = M('merchant', '', 'DB_CONFIG2')->where("`store_name` like '%".$store_name."%'")->select();
         $store_ids =null;
         $num = count($store_id);
         for($i=0;$i<$num;$i++)
@@ -506,16 +533,16 @@ class BaseController extends Controller {
     //调度商品详情
     function  getGoodsInfo($goods_id,$type='')
     {
-        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img')->find();
+        $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img')->find();
 
         //商品详情
         $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
         $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
+        $store = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
         $goods['original_img'] =$goods['original']= TransformationImgurl($goods['original_img']);
-        $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
+        $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
         if($type!=1){
             $goods['img_arr'] = getImgs($goods['goods_content']);
             $goods['img_arr'] = getImgSize($goods['img_arr']);
@@ -528,8 +555,8 @@ class BaseController extends Controller {
     //调度商品列表
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc,sort asc')
     {
-        $count = M('goods')->where($where)->count();
-        $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
+        $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
             $v['original'] = TransformationImgurl($v['original_img']);
@@ -540,8 +567,8 @@ class BaseController extends Controller {
 
     function get_OrderList($where,$page,$pagesize)
     {
-        $count = M('order')->where($where)->count();
-        $all = M('order')
+        $count = M('order', '', 'DB_CONFIG2')->where($where)->count();
+        $all = M('order', '', 'DB_CONFIG2')
             ->where($where)
             ->order('order_id desc')
             ->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
@@ -553,8 +580,8 @@ class BaseController extends Controller {
 
     function getPromList($where,$page,$pagesize)
     {
-        $count = M('group_buy')->where($where)->count();
-        $all = M('group_buy')->alias('b')
+        $count = M('group_buy', '', 'DB_CONFIG2')->where($where)->count();
+        $all = M('group_buy', '', 'DB_CONFIG2')->alias('b')
             ->join('INNER JOIN tp_order o on b.order_id = o.order_id ')
             ->join('INNER JOIN tp_goods g on g.goods_id = b.goods_id ')
             ->where($where)
@@ -576,17 +603,17 @@ class BaseController extends Controller {
             $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
             //判断是不是团购订单
             if (!empty($all[$i]['prom_id'])) {
-                $mark = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,end_time,goods_num,order_id,goods_id,mark,goods_num')->find();
+                $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,end_time,goods_num,order_id,goods_id,mark,goods_num')->find();
                 $all[$i]['goods_num'] = $mark['goods_num'];
                 if ($mark['mark'] == 0) {
-                    $num = M('group_buy')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
                     $all[$i]['type'] = 1;
                     $order_status = $this->getPromStatus($all[$i], $mark, $num);
                     $all[$i]['annotation'] = $order_status['annotation'];
                     $all[$i]['order_type'] = $order_status['order_type'];
                 } elseif ($mark['mark'] != 0) {
-                    $perant = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
-                    $num = M('group_buy')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
+                    $perant = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
                     $all[$i]['type'] = 0;
                     $order_status = $this->getPromStatus($all[$i], $mark, $num);
                     $all[$i]['annotation'] = $order_status['annotation'];
@@ -598,9 +625,8 @@ class BaseController extends Controller {
                 $all[$i]['type'] = 2;
                 $order_status = $this->getStatus($all[$i]);
                 $all[$i]['annotation'] = $order_status['annotation'];
-                $all[$i]['order_type'] = $order_status['order_type'];
-                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = ".$all[$i]['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
-                $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $all[$i]['store_id'])->field('id,store_name,store_logo,sales')->find();
+                $all[$i]['goodsInfo'] = $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$all[$i]['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img')->find();
+                $all[$i]['goodsInfo']['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $all[$i]['store_id'])->field('id,store_name,store_logo,sales')->find();
             }
 
         }
@@ -631,24 +657,125 @@ class BaseController extends Controller {
         return $return;
     }
 
-    //验签
-    public function encryption(){
-        $arr = empty($_GET) ? $_POST : $_GET;
-        ksort ($arr);
-        $sig = $arr['sig'];
-        unset($arr['sig']);
-        $str = "";
-        foreach ($arr as $k => $v){
-            $str .= $k . "=" . $v . "&";
+    public function getFree($prom_id)
+    {
+        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id')->order('mark asc')->select();
+
+        $prom_num = $join_num[0]['goods_num'];
+        $free_num = $join_num[0]['free'];
+        M()->startTrans();
+        //把所有人的状态改成发货
+        for($i=0;$i<$prom_num;$i++)
+        {
+            redis("getUserPromList_status".$join_num[$i]['user_id'], "1");
+            if(!empty($join_num[0]['is_raise']))
+            {
+                if($i==0)
+                {
+                    $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+                } else {
+                    $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>4))->save();
+                }
+            } else {
+                $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+            }
+            $res2 = M('group_buy')->where('`id`='.$join_num[$i]['id'])->data(array('is_successful'=>1))->save();
+            if($res && $res2)
+            {
+                M()->commit();
+            }else{
+                M()->rollback();
+            }
         }
-        $str .= "sig=pinquduo_sing";
-        if (md5($str) != $sig) {
-            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
-            exit(json_encode($json_arr));
+
+        if($free_num>0)//如果有免单，才执行getRand操作
+        {
+            redis("get_Free_Order_status","1");
+            $order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
+            //给参团人和开团人推送信息
+            $message = "你参与的团购,即将揭晓免单人";
+            $custom = array('type' => '2','id'=>$join_num[0]['order_id']);
+            foreach($join_num as $val){
+                SendXinge($message,$val['user_id'],$custom);
+            }
+
+            $num = $this->getRand($free_num,($prom_num-1));//随机出谁免单
+            for($i=0;$i<count($num);$i++)
+            {
+                $j = $num[$i];
+                $order_id = $order_ids[$j];
+                $res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+                $res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+                if($res && $res2)
+                {
+                    $this->getWhere($order_id);
+                    M()->commit();
+                }else{
+                    M()->rollback();
+                }
+            }
+        }else{
+//			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
+
+            //给参团人和开团人推送信息
+//			$user_ids = M('order')->where(array('order_id'=>array('in',$order_ids)))->field('user_id')->select();
+            $message = "你参与的团购,团满开团成功";
+            $custom = array('type' => '1','id'=>$join_num[0]['order_id']);
+            foreach($join_num as $val){
+                SendXinge($message,$val['user_id'],$custom);
+            }
         }
+        exit ;
     }
 
-    public function getdb(){
+    public function getWhere($order_id)
+    {
+        $result = M('order')->where('`order_id`='.$order_id)->find();
+        if($result['is_jsapi']==1)
+            $data['is_jsapi'] = 1;
+        $data['order_id']=$order_id;
+        $data['price'] = $result['order_amount'];
+        $data['code'] = $result['pay_code'];
+        $data['add_time'] = time();
+        M('getwhere')->data($data)->add();
+    }
 
+    public function getRand($num,$max)//需要生成的个数，最大值
+    {
+        $rand_array=range(0,$max);
+        shuffle($rand_array);//调用现成的数组随机排列函数
+//		var_dump(array_slice($rand_array,0,$num));
+        return array_slice($rand_array,0,$num);//截取前$num个
+    }
+
+    //验签
+    public function encryption(){
+//        $arr = empty($_GET) ? $_POST : $_GET;
+//        ksort ($arr);
+//        $sig = $arr['sig'];
+//        unset($arr['sig']);
+//        $str = "";
+//        foreach ($arr as $k => $v){
+//            $str .= $k . "=" . $v . "&";
+//        }
+//        $str .= "sig=pinquduo_sing";
+//        if (md5($str) != $sig) {
+//            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
+//            exit(json_encode($json_arr));
+//        }
+    }
+
+    public function order_redis_status_ref($user_id){
+        redis("getOrderList_status_".$user_id,"1");
+        redis("getCountUserOrder_status".$user_id,"1");
+        redis("return_goods_list_status".$user_id,"1");
+        redisdelall("TuiSong*");//删除推送缓存
+    }
+
+    function changStatus($where){
+        $order=M('order')->alias('o')
+            ->join('INNER JOIN tp_group_buy gb on gb.order_id = o.order_id ')
+            ->where($where)->find();
+        return $order;
     }
 }

@@ -642,8 +642,8 @@ class PromController extends BaseController {
 		$num = count($return_goods['imgs']);
 		$return_goods = $this->getIMG($return_goods,$num);
 
-		$user = M('users')->where("user_id = {$return_goods[user_id]}")->find();
-		$goods = M('goods')->where("goods_id = {$return_goods[goods_id]}")->find();
+		$user = M('users')->where("user_id = {$return_goods['user_id']}")->find();
+		$goods = M('goods')->where("goods_id = {$return_goods['goods_id']}")->find();
 		$type_msg = array('退换','换货');
 		$status_msg = array('未处理','处理中','已完成');
 		if(IS_POST) {
@@ -674,6 +674,8 @@ class PromController extends BaseController {
 				$data['ok_time'] = time();//和完成共用一个时间
 				//将order状态改变
 				M('order')->where('order_id='.$return_goods['order_id'])->save(array('order_type'=>16,'order_status'=>15));
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($return_goods['user_id']);
 			}
 			$data['remark'] = I('remark');
 			$note ="退换货:{$type_msg[$data['type']]}, 状态:{$status_msg[$data['status']]},处理备注：{$data['remark']}";
@@ -694,22 +696,24 @@ class PromController extends BaseController {
 			echo json_encode(array('status'=>2,'msg'=>'已退款'));
 			die;
 		}
-		$Order_Logic = new OrderLogic();
-
-		if($order['pay_code']=='weixin')
-		{
-			if ($order['is_jsapi']==1){
-				$res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
-			}else{
-				$res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
+		if($order['order_type']==8){
+			$Order_Logic = new OrderLogic();
+			if($order['pay_code']=='weixin'){
+				if ($order['is_jsapi']==1){
+					$res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
+				}else{
+					$res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
+				}
+			}elseif($order['pay_code']=='alipay'){
+				$res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
+			}elseif($order['pay_code'] == 'qpay'){
+				$qqPay = new QQPayController();
+				$res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
 			}
-		}elseif($order['pay_code']=='alipay'){
-			$res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
-		}elseif($order['pay_code'] == 'qpay'){
-			$qqPay = new QQPayController();
-			$res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
+		}else{
+			$res['status'] = 1;
 		}
-		$result = M('order_goods')->where('order_id='.$order_id)->field('type')->find();
+		$result = M('return_goods')->where('order_id='.$order_id)->field('type')->find();
 		if($res['status']==1){
 			if($result['type']==0)
 			{
@@ -723,6 +727,8 @@ class PromController extends BaseController {
 				$data['order_status'] = 5;
 				$data['order_type'] = 7;
 			}
+			$base = new \Api_2_0_0\Controller\BaseController();
+			$base->order_redis_status_ref($order['user_id']);
 			M('return_goods')->where('order_id='.$order_id)->save(array('status'=>3));
 			M('order')->where('`order_id`='.$order_id)->data($data)->save();
 			echo json_encode(array('status'=>1,'msg'=>'退款成功'));
@@ -763,7 +769,7 @@ class PromController extends BaseController {
 		$data['order_sn'] = $order['order_sn'];
 		$data['goods_id'] = $goods_id;
 		$data['addtime'] = time();
-		$data['user_id'] = $order[user_id];
+		$data['user_id'] = $order['user_id'];
 		$data['remark'] = '管理员申请退换货'; // 问题描述
 		M('return_goods')->add($data);
 		$this->success('申请成功,现在去处理退货',U('Store/Order/return_list'));

@@ -17,5 +17,13 @@ return array(
                 'cacert'=> getcwd().'\\cacert.pem',
                 'transport'=> 'http',
         ),
-
+    'DB_CONFIG2' => array(
+        'db_type'  => 'mysql',
+        'db_host'  => 'rr-wz9gfg905xeq4ngi1o.mysql.rds.aliyuncs.com',
+        'db_name'  => 'pinquduo',
+        'db_user'  => 'rootmost',
+        'db_pwd'   => 'Zuoapp_la',
+        'db_port'  => '3306',
+        'DB_PREFIX' => 'tp_', //数据库前缀
+    ),
 );

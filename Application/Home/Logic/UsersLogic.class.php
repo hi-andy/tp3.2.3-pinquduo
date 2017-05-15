@@ -39,6 +39,7 @@ class UsersLogic extends RelationModel
         $openid = $data['openid']; //第三方返回唯一标识
         $oauth = $data['oauth']; //来源
         $unionid = $data['unionid'];
+        $version = $data['version'];
         if(!$openid || !$oauth) {
             return array('status' => -1, 'msg' => '参数有误', 'result' => '');
         } else {
@@ -64,6 +65,7 @@ class UsersLogic extends RelationModel
                 $map['reg_time'] = time();
                 $map['oauth'] = $oauth;
                 $map['test'] = 1;
+                $map['version'] = $version;
                 //$map['head_pic'] = saveimage($data['head_pic']);
                 //拉去微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();
@@ -500,12 +502,12 @@ class UsersLogic extends RelationModel
     public function fallback($order)
     {
         //商品销量减去订单中的数量
-//        M('goods')->where('`goods_id`='.$order['goods_id'])->setDec('sales',$order['num']);
+        M('goods')->where('`goods_id`='.$order['goods_id'])->setDec('sales',$order['num']);
         //门店总销量减去订单中的数量
-//        M('merchant')->where('`id`='.$order['store_id'])->setDec('sales',$order['num']);
+        M('merchant')->where('`id`='.$order['store_id'])->setDec('sales',$order['num']);
         //规格库存回复到原来的样子
-//        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
-//        M('spec_goods_price')->where('`goods_id`='.$order['goods_id']." and `key`='".$spec_name['spec_key']."'")->setInc('store_count',$order['num']);
+        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
+        M('spec_goods_price')->where('`goods_id`='.$order['goods_id']." and `key`='".$spec_name['spec_key']."'")->setInc('store_count',$order['num']);
         //优惠卷回到原来的数量
         if($order['coupon_id']!=0)
         {

@@ -580,14 +580,14 @@ class GoodsController extends BaseController {
 	function getShare()
 	{
 		$id=$_GET['id'];
-		$this->show();
+		$this->display();
 	}
 
 	public function get_goods_detail(){
 		$id=$_GET['id'];
 		$detail = M('goods')->where(array('goods_id'=>$id))->getField('goods_content');
 		$this->assign('detail',html_entity_decode($detail));
-		$this->show();
+		$this->display();
 	}
 
     /*
@@ -1591,9 +1591,7 @@ class GoodsController extends BaseController {
 	//操作价格
 	public function operationPrice($price)
 	{
-		$price = sprintf('%.2f', $price);
-		$fix = floatval(pow(10, strlen(explode('.', strval($price))[1])));
-		$price = ($price*$fix)/$fix;
+		$price = number_format($price, 2, '.', '');
 		return $price;
 	}
 

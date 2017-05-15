@@ -195,7 +195,7 @@ class QQPayController extends BaseController
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
                     if(($nums)==$group_info['goods_num'])
                     {
-                        $Goods = new GoodsController();
+                        $Goods = new BaseController();
                         $Goods->getFree($group_info['mark']);
                         M()->commit();
                     }
@@ -281,12 +281,12 @@ class QQPayController extends BaseController
         }else{
             $data['order_type'] = 2;
         }
-        //销量、库存
-        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
-        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
-        //商品规格库存
-        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
-        M('spec_goods_price')->where("`goods_id`=$order[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$order['num']);
+//        //销量、库存
+//        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
+//        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
+//        //商品规格库存
+//        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
+//        M('spec_goods_price')->where("`goods_id`=$order[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$order['num']);
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }

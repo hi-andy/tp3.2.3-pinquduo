@@ -2,6 +2,11 @@
 namespace Api_2_0_0\Controller;
 use Think\Controller;
 class IndexController extends BaseController {
+
+    public function _initialize() {
+//        $this->encryption();
+    }
+
     public function index($getGoodsDetails="",$user_id="", $goods_id=""){
         //跨域删除缓存
         if ($getGoodsDetails == "1") {
@@ -14,6 +19,7 @@ class IndexController extends BaseController {
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
         }
+        print_r(unserialize(redis("mobile_uploadimage")));
     }
 
     /*
@@ -26,41 +32,27 @@ class IndexController extends BaseController {
         $rdsname = "home".$page.$pagesize.$version;
         if (empty(redis($rdsname))) { //判断缓存是否存在
             //获取轮播图
-            $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
+            $data = M('ad', '', 'DB_CONFIG2')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
             foreach ($data as & $v) {
                 $v['ad_code'] = TransformationImgurl($v['ad_code']);
             }
             //中间图标
-            $category = M('group_category')->where('`id` != 9 and `id` != 8')->select();
+            $category = M('group_category', '', 'DB_CONFIG2')->where('`id` != 9 and `id` != 8')->select();
             foreach ($category as &$v) {
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
-            if ($version == '1.3.0' || $version == '2.0.0') {
-                $category[4]['cat_name'] = '为我拼';
-                $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
-                $category[7]['cat_name'] = '省钱大法';
-                $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
-                //中间活动模块
-                $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
-                $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
-            }
-            if($version == '2.0.0'){
-                $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
-                $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
-            }else{
-                $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1')->count();
-                $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page,$pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free,the_raise')->select();
-                $result2 = $this->listPageData($count,$goods);
-                foreach ($result2['items'] as &$v) {
-                    $v['original'] = TransformationImgurl($v['original_img']);
-                    $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-                    $v['original_img'] = TransformationImgurl($v['original_img']);
-                }
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
-            }
-
-
+	        $category[3]['cat_name'] = '趣多严选';
+	        $category[3]['cat_img'] = CDN .'/Public/upload/index/quduoyanxuan.jpg';
+            $category[4]['cat_name'] = '为我拼';
+            $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
+            $category[7]['cat_name'] = '省钱大法';
+            $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
+            //中间活动模块
+            $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
+            $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
+            $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
+            $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -103,7 +95,7 @@ class IndexController extends BaseController {
 
     function getHeader()
     {
-        $header = M('goods_category')->where(' `parent_id` = 0 ')->field('id,name')->limit(8)->order('sort_order asc')->select();
+        $header = M('goods_category', '', 'DB_CONFIG2')->where(' `parent_id` = 0 ')->field('id,name')->limit(8)->order('sort_order asc')->select();
         array_unshift($header,array('id'=>'0','name'=>'首页'));
 
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -122,19 +114,19 @@ class IndexController extends BaseController {
         $rdsname = "getHaiTao".$page.$pagesize.$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
             //头部分类
-            $directory = M('haitao_style')->select();
+            $directory = M('haitao_style', '', 'DB_CONFIG2')->select();
             foreach ($directory as &$v) {
                 $v['logo'] = TransformationImgurl($v['logo']);
             }
             if($version=='2.0.0'){
                 //中间分类
                 $directory2 = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
-                $directory2['cat2'] = M('haitao')->where('`parent_id` = 0')->field('id,name,img,logo')->limit('4')->select();
+                $directory2['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0')->field('id,name,img,logo')->limit('4')->select();
                 foreach ($directory2['cat2'] as &$v) {
                     $v['img'] = TransformationImgurl($v['img']);
                 }
                 for ($i = 0; $i < count($directory2['cat2']); $i++) {
-                    $directory2 ['cat2'][$i]['cat3'] = M('haitao')->where('`parent_id` = ' . $directory2['cat2'][$i]['id'])->field('id,name')->select();
+                    $directory2 ['cat2'][$i]['cat3'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = ' . $directory2['cat2'][$i]['id'])->field('id,name')->select();
                     array_unshift($directory2['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
                 $where = '`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ';
@@ -142,22 +134,20 @@ class IndexController extends BaseController {
                 $data = $this->getGoodsList($where,$page,$pagesize,$order);
             }else{
                 //中间分类
-                $directory2 = M('haitao')->where('`parent_id` = 0')->limit(4)->field('id,name,logo,img')->select();
+                $directory2 = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0')->limit(4)->field('id,name,logo,img')->select();
                 foreach ($directory2 as &$v) {
                     $v['img'] = TransformationImgurl($v['img']);
                     $v['logo'] = TransformationImgurl($v['logo']);
                 }
 
-                $total = M('goods')->where('`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ')->count();
-                $goods = M('goods')->where(array('is_special' => 1, 'is_show' => 1, 'is_audit' => 1, 'is_on_sale' => 1, 'shpw_type' => 0))->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+                $total = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ')->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where(array('is_special' => 1, 'is_show' => 1, 'is_audit' => 1, 'is_on_sale' => 1, 'shpw_type' => 0))->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
                 foreach ($goods as &$v) {
                     $v['original'] = TransformationImgurl($v['original_img']);
                     $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
                 }
                 $data = $this->listPageData($total, $goods);
             }
-
-
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods' => $data, 'directory' => $directory, 'directory2' => $directory2));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -178,10 +168,10 @@ class IndexController extends BaseController {
         $version = I('version');
         $rdsname = "getJiuJiu".$page.$pagesize.$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $banner = M('ad')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
+            $banner = M('ad', '', 'DB_CONFIG2')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
             $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
             //中间四个小块
-            $banner2 = M('exclusive')->select();
+            $banner2 = M('exclusive', '', 'DB_CONFIG2')->select();
 
             foreach ($banner2 as &$v) {
                 $v['img'] = TransformationImgurl($v['img']);
@@ -190,8 +180,8 @@ class IndexController extends BaseController {
                 $where = '`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
                 $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             }else{
-                $count = M('goods')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-                $goods = M('goods')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+                $count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
 
                 foreach ($goods as &$v) {
                     $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
@@ -219,14 +209,14 @@ class IndexController extends BaseController {
         $rdsname = "getJIuJIuCategory".$id.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             //获取轮播图
-            $banner = M('exclusive')->where('id =' . $id)->field(array('banner'))->find();
+            $banner = M('exclusive', '', 'DB_CONFIG2')->where('id =' . $id)->field(array('banner'))->find();
             $banner['banner'] = TransformationImgurl($banner['banner']);
             if($version=='2.0.0'){
                 $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
                 $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             }else{
-                $count = M('goods')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->count();
-                $goods = M('goods')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+                $count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
                 for ($i = 0; $i < count($goods); $i++) {
                     $goods[$i]['original_img'] = goods_thum_images($goods[$i]['goods_id'], 400, 400);
                 }
@@ -266,11 +256,11 @@ class IndexController extends BaseController {
         $condition['is_on_sale'] = array('eq',1);
         $condition['show_type'] = array('eq',0);
 
-        $count = M('group_buy')->where($condition)->count();
-        $prom = M('group_buy')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
+        $count = M('group_buy', '', 'DB_CONFIG2')->where($condition)->count();
+        $prom = M('group_buy', '', 'DB_CONFIG2')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
         foreach($prom as &$v)
         {
-            $goods_info = M('goods')->where('`goods_id`='.$v['goods_id'])->field('original_img,goods_name')->find();
+            $goods_info = M('goods', '', 'DB_CONFIG2')->where('`goods_id`='.$v['goods_id'])->field('original_img,goods_name')->find();
             $v['goods_name'] = $goods_info['goods_name'];
             $v['original'] = TransformationImgurl($goods_info['original_img']);
             $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
@@ -364,8 +354,8 @@ class IndexController extends BaseController {
                 $where = '`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ';
                 $data = $this->getGoodsList($where,$page,$pagesize,' sales desc ');
             }else{
-                $count = M('goods')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->count();
-                $goods = M('goods')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->order(' sales desc ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom')->page($page, $pagesize)->select();
+                $count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ')->order(' sales desc ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom')->page($page, $pagesize)->select();
                 foreach ($goods as &$v) {
                     $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
                 }
@@ -391,18 +381,17 @@ class IndexController extends BaseController {
         $today_zero = strtotime(date('Y-m-d', time()));
         $today_zero2 = strtotime(date('Y-m-d', (time() + 2 * 24 * 3600)));
         $sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
-        $time = M()->query($sql);
+        $time = M('', '', 'DB_CONFIG2')->query($sql);
         if (empty($time)) {
             for ($j = 1;$j<4; $j++) {
                 $today_zero = $today_zero - $j * 24 * 3600;
                 $today_zero2 = $today_zero2 - $j * 24 * 3600;
                 $sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
-                $time = M()->query($sql);
+                $time = M('', '', 'DB_CONFIG2')->query($sql);
                 if (!empty($time))
                     break;
             }
         }
-
         for ($i = 0; $i < count($time); $i++) {
             if ($time[$i]['datetime'] == date('Y-m-d H')) {
                 $time[$i]['title'] = '抢购中';
@@ -423,14 +412,17 @@ class IndexController extends BaseController {
     function get_Seconds_Kill()
     {
         $starttime =I('starttime');
-//        $endtime = I('endtime');
         $version= I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $rdsname = "get_Seconds_Kill".$starttime.$page.$version;
+        if (redis("get_Seconds_Kill_status") == "1"){
+            redisdelall("get_Seconds_Kill*");
+            redisdelall("get_Seconds_Kill_status");
+        }
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $count = M('goods')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
-            $goods = M('goods')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,store_count,sales')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+            $count = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
+            $goods = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,store_count,sales')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
             $data = $this->listPageData($count, $goods);
             foreach ($data['items'] as &$v) {
                 $v['original'] = TransformationImgurl($v['original_img']);
@@ -454,7 +446,7 @@ class IndexController extends BaseController {
     {
         $rdsname = "getexplore";
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $category = M('goods_category');
+            $category = M('goods_category', '', 'DB_CONFIG2');
             $cat1 = $category->where('`parent_id` = 0 and id != 10044')->order('sort_order asc')->field('id,name,logo')->select();
 
             for ($i = 0; $i < count($cat1); $i++) {
@@ -468,12 +460,12 @@ class IndexController extends BaseController {
                 }
             }
             $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
-            $haitao['cat2'] = M('haitao')->where('`parent_id` = 0')->field('id,name,img')->select();
+            $haitao['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0')->field('id,name,img')->select();
             foreach ($haitao['cat2'] as &$v) {
                 $v['img'] = TransformationImgurl($v['img']);
             }
             for ($i = 0; $i < count($haitao['cat2']); $i++) {
-                $haitao['cat2'][$i]['cat3'] = M('haitao')->where('`parent_id` = ' . $haitao['cat2'][$i]['id'])->field('id,name')->select();
+                $haitao['cat2'][$i]['cat3'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = ' . $haitao['cat2'][$i]['id'])->field('id,name')->select();
                 array_unshift($haitao['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
             }
             $json = array('status' => 1, 'msg' => '', 'result' => array('haitao' => $haitao, 'cat' => $cat1));
@@ -513,9 +505,9 @@ class IndexController extends BaseController {
     function getNextCat($id,$page,$pagesize,$version)
     {
         //找到一级菜单的下级id
-        $parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
+        $parent_cat = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`='.$id)->field('id')->select();
         $condition['parent_id'] =array('in',array_column($parent_cat,'id'));
-        $parent_cat2 = M('goods_category')->where($condition)->field('id')->select();
+        $parent_cat2 = M('goods_category', '', 'DB_CONFIG2')->where($condition)->field('id')->select();
         $condition2['cat_id'] =array('in',array_column($parent_cat2,'id'));
         $condition2['is_on_sale']=1;
         $condition2['is_show'] = 1;
@@ -524,8 +516,8 @@ class IndexController extends BaseController {
         if($version=='2.0.0'){
             $data = $this->getGoodsList($condition2,$page,$pagesize,$order);
         }else{
-            $count = M('goods')->where($condition2)->count();
-            $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
+            $count = M('goods', '', 'DB_CONFIG2')->where($condition2)->count();
+            $goods = M('goods', '', 'DB_CONFIG2')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
 
             foreach($goods as &$v)
             {
@@ -673,8 +665,8 @@ class IndexController extends BaseController {
                 $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
                 $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             }else{
-                $count = M('goods')->where('`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-                $goods = M('goods')->where('`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+                $count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
                 foreach ($goods as &$v) {
                     $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
                 }
@@ -703,8 +695,8 @@ class IndexController extends BaseController {
                 $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
                 $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             }else{
-                $count = M('goods')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-                $goods = M('goods')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+                $count = M('goods', '', 'DB_CONFIG2')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
                 foreach ($goods as &$v) {
                     $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
                 }
@@ -731,7 +723,7 @@ class IndexController extends BaseController {
         $count = M('goods_activity')->where($where)->count();
         $page = I('page',1);
         $pagesize = I('pagesize',20);
-        $goodsList = M('goods_activity')->alias('ga')
+        $goodsList = M('goods_activity', '', 'DB_CONFIG2')->alias('ga')
             ->join('INNER JOIN tp_goods g on g.goods_id = ga.goods_id ')
             ->where($where)
             ->page($page,$pagesize)
@@ -758,41 +750,66 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $condition['gb.free'] = array('eq',$free_num);
-        $condition['gb.is_successful'] = array('eq',0);
-        $condition['gb.end_time'] = array('gt',time());
-        $condition['gb.mark'] = array('eq',0);
-        $condition['gb.is_pay'] = array('eq',1);
-        $condition['g.is_on_sale'] = array('eq',1);
-        $condition['g.show_type'] = array('eq',0);
-        $condition['g.is_audit'] = array('eq',1);
-
-        $count = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
-            ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
-            ->where($condition)->count();
-        $prom = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
-            ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
-            ->where($condition)
-            ->field('gb.id as prom_id,gb.goods_id,gb.price,gb.goods_num as prom,gb.free,gb.start_time,gb.end_time,gb.order_id,og.spec_key')
-            ->page($page,$pagesize)
-            ->select();
-
-        //将免单价格重新计算
-        for($i=0;$i<count($prom);$i++){
-            $spec_price = M('spec_goods_price')->where("goods_id = ".$prom[$i]['goods_id']." and `key`= '".$prom[$i]['spec_key']."'")->getField('prom_price');
-            $price = ($spec_price*$prom[$i]['prom'])/($prom[$i]['prom']-$prom[$i]['free']);
-            $c = $this->getFloatLength($price);
-            if($c>3){
-                $price = $this->operationPrice($price);
-            }
-            $prom[$i]['price'] = sprintf("%.2f", $price);
-            $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
+        $rdsname = "get_Free_Order".$free_num.$page.$pagesize;
+        if (redis("get_Free_Order_status") == "1"){
+            redisdelall("get_Free_Order"."*");
+            redisdelall("get_Free_Order_status");
         }
-        $data=$this->listPageData($count,$prom);
+        if (empty(redis($rdsname))) {//是否有缓存
+            $condition['gb.free'] = array('eq', $free_num);
+            $condition['gb.is_successful'] = array('eq', 0);
+            $condition['gb.end_time'] = array('gt', time());
+            $condition['gb.mark'] = array('eq', 0);
+            $condition['gb.is_pay'] = array('eq', 1);
+            $condition['g.is_on_sale'] = array('eq', 1);
+            $condition['g.show_type'] = array('eq', 0);
+            $condition['g.is_audit'] = array('eq', 1);
 
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+            $count = M('group_buy', '', 'DB_CONFIG2')->alias('gb')
+                ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
+                ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
+                ->where($condition)->count();
+            $prom = M('group_buy', '', 'DB_CONFIG2')->alias('gb')
+                ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
+                ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
+                ->where($condition)
+                ->field('gb.id as prom_id,gb.goods_id,gb.price,gb.goods_num as prom,gb.free,gb.start_time,gb.end_time,gb.order_id,og.spec_key')
+                ->page($page, $pagesize)
+                ->select();
+
+            //将免单价格重新计算
+            $goods_id = "";
+            foreach ($prom as $value) {
+                $goods_id .= $value['goods_id'] . ",";
+            }
+            $goods_id = substr($goods_id, 0, -1);
+            $spec_goods_price = M('spec_goods_price')->where(array("goods_id" => array("in", $goods_id)))->field('key,prom_price')->select();
+            $arr = array();
+            foreach ($prom as $v) {
+                foreach ($spec_goods_price as $value) {
+                    if ($v['spec_key'] == $value['key']) {
+                        $arr[]['prom_price'] = $value['prom_price'];
+                    }
+                }
+            }
+            //将免单价格重新计算
+            for ($i = 0; $i < count($arr); $i++) {
+                $price = ($arr[$i]['prom_price'] * $prom[$i]['prom']) / ($prom[$i]['prom'] - $prom[$i]['free']);
+                $c = $this->getFloatLength($price);
+                if ($c >= 3) {
+                    $price = $this->operationPrice($price);
+                }
+                $prom[$i]['price'] = sprintf("%.2f", $price);
+                $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
+            }
+
+            $data = $this->listPageData($count, $prom);
+
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json));//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
         if(I('ajax_get')) {
             $this->getJsonp($json);
         }
@@ -813,8 +830,8 @@ class IndexController extends BaseController {
     //操作价格
     public function operationPrice($price)
     {
-        $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
-        $price = $price+0.01;
+	    $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
+	    $price = $price+0.01;
         return $price;
     }
 
@@ -822,5 +839,30 @@ class IndexController extends BaseController {
     public function redisdelall($rdsname = ""){
         redisdelall($rdsname);
         echo "删除 ".$rdsname;
+    }
+
+    //趣多严选
+	public function getStrict_selection(){
+		$page = I('page',1);
+		$pagesize = I('pagesize',10);
+		$rdsname = "getStrict_selection".$page.$pagesize;
+		if(empty(redis($rdsname))) {//判断是否有缓存
+			$where = '`is_special`=9 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+			$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+			redis($rdsname, serialize($json), REDISTIME);//写入缓存
+		}else{
+			$json = unserialize(redis($rdsname));//读取缓存
+		}
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
+	}
+
+    function test(){
+        $where="order_sn = 201705131250282161";
+        $order = $this->changStatus($where);
+        var_dump( $order);
     }
 }

@@ -317,6 +317,8 @@ class OrderController extends BaseController {
 				    return array('status'=>-1,'msg'=>'支付状态或订单状态不允许','result'=>'');
 
 			    $row = M('order')->where(array('order_id'=>$data['order_id']))->save(array('order_status'=>3,'is_cancel'=>1,'order_type'=>5));
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($order['user_id']);
 			    if($order['prom_id']!=null) {
 				    $res = M('group_buy')->where(array('order_id' =>$data['order_id']))->save(array('is_cancel' => 1));
 			    }else{
@@ -477,9 +479,8 @@ class OrderController extends BaseController {
 
 	    $num = count($return_goods['imgs']);
 	    $return_goods = $this->getIMG($return_goods,$num);
-
-        $user = M('users')->where("user_id = {$return_goods[user_id]}")->find();
-        $goods = M('goods')->where("goods_id = {$return_goods[goods_id]}")->find();
+        $user = M('users')->where("user_id = {$return_goods['user_id']}")->find();
+        $goods = M('goods')->where("goods_id = {$return_goods['goods_id']}")->find();
         $type_msg = array('退换','换货');
         $status_msg = array('拒绝退款','未处理','已确认','处理中','已完成');
         if(IS_POST)
@@ -511,6 +512,8 @@ class OrderController extends BaseController {
 		        $data['ok_time'] = time();//和完成共用一个时间
 		        //将order状态改变
 		        M('order')->where('order_id='.$return_goods['order_id'])->save(array('order_type'=>16,'order_status'=>15));
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($return_goods['user_id']);
 	        }
 
             $data['remark'] = I('remark');                                    
@@ -528,11 +531,13 @@ class OrderController extends BaseController {
 //	            $status[2]='处理中';
 //	            $status[3]='已完成';
 //                $log = $orderLogic->orderActionLog($return_goods[order_id],$status[$data['status']],$note);
+                $base = new \Api_2_0_0\Controller\BaseController();
+                $base->order_redis_status_ref($return_goods['user_id']);
                 $this->success('修改成功!');
                 exit;
             }
         }
-        
+        $return_goods['imgs'] = str_replace("\\","",$return_goods['imgs']);
         $this->assign('id',$id); // 用户
         $this->assign('user',$user); // 用户
         $this->assign('goods',$goods);// 商品
@@ -550,26 +555,28 @@ class OrderController extends BaseController {
 			echo json_encode(array('status'=>2,'msg'=>'已退款'));
 			die;
 		}
-		$Order_Logic = new OrderLogic();
-        if($order['pay_code']=='weixin')
-	    {
-		    if ($order['is_jsapi']==1){
-			    $res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
-		    }else{
-			    $res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
-		    }
-        }elseif($order['pay_code']=='alipay'){
-            $res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
-        }elseif($order['pay_code'] == 'qpay'){
-	        $qqPay = new QQPayController();
-	        $res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
-        }
+		if($order['order_type']==8){
+			$Order_Logic = new OrderLogic();
+			if($order['pay_code']=='weixin'){
+				if ($order['is_jsapi']==1){
+					$res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
+				}else{
+					$res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
+				}
+			}elseif($order['pay_code']=='alipay'){
+				$res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
+			}elseif($order['pay_code'] == 'qpay'){
+				$qqPay = new QQPayController();
+				$res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
+			}
+		}else{
+			$res['status'] = 1;
+		}
 		//找到退款的类型
-		$result = M('order_goods')->where('order_id='.$order_id)->field('type')->find();
+		$result = M('return_goods')->where('order_id='.$order_id)->field('type')->find();
         if($res['status'] == 1){
 	        if($result['type']==0)
-	        {
-				//退货
+	        {//退货
 		        $data['order_status'] = 7;
 		        $data['order_type'] = 9;
 		        $this->fallback($order);
@@ -579,6 +586,8 @@ class OrderController extends BaseController {
 		        $data['order_status'] = 5;
 		        $data['order_type'] = 7;
 	        }
+	        $base = new \Api_2_0_0\Controller\BaseController();
+	        $base->order_redis_status_ref($order['user_id']);
 	        M('order')->where('`order_id`='.$order_id)->data($data)->save();
             echo json_encode(array('status'=>1,'msg'=>'退款成功'));
         }else{

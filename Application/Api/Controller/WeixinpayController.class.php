@@ -97,8 +97,8 @@ class WeixinpayController extends BaseController {
         //①、获取用户openid
         $tools = new \JsApiPay();
         //$openId = $tools->GetOpenid();
-
-        $openId = M('users')->where(array("user_id"=>array("eq",$order['user_id'])))->field('openid')->find();
+        $user = M('users')->where(array("user_id"=>array("eq",$order['user_id'])))->field('openid')->find();
+        $openId = $user['openid'];
         //②、统一下单
         $input = new \WxPayUnifiedOrder();
         $input->SetBody("支付订单：".$order['order_sn']);
@@ -114,10 +114,10 @@ class WeixinpayController extends BaseController {
             $input->SetSpbill_create_ip($this->get_real_ip());
         }else{
             $input->SetTrade_type("JSAPI");
-            $input->SetOpenid($openId['openid']);
+            $input->SetOpenid($openId);
         }
         $order2 = \WxPayApi::unifiedOrder($input);
-        //redis("wxpay", serialize($order2), 6000);
+        redis("wxpay", serialize($order2), 6000);
         //redisdelall("wxpay");
         if($_REQUEST['is_mobile_browser']==1) {
             echo $this->get_real_ip();

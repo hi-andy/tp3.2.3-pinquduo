@@ -116,6 +116,7 @@ class FreeController extends BaseController
 		$Goods = D('Goods'); //
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
 		//ajax提交验证
+		$_POST['refresh'] = 0;
 		if(($_GET['is_ajax'] == 1) && IS_POST)
 		{
 			C('TOKEN_ON',false);
@@ -139,7 +140,6 @@ class FreeController extends BaseController
 				if ($type == 2)
 				{
 					$goods_id = $_POST['goods_id'];
-					$_POST['refresh'] = 0;
 					$goods = M('goods')->where("goods_id = $goods_id")->find();
 					if($_POST['original_img']!=$goods['original_img'])
 					{

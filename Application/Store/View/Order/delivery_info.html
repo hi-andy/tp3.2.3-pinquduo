@@ -113,13 +113,6 @@
                         <tbody>
 
                         <tr>
-                            <!--<td class="text-right col-sm-2 margin">发货单备注：</td>-->
-                            <!--<td colspan="3">-->
-                            	<!--<input type="hidden" name="order_id" value="{$order.order_id}">-->
-                               <!--<textarea name="note" placeholder="请输入操作备注" rows="3" class="form-control"></textarea>-->
-                            <!--</td>-->
-                        </tr>
-                        <tr>
                              <td colspan="4">
                                  <div class="form-group text-center">
                                         <button onclick="dosubmit()"  class="btn btn-primary" type="button">确认发货</button>
@@ -133,39 +126,6 @@
             </div>
             </if>
         </if>
-        
-                <!--新订单列表 操作记录信息-->
-        <!--<div class="panel panel-default">-->
-            <!--<div class="panel-heading">-->
-                <!--<h3 class="panel-title text-center">发货记录</h3>-->
-            <!--</div>-->
-            <!--<div class="panel-body">-->
-                <!--<table class="table table-bordered">-->
-                    <!--<thead>-->
-                    <!--<tr>-->
-                        <!--<td class="text-center">操作者</td>-->
-                        <!--<td class="text-center">发货时间</td>-->
-                        <!--<td class="text-center">发货单号</td>-->
-                        <!--<td class="text-center">收货人</td>-->
-                        <!--<td class="text-center">发货物流</td>-->
-                        <!--<td class="text-center">备注</td>-->
-                    <!--</tr>-->
-                    <!--</thead>-->
-                    <!--<tbody>-->
-                    <!--<volist name="delivery_record" id="log">-->
-                        <!--<tr>-->
-                            <!--<td class="text-center">{$log.store_id}</td>-->
-                            <!--<td class="text-center">{$log.create_time|date='Y-m-d H:i:s',###}</td>-->
-                            <!--<td class="text-center">{$log.shipping_order}</td>-->
-                            <!--<td class="text-center">{$log.consignee}</td>-->
-                            <!--<td class="text-center">{$log.shipping_name}</td>-->
-                            <!--<td class="text-center">{$log.note}</td>-->
-                        <!--</tr>-->
-                    <!--</volist>-->
-                    <!--</tbody>-->
-                <!--</table>-->
-            <!--</div>-->
-          <!--</div>-->
 	</form>
    </div>
  </section>
@@ -181,16 +141,6 @@ function dosubmit(){
 		return false;
 	}
 
-//	var a = [];
-//	$('input[name*=goods]').each(function(i,o){
-//		if($(o).is(':checked')){
-//			a.push($(o).val());
-//		}
-//	});
-//	if(a.length == 0){
-//		layer.alert('请选择发货商品', {icon: 2});  //alert('请选择发货商品');
-//		return;
-//	}
 	$('#delivery-form').submit();
 }
 </script>

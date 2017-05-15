@@ -133,10 +133,10 @@ class EconomizeController extends Controller {
         $data = I('post.');
         //print_r($data);exit;
         foreach ($data['id'] as $value) {
-            $res = M('goods_activity')->where('id='.$value)->delete();
+            $res = M('goods_activity')->where('goods_id='.$value)->delete();
+            $res = M('goods')->where('goods_id='.$value)->save(array('is_special'=>0,'is_show'=>0));
         }
-        if($res)
-        {
+        if($res){
             $this->success("删除成功",U('Economize/goodsList'));
         }else{
             $this->success("删除失败",U('Economize/goodsList'));
@@ -152,6 +152,7 @@ class EconomizeController extends Controller {
         $Goods = D('Goods'); //
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
         //ajax提交验证
+        $_POST['refresh'] = 0;
         if(($_GET['is_ajax'] == 1) && IS_POST)
         {
             C('TOKEN_ON',false);
@@ -176,7 +177,6 @@ class EconomizeController extends Controller {
                 if ($type == 2)
                 {
                     $goods_id = $_POST['goods_id'];
-                    $_POST['refresh'] = 0;
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
                     if($_POST['original_img']!=$goods['original_img'])
                     {

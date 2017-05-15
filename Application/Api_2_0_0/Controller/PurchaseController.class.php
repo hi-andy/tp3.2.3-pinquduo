@@ -13,13 +13,15 @@
 namespace Api_2_0_0\Controller;
 
 
-use Admin\Controller\BaseController;
-use Api_2_0_0\Controller\AlipayController;
-use Api_2_0_0\Controller\QQPayController;
-use Api_2_0_0\Controller\WeixinpayController;
+use Api_2_0_0\Controller;
 
-class PurchaseController
+class PurchaseController extends  BaseController
 {
+
+    public function _initialize() {
+        $this->encryption();
+    }
+
     /*
 	 * type:  0、参团、1、开团、2、单买
 	 */
@@ -39,6 +41,10 @@ class PurchaseController
         I('prom') && $prom = I('prom');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
+//        if(){
+//
+//        }
+
         $parameter['prom_id'] = $prom_id;
         $parameter['prom'] = $prom;
         $parameter['user_id'] = $user_id;
@@ -51,136 +57,152 @@ class PurchaseController
         $parameter['ajax_get'] = $ajax_get;
         $parameter['coupon_list_id'] = $coupon_list_id;
 
-        if (empty(redis("getBuy_lock_".$goods_id)))//如果无锁
+        if (empty(redis("getBuy_lock_".$goods_id))) {//如果无锁
             redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁
 
-        if(!empty($spec_key)) {
-            $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-        }else{
-            $spec_res = M('goods')->where('`goods_id`='.$goods_id)->find();
-        }
-        if ($spec_res['store_count'] <= 0) {
-            $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
+            if (!empty($spec_key)) {
+                $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
+            } else {
+                $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
+            if ($spec_res['store_count'] <= 0) {
+                $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            } elseif ($spec_key['store_count'] < $num) {
+                $json = array('status' => -1, 'msg' => '库存不足！');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            } elseif ($spec_res['store_count'] < ($spec_res['store_count'] / 2) && $type == 1) {
+                $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
+            $res1 = M('group_buy')->alias('gb')
+                ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id ')
+                ->where("gb.`user_id`=$user_id and gb.`is_pay`=1 and gb.`goods_id`=$goods_id")
+                ->field("g.is_special")
+                ->find();
+            if (!empty($res1) && $res1['is_special'] == 7) {
+                $json = array('status' => -1, 'msg' => '您已购买过此宝贝T_T');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get)) {
+                    echo "<script> alert('" . $json['msg'] . "') </script>";
+                    exit;
+                }
+                exit(json_encode($json));
+            }
+            //参团购物
+            if ($type == 0) {
+                $result = M('group_buy')->where("`id` = $prom_id")->find();
+                if ($result['end_time'] < time()) {
+                    $json = array('status' => -1, 'msg' => '该团已结束了，请选择别的团参加');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
+                }
+                //为我点赞只允许每个人参团一次
+                if ($result['is_raise'] == 1) {
+                    $raise = M('group_buy')->where('(end_time>' . time() . ' or is_successful=1) and mark!=0 and is_raise=1')->order('id desc')->select();
+                    $raise_id_array = array_column($raise, 'user_id');
+                    if (in_array("$user_id", $raise_id_array)) {
+                        $json = array('status' => -1, 'msg' => '您已参加过该拼团活动，不能再参团，只能继续开团');
+                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                        if (!empty($ajax_get)) {
+                            echo "<script> alert('" . $json['msg'] . "') </script>";
+                            exit;
+                        }
+                        exit(json_encode($json));
+                    }
+                }
+                //每个团的最后一个人直接将订单锁住防止出现错误
+                $num = M('group_buy')->where('`id`=' . $result['id'] . ' or `mark`=' . $result['id'] . ' and `is_pay`=1 and `is_cancel`=0')->count();
+                if ($num == $result['goods_num']) {
+                    $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `is_pay`=0 and `is_cancel`=0')->find();
+                    if (!empty($on_buy)) {
+                        $json = array('status' => -1, 'msg' => '有用户尚未支付，您可以在他取消订单后进行支付');
+                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                        if (!empty($ajax_get)) {
+                            echo "<script> alert('" . $json['msg'] . "') </script>";
+                            exit;
+                        }
 
-            $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-        }else{
-            $spec_res = M('goods')->where('`goods_id`='.$goods_id)->find();
-        }
-        if ($spec_res['store_count'] <= 0) {
-            $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
+                        exit(json_encode($json));
+                    }
+                } elseif ($num == $result['goods_num']) {
+                    $json = array('status' => -1, 'msg' => '该团已经满员开团了，请选择别的团参加');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
+                }
+                //判断该用户是否参团了
+                $self = M('group_buy')->where('`mark`=' . $result['id'] . ' and `user_id`=' . $user_id . ' and `is_pay`=1')->find();
+                if (!empty($self)) {
+                    $json = array('status' => -1, 'msg' => '你已经参团了');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
+                }
+                //判断用户是否已经生成未付款订单
+                $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `user_id`=' . $user_id . ' and `is_pay`=0 and `is_cancel`=0')->find();
+                if (!empty($on_buy)) {
+                    $json = array('status' => -1, 'msg' => '该团你有未付款订单，请前往支付再进行操作');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
+                }
+                if ($result['mark'] != 0) {
+                    $num2 = M('group_buy')->where('`id`=' . $result['mark'] . ' or `mark` = ' . $result['mark'] . ' and `is_pay`=1')->count();
+                } else {
+                    $num2 = M('group_buy')->where('`id`=' . $prom_id . ' or `mark` = ' . $prom_id . ' and `is_pay`=1')->count();
+                }
+
+                if ($num2 == $result['goods_num']) {
+                    $json = array('status' => -1, 'msg' => '该团已经满员开团了，请选择别的团参加');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }
+                    exit(json_encode($json));
+                }
+                $this->joinGroupBuy($parameter);
+            } else if ($type == 1)    //开团
+            {
+                $this->openGroup($parameter);
+            } //自己买
+            else if ($type == 2) {
+                $this->buyBymyself($parameter);
+            }
+        } else {
+            $json = array('status' => -1, 'msg' => '抢购比较激烈，请再猛戳试试');
+            if (!empty($ajax_get)) {
+                echo "<script> alert('" . $json['msg'] . "') </script>";
+                exit;
+            }
             exit(json_encode($json));
-        }
-        //参团购物
-        if($type == 0)
-        {
-            $result = M('group_buy')->where("`id` = $prom_id")->find();
-            if($result['end_time']<time())
-            {
-                $json = array('status'=>-1,'msg'=>'该团已结束了，请选择别的团参加');
-                redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-                exit(json_encode($json));
-            }
-            //为我点赞只允许每个人参团一次
-            if($result['is_raise']==1)
-            {
-                $raise = M('group_buy')->where('(end_time>'.time().' or is_successful=1) and mark!=0 and is_raise=1')->order('id desc')->select();
-                $raise_id_array = array_column($raise,'user_id');
-                if(in_array("$user_id",$raise_id_array))
-                {
-                    $json =array('status'=>-1,'msg'=>'您已参加过该拼团活动，不能再参团，只能继续开团');
-                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
-                    exit(json_encode($json));
-                }
-            }
-            //每个团的最后一个人直接将订单锁住防止出现错误
-            $num = M('group_buy')->where('`id`='.$result['id'].' or `mark`='.$result['id'].' and `is_pay`=1 and `is_cancel`=0')->count();
-            if($num==$result['goods_num'])
-            {
-                $on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `is_pay`=0 and `is_cancel`=0' )->find();
-                if(!empty($on_buy))
-                {
-                    $json =array('status'=>-1,'msg'=>'有用户尚未支付，您可以在他取消订单后进行支付');
-                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
-
-                    exit(json_encode($json));
-                }
-            }elseif($num==$result['goods_num']){
-                $json =array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-                redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-                exit(json_encode($json));
-            }
-            //判断该用户是否参团了
-            $self = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=1')->find();
-            if(!empty($self))
-            {
-                $json =array('status'=>-1,'msg'=>'你已经参团了');
-                redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-                exit(json_encode($json));
-            }
-            //判断用户是否已经生成未付款订单
-            $on_buy = M('group_buy')->where('`mark`='.$result['id'].' and `user_id`='.$user_id.' and `is_pay`=0 and `is_cancel`=0' )->find();
-            if(!empty($on_buy))
-            {
-                $json =array('status'=>-1,'msg'=>'该团你有未付款订单，请前往支付再进行操作');
-                redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-                exit(json_encode($json));
-            }
-            if($result['mark']!=0){
-                $num2 = M('group_buy')->where('`id`='.$result['mark'].' or `mark` = '.$result['mark'].' and `is_pay`=1')->count();
-            }else{
-                $num2 = M('group_buy')->where('`id`='.$prom_id.' or `mark` = '.$prom_id.' and `is_pay`=1')->count();
-            }
-
-            if($num2==$result['goods_num'])
-            {
-                $json =	array('status'=>-1,'msg'=>'该团已经满员开团了，请选择别的团参加');
-                redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
-                exit(json_encode($json));
-            }
-            $this->joinGroupBuy($parameter);
-        }
-        else if($type == 1)	//开团
-        {
-            $this->openGroup($parameter);
-        }
-        //自己买
-        else if($type == 2)
-        {
-            $this->buyBymyself($parameter);
         }
     }
 
@@ -190,7 +212,6 @@ class PurchaseController
     public function joinGroupBuy($parameter){
         $prom_id = $parameter['prom_id'];
         $user_id = $parameter['user_id'];
-        $only_userid = $user_id;
         $data = array();
         $order = array();
         $address_id = $parameter['address_id'];
@@ -204,8 +225,7 @@ class PurchaseController
         $result = M('group_buy')->where("`id` = $prom_id")->find();
 
         //是否使用优惠卷
-        if(!empty($coupon_id))
-        {
+        if(!empty($coupon_id)){
             $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
         }else{
             $coupon['money'] = 0;
@@ -214,8 +234,7 @@ class PurchaseController
         $goods_id = $result['goods_id'];
         $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();
         //找到开团的商品,并获取要用的数据
-        if(!empty($spec_key))
-        {
+        if(!empty($spec_key)){
             $goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->find();
             $goods['prom_price']=(string)($goods_spec['prom_price']);
         }else{
@@ -224,12 +243,12 @@ class PurchaseController
         }
         $free = $result['free'];
         $prom = $result['goods_num'];
-        if(!empty($free))//是否免单
-        {
+        if(!empty($free)){//是否免单
+            redis("get_Free_Order_status", "1");
             if(!empty($prom)){
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3){
+                if($count>=3){
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
@@ -238,7 +257,7 @@ class PurchaseController
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3){
+                if($count>=3){
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
@@ -385,17 +404,16 @@ class PurchaseController
                 M()->commit();//都操作成功的时候才真的把数据放入数据库
 
                 redisdelall("getBuy_lock_".$goods_id);//删除锁
-                $user_id_arr = M('group_buy')->where('id = '.$result['mark'].' or mark ='.$result['mark'])->field('user_id')->select();
+                $user_id_arr = M('group_buy')->where('id = '.$result['id'].' or mark ='.$result['id'])->field('user_id')->select();
+                redis("group_buy", serialize($user_id_arr), 300);
                 for($i=0;$i<count($user_id_arr);$i++){
-                    $rdsname = "getOrderList_".$user_id_arr[$i]['user_id']."*";
-                    redisdelall($rdsname);//删除订单列表
+                    redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
+                    redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
                 }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
-
                 if($order['pay_code']=='weixin'){
                     $weixinPay = new WeixinpayController();
-                    //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
                     if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
                         $order['order_id'] = $result['order_id'];
                         $code_str = $weixinPay->getJSAPI($order);
@@ -410,12 +428,16 @@ class PurchaseController
                     $qqPay = new QQPayController();
                     $pay_detail = $qqPay->getQQPay($order);
                 }
-                $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail)); //销量、库存
+                $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
+
+                $this->order_redis_status_ref($user_id);
+                //销量、库存
                 M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
                 //商品规格库存
                 $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
                 M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
                 M('merchant')->where('`id`='.$spec_name['store_id'])->setInc('sales',$num);
+
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -461,8 +483,7 @@ class PurchaseController
         //找到开团的商品,并获取要用的数据
         $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();
         //获取商品规格和相应的价格
-        if(!empty($spec_key))
-        {
+        if(!empty($spec_key)){
             $goods_spec = M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_key'")->field('key_name,prom_price')->find();
             $goods['prom_price']=(string)($goods_spec['prom_price']);
         }else{
@@ -471,11 +492,12 @@ class PurchaseController
         }
         if(!empty($free))//是否免单
         {
+            redis("get_Free_Order_status", "1");
             if(!empty($prom))
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
@@ -485,7 +507,7 @@ class PurchaseController
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
@@ -500,7 +522,7 @@ class PurchaseController
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
@@ -510,7 +532,7 @@ class PurchaseController
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
                 $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
+                if($count>=3)
                 {
                     $price = $this->operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
@@ -678,7 +700,9 @@ class PurchaseController
                 $pay_detail = $qqPay->getQQPay($order);
                 // End code by lcy
             }
-            $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail)); //销量、库存
+            $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
+            $this->order_redis_status_ref($user_id);
+            //销量、库存
             M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
             //商品规格库存
             $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
@@ -859,9 +883,10 @@ class PurchaseController
             }elseif($order['pay_code'] == 'qpay'){
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
-                // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
+
+            $this->order_redis_status_ref($only_userid);
             M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
             //商品规格库存
             $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
@@ -897,8 +922,8 @@ class PurchaseController
     //操作价格
     public function operationPrice($price)
     {
-        $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
-        $price = $price+0.01;
+        $price = number_format($price, 2, '.', '');
+//        $price = $price+0.01;
         return $price;
     }
 

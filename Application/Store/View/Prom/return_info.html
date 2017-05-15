@@ -56,9 +56,10 @@
                                              </if>
                                          </span>
                                       </div>
-                                        <if condition="$return_goods['status'] eq 2">
-                                            <input class="btn btn-primary" type="button"  value="退款" onclick="backPay({$return_goods.order_id})">
-                                        </if>
+                                        <if condition="$return_goods['type'] eq 0">
+                                            <if condition="$return_goods['status'] eq 2">
+                                                <input class="btn btn-primary" type="button"  value="退款" onclick="backPay({$return_goods.order_id})">
+                                            </if></if>
                                       
                                     </td>
                                 </tr>

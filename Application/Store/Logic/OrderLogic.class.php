@@ -446,6 +446,8 @@ class OrderLogic extends RelationModel
 			$updata['automatic_time'] = time()+15*24*60*60;
 		}
 		M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
+        $base = new \Api_2_0_0\Controller\BaseController();
+        $base->order_redis_status_ref($order['user_id']);
 		$s = $this->orderActionLog($order['order_id'],'delivery',$data['note']);//操作日志
 		return $s && $r;
     }

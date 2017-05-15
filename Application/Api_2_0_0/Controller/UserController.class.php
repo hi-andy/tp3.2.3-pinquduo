@@ -8,7 +8,9 @@ class UserController extends BaseController {
     public function _initialize(){
         parent::_initialize();
         $this->userLogic = new \Home\Logic\UsersLogic();
+//        $this->encryption();
     }
+
     /**
      *  登录
      */
@@ -31,6 +33,7 @@ class UserController extends BaseController {
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
+        $map['version'] = I('version');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $data = $this->userLogic->thirdLogin($map);
         if($data['status'] ==1){
@@ -103,7 +106,7 @@ class UserController extends BaseController {
         $user_id = I('user_id');
         if(!$user_id)
             exit(json_encode(array('status'=>-1,'msg'=>'缺少参数','result'=>'')));
-            $address = M('user_address')->where(array('user_id'=>$user_id))->select();
+        $address = M('user_address', '', 'DB_CONFIG2')->where(array('user_id'=>$user_id))->select();
         if(!$address)
             exit(json_encode(array('status'=>1,'msg'=>'没有数据','result'=>'')));
         exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>$address)));
@@ -126,16 +129,16 @@ class UserController extends BaseController {
             exit(json_encode($json));
         }
         if($version=='2.0.0'){
-            $coupons_list = M('coupon_list')->where('`uid` = '.$user_id)->field('cid,is_use')->page($page,$pagesize)->select();
+            $coupons_list = M('coupon_list', '', 'DB_CONFIG2')->where('`uid` = '.$user_id)->field('cid,is_use')->page($page,$pagesize)->select();
         }else{
-            $coupons_list = M('coupon_list')->where('`uid` = '.$user_id)->field('cid,is_use')->select();
+            $coupons_list = M('coupon_list', '', 'DB_CONFIG2')->where('`uid` = '.$user_id)->field('cid,is_use')->select();
         }
         if($state == 0)
         {
             $j=0;
             for($i=0;$i<count($coupons_list);$i++)
             {
-                $coupons_details[$i] = M('coupon')->alias('c')
+                $coupons_details[$i] = M('coupon', '', 'DB_CONFIG2')->alias('c')
                     ->where('c.id = '.$coupons_list[$i]['cid'])
                     ->join('INNER JOIN tp_merchant m on c.store_id = m.id ')
                     ->field('c.id,c.name,c.money,c.condition,c.use_start_time,c.use_end_time,m.store_name,m.id as store_id')
@@ -156,7 +159,7 @@ class UserController extends BaseController {
             $j=0;
             for($i=0;$i<count($coupons_list);$i++)
             {
-                $coupons_details[$i] = M('coupon')->alias('c')
+                $coupons_details[$i] = M('coupon', '', 'DB_CONFIG2')->alias('c')
                     ->where('c.id = '.$coupons_list[$i]['cid'])
                     ->join('INNER JOIN tp_merchant m on c.store_id = m.id ')
                     ->field('c.id,c.name,c.money,c.condition,c.use_start_time,c.use_end_time,m.store_name,m.id as store_id')
@@ -275,33 +278,33 @@ class UserController extends BaseController {
         }
         if($invitation_num)
         {
-            $order = M('order')->where("`invitation_num`='$invitation_num'")->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,shipping_order,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
+            $order = M('order', '', 'DB_CONFIG2')->where("`invitation_num`='$invitation_num'")->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,shipping_order,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
         }else{
-            $order = M('order')->where('`order_id`='.$order_id)->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,shipping_order,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
+            $order = M('order', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,shipping_order,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
         }
         $order['share_url'] = C('SHARE_URL').'/prom_regiment.html?order_id='.$order_id.'&user_id='.$user_id;
-        $order['spec_key'] = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
+        $order['spec_key'] = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
 
         if($order['prom_id']!=null)
         {
-            $order['goodsInfo'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_id,goods_name,goods_remark,original_img,prom,prom_price,cat_id,market_price,store_id')->find();
+            $order['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('goods_id,goods_name,goods_remark,original_img,prom,prom_price,cat_id,market_price,store_id')->find();
             $order['goodsInfo']['original_img'] =  goods_thum_images($order['goods_id'],400,400);
 
             //获取分享缩略图
             $order['goodsInfo']['fenxiang_url'] = $order['goodsInfo']['original_img']."/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0|imageslim";
-            $store_id['id'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('store_id')->find();
+            $store_id['id'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('store_id')->find();
             $order['goodsInfo']['store']['id']= $store_id['id']['store_id'];
-            $order['rules'] = M('rules_text')->find();
-            $promInfo = M('group_buy')->where('`order_id` = '.$order['order_id'])->field('id,photo,end_time,goods_num,start_time,user_id,mark,order_id,end_time,is_free')->find();
+            $order['rules'] = M('rules_text', '', 'DB_CONFIG2')->find();
+            $promInfo = M('group_buy', '', 'DB_CONFIG2')->where('`order_id` = '.$order['order_id'])->field('id,photo,end_time,goods_num,start_time,user_id,mark,order_id,end_time,is_free')->find();
 
             if(!empty($promInfo['mark']))
             {
-                $is_self = M('group_buy')->where('`id` = '.$promInfo['mark'].' and `user_id`='.$user_id)->field('mark')->find();
+                $is_self = M('group_buy', '', 'DB_CONFIG2')->where('`id` = '.$promInfo['mark'].' and `user_id`='.$user_id)->field('mark')->find();
                 if(!empty($is_self)){
                     $promInfo['is_self'] = null;
                 }
             } elseif(empty($promInfo['mark'])) {
-                $is_self = M('group_buy')->where('`order_id` = '.$order['order_id'].' and `user_id`='.$user_id)->field('mark')->find();
+                $is_self = M('group_buy', '', 'DB_CONFIG2')->where('`order_id` = '.$order['order_id'].' and `user_id`='.$user_id)->field('mark')->find();
                 if(!empty($is_self)) {
                     $promInfo['is_self'] = 1;
                 }elseif(empty($is_self)){
@@ -319,15 +322,15 @@ class UserController extends BaseController {
             $promInfo['photo'] = TransformationImgurl($promInfo['photo']);
             $promInfo['prom'] = $order['goodsInfo']['prom'];
             if(!empty($promInfo['mark'])) {
-                $join_num = M('group_buy')->where('`mark` = '.$promInfo['mark'].' and `is_pay`=1')->select();
-                $parents = M('group_buy')->where('`id`='.$promInfo['mark'])->find();
-                $promInfo['join_num'][0] = M('users')->where('`user_id` = '.$parents['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
+                $join_num = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = '.$promInfo['mark'].' and `is_pay`=1')->select();
+                $parents = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$promInfo['mark'])->find();
+                $promInfo['join_num'][0] = M('users', '', 'DB_CONFIG2')->where('`user_id` = '.$parents['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
                 $promInfo['join_num'][0]['is_free'] = $parents['is_free'];
                 $promInfo['join_num'][0]['addtime'] = $parents['start_time'];
                 $promInfo['join_num'][0]['id'] = $parents['id'];
             } elseif (empty($promInfo['mark'])) {
-                $join_num = M('group_buy')->where('`mark` = '.$promInfo['id'].' and `is_pay`=1')->select();
-                $promInfo['join_num'][0] = M('users')->where('`user_id` = '.$order['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
+                $join_num = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = '.$promInfo['id'].' and `is_pay`=1')->select();
+                $promInfo['join_num'][0] = M('users', '', 'DB_CONFIG2')->where('`user_id` = '.$order['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
                 $promInfo['join_num'][0]['is_free'] = $promInfo['is_free'];
                 $promInfo['join_num'][0]['addtime'] = $promInfo['start_time'];
                 $promInfo['join_num'][0]['id'] = $promInfo['id'];
@@ -342,9 +345,9 @@ class UserController extends BaseController {
 
             for($i=1;$i<=count($join_num);$i++)
             {
-                $mobile = M('users')->where('`user_id` = '.$join_num[$i-1]['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
+                $mobile = M('users', '', 'DB_CONFIG2')->where('`user_id` = '.$join_num[$i-1]['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
 
-                $start_time = M('group_buy')->where('`id`='.$join_num[$i-1]['id'])->field('start_time,is_free')->find();
+                $start_time = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$join_num[$i-1]['id'])->field('start_time,is_free')->find();
 
                 $promInfo['join_num'][$i]['user_id'] = $mobile['user_id'];
                 if(!empty($mobile['oauth']))
@@ -370,17 +373,17 @@ class UserController extends BaseController {
             $order['promInfo'] = $promInfo;
 
             //找到order表里的详情
-            $order['address'] = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
-            $order['goods'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
+            $order['address'] = M('user_address', '', 'DB_CONFIG2')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
+            $order['goods'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
             $order['goods']['original_img'] = goods_thum_images($order['goods_id'],400,400);
-            $order['store'] = M('merchant')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
+            $order['store'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
             $order['store']['store_logo'] = TransformationImgurl($order['store']['store_logo']);
 
             $order_status = $this->getPromStatus($order,$promInfo,count($join_num));
             $order['annotation'] = $order_status['annotation'];
             $order['order_type'] = $order_status['order_type'];
-            $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name,spec_key')->find();
-            $spec_key = M('spec_goods_price')->where("`key`='".$key_name['spec_key']."'")->find();
+            $key_name = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order['order_id'])->field('spec_key_name,spec_key')->find();
+            $spec_key = M('spec_goods_price', '', 'DB_CONFIG2')->where("`key`='".$key_name['spec_key']."'")->find();
             $order['key_name'] = $spec_key['key_name'];
             //猜你喜欢
             $data = $this->if_you_like($order['goodsInfo']['cat_id'],$page,$pagesize);
@@ -392,13 +395,13 @@ class UserController extends BaseController {
         }
         elseif($order['prom_id']==null)
         {
-            $address = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
+            $address = M('user_address', '', 'DB_CONFIG2')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
 
-            $goods = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
+            $goods = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
             $goods['original_img'] = goods_thum_images($order['goods_id'],200,200);
-            $store = M('merchant')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
+            $store = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
             $store['store_logo'] = TransformationImgurl($store['store_logo']);
-            $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
+            $key_name = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
             $order['key_name'] = $key_name['spec_key_name'];
             $order_status = $this->getStatus($order);
             $order['annotation'] = $order_status['annotation'];
@@ -444,40 +447,40 @@ class UserController extends BaseController {
         }
         if($invitation_num)
         {
-            $order = M('order')->where("`invitation_num`='$invitation_num'")->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,shipping_order,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
+            $order = M('order', '', 'DB_CONFIG2')->where("`invitation_num`='$invitation_num'")->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,shipping_order,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
         }else{
-            $order = M('order')->where('`order_id`='.$order_id)->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,shipping_order,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
+            $order = M('order', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->field('order_id,invitation_num,user_id,goods_id,total_amount,address,address_base,order_sn,add_time,pay_name,order_status,shipping_status,shipping_order,pay_status,prom_id,num,order_amount,shipping_name,shipping_code,delivery_time,automatic_time,is_return_or_exchange,the_raise,free,order_type')->find();
         }
         $order['share_url'] = C('SHARE_URL').'/prom_regiment_app.html?order_id='.$order_id.'&user_id='.$user_id;
-        $order['spec_key'] = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
+        $order['spec_key'] = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
 
         if($order['prom_id']!=null)
         {
-            $order['goodsInfo'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_id,goods_name,goods_remark,original_img,prom,prom_price,cat_id,market_price,store_id')->find();
+            $order['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('goods_id,goods_name,goods_remark,original_img,prom,prom_price,cat_id,market_price,store_id')->find();
             $order['goodsInfo']['original_img'] =  goods_thum_images($order['goods_id'],400,400);
 
             //获取分享缩略图
-            if(file_exists('Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg'))
+            if(file_exists(CDN.'Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg'))
             {
-                $goods['fenxiang_url'] = C('HTTP_URL').'/Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg';
+                $goods['fenxiang_url'] = CDN.'/Public/upload/fenxiang/'.$order['goodsInfo']['goods_id'].'_'.$order['goodsInfo']['store_id'].'.jpg';
             }else{
-                $goods_pic_url = C('HTTP_URL').goods_thum_images($order['goodsInfo']['goods_id'],400,400);
+                $goods_pic_url = goods_thum_images($order['goodsInfo']['goods_id'],400,400);
                 $this->fenxiangLOGO($goods_pic_url,$order['goodsInfo']['goods_id'],$order['goodsInfo']['store_id']);
                 $order['goodsInfo']['fenxiang_url'] = $order['goodsInfo']['original_img']."/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0|imageslim";
             }
-            $store_id['id'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('store_id')->find();
+            $store_id['id'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('store_id')->find();
             $order['goodsInfo']['store']['id']= $store_id['id']['store_id'];
-            $order['rules'] = M('rules_text')->find();
-            $promInfo = M('group_buy')->where('`order_id` = '.$order['order_id'])->field('id,photo,end_time,goods_num,start_time,user_id,mark,order_id,end_time,is_free')->find();
+            $order['rules'] = M('rules_text', '', 'DB_CONFIG2')->find();
+            $promInfo = M('group_buy', '', 'DB_CONFIG2')->where('`order_id` = '.$order['order_id'])->field('id,photo,end_time,goods_num,start_time,user_id,mark,order_id,end_time,is_free')->find();
 
             if(!empty($promInfo['mark']))
             {
-                $is_self = M('group_buy')->where('`id` = '.$promInfo['mark'].' and `user_id`='.$user_id)->field('mark')->find();
+                $is_self = M('group_buy', '', 'DB_CONFIG2')->where('`id` = '.$promInfo['mark'].' and `user_id`='.$user_id)->field('mark')->find();
                 if(!empty($is_self)){
                     $promInfo['is_self'] = null;
                 }
             } elseif(empty($promInfo['mark'])) {
-                $is_self = M('group_buy')->where('`order_id` = '.$order['order_id'].' and `user_id`='.$user_id)->field('mark')->find();
+                $is_self = M('group_buy', '', 'DB_CONFIG2')->where('`order_id` = '.$order['order_id'].' and `user_id`='.$user_id)->field('mark')->find();
                 if(!empty($is_self)) {
                     $promInfo['is_self'] = 1;
                 }elseif(empty($is_self)){
@@ -495,15 +498,15 @@ class UserController extends BaseController {
             $promInfo['photo'] = TransformationImgurl($promInfo['photo']);
             $promInfo['prom'] = $order['goodsInfo']['prom'];
             if(!empty($promInfo['mark'])) {
-                $join_num = M('group_buy')->where('`mark` = '.$promInfo['mark'].' and `is_pay`=1')->select();
-                $parents = M('group_buy')->where('`id`='.$promInfo['mark'])->find();
-                $promInfo['join_num'][0] = M('users')->where('`user_id` = '.$parents['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
+                $join_num = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = '.$promInfo['mark'].' and `is_pay`=1')->select();
+                $parents = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$promInfo['mark'])->find();
+                $promInfo['join_num'][0] = M('users', '', 'DB_CONFIG2')->where('`user_id` = '.$parents['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
                 $promInfo['join_num'][0]['is_free'] = $parents['is_free'];
                 $promInfo['join_num'][0]['addtime'] = $parents['start_time'];
                 $promInfo['join_num'][0]['id'] = $parents['id'];
             } elseif (empty($promInfo['mark'])) {
-                $join_num = M('group_buy')->where('`mark` = '.$promInfo['id'].' and `is_pay`=1')->select();
-                $promInfo['join_num'][0] = M('users')->where('`user_id` = '.$order['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
+                $join_num = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = '.$promInfo['id'].' and `is_pay`=1')->select();
+                $promInfo['join_num'][0] = M('users', '', 'DB_CONFIG2')->where('`user_id` = '.$order['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
                 $promInfo['join_num'][0]['is_free'] = $promInfo['is_free'];
                 $promInfo['join_num'][0]['addtime'] = $promInfo['start_time'];
                 $promInfo['join_num'][0]['id'] = $promInfo['id'];
@@ -518,10 +521,8 @@ class UserController extends BaseController {
 
             for($i=1;$i<=count($join_num);$i++)
             {
-                $mobile = M('users')->where('`user_id` = '.$join_num[$i-1]['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
-
-                $start_time = M('group_buy')->where('`id`='.$join_num[$i-1]['id'])->field('start_time,is_free')->find();
-
+                $mobile = M('users', '', 'DB_CONFIG2')->where('`user_id` = '.$join_num[$i-1]['user_id'])->field('user_id,mobile,head_pic,oauth,nickname')->find();
+                $start_time = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$join_num[$i-1]['id'])->field('start_time,is_free')->find();
                 $promInfo['join_num'][$i]['user_id'] = $mobile['user_id'];
                 if(!empty($mobile['oauth']))
                 {
@@ -546,17 +547,17 @@ class UserController extends BaseController {
             $order['promInfo'] = $promInfo;
 
             //找到order表里的详情
-            $order['address'] = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
-            $order['goods'] = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
+            $order['address'] = M('user_address', '', 'DB_CONFIG2')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
+            $order['goods'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
             $order['goods']['original_img'] = goods_thum_images($order['goods_id'],400,400);
-            $order['store'] = M('merchant')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
+            $order['store'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$order['goods']['store_id'])->field('store_name,store_logo,mobile')->find();
             $order['store']['store_logo'] = TransformationImgurl($order['store']['store_logo']);
 
             $order_status = $this->getPromStatus($order,$promInfo,count($join_num));
             $order['annotation'] = $order_status['annotation'];
             $order['order_type'] = $order_status['order_type'];
-            $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name,spec_key')->find();
-            $spec_key = M('spec_goods_price')->where("key='".$key_name['spec_key']."'")->find();
+            $key_name = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order['order_id'])->field('spec_key_name,spec_key')->find();
+            $spec_key = M('spec_goods_price', '', 'DB_CONFIG2')->where("key='".$key_name['spec_key']."'")->find();
             $order['key_name'] = $spec_key['key_name'];
             //猜你喜欢
             $data = $this->if_you_like($order['goodsInfo']['cat_id'],$page,$pagesize);
@@ -568,13 +569,13 @@ class UserController extends BaseController {
         }
         elseif($order['prom_id']==null)
         {
-            $address = M('user_address')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
+            $address = M('user_address', '', 'DB_CONFIG2')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
 
-            $goods = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
+            $goods = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('cat_id,goods_name,original_img,store_id,market_price')->find();
             $goods['original_img'] = goods_thum_images($order['goods_id'],200,200);
-            $store = M('merchant')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
+            $store = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$goods['store_id'])->field('store_name,store_logo,mobile')->find();
             $store['store_logo'] = TransformationImgurl($store['store_logo']);
-            $key_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
+            $key_name = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order['order_id'])->field('spec_key_name')->find();
             $order['key_name'] = $key_name['spec_key_name'];
             $order_status = $this->getStatus($order);
             $order['annotation'] = $order_status['annotation'];
@@ -606,24 +607,24 @@ class UserController extends BaseController {
     {
         if($version=='2.0.0'){
             $where = '`show_type`=0 and `cat_id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1';
-            $count = M('goods')->where($where)->count();
+            $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
             if(empty($count)){
                 $where = '`show_type`=0 and `id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1';
             }
             $data = $this->getGoodsList($where,$page,$pagesize);
         }else{
-            $count = M('goods')->where('`show_type`=0 and `cat_id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1')->count();
-            $goods = M('goods')->where('`show_type`=0 and `cat_id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
+            $count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `cat_id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1')->count();
+            $goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `cat_id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
             if($count==null)
             {
-                $parent_cat_id = M('goods_category')->where('`show_type`=0 and `id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1')->field('parent_id')->find();
-                $cat_ids = M('goods_category')->where('`parent_id` = '.$parent_cat_id['parent_id'])->field('id')->select();
+                $parent_cat_id = M('goods_category', '', 'DB_CONFIG2')->where('`show_type`=0 and `id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1')->field('parent_id')->find();
+                $cat_ids = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id` = '.$parent_cat_id['parent_id'])->field('id')->select();
                 $condition['haitao_cat'] = array('in',array_column($cat_ids,'id'));
                 $condition['is_on_sale'] = array('eq',1);
                 $condition['is_show'] = array('eq',1);
                 $condition['show_type'] = array('eq',0);
-                $count = M('goods')->where($condition)->count();
-                $goods = M('goods')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
+                $count = M('goods', '', 'DB_CONFIG2')->where($condition)->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
             }
             foreach($goods as &$v)
             {
@@ -650,18 +651,17 @@ class UserController extends BaseController {
         $data = $this->userLogic->cancel_order($user_id,$id);
         $json = $data;
         $returnjson = $json;
-        if(!$user_id > 0 || !$id > 0)
-        {
+        if(!$user_id > 0 || !$id > 0){
             $json = array('status'=>-1,'msg'=>'参数有误','result'=>'');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
             $returnjson = json_encode($json);
         }
+        $this->order_redis_status_ref($id);
         if(!empty($ajax_get))
             $this->getJsonp($json);
 
-        $rdsname = "getOrderList_".$user_id."*";
-        redisdelall($rdsname);//根据类型删除用户订单缓存
+        $this->order_redis_status_ref($user_id);
         exit(json_encode($returnjson));
     }
 
@@ -698,8 +698,7 @@ class UserController extends BaseController {
         }
         $data = $this->userLogic->confirm_order($user_id,$id);
         $json = $data;
-        $rdsname = "getUserOrderList".$user_id."*";
-        redisdelall($rdsname);//删除用户订单缓存
+        $this->order_redis_status_ref($user_id);
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
@@ -711,50 +710,50 @@ class UserController extends BaseController {
      */
     public function add_comment(){
 
-            // 晒图片
-            if($_FILES[img_file][tmp_name][0])
-            {
-                    $upload = new \Think\Upload();// 实例化上传类
-                    $upload->maxSize   =    $map['author'] = (1024*1024*3);// 设置附件上传大小 管理员10M  否则 3M
-                    $upload->exts      =     array('jpg', 'gif', 'png', 'jpeg');// 设置附件上传类型
-                    $upload->rootPath  =     './Public/upload/comment/'; // 设置附件上传根目录
-                    $upload->replace  =     true; // 存在同名文件是否是覆盖，默认为false
-                    //$upload->saveName  =   'file_'.$id; // 存在同名文件是否是覆盖，默认为false
-                    // 上传文件
-                    $info   =   $upload->upload();
-                    if(!$info) {// 上传错误提示错误信息
-                        exit(json_encode(array('status'=>-1,'msg'=>$upload->getError()))); //$this->error($upload->getError());
-                    }else{
-                        foreach($info as $key => $val)
-                        {
-                            $comment_img[] = '/Public/upload/comment/'.$val['savepath'].$val['savename'];
-                        }
-                        $comment_img = serialize($comment_img); // 上传的图片文件
-                    }
+        // 晒图片
+        if($_FILES[img_file][tmp_name][0])
+        {
+            $upload = new \Think\Upload();// 实例化上传类
+            $upload->maxSize   =    $map['author'] = (1024*1024*3);// 设置附件上传大小 管理员10M  否则 3M
+            $upload->exts      =     array('jpg', 'gif', 'png', 'jpeg');// 设置附件上传类型
+            $upload->rootPath  =     './Public/upload/comment/'; // 设置附件上传根目录
+            $upload->replace  =     true; // 存在同名文件是否是覆盖，默认为false
+            //$upload->saveName  =   'file_'.$id; // 存在同名文件是否是覆盖，默认为false
+            // 上传文件
+            $info   =   $upload->upload();
+            if(!$info) {// 上传错误提示错误信息
+                exit(json_encode(array('status'=>-1,'msg'=>$upload->getError()))); //$this->error($upload->getError());
+            }else{
+                foreach($info as $key => $val)
+                {
+                    $comment_img[] = '/Public/upload/comment/'.$val['savepath'].$val['savename'];
+                }
+                $comment_img = serialize($comment_img); // 上传的图片文件
             }
+        }
 
-            $unique_id = I("unique_id"); // 唯一id  类似于 pc 端的session id
-            $user_id = I('user_id'); // 用户id
-            $user_info = M('users')->where("user_id = $user_id")->find();
+        $unique_id = I("unique_id"); // 唯一id  类似于 pc 端的session id
+        $user_id = I('user_id'); // 用户id
+        $user_info = M('users')->where("user_id = $user_id")->find();
 
-            $add['goods_id'] = I('goods_id');
-            $add['email'] = $user_info['email'];
-            //$add['nick'] = $user_info['nickname'];
-            $add['username'] = $user_info['nickname'];
-            $add['order_id'] = I('order_id');
-            $add['service_rank'] = I('service_rank');
-            $add['deliver_rank'] = I('deliver_rank');
-            $add['goods_rank'] = I('goods_rank');
-           // $add['content'] = htmlspecialchars(I('post.content'));
-            $add['content'] = I('content');
-            $add['img'] = $comment_img;
-            $add['add_time'] = time();
-            $add['ip_address'] = $_SERVER['REMOTE_ADDR'];
-            $add['user_id'] = $user_id;
+        $add['goods_id'] = I('goods_id');
+        $add['email'] = $user_info['email'];
+        //$add['nick'] = $user_info['nickname'];
+        $add['username'] = $user_info['nickname'];
+        $add['order_id'] = I('order_id');
+        $add['service_rank'] = I('service_rank');
+        $add['deliver_rank'] = I('deliver_rank');
+        $add['goods_rank'] = I('goods_rank');
+        // $add['content'] = htmlspecialchars(I('post.content'));
+        $add['content'] = I('content');
+        $add['img'] = $comment_img;
+        $add['add_time'] = time();
+        $add['ip_address'] = $_SERVER['REMOTE_ADDR'];
+        $add['user_id'] = $user_id;
 
-            //添加评论
-            $row = $this->userLogic->add_comment($add);
-            exit(json_encode($row));
+        //添加评论
+        $row = $this->userLogic->add_comment($add);
+        exit(json_encode($row));
     }
 
     /*
@@ -787,54 +786,61 @@ class UserController extends BaseController {
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        $conditon = '`is_return_or_exchange`=1 and `user_id`='.$user_id;
-        if($version=='2.0.0'){
-            $data = $this->get_OrderList($conditon,$page,$pagesize);
-        }else{
-            $count = M('order')->where($conditon)->count();
-            $order = M('order')->where($conditon)->page($page,$pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,is_return_or_exchange,order_type')->order('add_time desc') ->select();
+        if (redis("return_goods_list_status".$user_id) == "1") {
+            redisdelall("return_goods_list".$user_id."*");
+            redisdelall("return_goods_list_status".$user_id);
+        }
+        $rdsname = "return_goods_list".$user_id.$page.$pagesize;
+        if(empty(redis($rdsname))) {
+            $conditon = 'order_type in (6,7,8,9,12,13) and `user_id`=' . $user_id;
+            if ($version == '2.0.0') {
+                $data = $this->get_OrderList($conditon, $page, $pagesize);
+            } else {
+                $count = M('order', '', 'DB_CONFIG2')->where($conditon)->count();
+                $order = M('order', '', 'DB_CONFIG2')->where($conditon)->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,is_return_or_exchange,order_type')->order('add_time desc')->select();
 
-            for($i=0;$i<count($order);$i++)
-            {
-                $goods_spec = M('order_goods')->where('`order_id`='.$order[$i]['order_id'])->field('spec_key_name')->find();
-                if($order[$i]['prom_id']!=null)//团购订单
-                {
-                    $mark = M('group_buy')->where('`id`='.$order[$i]['prom_id'])->find();
-                    $order[$i]['end_time'] = $mark['end_time'];
-                    $order[$i]['goods_price'] = $mark['goods_price'];
-                    $order[$i]['mark'] = $mark['mark'];
-                    if(!empty($mark['mark']))
+                for ($i = 0; $i < count($order); $i++) {
+                    $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`=' . $order[$i]['order_id'])->field('spec_key_name')->find();
+                    if ($order[$i]['prom_id'] != null)//团购订单
                     {
-                        $num = M('group_buy')->where('`mark`='.$mark['mark'])->count();
-                    }else{
-                        $num = M('group_buy')->where('`mark`='.$mark['id'])->count();
+                        $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id`=' . $order[$i]['prom_id'])->find();
+                        $order[$i]['end_time'] = $mark['end_time'];
+                        $order[$i]['goods_price'] = $mark['goods_price'];
+                        $order[$i]['mark'] = $mark['mark'];
+                        if (!empty($mark['mark'])) {
+                            $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=' . $mark['mark'])->count();
+                        } else {
+                            $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=' . $mark['id'])->count();
+                        }
+
+                        $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $order[$i]['goods_id'])->field('goods_name,original_img')->find();
+                        $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'], 400, 400);
+                        $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $order[$i]['store_id'])->field('store_name,store_logo')->find();
+                        $order[$i]['storeInfo']['store_logo'] = $order[$i]['storeInfo']['store_logo'];
+                        $order[$i]['goods_num'] = $mark['goods_num'];
+
+                        $order_status = $this->getPromStatus($order[$i], $mark, $num);
+                        $order[$i]['annotation'] = $order_status['annotation'];
+                        $order[$i]['order_type'] = $order_status['order_type'];
+                    } else {
+                        $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $order[$i]['goods_id'])->field('goods_name,original_img')->find();
+                        $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'], 400, 400);
+                        $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $order[$i]['store_id'])->field('store_name,store_logo')->find();
+                        $order[$i]['storeInfo']['store_logo'] = TransformationImgurl($order[$i]['storeInfo']['store_logo']);
+                        $order[$i]['goods_num'] = $order[$i]['goods_num'];
+
+                        $order_status = $this->getStatus($order[$i]);
                     }
-
-                    $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$order[$i]['goods_id'])->field('goods_name,original_img')->find();
-                    $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'],400,400);
-                    $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$order[$i]['store_id'])->field('store_name,store_logo')->find();
-                    $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
-                    $order[$i]['goods_num'] = $mark['goods_num'];
-
-                    $order_status = $this->getPromStatus($order[$i],$mark,$num);
+                    $order[$i] = $this->FormatOrderInfo($order[$i]);
                     $order[$i]['annotation'] = $order_status['annotation'];
                     $order[$i]['order_type'] = $order_status['order_type'];
-                }else{
-                    $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$order[$i]['goods_id'])->field('goods_name,original_img')->find();
-                    $order[$i]['goodsInfo']['original_img'] = goods_thum_images($order[$i]['goods_id'],400,400);
-                    $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$order[$i]['store_id'])->field('store_name,store_logo')->find();
-                    $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
-                    $order[$i]['goods_num'] = $order[$i]['goods_num'];
-
-                    $order_status = $this->getStatus($order[$i]);
+                    $order[$i]['key_name'] = $goods_spec['spec_key_name'];
                 }
-
-                $order[$i] = $this->FormatOrderInfo($order[$i]);
-                $order[$i]['annotation'] = $order_status['annotation'];
-                $order[$i]['order_type'] = $order_status['order_type'];
-                $order[$i]['key_name']=$goods_spec['spec_key_name'];
+                $data = $this->listPageData($count, $order);
             }
-            $data = $this->listPageData($count,$order);
+            redis($rdsname, serialize($data));
+        } else {
+            $data = unserialize(redis($rdsname));
         }
 
 
@@ -924,20 +930,20 @@ class UserController extends BaseController {
         {
             //将状态改变
             $return['is_return_or_exchange']=1;
-                if($type==0)
-                {
-                    //退货
-                    $return['order_status'] = 6;
-                    $return['order_type'] = 8;
-                }elseif($type==1)
-                {
-                    //换货
-                    $return['order_status'] = 4;
-                    $return['order_type'] = 6;
-                }
+            if($type==0)
+            {
+                //退货
+                $return['order_status'] = 6;
+                $return['order_type'] = 8;
+            }elseif($type==1)
+            {
+                //换货
+                $return['order_status'] = 4;
+                $return['order_type'] = 6;
+            }
             M('goods')->where('`goods_id`='.$order_sn['goods_id'])->setInc('store_count',$order_sn['num']);
             M('order')->where('`order_id`='.$order_id)->data($return)->save();
-
+            $this->order_redis_status_ref($user_id);
             $json = array('status'=>1,'msg'=>'申请成功,客服第一时间会帮你处理!');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
@@ -1071,7 +1077,7 @@ class UserController extends BaseController {
                 $head_pic=$userinfo['head_pic'];
                 $name=$userinfo['name'];
 
-               $data = $this->getCountUserOrder($user_id);
+                $data = $this->getCountUserOrder($user_id);
 
                 $result= array('status' => 1, 'msg' => '验证成功','result'=>array('user_id'=>$user_id,'pay_points'=>$pay_points,'mobile'=>$mobile,'head_pic'=>$head_pic,'name'=>$name,'userdetails'=>$data));
 
@@ -1145,27 +1151,27 @@ class UserController extends BaseController {
             } else {
                 $condition = '`user_id` = ' . $user_id;
             }
-            $count = M('order')->where($condition)->count();
-            $all = M('order')->where($condition)->order('order_id desc')->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
+            $count = M('order', '', 'DB_CONFIG2')->where($condition)->count();
+            $all = M('order', '', 'DB_CONFIG2')->where($condition)->order('order_id desc')->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
 
             for ($i = 0; $i < count($all); $i++) {
                 //将规格放入数组
-                $goods_spec = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->field('spec_key_name')->find();
+                $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`order_id`=' . $all[$i]['order_id'])->field('spec_key_name')->find();
 //                var_dump(M()->getLastSql());
                 //判断是不是团购订单
                 if (!empty($all[$i]['prom_id'])) {
-                    $mark = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,store_id,end_time,goods_num,order_id,goods_id,goods_price,mark,goods_num,end_time')->find();
+                    $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,store_id,end_time,goods_num,order_id,goods_id,goods_price,mark,goods_num,end_time')->find();
                     $all[$i]['goods_num'] = $mark['goods_num'];
                     $all[$i]['end_time'] = $mark['end_time'];
                     $all[$i]['goods_price'] = $mark['goods_price'];
                     $all[$i]['mark'] = $mark['mark'];
 
                     if ($mark['mark'] == 0) {
-                        $num = M('group_buy')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
+                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
                         $all[$i]['type'] = 1;
-                        $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $mark['goods_id'])->field('goods_name,original_img')->find();
+                        $all[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $mark['goods_id'])->field('goods_name,original_img')->find();
                         $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
-                        $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $mark['store_id'])->field('store_name,store_logo')->find();
+                        $all[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $mark['store_id'])->field('store_name,store_logo')->find();
                         $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
                         $all[$i]['goods_num'] = $mark['goods_num'];
 
@@ -1173,14 +1179,14 @@ class UserController extends BaseController {
                         $all[$i]['annotation'] = $order_status['annotation'];
                         $all[$i]['order_type'] = $order_status['order_type'];
                     } elseif ($mark['mark'] != 0) {
-                        $perant = M('group_buy')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
-                        $num = M('group_buy')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
+                        $perant = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('mark')->find();
+                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $perant['mark'] . ' and `is_pay`=1')->count();
                         $all[$i]['type'] = 0;
-                        $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
+                        $all[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
                         $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
                         unset($all[$i]['goodsInfo']['shop_price']);
                         $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
-                        $all[$i]['storeInfo'] = M('merchant')->where('`id`=' . $mark['store_id'])->field('store_name,store_logo')->find();
+                        $all[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id`=' . $mark['store_id'])->field('store_name,store_logo')->find();
                         $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
 
                         $order_status = $this->getPromStatus($all[$i], $mark, $num);
@@ -1189,11 +1195,11 @@ class UserController extends BaseController {
                     }
                 } elseif (empty($all[$i]['prom_id'])) {
                     $all[$i]['type'] = 2;
-                    $all[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
+                    $all[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $all[$i]['goods_id'])->field('goods_name,original_img,shop_price')->find();
                     $all[$i]['goods_price'] = $all[$i]['goodsInfo']['shop_price'];
                     unset($all[$i]['goodsInfo']['shop_price']);
                     $all[$i]['goodsInfo']['original_img'] = goods_thum_images($all[$i]['goods_id'], 400, 400);
-                    $all[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $all[$i]['store_id'])->field('store_name,store_logo')->find();
+                    $all[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['store_id'])->field('store_name,store_logo')->find();
                     $all[$i]['storeInfo']['store_logo'] = TransformationImgurl($all[$i]['storeInfo']['store_logo']);
 
                     $order_status = $this->getStatus($all[$i]);
@@ -1225,31 +1231,40 @@ class UserController extends BaseController {
         $user_id = I('user_id');
         $page  = I('page',1);
         $pagesize = I('pagesize',20);
-        $goods_array = M('goods_collect')->where('`user_id` = '.$user_id)->order('collect_id desc')->page($page,$pagesize)->select();
-        $ids['g.goods_id'] = array('IN',array_column($goods_array,'goods_id'));
-        $count  = M('goods')
-            ->alias('g')
-            ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
-            ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id='.$user_id)
-            ->where($ids)
-            ->count();
-        $goods = M('goods')
-            ->alias('g')
-            ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
-            ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id='.$user_id)
-            ->where($ids)
-            ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.original_img,g.sales,g.store_count,g.prom_price,g.free')
-            ->order(' c.add_time desc')
-            ->select();
-
-        foreach($goods as &$v)
-        {
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+        $rdsname = "getUserCollection".$user_id.$page.$pagesize;
+        if (redis("getUserCollection_status".$user_id) == "1"){
+            redisdelall("getUserCollection".$user_id."*");
+            redisdelall("getUserCollection_status".$user_id);
         }
+        if (empty(redis($rdsname))) {//是否有缓存
+            $goods_array = M('goods_collect', '', 'DB_CONFIG2')->where('`user_id` = ' . $user_id)->order('collect_id desc')->page($page, $pagesize)->select();
+            $ids['g.goods_id'] = array('IN', array_column($goods_array, 'goods_id'));
+            $count = M('goods', '', 'DB_CONFIG2')
+                ->alias('g')
+                ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
+                ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id=' . $user_id)
+                ->where($ids)
+                ->count();
+            $goods = M('goods', '', 'DB_CONFIG2')
+                ->alias('g')
+                ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
+                ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id=' . $user_id)
+                ->where($ids)
+                ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.original_img,g.sales,g.store_count,g.prom_price,g.free,g.is_special')
+                ->order(' c.add_time desc')
+                ->select();
 
-        $collection = $this->listPageData($count,$goods);
+            foreach ($goods as &$v) {
+                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+            }
+
+            $collection = $this->listPageData($count, $goods);
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $collection);
+            redis($rdsname, serialize($json));//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$collection);
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
@@ -1305,6 +1320,10 @@ class UserController extends BaseController {
         $version = I('version');
         $pagesize = I('pagesize',10);
         $rdsname = "getUserPromList".$user_id.$type.$page.$pagesize.$version;
+        if (redis("getUserPromList_status".$user_id) == "1"){
+            redisdelall("getUserPromList".$user_id."*");
+            redisdelall("getUserPromList_status".$user_id);
+        }
         if (empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
                 $condition = '`order_status`=8 and `user_id`=' . $user_id;
@@ -1320,20 +1339,20 @@ class UserController extends BaseController {
             if($version=='2.0.0'){
                 $data = $this->get_OrderList($condition,$page,$pagesize);
             }else{
-                $count = M('order')->where($condition)->count();
-                $order = M('order')->where($condition)->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->order('order_id desc')->select();
+                $count = M('order', '', 'DB_CONFIG2')->where($condition)->count();
+                $order = M('order', '', 'DB_CONFIG2')->where($condition)->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->order('order_id desc')->select();
                 for ($i = 0; $i < count($order); $i++) {
-                    $prom = M('group_buy')->where('`id`=' . $order[$i]['prom_id'])->find();
-                    $goods_spec = M('order_goods')->where('`prom_id`=' . $prom['id'])->field('spec_key_name')->find();
+                    $prom = M('group_buy', '', 'DB_CONFIG2')->where('`id`=' . $order[$i]['prom_id'])->find();
+                    $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`prom_id`=' . $prom['id'])->field('spec_key_name')->find();
                     if ($prom['mark'] == 0) {
-                        $num = M('group_buy')->where('`is_pay`=1 and `mark`=' . $prom['id'])->count();
+                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark`=' . $prom['id'])->count();
                     } else {
-                        $num = M('group_buy')->where('`is_pay`=1 and `mark`=' . $prom['mark'])->count();
+                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark`=' . $prom['mark'])->count();
                     }
-                    $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = ' . $prom['goods_id'])->field('goods_name,original_img')->find();
+                    $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $prom['goods_id'])->field('goods_name,original_img')->find();
                     $order[$i]['goodsInfo']['original_img'] = goods_thum_images($prom['goods_id'], 400, 400);
-                    $order[$i]['storeInfo'] = M('merchant')->where('`id` = ' . $prom['store_id'])->field('store_name,store_logo')->find();
-                    $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL') . $order[$i]['storeInfo']['store_logo'];
+                    $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $prom['store_id'])->field('store_name,store_logo')->find();
+                    $order[$i]['storeInfo']['store_logo'] = $order[$i]['storeInfo']['store_logo'];
                     $order[$i]['goods_num'] = $prom['goods_num'];
 
                     $order[$i]['end_time'] = $prom['end_time'];
@@ -1351,7 +1370,7 @@ class UserController extends BaseController {
             }
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+            redis($rdsname, serialize($json));//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
@@ -1406,13 +1425,13 @@ class UserController extends BaseController {
         //0申请中1等待批准2等待到账3完成
         $order_id = I('order_id');
 
-        $return_order = M('return_goods')->where('`order_id`='.$order_id)->find();
+        $return_order = M('return_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->find();
         if(empty($return_order))
         {
             exit(json_encode(array('status'=>1,'msg'=>'订单不存在','result'=>'')));
         }
 
-        $pay_code = M('order')->where('`order_id`='.$order_id)->field('pay_code')->find();
+        $pay_code = M('order', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->field('pay_code')->find();
 
         if($pay_code['pay_code']=='weixin')
         {
@@ -1473,22 +1492,22 @@ class UserController extends BaseController {
         if($version=='2.0.0'){
             $data = $this->get_OrderList($conditions,$page,$pagesize);
         }else{
-            $count = M('order')->where($conditions)->count();
-            $order = M('order')->where($conditions)->order('order_id desc')->page($page,$pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
+            $count = M('order', '', 'DB_CONFIG2')->where($conditions)->count();
+            $order = M('order', '', 'DB_CONFIG2')->where($conditions)->order('order_id desc')->page($page,$pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
             for($i=0;$i<count($order);$i++)
             {
-                $prom = M('group_buy')->where('`id`='.$order[$i]['prom_id'])->find();
-                $goods_spec = M('order_goods')->where('`prom_id`='.$prom['id'])->field('spec_key_name')->find();
+                $prom = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$order[$i]['prom_id'])->find();
+                $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`prom_id`='.$prom['id'])->field('spec_key_name')->find();
                 if($prom['mark']==0)
                 {
-                    $num = M('group_buy')->where('`is_pay`=1 and `mark`='.$prom['id'])->count();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark`='.$prom['id'])->count();
                 }else{
-                    $num = M('group_buy')->where('`is_pay`=1 and `mark`='.$prom['mark'])->count();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark`='.$prom['mark'])->count();
                 }
-                $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$prom['goods_id'])->field('goods_name,original_img')->find();
+                $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$prom['goods_id'])->field('goods_name,original_img')->find();
                 $order[$i]['goodsInfo']['original_img'] = goods_thum_images($prom['goods_id'],400,400);
-                $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$prom['store_id'])->field('store_name,store_logo')->find();
-                $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
+                $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$prom['store_id'])->field('store_name,store_logo')->find();
+                $order[$i]['storeInfo']['store_logo'] = $order[$i]['storeInfo']['store_logo'];
                 $order[$i]['goods_num'] = $prom['goods_num'];
 
                 $order[$i]['end_time'] = $prom['end_time'];
@@ -1525,9 +1544,9 @@ class UserController extends BaseController {
             }
 
             if (empty($user_id)) {
-                $new_prom = M('group_buy')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field($field)->limit('0,20')->select();
+                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field($field)->limit('0,20')->select();
             } else {
-                $new_prom = M('group_buy')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field($field)->limit('0,20')->select();
+                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field($field)->limit('0,20')->select();
             }
             for ($i = 0; $i < count($new_prom); $i++) {
                 $new_prom[$i]['userInfo'] = M('users')->where('`user_id`=' . $new_prom[$i]['user_id'])->field('mobile,nickname,oauth,head_pic')->find();
@@ -1565,21 +1584,21 @@ class UserController extends BaseController {
             $where = '`pay_status`=1 and `the_raise`=1 and `user_id`='.$user_id;
             $data = $this->get_OrderList($where,$page,$pagesize);
         }else{
-            $count = M('order')->where('`pay_status`=1 and `the_raise`=1 and `user_id`='.$user_id)->count();
-            $order = M('order')->where('`pay_status`=1 and `the_raise`=1 and `user_id`='.$user_id)->order('order_id desc')->page($page,$pagesize)->select();
+            $count = M('order', '', 'DB_CONFIG2')->where('`pay_status`=1 and `the_raise`=1 and `user_id`='.$user_id)->count();
+            $order = M('order', '', 'DB_CONFIG2')->where('`pay_status`=1 and `the_raise`=1 and `user_id`='.$user_id)->order('order_id desc')->page($page,$pagesize)->select();
             for($i=0;$i<count($order);$i++)
             {
-                $prom = M('group_buy')->where('`id`='.$order[$i]['prom_id'])->find();
-                $goods_spec = M('order_goods')->where('`prom_id`='.$prom['id'])->field('spec_key_name')->find();
+                $prom = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$order[$i]['prom_id'])->find();
+                $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`prom_id`='.$prom['id'])->field('spec_key_name')->find();
                 if($prom['mark']==0)
                 {
-                    $num = M('group_buy')->where('`id`='.$prom['id'])->count();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$prom['id'])->count();
                 }else{
-                    $num = M('group_buy')->where('`mark`='.$prom['mark'])->count();
+                    $num = M('group_buy', '', 'DB_CONFIG2')->where('`mark`='.$prom['mark'])->count();
                 }
-                $order[$i]['goodsInfo'] = M('goods')->where('`goods_id` = '.$prom['goods_id'])->field('goods_name,original_img')->find();
+                $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$prom['goods_id'])->field('goods_name,original_img')->find();
                 $order[$i]['goodsInfo']['original_img'] = goods_thum_images($prom['goods_id'],400,400);
-                $order[$i]['storeInfo'] = M('merchant')->where('`id` = '.$prom['store_id'])->field('store_name,store_logo')->find();
+                $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = '.$prom['store_id'])->field('store_name,store_logo')->find();
                 $order[$i]['storeInfo']['store_logo'] = C('HTTP_URL').$order[$i]['storeInfo']['store_logo'];
                 $order[$i]['goods_num'] = $prom['goods_num'];
                 $order[$i]['end_time'] = $prom['end_time'];
@@ -1613,7 +1632,7 @@ class UserController extends BaseController {
     {
         $order_id = I('order_id');
 
-        $money = M('getwhere')->where('`order_id`='.$order_id)->find();
+        $money = M('getwhere', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->find();
         if(empty($money))
         {
             exit(json_encode(array('status'=>-1,'msg'=>'该订单不存在')));
@@ -1690,29 +1709,18 @@ class UserController extends BaseController {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
                 }
-                redisdelall("getOrderList_".$order['user_id']."*");//删除订单缓存
+                redis("getOrderList_status_".$order['user_id'], "1");
                 redisdelall("TuiSong*");//删除推送缓存
-                //跨区同步订单、推送、详情缓存
-                $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
-                async_get_url($url);
-                $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$order['user_id']."/goods_id/".$order['goods_id']);
-                async_get_url($url);
             }
 
             //将单买超时支付的订单设置成取消
             $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
             if (count($self_cancel_order) > 0) {
                 for ($j = 0; $j < count($self_cancel_order); $j++) {
-                    $data_time = $self_cancel_order[$j]['add_time'] + 2 * 60;
+                    $data_time = $self_cancel_order[$j]['add_time'] + ORDER_END_TIME;
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
-                        redisdelall("getOrderList_".$self_cancel_order[$j]['user_id']."*");//删除订单缓存
-                        redisdelall("TuiSong*");//删除推送缓存
-                        //跨区同步订单、推送、详情缓存
-                        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
-                        async_get_url($url);
-                        $url = array("http://139.196.255.40/index/index/getGoodsDetails/1/user_id/".$self_cancel_order[$j]['user_id']."/goods_id/".$self_cancel_order[$j]['goods_id']);
-                        async_get_url($url);
+                        $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
                     }
                     {
                         //优惠卷回到原来的数量
@@ -1732,21 +1740,17 @@ class UserController extends BaseController {
 
             //将团购里超时支付的订单设置成取消
             $where = null;
-            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id')->select();
+            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id,free')->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
-                    $data_time = $join_prom_order[$z]['start_time'] + 3 * 60;
+                    $data_time = $join_prom_order[$z]['start_time'] + ORDER_END_TIME;
                     if ($data_time <= time()) {
+                        if ($join_prom_order[$z]['free'] > 0) $free_status = true;
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
-                        redisdelall("getOrderList_".$join_prom_order[$z]['user_id']."*");//删除订单缓存
-                        redisdelall("TuiSong*");//删除推送缓存
-                        //跨区同步订单、推送、详情缓存
-                        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
-                        async_get_url($url);
-                        $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$join_prom_order[$z]['user_id']."/goods_id/".$join_prom_order[$z]['goods_id']);
-                        async_get_url($url);
+                        $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
                     }
+                    if ($join_prom_order[$z]['free'] > 0) redis("get_Free_Order_status", "1");
                 }
                 $where['id'] = array('IN', array_column($id, 'id'));
                 $conditon['order_id'] = array('IN', array_column($order_id, 'order_id'));
@@ -1764,6 +1768,7 @@ class UserController extends BaseController {
                         M('coupon_list')->where('`id`=' . $r[$t]['coupon_list_id'])->data($data)->save();
                     }
                 }
+                if ($free_status) redis("get_Seconds_Kill_status","1");
             }
 
             //将时间到了团又没有成团的团解散
@@ -1788,13 +1793,7 @@ class UserController extends BaseController {
                             $n['id'][] = "'" . $v['id'] . "',";
                             $n['order_id'][] = "'" . $v['order_id'] . "',";
                         }
-                        redisdelall("getOrderList_".$v1['user_id']."*");//删除订单缓存
-                        redisdelall("TuiSong*");//删除推送缓存
-                        //跨区同步订单、推送、详情缓存
-                        $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
-                        async_get_url($url);
-                        $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$v1['user_id']."/goods_id/".$v1['goods_id']);
-                        async_get_url($url);
+                        $this->order_redis_status_ref($v1['user_id']);
                     }
                     $prom_man[$k] = $n;
                 }
@@ -1823,13 +1822,7 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($ids)->data($data)->save();
                 for ($oi=0; $oi<$one_buy_number; $oi++){
-                    redisdelall("getOrderList_".$one_buy[$oi]['user_id']."*");//删除订单缓存
-                    redisdelall("TuiSong*");//删除推送缓存
-                    //跨区同步订单、推送、详情缓存
-                    $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
-                    async_get_url($url);
-                    $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$one_buy[$oi]['user_id']."/goods_id/".$one_buy[$oi]['goods_id']);
-                    async_get_url($url);
+                    $this->order_redis_status_ref($one_buy[$oi]['user_id']);
                 }
             }
 
@@ -1844,15 +1837,18 @@ class UserController extends BaseController {
                 $data['order_type'] = 4;
                 M('order')->where($order_id_array)->data($data)->save();
                 for ($gi=0; $gi<$group_nuy_number; $gi++){
-                    redisdelall("getOrderList_".$group_nuy[$gi]['user_id']."*");//删除订单缓存
-                    redisdelall("TuiSong*");//删除推送缓存
-                    //跨区同步订单、推送、详情缓存
-                    $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
-                    async_get_url($url);
-                    $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/".$group_nuy[$gi]['user_id']."/goods_id/".$group_nuy[$gi]['goods_id']);
-                    async_get_url($url);
+                    $this->order_redis_status_ref($group_nuy[$gi]['user_id']);
                 }
             }
+
+            //更新限时秒杀列表
+            $is_special = M('goods','','')
+                ->where(array(
+                    'is_special'=>array('EQ',1),
+                    'on_time'=>array('ELT',time()),
+                    'store_count'=>array('GT',0)))
+                ->count();
+            if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
 
             echo 'successful';
         }
@@ -2013,7 +2009,7 @@ class UserController extends BaseController {
             exit(json_encode($json));
         }
 
-        $order_info = M('order')->where('order_id = '.$order)->find();
+        $order_info = M('order', '', 'DB_CONFIG2')->where('order_id = '.$order)->find();
 
         if($order_info['order_type']==1 || $order_info['order_type']==10)
         {
@@ -2072,23 +2068,27 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesiaze',20);
         $rdsname = "getOrderList_".$user_id.$type.$page.$pagesize;
+        if (redis("getOrderList_status_".$user_id) == "1"){
+            redisdelall("getOrderList_".$user_id."*");//删除旧缓存
+            redisdelall("getOrderList_status_".$user_id);//删除状态
+        }
 
         if(empty(redis($rdsname))) {//判断是否有缓存
-            if ($type == 1) {
-                $condition = 'order_type = 11 and `user_id`=' . $user_id;
-            } elseif ($type == 2) {//待发货
-                $condition = '(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
-            } elseif ($type == 3) {//待收货
-                $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
-            } elseif ($type == 4) {//待付款
-                $condition = '(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
-            } elseif ($type == 5) {//已完成
-                $condition = 'order_type = 4 and `user_id` = ' . $user_id;
-            } else {
-                $condition = '`user_id` = ' . $user_id;
-            }
-            $all = $this->get_OrderList($condition,$page,$pagesize);
-            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
+        if ($type == 1) {
+            $condition = '(order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
+        } elseif ($type == 2) {//待发货
+            $condition = '(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
+        } elseif ($type == 3) {//待收货
+            $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
+        } elseif ($type == 4) {//待付款
+            $condition = '(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
+        } elseif ($type == 5) {//已完成
+            $condition = 'order_type = 4 and `user_id` = ' . $user_id;
+        } else {
+            $condition = '`user_id` = ' . $user_id;
+        }
+        $all = $this->get_OrderList($condition,$page,$pagesize);
+        $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
             redis($rdsname, serialize($json));//写入缓存
         }else{
             $json = unserialize(redis($rdsname));//读取缓存
@@ -2110,25 +2110,25 @@ class UserController extends BaseController {
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
         if($invitation_num){
-            $order = M('order')->alias('o')
+            $order = M('order', '', 'DB_CONFIG2')->alias('o')
                 ->join('INNER JOIN tp_order_goods og on o.order_id = og.order_id ')
                 ->join('INNER JOIN tp_spec_goods_price sgp on sgp.`key` = og.`spec_key`')
                 ->where("o.`invitation_num`='$invitation_num'")
                 ->field('o.order_id,o.user_id,o.goods_id,o.invitation_num,sgp.prom_price,o.free')
                 ->find();
         }else{
-            $order = M('order')->alias('o')
+            $order = M('order', '', 'DB_CONFIG2')->alias('o')
                 ->join('INNER JOIN tp_order_goods og on o.order_id = og.order_id ')
                 ->where('o.`prom_id`='.$prom_id)
                 ->field('o.order_id,o.user_id,o.goods_id,o.invitation_num,og.spec_key,o.free')
                 ->find();
         }
-        $prom = M('group_buy')->where('id ='.$prom_id)->field('goods_num,free')->find();
-        $spec_price = M('spec_goods_price')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
+        $prom = M('group_buy', '', 'DB_CONFIG2')->where('id ='.$prom_id)->field('goods_num,free')->find();
+        $spec_price = M('spec_goods_price', '', 'DB_CONFIG2')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
         if($order['free']>0){
             $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
             $c = $this->getFloatLength($price);
-            if($c>3){
+            if($c>=3){
                 $price = $this->operationPrice($price);
             }
         }else{
@@ -2139,9 +2139,9 @@ class UserController extends BaseController {
         $goodsInfo = $this->getGoodsInfo($order['goods_id'],1);
         $goodsInfo['security'] =$security;
         //判断进来的是团长还是团员
-        $res = M('group_buy')->where('(id='.$prom_id.' or mark = '.$prom_id.') and is_pay = 1' )->order('id asc')->select();
+        $res = M('group_buy', '', 'DB_CONFIG2')->where('(id='.$prom_id.' or mark = '.$prom_id.') and is_pay = 1' )->order('id asc')->select();
         if($res[0]['mark']!=0){
-            $res = M('group_buy')->where('(id='.$res[0]['mark'].' or mark = '.$res[0]['mark'].') and is_pay = 1')->order('id asc')->select();
+            $res = M('group_buy', '', 'DB_CONFIG2')->where('(id='.$res[0]['mark'].' or mark = '.$res[0]['mark'].') and is_pay = 1')->order('id asc')->select();
         }
         //循环对比进来的人在团里是什么身份
         $not = 0;
@@ -2193,8 +2193,7 @@ class UserController extends BaseController {
     //操作价格
     public function operationPrice($price)
     {
-        $price = sprintf("%.2f",substr(sprintf("%.4f", $price), 0, -2));
-        $price = $price+0.01;
+        $price = number_format($price, 2, '.', '');
         return $price;
     }
 
@@ -2219,20 +2218,23 @@ class UserController extends BaseController {
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
-        $order_info = M('order')->alias('o')
+        $order_info = M('order', '', 'DB_CONFIG2')->alias('o')
             ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id ')
             ->where('o.order_id = '.$order_id.' and o.user_id = '.$user_id)
             ->field('o.goods_id,o.store_id,o.order_sn,o.pay_name,o.add_time,o.consignee,o.address_base,o.address,o.mobile,o.store_id,o.shipping_order,o.shipping_name,g.cat_id,o.order_amount,o.num,o.prom_id,o.order_type,o.order_status,o.pay_status,o.shipping_status,o.automatic_time,o.delivery_time')->find();
-        $prom_info = M('group_buy')->where('order_id = '.$order_id)->find();
-        //获取成团时间
-        if ($prom_info['mark']==0){
-            $res1 = M('group_buy')->where('id = '.$prom_info['id'].' or mark ='.$prom_info['id'])->order('id desc')->find();
-        }else{
-            $res1 = M('group_buy')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
+        if($order_info['prom_id']!=0){
+            $prom_info = M('group_buy')->where('order_id = '.$order_id)->find();
+            //获取成团时间
+            if ($prom_info['mark']==0){
+                $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['id'].' or mark ='.$prom_info['id'])->order('id desc')->find();
+            }else{
+                $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
+            }
         }
-        $goods_info= $goods = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
-        $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
-        $spec_info = M('order_goods')->alias('og')
+
+        $goods_info= $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
+        $goods_info['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
+        $spec_info = M('order_goods', '', 'DB_CONFIG2')->alias('og')
             ->join('INNER JOIN tp_spec_goods_price sgp on sgp.`key` = og.`spec_key` ')
             ->where('order_id = '.$order_id)
             ->field('sgp.key_name,sgp.price,sgp.prom_price')
@@ -2240,15 +2242,15 @@ class UserController extends BaseController {
 
         if(!empty($order_info['prom_id'])){
             if($prom_info['mark']==0){
-                $prom = M('group_buy')->where('mark = '.$order_info['prom_id'].' and is_pay = 1')->select();
+                $prom = M('group_buy', '', 'DB_CONFIG2')->where('mark = '.$order_info['prom_id'].' and is_pay = 1')->select();
                 $order_info['prom'] = $prom[0]['goods_num'];
-                $mens = M('group_buy')->where('`mark` = ' . $order_info['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+                $mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $order_info['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
                 $order_info['prom_mens'] = $prom_info['goods_num'] - $mens - 1;
                 $is_oneself = 1;
             }else{
-                $prom = M('group_buy')->where('mark = '.$prom_info['mark'].' and is_pay = 1')->select();
+                $prom = M('group_buy', '', 'DB_CONFIG2')->where('mark = '.$prom_info['mark'].' and is_pay = 1')->select();
                 $order_info['prom'] = $prom[0]['goods_num'];
-                $mens = M('group_buy')->where('`mark` = ' . $order_info['mark'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+                $mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $prom_info['mark'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
                 $order_info['prom_mens'] = $prom_info['goods_num']-$mens-1;
                 $is_oneself = 2;
             }

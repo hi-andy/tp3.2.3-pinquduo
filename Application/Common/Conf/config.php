@@ -8,6 +8,7 @@ define("PORT", 6379);
 define("REDISPASS", "Wang1314");
 define("REDISTIME", 1800);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
+define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
 return array(
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
@@ -309,7 +310,7 @@ return array(
 
     // 0.1秒杀时间段，时间/日期
     'SecondBuy' => array(
-        'dates' => array('2017-5-10', '2017-5-11', '2017-5-12'),
+        'dates' => array('2017-5-13', '2017-5-14', '2017-5-15','2017-5-16', '2017-5-17', '2017-5-18','2017-5-19', '2017-5-20', '2017-5-22','2017-5-23', '2017-5-24', '2017-5-25','2017-5-26', '2017-5-27', '2017-5-28','2017-5-29', '2017-5-30', '2017-5-31'),
         'times' => array('10:00', '13:00', '16:00', '19:00')
     ),
 );
