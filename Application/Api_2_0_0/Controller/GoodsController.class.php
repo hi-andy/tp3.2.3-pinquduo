@@ -935,20 +935,10 @@ class GoodsController extends BaseController {
 		$key = I('key');
 		$page = I('page',1);
 		$pagesize = I('pagesize',50);
-		$version = I('version');
-		$rdsname = "getsearch".$key.$page.$pagesize.$version;
+		$rdsname = "getsearch".$key.$page.$pagesize;
         if (empty(redis($rdsname))) {//判断是否有缓存
-	        if($version=='2.0.0'){
-		        $where = "`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
-		        $data = $this->getGoodsList($where,$page,$pagesize,'');
-	        }else{
-		        $count = M('goods', '', 'DB_CONFIG2')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->count();
-		        $goods = M('goods', '', 'DB_CONFIG2')->where("`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->select();
-		        foreach ($goods as &$v) {
-			        $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-		        }
-		        $data = $this->listPageData($count, $goods);
-	        }
+            $where = "`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+            $data = $this->getGoodsList($where,$page,$pagesize,'');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -1086,12 +1076,7 @@ class GoodsController extends BaseController {
         }
         //////
         $goodsstatus = M('goods')
-            ->where(array(
-                'goods_id'=>array('eq',$goods_id),
-                'show_type'=>array('eq',1),
-                'is_show'=>array('eq',0),
-                'is_on_sale'=>array('eq',0)
-            ))
+            ->where("goods_id=$goods_id or show_type=1 or is_show=0 or is_on_sale=0")
             ->count();
         if ($goodsstatus >0){
             $json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
