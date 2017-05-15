@@ -525,8 +525,7 @@ class GoodsController extends BaseController {
 
 		$order = M('order')->where('`order_id`='.$order_id)->field('order_sn,user_id')->find();
 		//当订单已经是取消状态是不能继续支付
-		if($order['order_status']==3)
-		{
+		if($order['order_status']==3){
 			$json = array('status'=>-1,'msg'=>'当前订单已经取消，请重新下单');
 			if(!empty($ajax_get))
 				$this->getJsonp($json);
@@ -536,10 +535,8 @@ class GoodsController extends BaseController {
 		redisdelall($rdsname);//删除订单列表
 		$rdsname = "TuiSong*";
 		redisdelall($rdsname);//删除推送缓存
-		if($pay_code!=$order['pay_code'])
-		{
-			if($pay_code=='alipay')
-			{
+		if($pay_code!=$order['pay_code']){
+			if($pay_code=='alipay'){
 				$pay_name = '支付宝支付';
 			}elseif($pay_code=='weixin'){
 				$pay_name = '微信支付';
@@ -548,8 +545,7 @@ class GoodsController extends BaseController {
 			}
 			M('order')->where('order_id='.$order_id)->save(array('pay_code'=>$pay_code,'pay_name'=>$pay_name));
 		}
-		if($pay_code=='weixin')
-		{
+		if($pay_code=='weixin'){
 			$weixinPay = new WeixinpayController();
 			$pay_detail = $weixinPay->addwxorder($order['order_sn']);
 		} elseif($pay_code=='alipay') {

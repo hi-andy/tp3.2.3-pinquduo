@@ -599,7 +599,7 @@ class BaseController extends Controller {
     //团购订单处理
     private function operationOrder($count,$all,$nums)
     {
-        for ($i=10;$i<$nums;$i++){
+        for ($i=0;$i<$nums;$i++){
             $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
             //判断是不是团购订单
             if (!empty($all[$i]['prom_id'])) {

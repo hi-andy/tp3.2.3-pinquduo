@@ -100,13 +100,7 @@ class AlipayController extends BaseController
 
         //支付宝交易号
         $out_trade_no = $_POST['trade_no'];
-        $where="order_sn = $out_trade_no";
-        $order = $this->changStatus($where);
-        if($order['end_time']<time()){
-            $orderLogic = new OrderLogic();
-            $orderLogic->alipayBackPay($order['order_sn'],$order['order_amount']);
-            exit();
-        }
+
         //交易状态
         $trade_status = $_POST['trade_status'];
 

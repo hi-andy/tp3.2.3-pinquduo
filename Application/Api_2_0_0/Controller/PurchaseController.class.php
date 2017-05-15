@@ -41,10 +41,6 @@ class PurchaseController extends  BaseController
         I('prom') && $prom = I('prom');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
-//        if(){
-//
-//        }
-
         $parameter['prom_id'] = $prom_id;
         $parameter['prom'] = $prom;
         $parameter['user_id'] = $user_id;
@@ -60,7 +56,7 @@ class PurchaseController extends  BaseController
         if (empty(redis("getBuy_lock_".$goods_id)))//如果无锁
             redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁
 
-        if(!empty($spec_key)) {
+        if(!empty($spec_key)){
             $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
         }else{
             $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
@@ -75,7 +71,7 @@ class PurchaseController extends  BaseController
             if (!empty($ajax_get))
                 $this->getJsonp($json);
             exit(json_encode($json));
-        }elseif ($spec_key['store_count']<$num){
+        }elseif ($spec_res['store_count']<$num){
             $json = array('status' => -1, 'msg' => '库存不足！');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))

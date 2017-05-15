@@ -63,12 +63,10 @@ class StoreController extends BaseController{
         //拿到总共能体现的资金
         $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
         $reflect = null;
-        foreach($one as $v)
-        {
+        foreach($one as $v){
             $temp = 2*3600*24;
             $cha = time()-$v['confirm_time'];
-            if($cha>=$temp)
-            {
+            if($cha>=$temp){
                 $reflect = $reflect+$v['order_amount'];
             }
         }
