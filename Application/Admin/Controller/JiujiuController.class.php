@@ -174,8 +174,7 @@ class JiujiuController extends BaseController{
 					}
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
-					$rdsname = "getDetaile_".$goods_id;
-					redisdelall($rdsname);//删除商品详情缓存
+					M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->getField('refresh',0);
 				}
 				else
 				{
