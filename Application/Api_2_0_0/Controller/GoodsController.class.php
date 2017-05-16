@@ -1065,9 +1065,8 @@ class GoodsController extends BaseController {
         $goods_id = I('goods_id');
         //自动脚本
         if ($refresh) {
-            $result = M('goods')->where(array('refresh'=>array('eq',0)))->field('goods_id,store_id')->order('sales desc,goods_id desc')->find();
+            $result = M('goods')->where(array('refresh'=>array('eq',0)))->field('goods_id')->order('sales desc,goods_id desc')->find();
             if ($result) {
-                M()->query("update tp_merchant set sales=(select SUM(sales) as a from tp_goods where store_id = {$result['store_id']}) where id={$result['store_id']}");
                 M('goods')->where(array("goods_id" => array("eq", $result['goods_id'])))->setField('refresh', 1);
                 $goods_id = $result['goods_id'];
                 redisdelall("getDetaile_".$goods_id);
