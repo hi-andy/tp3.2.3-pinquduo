@@ -548,6 +548,9 @@ class BaseController extends Controller {
             $goods['img_arr'] = getImgSize($goods['img_arr']);
         }
         unset($goods['goods_content']);
+
+        if(empty($goods))
+            $goods=null;
         return $goods;
     }
 
