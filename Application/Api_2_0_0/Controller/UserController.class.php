@@ -2127,9 +2127,9 @@ class UserController extends BaseController {
         $spec_price = M('spec_goods_price', '', 'DB_CONFIG2')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
         if($order['free']>0){
             $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
-            $c = $this->getFloatLength($price);
+            $c = getFloatLength($price);
             if($c>=3){
-                $price = $this->operationPrice($price);
+                $price = operationPrice($price);
             }
         }else{
             (string)$price=(string)$spec_price;
@@ -2177,24 +2177,6 @@ class UserController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
 
-    }
-
-    //获取小数点后面的长度
-    private function getFloatLength($num) {
-        $count = 0;
-        $temp = explode ( '.', $num );
-        if (sizeof ( $temp ) > 1) {
-            $decimal = end ( $temp );
-            $count = strlen ( $decimal );
-        }
-        return $count;
-    }
-
-    //操作价格
-    public function operationPrice($price)
-    {
-        $price = number_format($price, 2, '.', '');
-        return $price;
     }
 
     function getUserInfo($user_id,$prom_order){

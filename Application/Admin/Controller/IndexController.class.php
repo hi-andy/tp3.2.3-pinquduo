@@ -40,8 +40,8 @@ class IndexController extends BaseController {
             $in_goods_id = str_replace("，", ",", $in_goods_id);
             $in_goods_id = str_replace(" ，", ",", $in_goods_id);
             M('goods')->where(array('store_id'=>array("eq",$store_id),'goods_id' => array('in', $in_goods_id)))->save(array('sales'=>intval($sales),'refresh'=>0));
-            $sales = M()->query("select SUM(sales) as a from tp_goods where store_id = {$store_id} and goods_id in ({$in_goods_id})");
-            M('merchant')->where(array("store_id"=>array("eq",$store_id)))->save(array("sales"=>$sales));
+            $sales = M()->query("select SUM(sales) as a from tp_goods where store_id = {$store_id}");
+            M('merchant')->where(array("id"=>array("eq",$store_id)))->save(array("sales"=>$sales['a']));
         }
         $this->success('操作成功', '/Admin/Index/welcome');
     }

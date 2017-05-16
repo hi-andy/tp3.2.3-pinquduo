@@ -257,7 +257,7 @@ class StoreController extends BaseController{
 		if(empty($a))
 			$a = 0;
 		$b = strtotime(date('Y-m-d H:m:s',strtotime($withdrawal_info[$num-1]['datetime'])));
-		$datas[0]['all_buy'] = M('order')->where('order_type=4 and store_id='.$store_id.' and add_time>='.$a.' and add_time<'.$b)->sum('order_amount');
+		$datas[0]['all_buy'] = M('order')->where('order_type in (4,8,9,16) and store_id='.$store_id.' and add_time>='.$a.' and add_time<'.$b)->sum('order_amount');
 		empty($datas[0]['all_buy']) && $datas[0]['all_buy']=0;
 		//提现余额
 		//先拿到上次提现成功的总提现额

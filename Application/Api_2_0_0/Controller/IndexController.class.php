@@ -859,10 +859,4 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-
-    function test(){
-        $where="order_sn = 201705131250282161";
-        $order = $this->changStatus($where);
-        var_dump( $order);
-    }
 }

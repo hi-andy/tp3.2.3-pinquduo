@@ -8,25 +8,25 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-    if (REDIS_SWITCH) {
-        $redis = new Redis();
-        $redis->connect(REDISIP, PORT);
-        $redis->auth(REDISPASS);
-        if ($del == true) {
-            $redis->delete($key);
-        }
-        if ($value) {
-            if ($time) {
-                $redis->setex($key, $time, $value);
-            } else {
-                $redis->set($key, $value);
-            }
-        } else {
-            return $redis->get($key);
-        }
-    } else {
-        redisdelall("*");
-    }
+//    if (REDIS_SWITCH) {
+//        $redis = new Redis();
+//        $redis->connect(REDISIP, PORT);
+//        $redis->auth(REDISPASS);
+//        if ($del == true) {
+//            $redis->delete($key);
+//        }
+//        if ($value) {
+//            if ($time) {
+//                $redis->setex($key, $time, $value);
+//            } else {
+//                $redis->set($key, $value);
+//            }
+//        } else {
+//            return $redis->get($key);
+//        }
+//    } else {
+//        redisdelall("*");
+//    }
 }
 
 /**
@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-    $redis = new Redis();
-    $redis->connect(REDISIP, PORT);
-    $redis->auth(REDISPASS);
-    $redis->delete($redis->keys($key));
+//    $redis = new Redis();
+//    $redis->connect(REDISIP, PORT);
+//    $redis->auth(REDISPASS);
+//    $redis->delete($redis->keys($key));
 }
 /**
  * @param $arr
@@ -809,4 +809,22 @@ function read_only_db() {
         'DB_PWD' => 'Zuoapp_la', //数据库密码
         'DB_PORT' => '3306', //数据库端口
     );
+}
+
+//获取小数点后面的长度
+function getFloatLength($num) {
+    $count = 0;
+    $temp = explode ( '.', $num );
+    if (sizeof ( $temp ) > 1) {
+        $decimal = end ( $temp );
+        $count = strlen ( $decimal );
+    }
+    return $count;
+}
+
+//操作价格
+function operationPrice($price)
+{
+    $price = number_format($price, 2, '.', '');
+    return $price;
 }

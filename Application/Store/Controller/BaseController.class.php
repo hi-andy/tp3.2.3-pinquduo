@@ -117,4 +117,38 @@ class BaseController extends Controller {
 		$return_goods['imgs'] = array_values($return_goods['imgs']);
 		return $return_goods;
 	}
+
+	public function cash_available($store_id){
+        //拿到总共能体现的资金
+        $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
+        $reflect = null;
+        foreach($one as $v){
+            $temp = 2*3600*24;
+            $cha = time()-$v['confirm_time'];
+            if($cha>=$temp){
+                $reflect = $reflect+$v['order_amount'];
+            }
+        }
+        //获取以前的提取记录
+        $total = 0;
+        $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id.' and (status=1 or status=0 )')->field('withdrawal_money')->select();
+
+        $suoding = M('store_withdrawal')->where('store_id='.$store_id.' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
+        if(!empty($suoding))
+        {
+            $this->assign('suoding',$suoding);
+        }
+        foreach($withdrawal_total as $v)
+        {
+            $total = $total+$v['withdrawal_money'];
+        }
+        $reflect = $reflect-$total;
+        if(empty($reflect))
+            $reflect = 0;
+        $c = getFloatLength($reflect);
+        if($c>=3){
+            $reflect = operationPrice($reflect);
+        }
+        return $reflect;
+    }
 }

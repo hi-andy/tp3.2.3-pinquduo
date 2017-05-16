@@ -185,10 +185,8 @@ class GoodsController extends BaseController {
                 $cat = M('haitao')->where('`parent_id`='.I('cat_id_1'))->field('id')->select();
                 $cats =null;
                 $num = count($cat);
-                for($i=0;$i<$num;$i++)
-                {
-                    if($i==$num-1)
-                    {
+                for($i=0;$i<$num;$i++){
+                    if($i==$num-1){
                         $cats = $cats."'".$cat[$i]['id']."')";
                     }elseif($i==0){
                         $cats = $cats."('".$cat[$i]['id']."',";
@@ -199,15 +197,12 @@ class GoodsController extends BaseController {
                 $where = "$where and haitao_cat IN $cats";
             }
         }else{
-            if(I('cat_id_2'))
-            {
+            if(I('cat_id_2')){
                 $cat_id = M('GoodsCategory')->where('`parent_id`='.I('cat_id_2'))->field('id')->select();
                 $cats =null;
                 $num = count($cat_id);
-                for($i=0;$i<$num;$i++)
-                {
-                    if($i==$num-1)
-                    {
+                for($i=0;$i<$num;$i++){
+                    if($i==$num-1){
                         $cats = $cats."'".$cat_id[$i]['id']."')";
                     }elseif($i==0){
                         $cats = $cats."('".$cat_id[$i]['id']."',";
@@ -222,10 +217,8 @@ class GoodsController extends BaseController {
                 $cat = M('GoodsCategory')->where($cat2)->field('id')->select();
                 $cats =null;
                 $num = count($cat);
-                for($i=0;$i<$num;$i++)
-                {
-                    if($i==$num-1)
-                    {
+                for($i=0;$i<$num;$i++){
+                    if($i==$num-1){
                         $cats = $cats."'".$cat[$i]['id']."')";
                     }elseif($i==0){
                         $cats = $cats."('".$cat[$i]['id']."',";
@@ -239,8 +232,7 @@ class GoodsController extends BaseController {
 
         // 关键词搜索
         $key_word = I('key_word') ? trim(I('key_word')) : '';
-        if($key_word)
-        {
+        if($key_word){
             $where = "$where and (goods_name like '%$key_word%')" ;
         }
 
@@ -249,15 +241,13 @@ class GoodsController extends BaseController {
         $Page  = new AjaxPage($count,10);
         $show = $Page->show();
         $order_str = "`{$_POST['orderby1']}` {$_POST['orderby2']}";
-        if(!empty($cats))
-        {
+        if(!empty($cats)){
             $goodsList = $model->where($where)->order($order_str)->limit($Page->firstRow,$Page->listRows)->select();
         }else{
             $goodsList = $model->where($where)->order($order_str)->limit($Page->firstRow,$Page->listRows)->select();
         }
         $haitao = $_SESSION['is_haitao'];
-        if(!empty($haitao))
-        {
+        if(!empty($haitao)){
             $this->assign('haitao',$haitao);
         }
 
@@ -359,7 +349,7 @@ class GoodsController extends BaseController {
             }else {
                 //  form表单提交
                 // C('TOKEN_ON',true);
-                $Goods->on_time = time(); // 上架时间
+//                $Goods->on_time = time(); // 上架时间
                 //$Goods->cat_id = $_POST['cat_id_1'];
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
@@ -625,8 +615,7 @@ class GoodsController extends BaseController {
     function getSortCategory()
     {
         $categoryList =  M("haitao")->getField('id,name,parent_id,level');
-        foreach($categoryList as $k => $v)
-        {
+        foreach($categoryList as $k => $v){
             $name = getFirstCharter($v['name']) .' '. $v['name']; // 前面加上拼音首字母
             $nameList[] = $v['name'] = $name;
             $categoryList[$k] = $v;
@@ -728,8 +717,7 @@ class GoodsController extends BaseController {
         if(($_GET['is_ajax'] == 1) && IS_POST)
         {
             C('TOKEN_ON',false);
-            if(!$Goods->create(NULL,$type))// 根据表单提交的POST数据创建数据对象
-            {
+            if(!$Goods->create(NULL,$type)){// 根据表单提交的POST数据创建数据对象
                 //  编辑
                 $return_arr = array(
                     'status' => -1,
@@ -737,21 +725,18 @@ class GoodsController extends BaseController {
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
-            }else {
+            }else{
                 //  form表单提交
                 // C('TOKEN_ON',true);
                 $Goods->on_time = time(); // 上架时间
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 session('goods',$_POST);
-
-                if ($type == 2)
-                {
+                if ($type == 2){
                     $goods_id = $_POST['goods_id'];
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
-                    if($_POST['original_img']!=$goods['original_img'])
-                    {
+                    if($_POST['original_img']!=$goods['original_img']){
                         $link =  C('DATA_URL').goods_thum_images($_POST['goods_id'],400,400);
                         $res = unlink($link);
                         $link1 = C('DATA_URL').$goods['original_img'];
@@ -762,13 +747,10 @@ class GoodsController extends BaseController {
                     $rdsname = "getDetaile".$goods_id;
                     redisdelall($rdsname);//删除商品详情缓存
 //					M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
-                }
-                else
-                {
+                }else{
                     $Goods->is_on_sale = 0 ;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-
                 }
                 $HaitaoLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
                 M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
@@ -814,8 +796,7 @@ class GoodsController extends BaseController {
             $this->ajaxReturn(json_encode($return_arr));
         }
         $res = M('goods')->where('`goods_id`='.$id)->data(array('is_show'=>0))->save();
-        if($res)
-        {
+        if($res){
             $return_arr = array(
                 'status' => 1,
                 'msg' => '删除成功',
@@ -832,5 +813,112 @@ class GoodsController extends BaseController {
         foreach($list as $k => $v)
             $html .= "<option value='{$v['id']}'>{$v['name']}</option>";
         exit($html);
+    }
+
+    function addeditSecondskill()
+    {
+        {
+            $GoodsLogic = new GoodsLogic();
+            $Goods = D('Goods'); //
+            $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
+            //ajax提交验证
+            $_POST['refresh'] = 0;
+            if (($_GET['is_ajax'] == 1) && IS_POST) {
+                C('TOKEN_ON', false);
+                if (!$Goods->create(NULL, $type))// 根据表单提交的POST数据创建数据对象
+                {
+                    //  编辑
+                    $return_arr = array(
+                        'status' => -1,
+                        'msg' => '操作失败',
+                        'data' => $Goods->getError(),
+                    );
+                    $this->ajaxReturn(json_encode($return_arr));
+                } else {
+                    //  form表单提交
+                    // C('TOKEN_ON',true);
+                    $Goods->on_time = time(); // 上架时间
+                    $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
+                    $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
+                    session('goods', $_POST);
+
+                    if ($type == 2) {
+                        $goods_id = $_POST['goods_id'];
+                        $goods = M('goods')->where("goods_id = $goods_id")->find();
+                        if ($_POST['original_img'] != $goods['original_img']) {
+                            $link = C('DATA_URL') . goods_thum_images($_POST['goods_id'], 400, 400);
+                            $res = unlink($link);
+                            $link1 = C('DATA_URL') . $goods['original_img'];
+                            $res1 = unlink($link1);
+                        }
+                        $Goods->save(); // 写入数据到数据库
+                        $Goods->afterSave($goods_id);
+                        $this->prom_goods_save($_POST['date'], $_POST['time'], $goods_id);
+                        $rdsname = "getDetaile_" . $goods_id;
+                        redisdelall($rdsname);//删除商品详情缓存
+                    } else {
+                        $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
+                        $Goods->afterSave($goods_id);
+                        $this->prom_goods_save($_POST['date'], $_POST['time'], $goods_id);
+                    }
+
+                    $GoodsLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
+
+                    $return_arr = array(
+                        'status' => 1,
+                        'msg' => '操作成功',
+                        'data' => array('url' => U('Admin/Secondskill/Seconds_kill_goods')),
+                    );
+                    $this->ajaxReturn(json_encode($return_arr));
+                }
+            }
+
+            for ($i = 0; $i < 5; $i++) {
+                $date[$i]['id'] = $i + 1;
+                $date1 = time();
+                if ($i == 0) {
+                    $day = $date1 - (24 * 60 * 60 * 2);
+                    $date[$i]['date'] = date("Y-m-d", $day);
+                } elseif ($i == 1) {
+                    $day = $date1 - (24 * 60 * 60);
+                    $date[$i]['date'] = date("Y-m-d", $day);
+                } elseif ($i == 2) {
+                    $date[$i]['date'] = date("Y-m-d", time());
+                } elseif ($i == 3) {
+                    $day = $date1 + (24 * 60 * 60);
+                    $date[$i]['date'] = date("Y-m-d", $day);
+                } else {
+                    $day = $date1 + (24 * 60 * 60 * 2);
+                    $date[$i]['date'] = date("Y-m-d", $day);
+                }
+            }
+            $time = M('seconds_kill_time')->where('`is_show`=1')->order('time asc')->select();
+            for ($i = 0; $i < count($time); $i++) {
+                $time[$i]['time'] = $time[$i]['time'] . ':00:00';
+            }
+
+            $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
+            $this->assign('store', $store);
+            $this->assign('time', $time);
+            $this->assign('date', $date);
+            $goodsInfo = D('Goods')->where('goods_id=' . I('GET.id', 0))->find();
+            $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
+            $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
+            //$brandList = $GoodsLogic->getSortBrands();
+            $merchantList = $GoodsLogic->getSortMerchant();
+            $goodsType = M("GoodsType")->where('`store_id`=' . $goodsInfo['store_id'])->select();
+            if (empty($goodsType))
+                $goodsType = M("GoodsType")->select();
+            $this->assign('level_cat', $level_cat);
+            $this->assign('cat_list', $cat_list);
+            //$this->assign('brandList',$brandList);
+            $this->assign('merchantList', $merchantList);
+            $this->assign('goodsType', $goodsType);
+            $this->assign('goodsInfo', $goodsInfo);  // 商品详情
+            $goodsImages = M("GoodsImages")->where('goods_id =' . I('GET.id', 0))->select();
+            $this->assign('goodsImages', $goodsImages);  // 商品相册
+            $this->initEditor(); // 编辑器
+            $this->display('_Secondskill_goods');
+        }
     }
 }

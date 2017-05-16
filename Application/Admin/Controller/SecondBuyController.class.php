@@ -44,6 +44,8 @@ class SecondBuyController extends Controller {
         $data['type'] = 1;
         $goods = I('post.goods')['goods'];
         foreach ($goods as $value) {
+            // 修改商品类型为7： 0.1秒杀商品。修改活动价格为：0.1
+            M('goods')->where('goods_id='.$value['goods_id'])->save(array('is_special'=>'7', 'shop_price'=>'0.1', 'prom_price'=>'0.1','is_support_buy'=>0));
             $sGoods['is_special'] = 7; // 修改商品类型为7： 0.1秒杀商品。
             $sGoods['shop_price'] = '0.1';  // 修改售价为：0.1
             $sGoods['prom_price'] = '0.1';  // 修改活动价格为：0.1
