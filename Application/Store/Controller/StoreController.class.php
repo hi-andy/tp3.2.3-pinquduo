@@ -58,38 +58,8 @@ class StoreController extends BaseController{
      */
     public function withdrawal_add(){
         //	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
-        $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->find();
-
-        //拿到总共能体现的资金
-        $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
-        $reflect = null;
-        foreach($one as $v){
-            $temp = 2*3600*24;
-            $cha = time()-$v['confirm_time'];
-            if($cha>=$temp){
-                $reflect = $reflect+$v['order_amount'];
-            }
-        }
-        //获取以前的提取记录
-        $total = 0;
-        $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_info['id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
-
-        $suoding = M('store_withdrawal')->where('store_id='.$store_info['id'].' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
-        if(!empty($suoding))
-        {
-            $this->assign('suoding',$suoding);
-        }
-        foreach($withdrawal_total as $v)
-        {
-            $total = $total+$v['withdrawal_money'];
-        }
-        $reflect = $reflect-$total;
-        if(empty($reflect))
-            $reflect = 0;
-        $c = getFloatLength($reflect);
-        if($c>=3){
-            $reflect = operationPrice($reflect);
-        }
+        $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->field('store_name')->find();
+        $reflect = $this->cash_available($_SESSION['merchant_id']);
         $this->assign('reflect',$reflect);
         session('reflect',$reflect);
         $this->assign('store_name',$store_info['store_name']);
@@ -105,7 +75,7 @@ class StoreController extends BaseController{
             $data = $_POST;
             if ($data['withdrawal_money'] < 1 || $data['withdrawal_money'] % 500 != 0) {
                 $result = json_encode(array('status' => 0, 'msg' => '请输入500的倍数的提现金额'));
-            } elseif ($data['withdrawal_money'] > $_SESSION['reflect']) {
+            } elseif ($data['withdrawal_money'] > $this->cash_available($_SESSION['merchant_id'])) {
                 $result = json_encode(array('status' => 0, 'msg' => '提现余额不足'));
             } else {
                 $withdrawal_total = M('store_withdrawal')->where('store_id=' . $_SESSION['merchant_id'])->field('datetime')->order('id desc')->find();
@@ -128,7 +98,6 @@ class StoreController extends BaseController{
 
                     $res = M('store_withdrawal')->add($data);
                     if ($res) {
-                        session('reflect',0);
                         $result = json_encode(array('status' => 1, 'msg' => '申请成功,请等待平台审核'));
                     } else {
                         $result = json_encode(array('status' => 0, 'msg' => '提交失败，请联系管理员'));
