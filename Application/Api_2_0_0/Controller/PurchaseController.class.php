@@ -424,7 +424,7 @@ class PurchaseController extends  BaseController
                     $pay_detail = $qqPay->getQQPay($order);
                 }
                 $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-                ///
+                $this->aftermath($user_id,$goods_id,$num,$o_id);
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -688,14 +688,7 @@ class PurchaseController extends  BaseController
                 // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-            $this->order_redis_status_ref($user_id);
-            //销量、库存
-            M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',$num);
-            M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',$num);
-            //商品规格库存
-            $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
-            M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
-            M('merchant')->where('`id`='.$spec_name['store_id'])->setInc('sales',$num);
+            $this->aftermath($user_id,$goods_id,$num,$o_id);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -873,7 +866,6 @@ class PurchaseController extends  BaseController
                 $pay_detail = $qqPay->getQQPay($order);
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
-
             $this->aftermath($user_id,$goods_id,$num,$o_id);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
