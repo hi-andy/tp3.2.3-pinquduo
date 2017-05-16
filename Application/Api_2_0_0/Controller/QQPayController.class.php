@@ -209,6 +209,7 @@ class QQPayController extends BaseController
         }else{
             M()->commit();
         }
+        $log_name = '';
         $this->log($log_name,"【成功】", "notify");
         $this->successAck();
     }
@@ -281,12 +282,10 @@ class QQPayController extends BaseController
         }else{
             $data['order_type'] = 2;
         }
-//        //销量、库存
-//        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
-//        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
-//        //商品规格库存
-//        $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
-//        M('spec_goods_price')->where("`goods_id`=$order[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$order['num']);
+        $this->order_redis_status_ref($order['user_id']);
+        //销量、库存
+        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
+        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }

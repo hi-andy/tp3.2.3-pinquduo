@@ -874,7 +874,7 @@ class UserController extends BaseController {
         header("Access-Control-Allow-Origin:*");
 //        $unique_id = I("unique_id"); // 唯一id  类似于 pc 端的session id
         $user_id = I('user_id'); // 用户id
-        $order_id = I('order_id',0);
+        $order_id = I('order_id');
         $type = I('type'); // 0、退货 1、换货 （退款类型）
         $gold =I('gold');//退款金额
         $reason = I('reason'); //退款原因
@@ -899,7 +899,7 @@ class UserController extends BaseController {
             exit(json_encode(array('status'=>-1,'msg'=>'已经提交过退货申请!')));
         }
 
-        $order_sn = M('order')->where('`order_id`='.$order_id.' and `user_id`='.$user_id)->field('order_sn,goods_id,prom_id,pay_code,store_id,num')->find();
+        $order_sn = M('order')->where('`order_id`='.$order_id.' and `user_id`='.$user_id)->field('order_sn,goods_id,prom_id,pay_code,store_id,num,store_id')->find();
         $data['order_id'] = $order_id;
         $data['order_sn'] = $order_sn['order_sn'];
         $data['goods_id'] = $order_sn['goods_id'];
@@ -937,8 +937,12 @@ class UserController extends BaseController {
                 //换货
                 $return['order_status'] = 4;
                 $return['order_type'] = 6;
+                M('goods')->where('`goods_id`='.$order_sn['goods_id'])->setInc('store_count',$order_sn['num']);
+                $spec_name = M('order_goods')->where('`order_id`='.$order_id)->field('spec_key,store_id')->find();
+                M('spec_goods_price')->where("`goods_id`=$order_sn[goods_id] and `key`='$spec_name[spec_key]'")->setInc('store_count',$order_sn['num']);
+                M('goods')->where('`goods_id` = '.$order_sn['goods_id'])->setDec('sales',$order_sn['num']);
+                M('merchant')->where('`id`='.$order_sn['store_id'])->setDec('sales',$order_sn['num']);
             }
-            M('goods')->where('`goods_id`='.$order_sn['goods_id'])->setInc('store_count',$order_sn['num']);
             M('order')->where('`order_id`='.$order_id)->data($return)->save();
             $this->order_redis_status_ref($user_id);
             $json = array('status'=>1,'msg'=>'申请成功,客服第一时间会帮你处理!');
@@ -1718,6 +1722,9 @@ class UserController extends BaseController {
                     if ($data_time <= time()) {
                         $ids[]['id'] = $self_cancel_order[$j]['order_id'];
                         $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
+                        M('goods')->where('`goods_id` = '.$self_cancel_order[$j]['goods_id'])->setDec('store_count',$self_cancel_order[$j]['num']);
+                        $spec_name = M('order_goods')->where('`order_id`='.$self_cancel_order[$j]['order_id'])->field('spec_key,store_id')->find();
+                        M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',$self_cancel_order[$j]['num']);
                     }
                     {
                         //优惠卷回到原来的数量
@@ -1726,6 +1733,7 @@ class UserController extends BaseController {
                             //把优惠卷还给用户
                             $data['use_time'] = 0;
                             $data['is_use'] = 0;
+                            $data['order_id'] = 0;
                             $data['order_id'] = 0;
                             M('coupon_list')->where('`id`=' . $self_cancel_order[$j]['coupon_list_id'])->data($data)->save();
                         }
@@ -1737,7 +1745,11 @@ class UserController extends BaseController {
 
             //将团购里超时支付的订单设置成取消
             $where = null;
-            $join_prom_order = M('group_buy')->where('`is_pay`=0 and is_cancel=0')->field('id,order_id,start_time,user_id,goods_id,free')->select();
+            $join_prom_order = M('group_buy')->alias('gb')
+                ->join(" LEFT JOIN tp_order AS o ON o.order_id = gb.order_id ")
+                ->where('gb.`is_pay`=0 and gb.is_cancel=0')
+                ->field('gb.id,gb.order_id,gb.start_time,gb.user_id,gb.goods_id,gb.free,gb.goods_id,o.num')
+                ->select();
             if (count($join_prom_order) > 0) {
                 for ($z = 0; $z < count($join_prom_order); $z++) {
                     $data_time = $join_prom_order[$z]['start_time'] + ORDER_END_TIME;
@@ -1746,6 +1758,9 @@ class UserController extends BaseController {
                         $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                         $id[]['id'] = $join_prom_order[$z]['id'];
                         $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
+                        M('goods')->where('`goods_id` = '.$join_prom_order[$z]['goods_id'])->setDec('store_count',$join_prom_order[$z]['num']);
+                        $spec_name = M('order_goods')->where('`order_id`='.$join_prom_order[$z]['order_id'])->field('spec_key,store_id')->find();
+                        M('spec_goods_price')->where("`goods_id`=$join_prom_order[$z]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',$join_prom_order[$z]['num']);
                     }
                     if ($join_prom_order[$z]['free'] > 0) redis("get_Free_Order_status", "1");
                 }
