@@ -926,17 +926,14 @@ class UserController extends BaseController {
             $data['is_prom'] = 0;
         }
         $res = M('return_goods')->add($data);
-        if($res)
-        {
+        if($res){
             //将状态改变
             $return['is_return_or_exchange']=1;
-            if($type==0)
-            {
+            if($type==0){
                 //退货
                 $return['order_status'] = 6;
                 $return['order_type'] = 8;
-            }elseif($type==1)
-            {
+            }elseif($type==1){
                 //换货
                 $return['order_status'] = 4;
                 $return['order_type'] = 6;
