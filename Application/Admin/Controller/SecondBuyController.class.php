@@ -43,28 +43,41 @@ class SecondBuyController extends Controller {
         $data['create_time'] = time();
         $data['type'] = 1;
         $goods = I('post.goods')['goods'];
-        foreach ($goods as $value) {
+        $Goods = M('goods');
+        $Spec = M('spec_goods_price');
+        foreach ($goods as $value) {//将选中的商品直接复制一份出来，包括规格
             // 修改商品类型为7： 0.1秒杀商品。修改活动价格为：0.1
-            M('goods')->where('goods_id='.$value['goods_id'])->save(array('is_special'=>'7', 'shop_price'=>'0.1', 'prom_price'=>'0.1','is_support_buy'=>0));
-            $sGoods['is_special'] = 7; // 修改商品类型为7： 0.1秒杀商品。
-            $sGoods['shop_price'] = '0.1';  // 修改售价为：0.1
-            $sGoods['prom_price'] = '0.1';  // 修改活动价格为：0.1
-            $sGoods['is_support_buy'] = 0; // 不支持单买
-            M('goods')->where('goods_id='.$value['goods_id'])->save($sGoods);
-            // 修改所有商品规格和活动价格为：0.1元。
-            M('spec_goods_price')->where('goods_id='.$value['goods_id'])->save(array('price'=>'0.1', 'prom_price'=>'0.1'));
+            M()->startTrans();
+            $goods_info = $Goods->where('goods_id='.$value['goods_id'])->find();
+            $goods_setDec= $Goods->where('goods_id='.$value['goods_id'])->setDec('store_count',$value['quantity']);
+            $goods_info['is_special'] = 7;
+            $goods_info['shop_price'] = 0.1;
+            $goods_info['prom_price'] = 0.1;
+            $goods_info['is_support_buy'] = 0;
+            $goods_info['store_count'] = $value['quantity'];
+            unset($goods_info['goods_id']);
+            $new_goods_id = $Goods->add($goods_info);
+
+            //将规格取出复制一份
+            $spec_arr = $Spec->where('goods_id='.$value['goods_id'])->find();
+            $spec_setDec = $Spec->where('goods_id='.$value['goods_id'])->setDec('store_count',$value['quantity']);
+            $spec_arr['goods_id'] = $new_goods_id;
+            $spec_arr['price'] = 0.1;
+            $spec_arr['prom_price'] = 0.1;
+            $res1 = $Spec->data($spec_arr)->add();
+            if($new_goods_id && $res1){
+                M()->commit();
+            }else {
+                M()->rollback();
+            }
             // 添加到商品活动表
             $data = array_merge($data, $value);
+            $data['goods_id'] = $new_goods_id;
+            $data['f_goods_id'] = $value['goods_id'];
             $res = M('goods_activity')->data($data)->add();
         }
 
         $this->success("添加成功",U('SecondBuy/goodsList'));
-
-//        if($res) {
-//            $this->success("添加成功",U('SecondBuy/goodsList'));
-//        } else {
-//            $this->success("添加失败",U('SecondBuy/goodsList'));
-//        }
     }
 
     // ajax 返回商品列表

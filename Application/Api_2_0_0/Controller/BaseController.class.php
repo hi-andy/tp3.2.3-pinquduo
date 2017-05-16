@@ -228,7 +228,7 @@ class BaseController extends Controller {
      */
     public function mobile_uploadimage($file='')
     {
-//        $upload = new \Think\Upload();
+        $upload = new \Think\Upload();
 //        //设置上传文件大小
 //        $upload->maxSize=30120000;
 //
@@ -245,7 +245,7 @@ class BaseController extends Controller {
             $file=$_FILES;
         }
 //
-//        $result=$upload->upload($file);
+        $result=$upload->upload($file);
 //
 //        if(!$result )
 //        {
