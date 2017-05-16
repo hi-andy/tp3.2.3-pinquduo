@@ -271,19 +271,35 @@ class BaseController extends Controller {
 
         //调用七牛云上传
         redis("mobile_uploadimage", serialize($file),REDISTIME);
-        $suffix = substr(strrchr($file['picture']['name'], '.'), 1);
-        $files = array(
-            "key" => time().rand(0,9).".".$suffix,
-            "filePath" => $file['picture']['tmp_name'],
-            "mime" => $file['picture']['type']
-        );
-        $qiniu = new \Admin\Controller\QiniuController();
-        $info = $qiniu->uploadfile("imgbucket", $files);
-
-        $return_data['origin'] = CDN."/".$info[0]["key"];
-        $return_data['width'] = '100';
-        $return_data['height'] = '100';
-        $return_data['small'] = CDN."/".$info[0]["key"];
+        if(I('terminal') == 'i') {
+            foreach ($file['picture']['name'] as $key => $value) {
+                $suffix = substr(strrchr($value, '.'), 1);
+                $files = array(
+                    "key" => time() . rand(0, 9) . "." . $suffix,
+                    "filePath" => $file['picture']['tmp_name'][$key],
+                    "mime" => $file['picture']['type'][$key]
+                );
+                $qiniu = new \Admin\Controller\QiniuController();
+                $info = $qiniu->uploadfile("imgbucket", $files);
+                $return_data[$key]['origin'] = CDN . "/" . $info[0]["key"];
+                $return_data[$key]['width'] = '100';
+                $return_data[$key]['height'] = '100';
+                $return_data[$key]['small'] = CDN . "/" . $info[0]["key"];
+            }
+        } else {
+            $suffix = substr(strrchr($file['picture']['name'], '.'), 1);
+            $files = array(
+                "key" => time() . rand(0, 9) . "." . $suffix,
+                "filePath" => $file['picture']['tmp_name'],
+                "mime" => $file['picture']['type']
+            );
+            $qiniu = new \Admin\Controller\QiniuController();
+            $info = $qiniu->uploadfile("imgbucket", $files);
+            $return_data['origin'] = CDN . "/" . $info[0]["key"];
+            $return_data['width'] = '100';
+            $return_data['height'] = '100';
+            $return_data['small'] = CDN . "/" . $info[0]["key"];
+        }
         return $return_data;
     }
 

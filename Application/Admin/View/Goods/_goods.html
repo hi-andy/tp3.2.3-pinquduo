@@ -218,17 +218,24 @@
                                             <span id="err_prom" style="color:#F00; display:none;"></span>
                                         </td>
                                     </tr>
+                                    <if condition="$goodsInfo['original_img'] neq null">
+                                    <tr>
+                                        <td>
+                                            &nbsp;
+                                        </td>
+                                        <td>
+                                                <a target="_blank" href="{$goodsInfo.original_img}" id="original_img2">
+                                                    <img width="200" src="{$goodsInfo.original_img}">
+                                                </a>
+                                            <span id="err_original_img" style="color:#F00; display:none;"></span>
+                                        </td>
+                                    </tr>
+                                    </if>
+                                    <tr>
                                         <td>上传商品图片:</td>
                                         <td>
                                             <input type="button" value="上传图片"  onclick="GetUploadify(1,'','goods','call_back');"/>
                                             <input type="text" class="input-sm"  name="original_img" id="original_img" value="{$goodsInfo.original_img}"/>
-                                            <if condition="$goodsInfo['original_img'] neq null">
-                                                &nbsp;&nbsp;
-                                                <a target="_blank" href="{$goodsInfo.original_img}" id="original_img2">
-                                                    <img width="25" height="25" src="/Public/images/image_icon.jpg">
-                                                </a>
-                                            </if>
-                                            <span id="err_original_img" style="color:#F00; display:none;"></span>
                                         </td>
                                     </tr>
                                     <tr>

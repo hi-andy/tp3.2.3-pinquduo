@@ -810,3 +810,21 @@ function read_only_db() {
         'DB_PORT' => '3306', //数据库端口
     );
 }
+
+//获取小数点后面的长度
+function getFloatLength($num) {
+    $count = 0;
+    $temp = explode ( '.', $num );
+    if (sizeof ( $temp ) > 1) {
+        $decimal = end ( $temp );
+        $count = strlen ( $decimal );
+    }
+    return $count;
+}
+
+//操作价格
+function operationPrice($price)
+{
+    $price = number_format($price, 2, '.', '');
+    return $price;
+}

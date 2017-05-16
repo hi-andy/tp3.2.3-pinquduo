@@ -58,35 +58,8 @@ class StoreController extends BaseController{
      */
     public function withdrawal_add(){
         //	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
-        $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->find();
-
-        //拿到总共能体现的资金
-        $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$_SESSION['merchant_id'])->select();
-        $reflect = null;
-        foreach($one as $v){
-            $temp = 2*3600*24;
-            $cha = time()-$v['confirm_time'];
-            if($cha>=$temp){
-                $reflect = $reflect+$v['order_amount'];
-            }
-        }
-        //获取以前的提取记录
-        $total = 0;
-        $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_info['id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
-
-        $suoding = M('store_withdrawal')->where('store_id='.$store_info['id'].' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
-        if(!empty($suoding))
-        {
-            $this->assign('suoding',$suoding);
-        }
-        foreach($withdrawal_total as $v)
-        {
-            $total = $total+$v['withdrawal_money'];
-        }
-        $reflect = $reflect-$total;
-        if(empty($reflect))
-            $reflect = 0;
-        $reflect = sprintf('%.2f', $reflect);
+        $store_info = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->field('store_name')->find();
+        $reflect = $this->cash_available($_SESSION['merchant_id']);
         $this->assign('reflect',$reflect);
         session('reflect',$reflect);
         $this->assign('store_name',$store_info['store_name']);
@@ -98,50 +71,44 @@ class StoreController extends BaseController{
      */
     public function post_withdrawal(){
         if(empty(redis("post_withdrawal".$_SESSION['merchant_id']))) {//判断是否有锁
-            redis("post_withdrawal".$_SESSION['merchant_id'], "1", 5);//写入锁
+            redis("post_withdrawal".$_SESSION['merchant_id'], "1", 20);//写入锁
             $data = $_POST;
-
-            if ($data['withdrawal_money'] == 0 || $data['withdrawal_money'] < 0) {
-                echo json_encode(array('status' => 0, 'msg' => '输入金额必须大于0'));
-                die;
-            }
-            if ($data['withdrawal_money'] % 500 != 0) {
-                echo json_encode(array('status' => 0, 'msg' => '请输入500的倍数的体现金额'));
-                die;
-            }
-            if ($data['withdrawal_money'] > $_SESSION['reflect']) {
-                echo json_encode(array('status' => 0, 'msg' => '提现余额不足'));
-                die;
-            }
-
-            $withdrawal_total = M('store_withdrawal')->where('store_id=' . $_SESSION['merchant_id'])->order('id desc')->find();
-            $datetime = strtotime(date('Y-m-d', strtotime($withdrawal_total['datetime'])));
-            $new = strtotime(date('Y-m-d', time()));
-            if ($datetime == $new) {
-                echo json_encode(array('status' => 0, 'msg' => '一天只能提现一次'));
-                die;
-            }
-
-            $store_info = M('merchant')->where(array('id' => $_SESSION['merchant_id']))->find();
-            $data['store_id'] = $store_info['id'];
-            $data['store_name'] = $store_info['store_name'];
-            $data['datetime'] = date('Y-m-d H:i:s');
-            $data['end_time'] = time();
-            $data['status'] = 0;
-            $order_total = M('order')->where(array('store_id' => $store_info['id']))->sum('order_amount');
-            $withdrawal_total = M('store_withdrawal')->where(array('store_id' => $store_info['id']))->sum('order_amount');
-            $data['total_money'] = $order_total;
-            $data['balance_money'] = $order_total - $withdrawal_total;
-
-            $res = M('store_withdrawal')->add($data);
-            if ($res) {
-                echo json_encode(array('status' => 1, 'msg' => '申请成功,请等待平台审核'));
+            if ($data['withdrawal_money'] < 1 || $data['withdrawal_money'] % 500 != 0) {
+                $result = json_encode(array('status' => 0, 'msg' => '请输入500的倍数的提现金额'));
+            } elseif ($data['withdrawal_money'] > $this->cash_available($_SESSION['merchant_id'])) {
+                $result = json_encode(array('status' => 0, 'msg' => '提现余额不足'));
             } else {
-                echo json_encode(array('status' => 0, 'msg' => '提交失败，请联系管理员'));
+                $withdrawal_total = M('store_withdrawal')->where('store_id=' . $_SESSION['merchant_id'])->field('datetime')->order('id desc')->find();
+                $datetime = strtotime(date('Y-m-d', strtotime($withdrawal_total['datetime'])));
+                $new = strtotime(date('Y-m-d', time()));
+                if ($datetime == $new) {
+                    $result = json_encode(array('status' => 0, 'msg' => '一天只能提现一次'));
+                } else {
+
+                    $store_info = M('merchant')->where(array('id' => $_SESSION['merchant_id']))->field('id,store_name')->find();
+                    $data['store_id'] = $store_info['id'];
+                    $data['store_name'] = $store_info['store_name'];
+                    $data['datetime'] = date('Y-m-d H:i:s');
+                    $data['end_time'] = time();
+                    $data['status'] = 0;
+                    $order_total = M('order')->where(array('store_id' => $store_info['id']))->sum('order_amount');
+                    $withdrawal_total = M('store_withdrawal')->where(array('store_id' => $store_info['id']))->sum('order_amount');
+                    $data['total_money'] = $order_total;
+                    $data['balance_money'] = $order_total - $withdrawal_total;
+
+                    $res = M('store_withdrawal')->add($data);
+                    if ($res) {
+                        $result = json_encode(array('status' => 1, 'msg' => '申请成功,请等待平台审核'));
+                    } else {
+                        $result = json_encode(array('status' => 0, 'msg' => '提交失败，请联系管理员'));
+                    }
+                }
             }
             redisdelall("post_withdrawal".$_SESSION['merchant_id']);//删除锁
-            die;
+        } else {
+            $result = json_encode(array('status' => 0, 'msg' => '客官别太着急'));
         }
+        echo $result;
     }
 
     /**
