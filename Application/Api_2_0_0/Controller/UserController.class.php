@@ -2225,7 +2225,6 @@ class UserController extends BaseController {
                 $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
             }
         }
-
         $goods_info= $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
         $goods_info['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $spec_info = M('order_goods', '', 'DB_CONFIG2')->alias('og')
