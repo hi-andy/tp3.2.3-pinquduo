@@ -84,8 +84,7 @@ class GoodsController extends BaseController {
 				$condition['parent_id'] = $ids =array('in',array_column($parent_id,'id'));
 				$parent_id2 = M('goods_category', '', 'DB_CONFIG2')->where($condition)->field('id')->select();
 				$ids2 =array(array_column($parent_id2,'id'));
-				if(in_array("$id", $ids2[0]))//确定为二级分类id
-				{
+				if(in_array("$id", $ids2[0])){//确定为二级分类id
 					//找到一级菜单的下级id
 					$parent_cat = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`='.$id)->field('id')->select();
 					$condition2['cat_id'] =array('in',array_column($parent_cat,'id'));
@@ -1073,7 +1072,6 @@ class GoodsController extends BaseController {
                 exit;
             }
         }
-        //////
         $goodsstatus = M('goods')
             ->where("goods_id=$goods_id and (show_type=1 or is_show=0 or is_on_sale=0)")
             ->count();
@@ -1099,7 +1097,7 @@ class GoodsController extends BaseController {
                 //商品规格
                 $goodsLogic = new \Home\Logic\GoodsLogic();
                 $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
-                $filter_spec = $goodsLogic->get_spec($goods_id);//规格参数
+                $filter_spec = $goodsLogic->get_spec($goods_id,$goods['is_special']);//规格参数
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
                     $new_spec_goods[] = $spec;

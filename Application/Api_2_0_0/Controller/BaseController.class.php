@@ -557,12 +557,12 @@ class BaseController extends Controller {
         $store = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
-        if(!empty($goods['original_img'])){
+        if(empty($goods['original_img'])){
             $goods['original_img'] =TransformationImgurl($goods['original']);
         }else{
             $goods['original_img'] =TransformationImgurl($goods['original_img']);
         }
-        $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
+        $goods['fenxiang_url'] = $goods['original']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
         if($type!=1){
             $goods['img_arr'] = getImgs($goods['goods_content']);
             $goods['img_arr'] = getImgSize($goods['img_arr']);

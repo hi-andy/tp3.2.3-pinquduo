@@ -244,7 +244,10 @@ class GoodsLogic extends RelationModel
    /**
     * 获取商品规格
     */
-   public function get_spec($goods_id){
+   public function get_spec($goods_id,$is_special=''){
+       if($is_special==7){
+           $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
+       }
 	   	//商品规格 价钱 库存表 找出 所有 规格项id
        $keys =M('SpecGoodsPrice', '', 'DB_CONFIG2')->where('goods_id = '.$goods_id)->field('key')->select();
 

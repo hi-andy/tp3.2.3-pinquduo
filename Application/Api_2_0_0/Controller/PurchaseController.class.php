@@ -325,10 +325,10 @@ class PurchaseController extends  BaseController
                 $order['pay_name'] = 'QQ钱包支付';
             }
             $order['goods_price'] = $order['total_amount'] = $goods['prom_price']*$num;
-            if(empty($coupon_list_id)){
+            if(!empty($coupon_list_id)){
                 $order['order_amount'] = (string)($goods['prom_price']*$num-$coupon['money']);
             }else{
-                $order['order_amount'] = (string)($goods['prom_price']);
+                $order['order_amount'] = (string)($goods['prom_price']*$num);
             }
             $order['coupon_price'] = $coupon['money'];
             I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
@@ -586,10 +586,10 @@ class PurchaseController extends  BaseController
         }
         $order['goods_price'] = $goods['market_price'];
         $order['total_amount'] = $goods['prom_price']*$num;
-        if(empty($coupon_list_id)){
+        if(!empty($coupon_list_id)){
             $order['order_amount'] = (string)($goods['prom_price']*$num-$coupon['money']);
         }else{
-            $order['order_amount'] = (string)($goods['prom_price']);
+            $order['order_amount'] = (string)($goods['prom_price']*$num);
         }
         $order['coupon_price'] = $coupon['money'];
         I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
@@ -928,11 +928,14 @@ class PurchaseController extends  BaseController
         return $code;
     }
 
-    public function aftermath($user_id,$goods_id,$num,$o_id){
+    public function aftermath($user_id,$goods,$num,$o_id){
         $this->order_redis_status_ref($user_id);
+        if($goods['is_special']==7){
+            M('goods_activity')->where('`goods_id` = '.$goods['goods_id'])->setDec('quantity',$num);
+        }
         //销量、库存//商品规格库存
-        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',$num);
+        M('goods')->where('`goods_id` = '.$goods['goods_id'])->setDec('store_count',$num);
         $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
-        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
+        M('spec_goods_price')->where("`goods_id`=$goods[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
     }
 }
