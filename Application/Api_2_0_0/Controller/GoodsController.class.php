@@ -1081,20 +1081,24 @@ class GoodsController extends BaseController {
         } else {
             $rdsname = 'getDetaile_' . $goods_id;
             if (empty(redis($rdsname))) {
-                //轮播图
-                $banner = M('goods_images', '', 'DB_CONFIG2')->where("`goods_id` = $goods_id")->field('image_url')->select();
-
-                foreach ($banner as &$v) {
-                    //TODO 缩略图处理
-                    $v['small'] = TransformationImgurl($v['image_url']);
-                    $v['origin'] = TransformationImgurl($v['image_url']);
-                    unset($v['image_url']);
-                }
-
-                if (empty($banner)) {
-                    $banner = null;
-                }
                 $goods = $this->getGoodsInfo($goods_id);
+	            //轮播图
+	            if($goods['is_special']==7){
+		            $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
+		            $banner = M('goods_images', '', 'DB_CONFIG2')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
+	            }else{
+		            $banner = M('goods_images', '', 'DB_CONFIG2')->where("`goods_id` = $goods_id")->field('image_url')->select();
+	            }
+
+	            foreach ($banner as &$v) {
+		            //TODO 缩略图处理
+		            $v['small'] = TransformationImgurl($v['image_url']);
+		            $v['origin'] = TransformationImgurl($v['image_url']);
+		            unset($v['image_url']);
+	            }
+	            if (empty($banner)) {
+		            $banner = null;
+	            }
                 //商品规格
                 $goodsLogic = new \Home\Logic\GoodsLogic();
                 $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
