@@ -29,7 +29,7 @@
                 </div>
                 <div class="panel-body ">   
                     <!--表单数据-->
-                    <!--<form method="post" id="Secondskill" action="{:U('Admin/SecondBuy/save')}">-->
+                    <form method="post" id="Secondskill" action="">
                         <!--通用信息-->
                     <div class="tab-content col-md-10">                 	  
                         <div class="tab-pane active" id="tab_tongyong">                           
@@ -114,13 +114,12 @@
                                 	<td><input class="btn btn-default" type="reset" value="重置">
                                 		<input type="hidden" name="id" value="{$info.id}">
                                 	</td>
-                                	<!--<td class="text-right"><input class="btn btn-primary" type="button"  onclick="ajax_submit_form('Secondskill','{:U('Admin/Secondskill/prom_goods_save2')}');" value="保存"></td></tr>-->
 	                                <td class="text-right"><input class="btn btn-primary" type="button" onclick="adsubmit()" value="保存"></td></tr>
                                 </tfoot>                               
                            </table>
                         </div>                           
                     </div>              
-			      <!--</form>&lt;!&ndash;表单数据&ndash;&gt;-->
+			      </form><!--表单数据-->
                 </div>
             </div>
         </div>
@@ -221,34 +220,6 @@ function call_back(table_html)
 	layer.closeAll('iframe');
 	$('#goods_list').append(table_html);
 }
-
-//$("#prom_type").on("change",function(){
-//	  var type = parseInt($("#prom_type").val());
-//	  var expression = '';
-//	  switch(type){
-//	    case 0:{
-//	      expression = '<td><b class="red">*</b>折扣：</td> <td> <input name="expression" type="text" class="small"  pattern="int" value=""> <label>% 折扣值(1-100 如果打9折，请输入90)</label> </td>';
-//	      break;
-//	    }
-//	    case 1:{
-//	      expression = '<td><b class="red">*</b>立减金额：</td> <td> <input name="expression" type="text" class="small"  pattern="float" value=""> <label>立减金额（元）</label> </td>';
-//	      break;
-//	    }
-//	    case 2:{
-//	      expression = '<td><b class="red">*</b>出售金额：</td> <td> <input name="expression" type="text" class="small"  pattern="float" value=""> <label>出售金额（元）</label> </td>';
-//	      break;
-//	    }
-//	    case 3:{
-//	      expression = '<td><b class="red">*</b>代金券：</td> <td><select name="expression"><tpshop sql="select * from __PREFIX__coupon where type=0" item="v"><option value="{$v.id}" <if condition="$v[id] eq $info[expression]">selected</if>>{$v.name}</option></tpshop></select></td>';
-//	      break;
-//	    }
-//	    case 4:{
-//	      expression = '<td><b class="red">*</b>买M送N：</td> <td> <input name="expression" type="text" class="small"  pattern="\\d+\/\\d+" value=""> <label>买几件送几件（如买3件送1件: 3/1）</label> </td>';
-//	      break;
-//	    }
-//	  }
-//	  $("#expression").html(expression);
-//});
 
 </script>
 </body>

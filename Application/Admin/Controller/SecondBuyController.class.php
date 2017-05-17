@@ -77,7 +77,13 @@ class SecondBuyController extends Controller {
 //            $res = M('goods_activity')->data($data)->add();
 //        }
 
-        $this->success("添加成功",U('SecondBuy/goodsList'));
+//        $this->success("添加成功",U('Admin/SecondBuy/goodsList'));
+        $return_arr = array(
+            'status' => 1,
+            'msg'   => '添加成功',
+            'data'  => array('url'=>U('Admin/SecondBuy/goodsList')),
+        );
+        $this->ajaxReturn(json_encode($return_arr));
     }
 
     // ajax 返回商品列表
@@ -142,10 +148,6 @@ class SecondBuyController extends Controller {
             $grandson_ids = getCatGrandson(I('cat_id'));
             $where = " $where  and cat_id in(" . implode(',', $grandson_ids) . ") "; // 初始化搜索条件
         }
-//		if (I('brand_id')) {
-//			$this->assign('brand_id', I('brand_id'));
-//			$where = "$where and brand_id = " . I('brand_id');
-//		}
         if (!empty($_REQUEST['keywords'])) {
             $this->assign('keywords', I('keywords'));
             $where = "$where and (goods_name like '%" . I('keywords') . "%' or keywords like '%" . I('keywords') . "%')";
