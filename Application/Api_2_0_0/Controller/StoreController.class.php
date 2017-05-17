@@ -11,8 +11,12 @@ class StoreController extends BaseController{
         $this->encryption();
     }
 
-    public function store_sales($page){
-        M()->query("update tp_merchant set sales=(select SUM(sales) as a from tp_goods where store_id = {$result['store_id']}) where id={$result['store_id']}");
+    /**
+     * 更新销量自动脚本
+     */
+    public function store_sales(){
+        $merchant = M('merchant')->where(array('refresh'=>array('eq',0)))->field('id')->find();
+        M()->query("update tp_merchant set sales=(select SUM(sales) as a from tp_goods where store_id = {$merchant['id']}),refresh=1 where id={$merchant['id']}");
     }
 
 	/*

@@ -1218,9 +1218,9 @@ class GoodsController extends BaseController {
 				$user_name = M('users', '', 'DB_CONFIG2')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
 				if (!empty($user_name['oauth'])) {
 					$group_buy[$i]['user_name'] = $user_name['nickname'];
-					$group_buy[$i]['photo'] = $user_name['head_pic'];
+					$group_buy[$i]['photo'] = TransformationImgurl($user_name['head_pic']);
 				} else {
-					$group_buy[$i]['photo'] = $user_name['head_pic'];
+					$group_buy[$i]['photo'] = TransformationImgurl($user_name['head_pic']);
 					$group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
 				}
 			}
