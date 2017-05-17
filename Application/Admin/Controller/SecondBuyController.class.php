@@ -65,7 +65,6 @@ class SecondBuyController extends Controller {
             $spec_arr['price'] = 0.1;
             $spec_arr['prom_price'] = 0.1;
             $res1 = $Spec->data($spec_arr)->add();
-
             if($new_goods_id && $res1){
                 M()->commit();
             }else {
