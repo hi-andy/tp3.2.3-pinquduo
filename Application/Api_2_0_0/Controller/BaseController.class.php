@@ -557,7 +557,7 @@ class BaseController extends Controller {
         $store = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
-        if(!empty($goods['original_img'])){
+        if(empty($goods['original_img'])){
             $goods['original_img'] =TransformationImgurl($goods['original']);
         }else{
             $goods['original_img'] =TransformationImgurl($goods['original_img']);

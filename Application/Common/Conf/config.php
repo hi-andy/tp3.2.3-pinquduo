@@ -6,7 +6,7 @@ define("REDIS_SWITCH", true); //true、false
 define("REDISIP", "r-wz9266773b1c1894.redis.rds.aliyuncs.com");
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");
-define("REDISTIME", 1800);
+define("REDISTIME", 120);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
 return array(
@@ -113,11 +113,8 @@ return array(
 		1 => '海淘商品',
 		2 => '限时秒杀',
 		4 => '9.9专场',
-		5 => '省钱大发',
-		6 => '免单拼',
-		7 => '0.1秒杀',
-		8 => '为我拼',
-		9 => '趣多严选'
+		5 => '多人拼',
+		6 => '免单拼'
 	),
 
 	'SINGLE_BUY' => array(

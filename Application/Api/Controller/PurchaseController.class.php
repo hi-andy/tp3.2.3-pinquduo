@@ -316,10 +316,10 @@ class PurchaseController
                 $order['pay_name'] = 'QQ钱包支付';
             }
             $order['goods_price'] = $order['total_amount'] = $goods['prom_price']*$num;
-            if(empty($coupon_list_id)){
+            if(!empty($coupon_list_id)){
                 $order['order_amount'] = (string)($goods['prom_price']*$num-$coupon['money']);
             }else{
-                $order['order_amount'] = (string)($goods['prom_price']);
+                $order['order_amount'] = (string)($goods['prom_price']*$num);
             }
             $order['coupon_price'] = $coupon['money'];
             I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
@@ -581,10 +581,10 @@ class PurchaseController
         }
         $order['goods_price'] = $goods['market_price'];
         $order['total_amount'] = $goods['prom_price']*$num;
-        if(empty($coupon_list_id)){
+        if(!empty($coupon_list_id)){
             $order['order_amount'] = (string)($goods['prom_price']*$num-$coupon['money']);
         }else{
-            $order['order_amount'] = (string)($goods['prom_price']);
+            $order['order_amount'] = (string)($goods['prom_price']*$num);
         }
         $order['coupon_price'] = $coupon['money'];
         I('coupon_list_id') && $order['coupon_list_id'] = $coupon_list_id;
