@@ -1256,7 +1256,7 @@ class UserController extends BaseController {
                 ->select();
 
             foreach ($goods as &$v) {
-                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
+                $v['original_img'] .= "?imageView2/1/w/" . 400 . "/h/" . 400;
             }
 
             $collection = $this->listPageData($count, $goods);

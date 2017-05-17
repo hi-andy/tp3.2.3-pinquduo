@@ -535,12 +535,12 @@ class BaseController extends Controller {
     //调度商品列表
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc,sort asc')
     {
-        $count = M('goods')->where($where)->count();
-        $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
+        $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
-            $v['original'] = TransformationImgurl($v['original_img']);
-            $v['original_img'] = TransformationImgurl($v['original_img']);
+            $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
+            $v['original'] =TransformationImgurl($v['original']);
         }
         return $result;
     }
