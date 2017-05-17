@@ -1792,7 +1792,7 @@ class UserController extends BaseController {
                 $where = $this->getPromid($prom_order);
                 //找出这个团的团长和团员
                 $join_proms = M('group_buy')->where($where)->select();
-
+                redis("get_Free_Order_status", "1");
                 //统计每个团的人数
                 $prom_man = array();
                 foreach ($join_proms as $k => $v) {

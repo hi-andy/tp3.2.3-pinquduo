@@ -1153,7 +1153,6 @@ class GoodsController extends BaseController {
 		}else{
 			$collect = 0;
 		}
-
         $goods = M('goods', '', 'DB_CONFIG2')->alias('g')
 	        ->join('INNER JOIN tp_merchant m on m.id = g.store_id')
 	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
