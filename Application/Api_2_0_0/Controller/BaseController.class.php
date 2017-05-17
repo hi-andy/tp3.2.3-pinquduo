@@ -558,11 +558,11 @@ class BaseController extends Controller {
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
         if(!empty($goods['list_img'])){
-            $goods['original']=$goods['list_img'];
+            $goods['original_img'] =TransformationImgurl($goods['list_img']);
         }else{
-            $goods['original']=$goods['original_img'];
+            $goods['original_img'] =TransformationImgurl($goods['original_img']);
         }
-        $goods['original_img'] =TransformationImgurl($goods['original_img']);
+        $goods['original']=$goods['list_img'];
         $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
         if($type!=1){
             $goods['img_arr'] = getImgs($goods['goods_content']);
@@ -584,12 +584,12 @@ class BaseController extends Controller {
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,list_img')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
-            if(!empty($v[''])){
-                $v['original'] = TransformationImgurl($v['list_img']);
+            if(!empty($v['list_img'])){
+                $v['original_img'] = TransformationImgurl($v['list_img']);
             }else{
-                $v['original'] = TransformationImgurl($v['original_img']);
+                $v['original_img'] = TransformationImgurl($v['original_img']);
             }
-            $v['original_img'] = TransformationImgurl($v['original_img']);
+            $v['original'] = TransformationImgurl($v['original_img']);
             unset($v['list_img']);
         }
         return $result;
