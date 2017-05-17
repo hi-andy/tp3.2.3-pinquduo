@@ -549,7 +549,7 @@ class BaseController extends Controller {
     //调度商品详情
     function  getGoodsInfo($goods_id,$type='')
     {
-        $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img')->find();
+        $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img,list_img')->find();
 
         //商品详情
         $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
@@ -557,13 +557,15 @@ class BaseController extends Controller {
         $store = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         $store['store_logo'] = TransformationImgurl($store['store_logo']);
         $goods['store'] = $store;
-        $goods['original_img'] =$goods['original']= TransformationImgurl($goods['original_img']);
+        $goods['original']=$goods['list_img'];
+        $goods['original_img'] =TransformationImgurl($goods['original_img']);
         $goods['fenxiang_url'] = $goods['original_img']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
         if($type!=1){
             $goods['img_arr'] = getImgs($goods['goods_content']);
             $goods['img_arr'] = getImgSize($goods['img_arr']);
         }
         unset($goods['goods_content']);
+        unset($goods['list_img']);
 
         if(empty($goods))
             $goods=null;
@@ -575,11 +577,12 @@ class BaseController extends Controller {
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc,sort asc')
     {
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
-        $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+        $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,list_img')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
-            $v['original'] = TransformationImgurl($v['original_img']);
+            $v['original'] = TransformationImgurl($v['list_img']);
             $v['original_img'] = TransformationImgurl($v['original_img']);
+            unset($v['list_img']);
         }
         return $result;
     }
