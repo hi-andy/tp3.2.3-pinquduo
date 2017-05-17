@@ -681,18 +681,8 @@ class IndexController extends BaseController {
         $version = I('version');
         $rdsname = "getThe_raise".$page.$pagesize.$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
-            if($version=='2.0.0'){
-                $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
-                $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            }else{
-                $count = M('goods', '', 'DB_CONFIG2')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
-                $goods = M('goods', '', 'DB_CONFIG2')->where('`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
-                foreach ($goods as &$v) {
-                    $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-                }
-                $data = $this->listPageData($count, $goods);
-            }
-
+            $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {

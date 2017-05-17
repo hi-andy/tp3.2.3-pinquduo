@@ -584,11 +584,7 @@ class BaseController extends Controller {
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
-            if(empty($v['original_img'])){
-                $v['original_img'] = $v['original'];
-            }else{
-                $v['original_img'] = $v['original_img'];
-            }
+            $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             $v['original'] =TransformationImgurl($v['original']);
         }
         return $result;
