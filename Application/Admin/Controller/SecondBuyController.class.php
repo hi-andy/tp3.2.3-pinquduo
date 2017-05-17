@@ -77,13 +77,7 @@ class SecondBuyController extends Controller {
 //            $res = M('goods_activity')->data($data)->add();
 //        }
 
-//        $this->success("添加成功",U('Admin/SecondBuy/goodsList'));
-        $return_arr = array(
-            'status' => 1,
-            'msg'   => '添加成功',
-            'data'  => array('url'=>U('Admin/SecondBuy/goodsList')),
-        );
-        $this->ajaxReturn(json_encode($return_arr));
+        $this->success("添加成功",U('SecondBuy/goodsList'));
     }
 
     // ajax 返回商品列表
