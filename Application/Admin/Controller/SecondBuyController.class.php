@@ -142,10 +142,6 @@ class SecondBuyController extends Controller {
             $grandson_ids = getCatGrandson(I('cat_id'));
             $where = " $where  and cat_id in(" . implode(',', $grandson_ids) . ") "; // 初始化搜索条件
         }
-//		if (I('brand_id')) {
-//			$this->assign('brand_id', I('brand_id'));
-//			$where = "$where and brand_id = " . I('brand_id');
-//		}
         if (!empty($_REQUEST['keywords'])) {
             $this->assign('keywords', I('keywords'));
             $where = "$where and (goods_name like '%" . I('keywords') . "%' or keywords like '%" . I('keywords') . "%')";

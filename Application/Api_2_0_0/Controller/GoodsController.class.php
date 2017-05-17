@@ -476,8 +476,7 @@ class GoodsController extends BaseController {
 				$order_id = $order_ids[$j];
 				$res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
 				$res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
-				if($res && $res2)
-				{
+				if($res && $res2){
 					$this->getWhere($order_id);
 					M()->commit();
 				}else{
