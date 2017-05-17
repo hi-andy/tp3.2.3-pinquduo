@@ -171,22 +171,7 @@
                                         <span id="err_store_count" style="color:#F00; display:none;"></span>
                                     </td>
                                 </tr>
-<<<<<<< HEAD
-=======
-                                <!--<if condition="$goodsInfo['original_img'] neq null">-->
-                                    <!--<tr>-->
-                                        <!--<td>-->
-                                            <!--&nbsp;-->
-                                        <!--</td>-->
-                                        <!--<td>-->
-                                            <!--<a target="_blank" href="{$goodsInfo.original_img}" id="original_img2">-->
-                                                <!--<img width="200" src="{$goodsInfo.original_img}">-->
-                                            <!--</a>-->
-                                            <!--<span id="err_original_img" style="color:#F00; display:none;"></span>-->
-                                        <!--</td>-->
-                                    <!--</tr>-->
-                                <!--</if>-->
->>>>>>> f6d88d569a3438bcc9c7c8141bb7e72a265bb600
+
                                 <tr>
                                     <td>商品列表主图:</td>
                                     <td>
@@ -195,7 +180,7 @@
                                         <if condition="$goodsInfo['list_img'] neq null">
                                             &nbsp;&nbsp;
                                             <a target="_blank" href="{$goodsInfo.list_img}" id="list_img_upload">
-                                                <img width="25" height="25" src="/Public/images/image_icon.jpg">
+                                                <img width="80" src="{$goodsInfo.list_img}">
                                             </a>
                                         </if>
                                         <span id="err_list_img" style="color:#F00; display:none;"></span>
@@ -207,14 +192,10 @@
                                     <td>
                                         <input type="button" value="上传图片"  onclick="GetUploadify(1,'','goods','call_back');"/>
                                         <input type="text" class="input-sm"  name="original_img" id="original_img" value="{$goodsInfo.original_img}"/>
-<<<<<<< HEAD
-                                        <span  style="color:red; ">类目主图：400*400px 纯白底无Logo/无文字（服饰箱包除外）</span>
-=======
->>>>>>> f6d88d569a3438bcc9c7c8141bb7e72a265bb600
                                         <if condition="$goodsInfo['original_img'] neq null">
                                             &nbsp;&nbsp;
                                             <a target="_blank" href="{$goodsInfo.original_img}" id="original_img2">
-                                                <img width="25" height="25" src="/Public/images/image_icon.jpg">
+                                                <img width="80" src="{$goodsInfo.original_img}">
                                             </a>
                                         </if>
                                         <span id="err_original_img" style="color:#F00; display:none;"></span>
