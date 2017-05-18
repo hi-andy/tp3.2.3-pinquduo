@@ -653,7 +653,6 @@ class BaseController extends Controller {
                     $all[$i]['goodsInfo']=null;
                 }
             }
-
         }
         $all = $this->listPageData($count, $all);
 

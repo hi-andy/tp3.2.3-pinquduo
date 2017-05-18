@@ -591,7 +591,7 @@ class PromController extends BaseController {
 		$sort_order = I('sort_order') ? I('sort_order') : 'desc';
 		$status =  I('status');
 
-		$where = "tp_return_goods.`store_id`=3405 and tp_return_goods.`is_prom`=1 and tp_group_buy.is_successful=1 ";
+		$where = "tp_return_goods.`store_id`=".$_SESSION['merchant_id']." and tp_return_goods.`is_prom`=1 and tp_group_buy.is_successful=1 ";
 		$order_sn && $where.= " and tp_return_goods.order_sn like '%$order_sn%' ";
 		empty($order_sn) && $where.= " and tp_return_goods.`status` = '$status' ";
 

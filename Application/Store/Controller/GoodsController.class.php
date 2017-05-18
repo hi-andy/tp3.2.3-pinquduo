@@ -525,13 +525,13 @@ class GoodsController extends BaseController {
     {
         $id = I('id');
         // 判断 商品规格
-        $count = M("Spec")->where("type_id = $id")->count("1");
+        $count = M("Spec")->where("type_id = $id and is_show=1")->count("1");
         $count > 0 && $this->error('该类型下有商品规格不得删除!',U('Store/Goods/goodsTypeList'));
-        // 判断 商品属性
-        $count = M("GoodsAttribute")->where("type_id =$id")->count("1");
-        $count > 0 && $this->error('该类型下有商品属性不得删除!',U('Store/Goods/goodsTypeList'));
+//        // 判断 商品属性
+//        $count = M("GoodsAttribute")->where("type_id =$id")->count("1");
+//        $count > 0 && $this->error('该类型下有商品属性不得删除!',U('Store/Goods/goodsTypeList'));
         // 删除分类
-
+        $spec_id_arr = M('spec')->where('is_show = 0 and type_id = '.$id )->delete();
         M('GoodsType')->where("id = $id")->delete();
         $this->success("操作成功!!!",U('Store/Goods/goodsTypeList'));
     }

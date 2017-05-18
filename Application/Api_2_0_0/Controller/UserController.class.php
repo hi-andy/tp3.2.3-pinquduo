@@ -2223,6 +2223,7 @@ class UserController extends BaseController {
             $order_info['key_name'] = $spec_info['pec_key_name'];
             $is_oneself = 0;
         }
+        $is_self = $is_oneself;
         unset($order_info['order_status']);
         unset($order_info['pay_status']);
         unset($order_info['shipping_status']);
@@ -2240,7 +2241,7 @@ class UserController extends BaseController {
         unset($order_info['cat_id']);
         unset($order_info['goods_id']);
 
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>array('order_id'=>$order_id,'order_amount'=>$order_info['order_amount'],'order_sn'=>$order_info['order_sn'],'pay_name'=>$order_info['pay_name'],'add_time'=>$order_info['add_time'],'shipping_order'=>$order_info['shipping_order'],'shipping_name'=>$order_info['shipping_name'],'prom_id'=>$order_info['prom_id'],'order_type'=>$order_info['order_type'],'automatic_time'=>$order_info['automatic_time'],'prom'=>$order_info['prom'],'prom_mens'=>$order_info['prom_mens'],'annotation'=>$order_info['annotation'],'delivery_time'=>$order_info['delivery_time'],'key_name'=>$order_info['key_name'],'price'=>$order_info['price'],'num'=>$order_info['num'],'successful_time'=>$res1['start_time'],'is_oneself'=>$is_oneself,'goodsInfo'=>$goods_info,'user'=>$user,'like'=>$goods));
+        $json = array('status'=>1,'msg'=>'获取成功','result'=>array('order_id'=>$order_id,'order_amount'=>$order_info['order_amount'],'order_sn'=>$order_info['order_sn'],'pay_name'=>$order_info['pay_name'],'add_time'=>$order_info['add_time'],'shipping_order'=>$order_info['shipping_order'],'shipping_name'=>$order_info['shipping_name'],'prom_id'=>$order_info['prom_id'],'order_type'=>$order_info['order_type'],'automatic_time'=>$order_info['automatic_time'],'prom'=>$order_info['prom'],'prom_mens'=>$order_info['prom_mens'],'annotation'=>$order_info['annotation'],'delivery_time'=>$order_info['delivery_time'],'key_name'=>$order_info['key_name'],'price'=>$order_info['price'],'num'=>$order_info['num'],'successful_time'=>$res1['start_time'],'is_self'=>$is_self,'goodsInfo'=>$goods_info,'user'=>$user,'like'=>$goods));
 
         if(!empty($ajax_get))
             $this->getJsonp($json);

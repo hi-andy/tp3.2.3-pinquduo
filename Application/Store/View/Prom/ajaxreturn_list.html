@@ -33,15 +33,15 @@
                                 <tbody>
                                 <volist name="orderList" id="list">
                                     <tr>
-                                        <td class="text-center">                    <input type="checkbox" name="selected[]" value="6">
-                                            <input type="hidden" name="shipping_code[]" value="flat.flat"></td>
+                                        <td class="text-center">
+                                        <input type="checkbox" name="selected[]" value="6">
+                                        <input type="hidden" name="shipping_code[]" value="flat.flat"></td>
                                         <td class="text-center">{$list.delivery_sn}</td>
                                         <td class="text-center">{$list.order_sn}</td>
                                         <td class="text-center">{$list.shipping_time|date='Y-m-d H:i',###}</td>
                                         <td class="text-center">{$list.consignee}</td>
                                         <td class="text-center">{$list.add_time|date='Y-m-d H:i',###}<if condition="$list['pay_code'] eq 'cod'"><span style="color: red">(货到付款)</span></if></td>
                                         <td class="text-center">{$shipping_status[$list[shipping_status]]}</td>
-
                                         <td class="text-center">{$list.action_user}</td>
                                         <td class="text-center">
                                             <a href="{:U('Store/Prom/delivery_info',array('id'=>$list['delivery_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
