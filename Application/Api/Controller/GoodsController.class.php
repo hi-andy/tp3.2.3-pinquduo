@@ -1929,19 +1929,17 @@ class GoodsController extends BaseController {
 					$condition2['show_type'] =0;
 					$condition2['the_raise'] =0;
 					$count = M('goods')->where($condition2)->count();
-					$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
-					foreach($goods as &$v)
-					{
-						$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+					$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
+					foreach ($goods as &$v) {
+						$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 					}
 					$data = $this->listPageData($count,$goods);
 					return $data;
 				}else{
 					$count = M('goods')->where('`show_type`=0 and `cat_id`='.$id.' and is_show=1 and is_on_sale=1 and is_audit=1')->count();
-					$goods = M('goods')->where('`show_type`=0 and `cat_id`='.$id.' and is_show=1 and is_on_sale=1 and is_audit=1')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->page($page,$pagesize)->select();
-					foreach($goods as &$v)
-					{
-						$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
+					$goods = M('goods')->where('`show_type`=0 and `cat_id`='.$id.' and is_show=1 and is_on_sale=1 and is_audit=1')->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->order('sales desc')->page($page,$pagesize)->select();
+					foreach ($goods as &$v) {
+						$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 					}
 					$data = $this->listPageData($count,$goods);
 					return $data;
@@ -1953,7 +1951,7 @@ class GoodsController extends BaseController {
 			if($id==0)//全部
 			{
 				$count = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1')->count();
-				$goods = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1')->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order('sales desc')->select();
+				$goods = M('goods')->where('`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1')->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->order('sales desc')->select();
 			}
 			else
 			{
@@ -1972,7 +1970,7 @@ class GoodsController extends BaseController {
 					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 				}
 				$count = M('goods')->where($condition)->count();
-				$goods = M('goods')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
+				$goods = M('goods')->where($condition)->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
 			}
 		}
 		else
@@ -1983,9 +1981,8 @@ class GoodsController extends BaseController {
 			exit(json_encode($json));
 		}
 
-		foreach($goods as &$v)
-		{
-			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
+		foreach ($goods as &$v) {
+			$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 		}
 		$data = $this->listPageData($count,$goods);
 
@@ -2007,11 +2004,10 @@ class GoodsController extends BaseController {
 		$condition2['show_type'] =0;
 		$condition2['the_raise'] =0;
 		$count = M('goods')->where($condition2)->count();
-		$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
+		$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
 
-		foreach($goods as &$v)
-		{
-			$v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
+		foreach ($goods as &$v) {
+			$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 		}
 		$data = $this->listPageData($count,$goods);
 		return $data;

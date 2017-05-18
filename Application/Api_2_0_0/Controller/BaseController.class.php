@@ -571,7 +571,6 @@ class BaseController extends Controller {
         $result = $this->listPageData($count, $goods);
         foreach ($result['items'] as &$v) {
             $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
-            $v['original'] =TransformationImgurl($v['original']);
         }
         return $result;
     }

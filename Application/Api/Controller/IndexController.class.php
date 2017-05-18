@@ -51,7 +51,9 @@ class IndexController extends BaseController {
 
             foreach ($result2['items'] as &$v) {
                 $v['original'] = $v['original_img'];
-                $v['original_img'] =$v['list_img'];
+                if(empty($v['original_img'])){
+                    $v['original_img'] = $v['original'];
+                }
                 unset($v['list_img']);
             }
 
@@ -524,11 +526,10 @@ class IndexController extends BaseController {
             $data = $this->getGoodsList($condition2,$page,$pagesize,$order);
         }else{
             $count = M('goods')->where($condition2)->count();
-            $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
+            $goods = M('goods')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->order($order)->select();
 
-            foreach($goods as &$v)
-            {
-                $v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
+            foreach ($goods as &$v) {
+                $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }
             $data = $this->listPageData($count,$goods);
         }
