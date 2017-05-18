@@ -536,29 +536,29 @@ class BaseController extends Controller {
     function  getGoodsInfo($goods_id,$type='')
     {
         $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
-
-        //商品详情
-        $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
-        $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-        $store = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
-        $store['store_logo'] = TransformationImgurl($store['store_logo']);
-        $goods['store'] = $store;
-        if(empty($goods['original_img'])){
-            $goods['original_img'] =TransformationImgurl($goods['original']);
+        if(!empty($goods)){
+            //商品详情
+            $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
+            $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
+            $store = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
+            $store['store_logo'] = TransformationImgurl($store['store_logo']);
+            $goods['store'] = $store;
+            if(empty($goods['original_img'])){
+                $goods['original_img'] =TransformationImgurl($goods['original']);
+            }else{
+                $goods['original_img'] =TransformationImgurl($goods['original_img']);
+            }
+            $goods['original'] =TransformationImgurl($goods['original']);
+            $goods['fenxiang_url'] = $goods['original']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
+            if($type!=1){
+                $goods['img_arr'] = getImgs($goods['goods_content']);
+                $goods['img_arr'] = getImgSize($goods['img_arr']);
+            }
+            unset($goods['goods_content']);
+            unset($goods['list_img']);
         }else{
-            $goods['original_img'] =TransformationImgurl($goods['original_img']);
-        }
-        $goods['original'] =TransformationImgurl($goods['original']);
-        $goods['fenxiang_url'] = $goods['original']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
-        if($type!=1){
-            $goods['img_arr'] = getImgs($goods['goods_content']);
-            $goods['img_arr'] = getImgSize($goods['img_arr']);
-        }
-        unset($goods['goods_content']);
-        unset($goods['list_img']);
-
-        if(empty($goods))
             $goods=null;
+        }
         return $goods;
     }
 

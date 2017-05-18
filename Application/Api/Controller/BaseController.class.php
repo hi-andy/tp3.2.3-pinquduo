@@ -517,20 +517,17 @@ class BaseController extends Controller {
     function  getGoodsInfo($goods_id)
     {
         $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,goods_content,store_id,is_support_buy,is_special,original_img')->find();
-        if(!empty($goods)){
-            //商品详情
-            $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
-            $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
-            $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
-            $store['store_logo'] = TransformationImgurl($store['store_logo']);
-            $goods['store'] = $store;
-            $goods['original_img'] =$goods['original']= TransformationImgurl($goods['original_img']);
-            $goods['fenxiang_url'] = $goods['original']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
-            $goods['img_arr'] = getImgs($goods['goods_content']);
-            $goods['img_arr'] = getImgSize($goods['img_arr']);
-        }else{
-            $goods = null;
-        }
+
+        //商品详情
+        $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
+        $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
+        $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+        $store['store_logo'] = TransformationImgurl($store['store_logo']);
+        $goods['store'] = $store;
+        $goods['original_img'] =$goods['original']= TransformationImgurl($goods['original_img']);
+        $goods['fenxiang_url'] = $goods['original']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nTE9HTy5qcGc=/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
+        $goods['img_arr'] = getImgs($goods['goods_content']);
+        $goods['img_arr'] = getImgSize($goods['img_arr']);
         return $goods;
     }
 
