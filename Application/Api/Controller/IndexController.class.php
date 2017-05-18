@@ -42,20 +42,13 @@ class IndexController extends BaseController {
                 $category[7]['cat_name'] = '省钱大法';
                 $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
             }
-            $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             
             $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->count();
-            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,list_img')->select();
-
-            $result2 = $this->listPageData($count, $goods);
-
-            foreach ($result2['items'] as &$v) {
-                $v['original'] = $v['original_img'];
-                if(empty($v['original_img'])){
-                    $v['original_img'] = $v['original'];
-                }
-                unset($v['list_img']);
+            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,is_special')->select();
+            foreach ($goods as &$v) {
+                $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }
+            $result2 = $this->listPageData($count, $goods);
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
