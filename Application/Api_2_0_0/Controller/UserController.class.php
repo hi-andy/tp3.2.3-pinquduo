@@ -1252,7 +1252,10 @@ class UserController extends BaseController {
                 ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.list_img as original_img,g.original_img as original,g.sales,g.store_count,g.prom_price,g.free,g.is_special')
                 ->order(' c.add_time desc')
                 ->select();
-
+            foreach ($goods as $k => $v){
+                $goods[$k]['original_img'] = empty($v['original_img'])?$v['original'] : $v['original_img'];
+            }
+            
             $collection = $this->listPageData($count, $goods);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $collection);
             redis($rdsname, serialize($json));//写入缓存
