@@ -1255,7 +1255,6 @@ class UserController extends BaseController {
             foreach ($goods as $k => $v){
                 $goods[$k]['original_img'] = empty($v['original_img'])?$v['original'] : $v['original_img'];
             }
-            
             $collection = $this->listPageData($count, $goods);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $collection);
             redis($rdsname, serialize($json));//写入缓存
