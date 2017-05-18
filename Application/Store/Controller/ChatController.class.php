@@ -19,7 +19,7 @@ class ChatController extends BaseController{
         $res = $HXcall->hx_register($username,$password,$nickname);
         $store_logo = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->getField('store_logo');
 
-        $this->assign('store_logo',C('SERVER_HTTP').$store_logo);
+        $this->assign('store_logo',$store_logo);
         $this->assign('username',$username);
         $this->assign('password',$password);
         $this->display();
