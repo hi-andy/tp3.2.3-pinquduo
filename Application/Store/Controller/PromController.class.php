@@ -591,25 +591,25 @@ class PromController extends BaseController {
 		$sort_order = I('sort_order') ? I('sort_order') : 'desc';
 		$status =  I('status');
 
-		$where = "tp_return_goods.`store_id`=".$_SESSION['merchant_id']." and tp_return_goods.`is_prom`=1 and tp_group_buy.is_successful=1 ";
+		$where = "tp_return_goods.`store_id`=3405 and tp_return_goods.`is_prom`=1 and tp_group_buy.is_successful=1 ";
 		$order_sn && $where.= " and tp_return_goods.order_sn like '%$order_sn%' ";
 		empty($order_sn) && $where.= " and tp_return_goods.`status` = '$status' ";
 
-		$count = M('return_goods')->
-		join(array(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id "))->
-		field("tp_return_goods.*,tp_group_buy.`is_successful`")->
-		where($where)->
-		count();
+		$count = M('return_goods')
+			->join(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id ")
+			->field("tp_return_goods.*,tp_group_buy.`is_successful`")
+			->where($where)
+			->count();
 
 		$Page  = new AjaxPage($count,13);
 		$show = $Page->show();
 
-		$list = M('return_goods')->where($where)->
-		join(array(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id "))->
-		field("tp_return_goods.*,tp_group_buy.`is_successful`")->
-		order("$order_by $sort_order")->
-		limit("{$Page->firstRow},{$Page->listRows}")->
-		select();
+		$list = M('return_goods')->where($where)
+			->join(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id ")
+			->field("tp_return_goods.*,tp_group_buy.`is_successful`")
+			->order("$order_by $sort_order")
+			->limit("{$Page->firstRow},{$Page->listRows}")
+			->select();
 
 		$goods_id_arr = get_arr_column($list, 'goods_id');
 		if(!empty($goods_id_arr))

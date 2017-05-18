@@ -45,14 +45,14 @@ class IndexController extends BaseController {
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             
             $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->count();
-            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special')->select();
+            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,list_img')->select();
 
             $result2 = $this->listPageData($count, $goods);
 
             foreach ($result2['items'] as &$v) {
-                $v['original'] = TransformationImgurl($v['original_img']);
-                $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-                $v['original_img'] = TransformationImgurl($v['original_img']);
+                $v['original'] = $v['original_img'];
+                $v['original_img'] =$v['list_img'];
+                unset($v['list_img']);
             }
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goods2' => $result2, 'ad' => $data, 'cat' => $category));
