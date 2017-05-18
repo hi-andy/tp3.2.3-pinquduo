@@ -245,7 +245,7 @@ class BaseController extends Controller {
             $file=$_FILES;
         }
 //
-        $result=$upload->upload($file);
+        //$result=$upload->upload($file);
 //
 //        if(!$result )
 //        {
