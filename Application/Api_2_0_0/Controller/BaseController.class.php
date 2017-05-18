@@ -631,19 +631,27 @@ class BaseController extends Controller {
                     $all[$i]['order_type'] = $order_status['order_type'];
                 }
                 $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = ".$mark['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
-                $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
-                if(empty($all[$i]['goodsInfo']['original_img'])){
-                    $all[$i]['goodsInfo']['original_img'] = $all[$i]['goodsInfo']['original'];
+                if(!empty($all[$i]['goodsInfo'])){
+                    $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+                    if(empty($all[$i]['goodsInfo']['original_img'])){
+                        $all[$i]['goodsInfo']['original_img'] = $all[$i]['goodsInfo']['original'];
+                    }
+                }else{
+                    $all[$i]['goodsInfo']=null;
                 }
             } elseif (empty($all[$i]['prom_id'])) {
                 $all[$i]['type'] = 2;
                 $order_status = $this->getStatus($all[$i]);
                 $all[$i]['annotation'] = $order_status['annotation'];
                 $all[$i]['goodsInfo'] = $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$all[$i]['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
-                if(empty($all[$i]['goodsInfo']['original_img'])){
-                    $all[$i]['goodsInfo']['original_img'] = $all[$i]['goodsInfo']['original'];
+                if(!empty($all[$i]['goodsInfo'])){
+                    $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
+                    if(empty($all[$i]['goodsInfo']['original_img'])){
+                        $all[$i]['goodsInfo']['original_img'] = $all[$i]['goodsInfo']['original'];
+                    }
+                }else{
+                    $all[$i]['goodsInfo']=null;
                 }
-                $all[$i]['goodsInfo']['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $all[$i]['store_id'])->field('id,store_name,store_logo,sales')->find();
             }
 
         }
