@@ -44,7 +44,7 @@ class IndexController extends BaseController {
             }
             
             $count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->count();
-            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,list_img as original,original_img as original_img,prom,prom_price,is_special')->select();
+            $goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ')->page($page, $pagesize)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,list_img as original,original_img,prom,prom_price,is_special')->select();
             foreach ($goods as &$v) {
                 $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }

@@ -1764,7 +1764,7 @@ class UserController extends BaseController {
         //将时间到了团又没有成团的团解散
         $where = null;
         $conditon = null;
-        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<='.time())->field('id,order_id,start_time,end_time,goods_num')->select();
+        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<='.time()-30)->field('id,order_id,start_time,end_time,goods_num')->select();
         if(count($prom_order)>0)
         {
             //将团ＩＤ一次性拿出来
