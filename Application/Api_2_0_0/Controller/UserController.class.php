@@ -886,9 +886,8 @@ class UserController extends BaseController {
         }
 
         $image_arr = array();
-        $Base = new BaseController();
         if($_FILES['picture']){
-            $image_arr = $Base->mobile_uploadimage();
+            $image_arr = $this->mobile_uploadimage();
         }
         $data['picture'] = json_encode($image_arr);
 
