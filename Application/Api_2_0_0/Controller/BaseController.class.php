@@ -270,7 +270,8 @@ class BaseController extends Controller {
 //        }
 
         //调用七牛云上传
-        redis("mobile_uploadimage", serialize($file),REDISTIME);
+        //redis("mobile_uploadimage", serialize($file),REDISTIME);
+        $qiniu = new \Admin\Controller\QiniuController();
             foreach ($file['picture']['name'] as $key => $value) {
                 $suffix = substr(strrchr($value, '.'), 1);
                 $files = array(
@@ -278,13 +279,13 @@ class BaseController extends Controller {
                     "filePath" => $file['picture']['tmp_name'][$key],
                     "mime" => $file['picture']['type'][$key]
                 );
-                $qiniu = new \Admin\Controller\QiniuController();
                 $info = $qiniu->uploadfile("imgbucket", $files);
                 $return_data[$key]['origin'] = CDN . "/" . $info[0]["key"];
                 $return_data[$key]['width'] = '100';
                 $return_data[$key]['height'] = '100';
                 $return_data[$key]['small'] = CDN . "/" . $info[0]["key"];
             }
+        redis("mobile_uploadimage", serialize($return_data),REDISTIME);
         return $return_data;
     }
 
