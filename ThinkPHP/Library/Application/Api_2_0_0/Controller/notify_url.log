@@ -1,0 +1,5556 @@
+执行日期：2017-05-05 11:37:28
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[5k2elpfj9219k4y2thxtw79ndn2pwq7z]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705051003082312]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[4FF62986893CA71A132309DA6F3789F6]]></sign>
+<time_end><![CDATA[20170505100316]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059616293826]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:37:28
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:37:28
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:37:28
+【Order_sn】:
+201705051003082312
+
+
+执行日期：2017-05-05 11:40:50
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:40:50
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:40:50
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:40:50
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 11:40:50
+【成功】
+
+执行日期：2017-05-05 11:41:03
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:41:03
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:41:03
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:41:03
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 11:41:22
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:41:22
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:41:22
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:41:22
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 11:41:54
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:41:54
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:41:54
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:41:54
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 11:44:50
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7otuh124dgjf38q1w7zqafp22hafv8gl]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051040329411]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[2493134625E45909712919260A69E0EB]]></sign>
+<time_end><![CDATA[20170505104040]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059621599515]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:44:50
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:44:50
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:44:50
+【Order_sn】:
+201705051040329411
+
+
+执行日期：2017-05-05 11:44:56
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:44:56
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:44:56
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:44:56
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 11:45:27
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:45:27
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:45:27
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:45:27
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 11:45:27
+【团修改】:
+1
+
+
+执行日期：2017-05-05 11:45:27
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 11:45:27
+【成功】
+
+执行日期：2017-05-05 11:45:44
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:45:44
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:45:44
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:45:44
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 11:46:00
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:46:00
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:46:00
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:46:00
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 11:46:26
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:46:26
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:46:26
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:46:26
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 11:46:26
+【团修改】:
+1
+
+
+执行日期：2017-05-05 11:46:26
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 11:46:33
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:46:33
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:46:33
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:46:33
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 11:46:39
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:46:39
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:46:39
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:46:39
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 11:46:56
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:46:56
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:46:56
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:46:56
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 11:47:29
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:47:29
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:47:29
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:47:29
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 11:49:12
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qtmqgshs41qqlkos4ss4d3k17tr8zuvs]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051114485957]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[161CE410F37FEC031006BEA9178D2068]]></sign>
+<time_end><![CDATA[20170505111503]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059626116403]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:49:12
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:49:12
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:49:12
+【Order_sn】:
+201705051114485957
+
+
+执行日期：2017-05-05 11:49:34
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:49:34
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:49:34
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:49:34
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 11:50:32
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:50:32
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:50:32
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:50:32
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 11:56:31
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xnxnefwc946wrfatyzj79uu70b0qvzaf]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051122237877]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[BFB67ECCD3850040A21CD0A4CDEFABBF]]></sign>
+<time_end><![CDATA[20170505112230]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059628287768]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:56:31
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:56:31
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:56:31
+【Order_sn】:
+201705051122237877
+
+
+执行日期：2017-05-05 11:58:31
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[6uqzek2kwjrqgbldw5izsbemdalpicnh]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051124172311]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[48A86B70141E4ED79E645B042E112B02]]></sign>
+<time_end><![CDATA[20170505112425]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059634396112]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:58:31
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:58:31
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:58:31
+【Order_sn】:
+201705051124172311
+
+
+执行日期：2017-05-05 11:59:18
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[96c6912lcak8mdieji6klfnp0lzedpd7]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051125077369]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[26FF7976CFA64124AF92B3E67669DE33]]></sign>
+<time_end><![CDATA[20170505112514]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059630771044]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:59:18
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:59:18
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:59:18
+【Order_sn】:
+201705051125077369
+
+
+执行日期：2017-05-05 11:59:21
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[a93pyz5degvrnp1zs1vnw5eg4mxs2m4s]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705050954583083]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[70978EF5FB5CCEA53F65653B9D6620CC]]></sign>
+<time_end><![CDATA[20170505095507]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059619377364]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 11:59:21
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 11:59:21
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 11:59:21
+【Order_sn】:
+201705050954583083
+
+
+执行日期：2017-05-05 12:00:11
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CMB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[4hiw49ulpfayoi7pbm2wh437phz9pz31]]></nonce_str>
+<openid><![CDATA[oCuUzwLtHUaWdfCOjWBrprx_V2bQ]]></openid>
+<out_trade_no><![CDATA[201705050955389489]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[64C11945E752ECCC8F491BD9CCBF3A10]]></sign>
+<time_end><![CDATA[20170505095552]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4004692001201705059619421655]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:00:11
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:00:11
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:00:11
+【Order_sn】:
+201705050955389489
+
+
+执行日期：2017-05-05 12:06:02
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[hpmin9cnli8vzs6t0xbh4kg0esrsghhy]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051031439273]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[FA548993C5B368063A3E0F643427E0C3]]></sign>
+<time_end><![CDATA[20170505103157]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059621280191]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:06:02
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:06:02
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:06:02
+【Order_sn】:
+201705051031439273
+
+
+执行日期：2017-05-05 12:07:31
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[5k2elpfj9219k4y2thxtw79ndn2pwq7z]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705051003082312]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[4FF62986893CA71A132309DA6F3789F6]]></sign>
+<time_end><![CDATA[20170505100316]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059616293826]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:07:31
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:07:31
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:07:31
+【Order_sn】:
+201705051003082312
+
+
+执行日期：2017-05-05 12:14:52
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7otuh124dgjf38q1w7zqafp22hafv8gl]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051040329411]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[2493134625E45909712919260A69E0EB]]></sign>
+<time_end><![CDATA[20170505104040]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059621599515]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:14:52
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:14:52
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:14:52
+【Order_sn】:
+201705051040329411
+
+
+执行日期：2017-05-05 12:14:58
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:14:58
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:14:58
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:14:58
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 12:19:14
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qtmqgshs41qqlkos4ss4d3k17tr8zuvs]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051114485957]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[161CE410F37FEC031006BEA9178D2068]]></sign>
+<time_end><![CDATA[20170505111503]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059626116403]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:19:14
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:19:14
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:19:14
+【Order_sn】:
+201705051114485957
+
+
+执行日期：2017-05-05 12:19:35
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:19:35
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:19:35
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:19:35
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 12:20:34
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:20:34
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:20:34
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:20:34
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 12:26:34
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xnxnefwc946wrfatyzj79uu70b0qvzaf]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051122237877]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[BFB67ECCD3850040A21CD0A4CDEFABBF]]></sign>
+<time_end><![CDATA[20170505112230]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059628287768]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:26:34
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:26:34
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:26:34
+【Order_sn】:
+201705051122237877
+
+
+执行日期：2017-05-05 12:28:32
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[6uqzek2kwjrqgbldw5izsbemdalpicnh]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051124172311]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[48A86B70141E4ED79E645B042E112B02]]></sign>
+<time_end><![CDATA[20170505112425]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059634396112]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:28:32
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:28:32
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:28:32
+【Order_sn】:
+201705051124172311
+
+
+执行日期：2017-05-05 12:29:20
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[96c6912lcak8mdieji6klfnp0lzedpd7]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051125077369]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[26FF7976CFA64124AF92B3E67669DE33]]></sign>
+<time_end><![CDATA[20170505112514]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059630771044]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:29:20
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:29:20
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:29:20
+【Order_sn】:
+201705051125077369
+
+
+执行日期：2017-05-05 12:36:04
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[hpmin9cnli8vzs6t0xbh4kg0esrsghhy]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051031439273]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[FA548993C5B368063A3E0F643427E0C3]]></sign>
+<time_end><![CDATA[20170505103157]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059621280191]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:36:04
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:36:04
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:36:04
+【Order_sn】:
+201705051031439273
+
+
+执行日期：2017-05-05 12:44:54
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7otuh124dgjf38q1w7zqafp22hafv8gl]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051040329411]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[2493134625E45909712919260A69E0EB]]></sign>
+<time_end><![CDATA[20170505104040]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059621599515]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:44:54
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:44:54
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:44:54
+【Order_sn】:
+201705051040329411
+
+
+执行日期：2017-05-05 12:45:01
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:45:01
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:45:01
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:45:01
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 12:49:16
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qtmqgshs41qqlkos4ss4d3k17tr8zuvs]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051114485957]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[161CE410F37FEC031006BEA9178D2068]]></sign>
+<time_end><![CDATA[20170505111503]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059626116403]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:49:16
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:49:16
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:49:16
+【Order_sn】:
+201705051114485957
+
+
+执行日期：2017-05-05 12:49:37
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:49:37
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:49:37
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:49:37
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 12:50:37
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:50:37
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:50:37
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:50:37
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 12:56:36
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xnxnefwc946wrfatyzj79uu70b0qvzaf]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051122237877]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[BFB67ECCD3850040A21CD0A4CDEFABBF]]></sign>
+<time_end><![CDATA[20170505112230]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059628287768]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:56:36
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:56:36
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:56:36
+【Order_sn】:
+201705051122237877
+
+
+执行日期：2017-05-05 12:58:36
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[6uqzek2kwjrqgbldw5izsbemdalpicnh]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051124172311]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[48A86B70141E4ED79E645B042E112B02]]></sign>
+<time_end><![CDATA[20170505112425]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059634396112]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:58:36
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:58:36
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:58:36
+【Order_sn】:
+201705051124172311
+
+
+执行日期：2017-05-05 12:59:21
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[96c6912lcak8mdieji6klfnp0lzedpd7]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051125077369]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[26FF7976CFA64124AF92B3E67669DE33]]></sign>
+<time_end><![CDATA[20170505112514]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059630771044]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:59:21
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:59:21
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:59:21
+【Order_sn】:
+201705051125077369
+
+
+执行日期：2017-05-05 12:59:23
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[a93pyz5degvrnp1zs1vnw5eg4mxs2m4s]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705050954583083]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[70978EF5FB5CCEA53F65653B9D6620CC]]></sign>
+<time_end><![CDATA[20170505095507]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059619377364]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 12:59:23
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 12:59:23
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 12:59:23
+【Order_sn】:
+201705050954583083
+
+
+执行日期：2017-05-05 13:00:13
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CMB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[4hiw49ulpfayoi7pbm2wh437phz9pz31]]></nonce_str>
+<openid><![CDATA[oCuUzwLtHUaWdfCOjWBrprx_V2bQ]]></openid>
+<out_trade_no><![CDATA[201705050955389489]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[64C11945E752ECCC8F491BD9CCBF3A10]]></sign>
+<time_end><![CDATA[20170505095552]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4004692001201705059619421655]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:00:13
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:00:13
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:00:13
+【Order_sn】:
+201705050955389489
+
+
+执行日期：2017-05-05 13:07:33
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[5k2elpfj9219k4y2thxtw79ndn2pwq7z]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705051003082312]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[4FF62986893CA71A132309DA6F3789F6]]></sign>
+<time_end><![CDATA[20170505100316]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059616293826]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:07:33
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:07:33
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:07:33
+【Order_sn】:
+201705051003082312
+
+
+执行日期：2017-05-05 13:15:03
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:15:03
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:15:03
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:15:03
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 13:19:18
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qtmqgshs41qqlkos4ss4d3k17tr8zuvs]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051114485957]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[161CE410F37FEC031006BEA9178D2068]]></sign>
+<time_end><![CDATA[20170505111503]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059626116403]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:19:18
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:19:18
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:19:18
+【Order_sn】:
+201705051114485957
+
+
+执行日期：2017-05-05 13:19:38
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:19:38
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:19:38
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:19:38
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 13:20:38
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:20:38
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:20:38
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:20:38
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 13:26:38
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xnxnefwc946wrfatyzj79uu70b0qvzaf]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051122237877]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[BFB67ECCD3850040A21CD0A4CDEFABBF]]></sign>
+<time_end><![CDATA[20170505112230]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059628287768]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:26:38
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:26:38
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:26:38
+【Order_sn】:
+201705051122237877
+
+
+执行日期：2017-05-05 13:28:37
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[6uqzek2kwjrqgbldw5izsbemdalpicnh]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051124172311]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[48A86B70141E4ED79E645B042E112B02]]></sign>
+<time_end><![CDATA[20170505112425]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059634396112]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:28:37
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:28:37
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:28:37
+【Order_sn】:
+201705051124172311
+
+
+执行日期：2017-05-05 13:29:24
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[96c6912lcak8mdieji6klfnp0lzedpd7]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051125077369]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[26FF7976CFA64124AF92B3E67669DE33]]></sign>
+<time_end><![CDATA[20170505112514]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059630771044]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:29:24
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:29:24
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:29:24
+【Order_sn】:
+201705051125077369
+
+
+执行日期：2017-05-05 13:36:05
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[hpmin9cnli8vzs6t0xbh4kg0esrsghhy]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051031439273]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[FA548993C5B368063A3E0F643427E0C3]]></sign>
+<time_end><![CDATA[20170505103157]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059621280191]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:36:05
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:36:05
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:36:05
+【Order_sn】:
+201705051031439273
+
+
+执行日期：2017-05-05 13:44:56
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7otuh124dgjf38q1w7zqafp22hafv8gl]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051040329411]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[2493134625E45909712919260A69E0EB]]></sign>
+<time_end><![CDATA[20170505104040]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059621599515]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:44:56
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:44:56
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:44:56
+【Order_sn】:
+201705051040329411
+
+
+执行日期：2017-05-05 13:45:06
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:45:06
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:45:06
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:45:06
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 13:49:41
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:49:41
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:49:41
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:49:41
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 13:50:39
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 13:50:39
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 13:50:39
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 13:50:39
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 14:19:19
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qtmqgshs41qqlkos4ss4d3k17tr8zuvs]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051114485957]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[161CE410F37FEC031006BEA9178D2068]]></sign>
+<time_end><![CDATA[20170505111503]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059626116403]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:19:19
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:19:19
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:19:19
+【Order_sn】:
+201705051114485957
+
+
+执行日期：2017-05-05 14:26:40
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xnxnefwc946wrfatyzj79uu70b0qvzaf]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051122237877]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[BFB67ECCD3850040A21CD0A4CDEFABBF]]></sign>
+<time_end><![CDATA[20170505112230]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059628287768]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:26:40
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:26:40
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:26:40
+【Order_sn】:
+201705051122237877
+
+
+执行日期：2017-05-05 14:28:40
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[6uqzek2kwjrqgbldw5izsbemdalpicnh]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051124172311]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[48A86B70141E4ED79E645B042E112B02]]></sign>
+<time_end><![CDATA[20170505112425]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059634396112]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:28:40
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:28:40
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:28:40
+【Order_sn】:
+201705051124172311
+
+
+执行日期：2017-05-05 14:29:28
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[96c6912lcak8mdieji6klfnp0lzedpd7]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051125077369]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[26FF7976CFA64124AF92B3E67669DE33]]></sign>
+<time_end><![CDATA[20170505112514]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059630771044]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:29:28
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:29:28
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:29:28
+【Order_sn】:
+201705051125077369
+
+
+执行日期：2017-05-05 14:45:07
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[xlnhemvga0tjeek9mb79d9fz5a8n0ys4]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051140405950]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[9E9FBF39F1E3A1F4E8CE7A234E05A5A6]]></sign>
+<time_end><![CDATA[20170505114049]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059629665400]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:45:07
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:45:07
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:45:07
+【Order_sn】:
+201705051140405950
+
+
+执行日期：2017-05-05 14:49:42
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[t2xyurf5ozh7jdukzxyr5y8dl8d8jms3]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051145183873]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[A80E00BCEC5FC741B4846F5B3A8B34F7]]></sign>
+<time_end><![CDATA[20170505114526]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631514729]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:49:42
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:49:42
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:49:42
+【Order_sn】:
+201705051145183873
+
+
+执行日期：2017-05-05 14:50:42
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[8qhrrenxj1avhhbez0llvcgce1m4cmww]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051146189896]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[24C0E95AFBF05D7435D923CB28ABF8D3]]></sign>
+<time_end><![CDATA[20170505114625]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059631577654]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:50:42
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:50:42
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:50:42
+【Order_sn】:
+201705051146189896
+
+
+执行日期：2017-05-05 14:59:22
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[lw40eaileji3vp5a9eoxozo32i43e75l]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051459119055]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[B1B2F87AE8B3196840ABAC916B3D027A]]></sign>
+<time_end><![CDATA[20170505145921]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660385918]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:59:22
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:59:22
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:59:22
+【Order_sn】:
+201705051459119055
+
+
+执行日期：2017-05-05 14:59:22
+【Prom_Id】:
+15714
+
+
+执行日期：2017-05-05 14:59:22
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 14:59:22
+【成功】
+
+执行日期：2017-05-05 14:59:35
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[lw40eaileji3vp5a9eoxozo32i43e75l]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051459119055]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[B1B2F87AE8B3196840ABAC916B3D027A]]></sign>
+<time_end><![CDATA[20170505145921]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660385918]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:59:35
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:59:35
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:59:35
+【Order_sn】:
+201705051459119055
+
+
+执行日期：2017-05-05 14:59:51
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[lw40eaileji3vp5a9eoxozo32i43e75l]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051459119055]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[B1B2F87AE8B3196840ABAC916B3D027A]]></sign>
+<time_end><![CDATA[20170505145921]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660385918]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 14:59:51
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 14:59:51
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 14:59:51
+【Order_sn】:
+201705051459119055
+
+
+执行日期：2017-05-05 15:00:23
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[lw40eaileji3vp5a9eoxozo32i43e75l]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051459119055]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[B1B2F87AE8B3196840ABAC916B3D027A]]></sign>
+<time_end><![CDATA[20170505145921]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660385918]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:00:23
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:00:23
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:00:23
+【Order_sn】:
+201705051459119055
+
+
+执行日期：2017-05-05 15:00:30
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7hukf8pl1q35xp4d9y3m9q63cf9d9udg]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051500229173]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6CDD91FF7D3EA0F0F47860C6666AE45C]]></sign>
+<time_end><![CDATA[20170505150029]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660448444]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:00:30
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:00:30
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:00:30
+【Order_sn】:
+201705051500229173
+
+
+执行日期：2017-05-05 15:00:30
+【Prom_Id】:
+15716
+
+
+执行日期：2017-05-05 15:00:30
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:00:47
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7hukf8pl1q35xp4d9y3m9q63cf9d9udg]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051500229173]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6CDD91FF7D3EA0F0F47860C6666AE45C]]></sign>
+<time_end><![CDATA[20170505150029]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660448444]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:00:47
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:00:47
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:00:47
+【Order_sn】:
+201705051500229173
+
+
+执行日期：2017-05-05 15:01:04
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7hukf8pl1q35xp4d9y3m9q63cf9d9udg]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051500229173]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6CDD91FF7D3EA0F0F47860C6666AE45C]]></sign>
+<time_end><![CDATA[20170505150029]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660448444]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:01:04
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:01:04
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:01:04
+【Order_sn】:
+201705051500229173
+
+
+执行日期：2017-05-05 15:01:35
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7hukf8pl1q35xp4d9y3m9q63cf9d9udg]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051500229173]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6CDD91FF7D3EA0F0F47860C6666AE45C]]></sign>
+<time_end><![CDATA[20170505150029]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660448444]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:01:35
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:01:35
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:01:35
+【Order_sn】:
+201705051500229173
+
+
+执行日期：2017-05-05 15:02:14
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[610d4r8buajhlhu5uzpjoeb4nc4pwh63]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051502046404]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[D963376F21540CCE6511C2D4243B368F]]></sign>
+<time_end><![CDATA[20170505150213]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059657773086]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:02:14
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:02:14
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:02:14
+【Order_sn】:
+201705051502046404
+
+
+执行日期：2017-05-05 15:02:14
+【Prom_Id】:
+15717
+
+
+执行日期：2017-05-05 15:02:14
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:02:14
+【成功】
+
+执行日期：2017-05-05 15:02:24
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[610d4r8buajhlhu5uzpjoeb4nc4pwh63]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051502046404]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[D963376F21540CCE6511C2D4243B368F]]></sign>
+<time_end><![CDATA[20170505150213]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059657773086]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:02:24
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:02:24
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:02:24
+【Order_sn】:
+201705051502046404
+
+
+执行日期：2017-05-05 15:02:41
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[610d4r8buajhlhu5uzpjoeb4nc4pwh63]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051502046404]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[D963376F21540CCE6511C2D4243B368F]]></sign>
+<time_end><![CDATA[20170505150213]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059657773086]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:02:41
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:02:41
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:02:41
+【Order_sn】:
+201705051502046404
+
+
+执行日期：2017-05-05 15:03:13
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[610d4r8buajhlhu5uzpjoeb4nc4pwh63]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051502046404]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[D963376F21540CCE6511C2D4243B368F]]></sign>
+<time_end><![CDATA[20170505150213]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059657773086]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:03:13
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:03:13
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:03:13
+【Order_sn】:
+201705051502046404
+
+
+执行日期：2017-05-05 15:03:26
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[lw40eaileji3vp5a9eoxozo32i43e75l]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051459119055]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[B1B2F87AE8B3196840ABAC916B3D027A]]></sign>
+<time_end><![CDATA[20170505145921]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660385918]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:03:26
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:03:26
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:03:26
+【Order_sn】:
+201705051459119055
+
+
+执行日期：2017-05-05 15:04:38
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7hukf8pl1q35xp4d9y3m9q63cf9d9udg]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051500229173]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6CDD91FF7D3EA0F0F47860C6666AE45C]]></sign>
+<time_end><![CDATA[20170505150029]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660448444]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:04:38
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:04:38
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:04:38
+【Order_sn】:
+201705051500229173
+
+
+执行日期：2017-05-05 15:06:14
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[610d4r8buajhlhu5uzpjoeb4nc4pwh63]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051502046404]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[D963376F21540CCE6511C2D4243B368F]]></sign>
+<time_end><![CDATA[20170505150213]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059657773086]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:06:14
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:06:14
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:06:14
+【Order_sn】:
+201705051502046404
+
+
+执行日期：2017-05-05 15:15:01
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7832d4bfz2m3hfg8dgvs3pxy6y6l4thc]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051514528221]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[0143C72CDB277C1AE4B3483FBCFA0CED]]></sign>
+<time_end><![CDATA[20170505151501]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059658086981]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:15:01
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:15:01
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:15:01
+【Order_sn】:
+201705051514528221
+
+
+执行日期：2017-05-05 15:15:02
+【Prom_Id】:
+15724
+
+
+执行日期：2017-05-05 15:15:02
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:15:02
+【成功】
+
+执行日期：2017-05-05 15:15:11
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7832d4bfz2m3hfg8dgvs3pxy6y6l4thc]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051514528221]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[0143C72CDB277C1AE4B3483FBCFA0CED]]></sign>
+<time_end><![CDATA[20170505151501]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059658086981]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:15:11
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:15:11
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:15:11
+【Order_sn】:
+201705051514528221
+
+
+执行日期：2017-05-05 15:15:27
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7832d4bfz2m3hfg8dgvs3pxy6y6l4thc]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051514528221]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[0143C72CDB277C1AE4B3483FBCFA0CED]]></sign>
+<time_end><![CDATA[20170505151501]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059658086981]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:15:27
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:15:27
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:15:27
+【Order_sn】:
+201705051514528221
+
+
+执行日期：2017-05-05 15:16:00
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7832d4bfz2m3hfg8dgvs3pxy6y6l4thc]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051514528221]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[0143C72CDB277C1AE4B3483FBCFA0CED]]></sign>
+<time_end><![CDATA[20170505151501]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059658086981]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:16:00
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:16:00
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:16:00
+【Order_sn】:
+201705051514528221
+
+
+执行日期：2017-05-05 15:18:54
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qq6slqbuxyrlty8xn9a2kem7j457ut9a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051518418894]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[14F93E5D722700F1667478C66175BE4A]]></sign>
+<time_end><![CDATA[20170505151853]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662718747]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:18:54
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:18:54
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:18:54
+【Order_sn】:
+201705051518418894
+
+
+执行日期：2017-05-05 15:18:54
+【Prom_Id】:
+15726
+
+
+执行日期：2017-05-05 15:18:54
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:18:54
+【成功】
+
+执行日期：2017-05-05 15:19:02
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7832d4bfz2m3hfg8dgvs3pxy6y6l4thc]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051514528221]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[0143C72CDB277C1AE4B3483FBCFA0CED]]></sign>
+<time_end><![CDATA[20170505151501]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059658086981]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:19:02
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:19:02
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:19:02
+【Order_sn】:
+201705051514528221
+
+
+执行日期：2017-05-05 15:19:04
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qq6slqbuxyrlty8xn9a2kem7j457ut9a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051518418894]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[14F93E5D722700F1667478C66175BE4A]]></sign>
+<time_end><![CDATA[20170505151853]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662718747]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:19:04
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:19:04
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:19:04
+【Order_sn】:
+201705051518418894
+
+
+执行日期：2017-05-05 15:19:20
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qq6slqbuxyrlty8xn9a2kem7j457ut9a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051518418894]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[14F93E5D722700F1667478C66175BE4A]]></sign>
+<time_end><![CDATA[20170505151853]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662718747]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:19:20
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:19:20
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:19:20
+【Order_sn】:
+201705051518418894
+
+
+执行日期：2017-05-05 15:19:53
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qq6slqbuxyrlty8xn9a2kem7j457ut9a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051518418894]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[14F93E5D722700F1667478C66175BE4A]]></sign>
+<time_end><![CDATA[20170505151853]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662718747]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:19:53
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:19:53
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:19:53
+【Order_sn】:
+201705051518418894
+
+
+执行日期：2017-05-05 15:21:20
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[727awujzrq2mjmafiqrla6bfi53igrec]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051521117664]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5C52A1DC7921DEE18C4B9B02A2A8E406]]></sign>
+<time_end><![CDATA[20170505152119]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661031009]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:21:20
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:21:20
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:21:20
+【Order_sn】:
+201705051521117664
+
+
+执行日期：2017-05-05 15:21:20
+【Prom_Id】:
+15727
+
+
+执行日期：2017-05-05 15:21:20
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:21:20
+【成功】
+
+执行日期：2017-05-05 15:21:35
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[727awujzrq2mjmafiqrla6bfi53igrec]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051521117664]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5C52A1DC7921DEE18C4B9B02A2A8E406]]></sign>
+<time_end><![CDATA[20170505152119]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661031009]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:21:35
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:21:35
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:21:35
+【Order_sn】:
+201705051521117664
+
+
+执行日期：2017-05-05 15:21:52
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[727awujzrq2mjmafiqrla6bfi53igrec]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051521117664]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5C52A1DC7921DEE18C4B9B02A2A8E406]]></sign>
+<time_end><![CDATA[20170505152119]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661031009]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:21:52
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:21:52
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:21:52
+【Order_sn】:
+201705051521117664
+
+
+执行日期：2017-05-05 15:22:24
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[727awujzrq2mjmafiqrla6bfi53igrec]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051521117664]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5C52A1DC7921DEE18C4B9B02A2A8E406]]></sign>
+<time_end><![CDATA[20170505152119]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661031009]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:22:24
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:22:24
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:22:24
+【Order_sn】:
+201705051521117664
+
+
+执行日期：2017-05-05 15:22:55
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qq6slqbuxyrlty8xn9a2kem7j457ut9a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051518418894]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[14F93E5D722700F1667478C66175BE4A]]></sign>
+<time_end><![CDATA[20170505151853]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662718747]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:22:55
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:22:55
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:22:55
+【Order_sn】:
+201705051518418894
+
+
+执行日期：2017-05-05 15:25:25
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[727awujzrq2mjmafiqrla6bfi53igrec]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051521117664]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5C52A1DC7921DEE18C4B9B02A2A8E406]]></sign>
+<time_end><![CDATA[20170505152119]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661031009]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:25:25
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:25:25
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:25:25
+【Order_sn】:
+201705051521117664
+
+
+执行日期：2017-05-05 15:33:28
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[lw40eaileji3vp5a9eoxozo32i43e75l]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051459119055]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[B1B2F87AE8B3196840ABAC916B3D027A]]></sign>
+<time_end><![CDATA[20170505145921]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660385918]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:33:28
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:33:28
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:33:28
+【Order_sn】:
+201705051459119055
+
+
+执行日期：2017-05-05 15:34:39
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7hukf8pl1q35xp4d9y3m9q63cf9d9udg]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051500229173]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6CDD91FF7D3EA0F0F47860C6666AE45C]]></sign>
+<time_end><![CDATA[20170505150029]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660448444]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:34:39
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:34:39
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:34:39
+【Order_sn】:
+201705051500229173
+
+
+执行日期：2017-05-05 15:36:17
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[610d4r8buajhlhu5uzpjoeb4nc4pwh63]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051502046404]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[D963376F21540CCE6511C2D4243B368F]]></sign>
+<time_end><![CDATA[20170505150213]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059657773086]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:36:17
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:36:17
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:36:17
+【Order_sn】:
+201705051502046404
+
+
+执行日期：2017-05-05 15:39:36
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[kszqx6sne62g2367zq9hgxikscvclt87]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051539285308]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[46BCA7FD59CEC5E26CB67E967E7D0EAD]]></sign>
+<time_end><![CDATA[20170505153935]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059664918706]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:39:36
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:39:36
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:39:36
+【Order_sn】:
+201705051539285308
+
+
+执行日期：2017-05-05 15:39:36
+【Prom_Id】:
+15734
+
+
+执行日期：2017-05-05 15:39:36
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:39:36
+【成功】
+
+执行日期：2017-05-05 15:39:52
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[kszqx6sne62g2367zq9hgxikscvclt87]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051539285308]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[46BCA7FD59CEC5E26CB67E967E7D0EAD]]></sign>
+<time_end><![CDATA[20170505153935]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059664918706]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:39:52
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:39:52
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:39:52
+【Order_sn】:
+201705051539285308
+
+
+执行日期：2017-05-05 15:40:09
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[kszqx6sne62g2367zq9hgxikscvclt87]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051539285308]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[46BCA7FD59CEC5E26CB67E967E7D0EAD]]></sign>
+<time_end><![CDATA[20170505153935]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059664918706]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:40:09
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:40:09
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:40:09
+【Order_sn】:
+201705051539285308
+
+
+执行日期：2017-05-05 15:40:41
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[kszqx6sne62g2367zq9hgxikscvclt87]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051539285308]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[46BCA7FD59CEC5E26CB67E967E7D0EAD]]></sign>
+<time_end><![CDATA[20170505153935]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059664918706]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:40:41
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:40:41
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:40:41
+【Order_sn】:
+201705051539285308
+
+
+执行日期：2017-05-05 15:40:59
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[0zp53nl781oly6uxaun4ly4z73d1cner]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051540509833]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5376D44F177D099C8F954641151E3945]]></sign>
+<time_end><![CDATA[20170505154058]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661521716]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:40:59
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:40:59
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:40:59
+【Order_sn】:
+201705051540509833
+
+
+执行日期：2017-05-05 15:40:59
+【Prom_Id】:
+15735
+
+
+执行日期：2017-05-05 15:40:59
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:40:59
+【成功】
+
+执行日期：2017-05-05 15:41:12
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[0zp53nl781oly6uxaun4ly4z73d1cner]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051540509833]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5376D44F177D099C8F954641151E3945]]></sign>
+<time_end><![CDATA[20170505154058]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661521716]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:41:12
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:41:12
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:41:12
+【Order_sn】:
+201705051540509833
+
+
+执行日期：2017-05-05 15:41:28
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[0zp53nl781oly6uxaun4ly4z73d1cner]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051540509833]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5376D44F177D099C8F954641151E3945]]></sign>
+<time_end><![CDATA[20170505154058]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661521716]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:41:28
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:41:28
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:41:28
+【Order_sn】:
+201705051540509833
+
+
+执行日期：2017-05-05 15:41:59
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[0zp53nl781oly6uxaun4ly4z73d1cner]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051540509833]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5376D44F177D099C8F954641151E3945]]></sign>
+<time_end><![CDATA[20170505154058]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661521716]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:41:59
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:41:59
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:41:59
+【Order_sn】:
+201705051540509833
+
+
+执行日期：2017-05-05 15:43:40
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[k1nqsrvd16zjoaeov34pwio1220fckss]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543281279]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[C78540A35F6A662A37BC85B4680156D1]]></sign>
+<time_end><![CDATA[20170505154339]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661600555]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:43:40
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:43:40
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:43:40
+【Order_sn】:
+201705051543281279
+
+
+执行日期：2017-05-05 15:43:40
+【Prom_Id】:
+15736
+
+
+执行日期：2017-05-05 15:43:40
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:43:43
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[kszqx6sne62g2367zq9hgxikscvclt87]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051539285308]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[46BCA7FD59CEC5E26CB67E967E7D0EAD]]></sign>
+<time_end><![CDATA[20170505153935]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059664918706]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:43:43
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:43:43
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:43:43
+【Order_sn】:
+201705051539285308
+
+
+执行日期：2017-05-05 15:43:52
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[k1nqsrvd16zjoaeov34pwio1220fckss]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543281279]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[C78540A35F6A662A37BC85B4680156D1]]></sign>
+<time_end><![CDATA[20170505154339]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661600555]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:43:52
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:43:52
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:43:52
+【Order_sn】:
+201705051543281279
+
+
+执行日期：2017-05-05 15:43:59
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[s789tjuivla0k9fdmjtgehdfoghihcdn]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543499120]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7ED9B3AA14D9862C65F15008EAD0FCC8]]></sign>
+<time_end><![CDATA[20170505154358]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059666754860]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:43:59
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:43:59
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:43:59
+【Order_sn】:
+201705051543499120
+
+
+执行日期：2017-05-05 15:43:59
+【Prom_Id】:
+15737
+
+
+执行日期：2017-05-05 15:43:59
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:43:59
+【成功】
+
+执行日期：2017-05-05 15:44:08
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[k1nqsrvd16zjoaeov34pwio1220fckss]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543281279]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[C78540A35F6A662A37BC85B4680156D1]]></sign>
+<time_end><![CDATA[20170505154339]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661600555]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:44:08
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:44:08
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:44:08
+【Order_sn】:
+201705051543281279
+
+
+执行日期：2017-05-05 15:44:15
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[s789tjuivla0k9fdmjtgehdfoghihcdn]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543499120]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7ED9B3AA14D9862C65F15008EAD0FCC8]]></sign>
+<time_end><![CDATA[20170505154358]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059666754860]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:44:15
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:44:15
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:44:15
+【Order_sn】:
+201705051543499120
+
+
+执行日期：2017-05-05 15:44:32
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[s789tjuivla0k9fdmjtgehdfoghihcdn]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543499120]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7ED9B3AA14D9862C65F15008EAD0FCC8]]></sign>
+<time_end><![CDATA[20170505154358]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059666754860]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:44:32
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:44:32
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:44:32
+【Order_sn】:
+201705051543499120
+
+
+执行日期：2017-05-05 15:44:40
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[k1nqsrvd16zjoaeov34pwio1220fckss]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543281279]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[C78540A35F6A662A37BC85B4680156D1]]></sign>
+<time_end><![CDATA[20170505154339]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661600555]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:44:40
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:44:40
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:44:40
+【Order_sn】:
+201705051543281279
+
+
+执行日期：2017-05-05 15:45:01
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[0zp53nl781oly6uxaun4ly4z73d1cner]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051540509833]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5376D44F177D099C8F954641151E3945]]></sign>
+<time_end><![CDATA[20170505154058]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661521716]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:45:01
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:45:01
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:45:01
+【Order_sn】:
+201705051540509833
+
+
+执行日期：2017-05-05 15:45:04
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[ivz5rrgmcsk7i19kgmfu78ixwoxljlpx]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051544556548]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[DEFD770A44B3854C015D9D4D6CFE848F]]></sign>
+<time_end><![CDATA[20170505154503]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059665054306]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:45:04
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:45:04
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:45:04
+【Order_sn】:
+201705051544556548
+
+
+执行日期：2017-05-05 15:45:04
+【Prom_Id】:
+15739
+
+
+执行日期：2017-05-05 15:45:04
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 15:45:04
+【成功】
+
+执行日期：2017-05-05 15:45:05
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[s789tjuivla0k9fdmjtgehdfoghihcdn]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543499120]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7ED9B3AA14D9862C65F15008EAD0FCC8]]></sign>
+<time_end><![CDATA[20170505154358]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059666754860]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:45:05
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:45:05
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:45:05
+【Order_sn】:
+201705051543499120
+
+
+执行日期：2017-05-05 15:45:20
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[ivz5rrgmcsk7i19kgmfu78ixwoxljlpx]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051544556548]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[DEFD770A44B3854C015D9D4D6CFE848F]]></sign>
+<time_end><![CDATA[20170505154503]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059665054306]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:45:20
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:45:20
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:45:20
+【Order_sn】:
+201705051544556548
+
+
+执行日期：2017-05-05 15:45:36
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[ivz5rrgmcsk7i19kgmfu78ixwoxljlpx]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051544556548]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[DEFD770A44B3854C015D9D4D6CFE848F]]></sign>
+<time_end><![CDATA[20170505154503]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059665054306]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:45:36
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:45:36
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:45:36
+【Order_sn】:
+201705051544556548
+
+
+执行日期：2017-05-05 15:46:07
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[ivz5rrgmcsk7i19kgmfu78ixwoxljlpx]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051544556548]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[DEFD770A44B3854C015D9D4D6CFE848F]]></sign>
+<time_end><![CDATA[20170505154503]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059665054306]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:46:07
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:46:08
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:46:08
+【Order_sn】:
+201705051544556548
+
+
+执行日期：2017-05-05 15:47:41
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[k1nqsrvd16zjoaeov34pwio1220fckss]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543281279]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[C78540A35F6A662A37BC85B4680156D1]]></sign>
+<time_end><![CDATA[20170505154339]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661600555]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:47:41
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:47:41
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:47:41
+【Order_sn】:
+201705051543281279
+
+
+执行日期：2017-05-05 15:48:06
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[s789tjuivla0k9fdmjtgehdfoghihcdn]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543499120]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7ED9B3AA14D9862C65F15008EAD0FCC8]]></sign>
+<time_end><![CDATA[20170505154358]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059666754860]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:48:06
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:48:06
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:48:06
+【Order_sn】:
+201705051543499120
+
+
+执行日期：2017-05-05 15:49:04
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7832d4bfz2m3hfg8dgvs3pxy6y6l4thc]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051514528221]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[0143C72CDB277C1AE4B3483FBCFA0CED]]></sign>
+<time_end><![CDATA[20170505151501]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059658086981]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:49:04
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:49:04
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:49:04
+【Order_sn】:
+201705051514528221
+
+
+执行日期：2017-05-05 15:49:10
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[ivz5rrgmcsk7i19kgmfu78ixwoxljlpx]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051544556548]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[DEFD770A44B3854C015D9D4D6CFE848F]]></sign>
+<time_end><![CDATA[20170505154503]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059665054306]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:49:10
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:49:10
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:49:10
+【Order_sn】:
+201705051544556548
+
+
+执行日期：2017-05-05 15:52:57
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[17]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[qq6slqbuxyrlty8xn9a2kem7j457ut9a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051518418894]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[14F93E5D722700F1667478C66175BE4A]]></sign>
+<time_end><![CDATA[20170505151853]]></time_end>
+<total_fee>17</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662718747]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:52:57
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:52:57
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:52:57
+【Order_sn】:
+201705051518418894
+
+
+执行日期：2017-05-05 15:55:27
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[10]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[727awujzrq2mjmafiqrla6bfi53igrec]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051521117664]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5C52A1DC7921DEE18C4B9B02A2A8E406]]></sign>
+<time_end><![CDATA[20170505152119]]></time_end>
+<total_fee>10</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661031009]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:55:27
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:55:27
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:55:27
+【Order_sn】:
+201705051521117664
+
+
+执行日期：2017-05-05 15:59:07
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[m5gwyb0vd55e01wt8h7pteaqrxe91aqw]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051558568546]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6FC5C264E8434F11A9014046886A3F65]]></sign>
+<time_end><![CDATA[20170505155907]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662077518]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:59:07
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:59:07
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:59:07
+【Order_sn】:
+201705051558568546
+
+
+执行日期：2017-05-05 15:59:07
+【成功】
+
+执行日期：2017-05-05 15:59:19
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[m5gwyb0vd55e01wt8h7pteaqrxe91aqw]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051558568546]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6FC5C264E8434F11A9014046886A3F65]]></sign>
+<time_end><![CDATA[20170505155907]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662077518]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:59:19
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:59:19
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:59:19
+【Order_sn】:
+201705051558568546
+
+
+执行日期：2017-05-05 15:59:35
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[m5gwyb0vd55e01wt8h7pteaqrxe91aqw]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051558568546]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6FC5C264E8434F11A9014046886A3F65]]></sign>
+<time_end><![CDATA[20170505155907]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662077518]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 15:59:35
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 15:59:36
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 15:59:36
+【Order_sn】:
+201705051558568546
+
+
+执行日期：2017-05-05 16:00:09
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[m5gwyb0vd55e01wt8h7pteaqrxe91aqw]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051558568546]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6FC5C264E8434F11A9014046886A3F65]]></sign>
+<time_end><![CDATA[20170505155907]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662077518]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:00:09
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:00:09
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:00:09
+【Order_sn】:
+201705051558568546
+
+
+执行日期：2017-05-05 16:00:18
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[fftv7aj2isbshqf1wmplj1p7maof1r4a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051600103354]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[04E22ADFF228F9E3D9DF3FEEC8FDF8AF]]></sign>
+<time_end><![CDATA[20170505160018]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059663942629]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:00:18
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:00:18
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:00:18
+【Order_sn】:
+201705051600103354
+
+
+执行日期：2017-05-05 16:00:18
+【成功】
+
+执行日期：2017-05-05 16:00:31
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[fftv7aj2isbshqf1wmplj1p7maof1r4a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051600103354]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[04E22ADFF228F9E3D9DF3FEEC8FDF8AF]]></sign>
+<time_end><![CDATA[20170505160018]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059663942629]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:00:31
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:00:31
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:00:31
+【Order_sn】:
+201705051600103354
+
+
+执行日期：2017-05-05 16:00:48
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[fftv7aj2isbshqf1wmplj1p7maof1r4a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051600103354]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[04E22ADFF228F9E3D9DF3FEEC8FDF8AF]]></sign>
+<time_end><![CDATA[20170505160018]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059663942629]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:00:48
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:00:48
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:00:48
+【Order_sn】:
+201705051600103354
+
+
+执行日期：2017-05-05 16:01:20
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[fftv7aj2isbshqf1wmplj1p7maof1r4a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051600103354]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[04E22ADFF228F9E3D9DF3FEEC8FDF8AF]]></sign>
+<time_end><![CDATA[20170505160018]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059663942629]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:01:20
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:01:20
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:01:20
+【Order_sn】:
+201705051600103354
+
+
+执行日期：2017-05-05 16:03:12
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[m5gwyb0vd55e01wt8h7pteaqrxe91aqw]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051558568546]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6FC5C264E8434F11A9014046886A3F65]]></sign>
+<time_end><![CDATA[20170505155907]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059662077518]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:03:12
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:03:12
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:03:12
+【Order_sn】:
+201705051558568546
+
+
+执行日期：2017-05-05 16:03:30
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[lw40eaileji3vp5a9eoxozo32i43e75l]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051459119055]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[B1B2F87AE8B3196840ABAC916B3D027A]]></sign>
+<time_end><![CDATA[20170505145921]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660385918]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:03:30
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:03:30
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:03:30
+【Order_sn】:
+201705051459119055
+
+
+执行日期：2017-05-05 16:04:22
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[fftv7aj2isbshqf1wmplj1p7maof1r4a]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051600103354]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[04E22ADFF228F9E3D9DF3FEEC8FDF8AF]]></sign>
+<time_end><![CDATA[20170505160018]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059663942629]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:04:22
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:04:22
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:04:22
+【Order_sn】:
+201705051600103354
+
+
+执行日期：2017-05-05 16:04:40
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[7hukf8pl1q35xp4d9y3m9q63cf9d9udg]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051500229173]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[6CDD91FF7D3EA0F0F47860C6666AE45C]]></sign>
+<time_end><![CDATA[20170505150029]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059660448444]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:04:40
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:04:40
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:04:40
+【Order_sn】:
+201705051500229173
+
+
+执行日期：2017-05-05 16:06:19
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[2]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[610d4r8buajhlhu5uzpjoeb4nc4pwh63]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051502046404]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[D963376F21540CCE6511C2D4243B368F]]></sign>
+<time_end><![CDATA[20170505150213]]></time_end>
+<total_fee>2</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059657773086]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:06:19
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:06:19
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:06:19
+【Order_sn】:
+201705051502046404
+
+
+执行日期：2017-05-05 16:13:44
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[kszqx6sne62g2367zq9hgxikscvclt87]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051539285308]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[46BCA7FD59CEC5E26CB67E967E7D0EAD]]></sign>
+<time_end><![CDATA[20170505153935]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059664918706]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:13:44
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:13:44
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:13:44
+【Order_sn】:
+201705051539285308
+
+
+执行日期：2017-05-05 16:15:04
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[0zp53nl781oly6uxaun4ly4z73d1cner]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051540509833]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[5376D44F177D099C8F954641151E3945]]></sign>
+<time_end><![CDATA[20170505154058]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661521716]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:15:04
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:15:04
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:15:04
+【Order_sn】:
+201705051540509833
+
+
+执行日期：2017-05-05 16:16:32
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[20]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[if8aiwf0dcgvzqu3kpl9jyq58wf0gkie]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051616246495]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7319CFF254A4594BAEEE143E662317BF]]></sign>
+<time_end><![CDATA[20170505161631]]></time_end>
+<total_fee>20</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059667769447]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:16:32
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:16:32
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:16:32
+【Order_sn】:
+201705051616246495
+
+
+执行日期：2017-05-05 16:16:32
+【Prom_Id】:
+15746
+
+
+执行日期：2017-05-05 16:16:32
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 16:16:32
+【成功】
+
+执行日期：2017-05-05 16:16:47
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[20]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[if8aiwf0dcgvzqu3kpl9jyq58wf0gkie]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051616246495]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7319CFF254A4594BAEEE143E662317BF]]></sign>
+<time_end><![CDATA[20170505161631]]></time_end>
+<total_fee>20</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059667769447]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:16:47
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:16:47
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:16:47
+【Order_sn】:
+201705051616246495
+
+
+执行日期：2017-05-05 16:17:04
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[20]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[if8aiwf0dcgvzqu3kpl9jyq58wf0gkie]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051616246495]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7319CFF254A4594BAEEE143E662317BF]]></sign>
+<time_end><![CDATA[20170505161631]]></time_end>
+<total_fee>20</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059667769447]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:17:04
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:17:04
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:17:04
+【Order_sn】:
+201705051616246495
+
+
+执行日期：2017-05-05 16:17:37
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[20]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[if8aiwf0dcgvzqu3kpl9jyq58wf0gkie]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051616246495]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7319CFF254A4594BAEEE143E662317BF]]></sign>
+<time_end><![CDATA[20170505161631]]></time_end>
+<total_fee>20</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059667769447]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:17:37
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:17:37
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:17:37
+【Order_sn】:
+201705051616246495
+
+
+执行日期：2017-05-05 16:17:43
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[k1nqsrvd16zjoaeov34pwio1220fckss]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543281279]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[C78540A35F6A662A37BC85B4680156D1]]></sign>
+<time_end><![CDATA[20170505154339]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059661600555]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:17:43
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:17:43
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:17:43
+【Order_sn】:
+201705051543281279
+
+
+执行日期：2017-05-05 16:17:46
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[20]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[d24wkysmzfcya21mhuclm175tzourwdt]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705051617372465]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[8B026AEEEC2CCF90FB3B01A8A1C97FA9]]></sign>
+<time_end><![CDATA[20170505161745]]></time_end>
+<total_fee>20</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059665974899]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:17:46
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:17:46
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:17:46
+【Order_sn】:
+201705051617372465
+
+
+执行日期：2017-05-05 16:17:46
+【Prom_Id】:
+15747
+
+
+执行日期：2017-05-05 16:17:46
+【QQ】:
+789789798
+
+
+执行日期：2017-05-05 16:18:03
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[20]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[d24wkysmzfcya21mhuclm175tzourwdt]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705051617372465]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[8B026AEEEC2CCF90FB3B01A8A1C97FA9]]></sign>
+<time_end><![CDATA[20170505161745]]></time_end>
+<total_fee>20</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059665974899]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:18:03
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:18:03
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:18:03
+【Order_sn】:
+201705051617372465
+
+
+执行日期：2017-05-05 16:18:07
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[s789tjuivla0k9fdmjtgehdfoghihcdn]]></nonce_str>
+<openid><![CDATA[oCuUzwLznQiiwqUZ5DUQAb1sxi7g]]></openid>
+<out_trade_no><![CDATA[201705051543499120]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[7ED9B3AA14D9862C65F15008EAD0FCC8]]></sign>
+<time_end><![CDATA[20170505154358]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4009182001201705059666754860]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:18:07
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:18:07
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:18:07
+【Order_sn】:
+201705051543499120
+
+
+执行日期：2017-05-05 16:18:19
+【接收到的notify通知】:
+<xml><appid><![CDATA[wx4a5c41f0607887ba]]></appid>
+<bank_type><![CDATA[CIB_DEBIT]]></bank_type>
+<cash_fee><![CDATA[20]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1402068602]]></mch_id>
+<nonce_str><![CDATA[d24wkysmzfcya21mhuclm175tzourwdt]]></nonce_str>
+<openid><![CDATA[oCuUzwCDmLj4ESwfEn3aNq7PQ7ZQ]]></openid>
+<out_trade_no><![CDATA[201705051617372465]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[8B026AEEEC2CCF90FB3B01A8A1C97FA9]]></sign>
+<time_end><![CDATA[20170505161745]]></time_end>
+<total_fee>20</total_fee>
+<trade_type><![CDATA[APP]]></trade_type>
+<transaction_id><![CDATA[4002012001201705059665974899]]></transaction_id>
+</xml>
+
+
+执行日期：2017-05-05 16:18:19
+【Q】:
+28797732
+
+
+执行日期：2017-05-05 16:18:19
+【QQ】:
+949676565
+
+
+执行日期：2017-05-05 16:18:19
+【Order_sn】:
+201705051617372465
+
+

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <title>0.1限时秒杀</title>
+    <link rel="stylesheet" href="__PUBLIC__/css/activity/public.css" />
+    <script src="__PUBLIC__/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <!--<script src="__PUBLIC__/js/activity/zepto.min.js"></script>-->
+    <!--<script src="__PUBLIC__/js/activity/zepto.lazyload.min.js"></script>-->
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <style type="text/css">
+        a.active{
+            background: #fe97a4;
+        }
+    </style>
+</head>
+<body>
+<div class="seckill">
+        <img width="100%" class="banner" src="__PUBLIC__/images/activity/ban.jpg" alt=""/>
+        <div class="cg-nav-list mod-box">
+            <volist name="time" id="list">
+            <a class='box-flex <if condition="$list.time eq $current"> active {$list.time}</if>' href="{:U('SecondBuy/index', array('start'=>$list['time']))}">
+                <b>{$list.time}</b>
+                {$list.notice}
+            </a>
+            </volist>
+        </div>
+        <!-- 10:00 -->
+        <div class="item-list cfix on">
+            <include file="./Application/Api/View/SecondBuy/load_more.html" />
+        </div>
+    </div>
+<script>
+$(function(){
+    var MS = {
+        init: function(){
+            this.ctr();
+        },
+        ctr: function(){
+            var top = $('.item-list').position().top,
+                sTop = 0,
+                nav = $('.cg-nav-list'),
+                tab = $('.box-flex'),
+                list = $('.item-list');
+
+
+            $(window).scroll(function(){
+                sTop = $(this).scrollTop();
+                if(sTop >= top){
+                    nav.addClass('fixed');
+                }else{
+                    nav.removeClass('fixed');
+                }
+
+
+            });
+//            $('.lazy').picLazyLoad({
+//                threshold: 30
+//            });
+
+
+//            tab.tap(function(){
+//               var $this = $(this),
+//                   i = $this.index();
+//
+//                   tab.removeClass('active').eq(i).addClass('active');
+//                   list.removeClass('on').eq(i).addClass('on');
+//            });
+        }
+    };
+    MS.init();
+
+    // 下拉加载
+    $(window).scroll(function() {
+        var scrollTop = $(this).scrollTop();
+        var scrollHeight = $(document).height();
+        var windowHeight = $(this).height();
+        if (scrollTop + windowHeight == scrollHeight) {
+            var Ob = $('#page');
+            var O_data = Ob.data();
+            var s_page = Number(O_data.page);
+            var e_page = Number(O_data.total);
+
+            var page = s_page + 1;
+            if (page > e_page) {
+                return;
+                // 可以有其他的操作
+            }
+
+            // 执行相关的操作
+            var start = O_data.type;
+            var ajax_url = O_data.url;
+
+            $.ajax({
+                url: ajax_url,
+                data: {
+                    'p': page,
+                    'start': start,
+                },
+                type: 'GET',
+                dataType: 'HTML',
+                success: function(res) {
+                    Ob.append(res);
+                    Ob.data('page', page);
+                },
+                error: function(e) {
+                    console.log(e)
+                }
+            });
+        }
+    });
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<include file="Public/min-header" />
+<div class="wrapper">
+	<include file="Public/breadcrumb"/>		
+    <section class="content ">
+        <!-- Main content -->
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="javascript:history.go(-1)" data-toggle="tooltip" title="" class="btn btn-default" data-original-title="返回"><i class="fa fa-reply"></i></a>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-list"></i>退换货</h3>
+                </div>
+                <div class="panel-body ">   
+                    <!--表单数据-->
+                    <form method="post" id="return_form" action="{:U('Admin/Order/punishment')}">
+                        <!--通用信息-->
+                    <div class="tab-content col-md-10">                 	  
+                        <div class="tab-pane active" id="tab_tongyong">                           
+                            <table class="table table-bordered">
+                                <tbody>
+                                <tr>
+                                    <td class="col-sm-2">订单编号：</td>
+                                    <td class="col-sm-8">
+                                        <a href="{:U('Admin/order/detail',array('order_id'=>$order['order_id']))}">{$order.order_sn}</a>
+                                    </td>
+                                </tr>  
+                                <tr>
+                                    <td>用户：</td>
+                                    <td>                    
+					                    {$user_name}
+                                    </td>
+                                </tr>  
+                                <tr>
+                                    <td>下单日期：</td>
+                                    <td>                    
+					                    {$order.add_time|date="Y-m-d H:i",###}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>商品名称：</td>
+                                    <td >
+                                        {$store}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>订单金额：</td>
+                                    <td >
+                                        ￥{$order.order_amount}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>惩罚金额：</td>
+                                    <td >
+                                        <input type="number" name="punishment_money" value="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>惩罚理由：</td>
+                                    <td>
+                                        <textarea name="reason" placeholder="请输入惩罚理由" rows="3" class="area" style="width:400px; height:120px;"></textarea>
+                                    </td>
+                                </tr>
+                                </tbody> 
+                                <tfoot>
+                                	<tr>
+                                	<td><input type="hidden" name="order_id" value="{$order.order_id}">
+                                	</td>
+                                        <td class="text-right">
+                                            <if condition="$return_goods['ok_time'] eq 0">
+                                                <input class="btn btn-primary" type="submit"  value="保存">
+                                            </if>
+                                </tfoot>                               
+                                </table>
+                        </div>                           
+                    </div>              
+			    	</form><!--表单数据-->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+function adsubmit(){
+	$('#handleposition').submit();
+}
+
+function backPay(order_id){
+    if(confirm('确定退款吗？')){
+        var index = layer.load(1, {
+            shade: [0.1,'#222'] //0.1透明度的白色背景
+        });
+        $.ajax({
+            type : 'POST',
+            url : '/Admin/Order/account_edit',
+            data : {'order_id':order_id},
+            dataType : 'JSON',
+            success : function(res){
+                layer.close(index);
+                if(res.status==1){
+                    alert('退款成功');
+                } else {
+                    alert('退款失败');
+                }
+            }
+        });
+
+    }else{
+        return false;
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,646 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>拼趣多管理后台</title>
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<!-- Bootstrap 3.3.4 -->
+	<link href="__PUBLIC__/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<!-- FontAwesome 4.3.0 -->
+	<link href="__PUBLIC__/bootstrap/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+	<!-- Ionicons 2.0.0 --
+    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <!-- Theme style -->
+	<link href="__PUBLIC__/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+	<!-- AdminLTE Skins. Choose a skin from the css/skins
+        folder instead of downloading all of them to reduce the load. -->
+	<link href="__PUBLIC__/dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
+	<!--map-->
+	<!-- iCheck -->
+
+	<link href="__PUBLIC__/plugins/iCheck/flat/blue.css" rel="stylesheet" type="text/css" />
+	<!-- jQuery 2.1.4 -->
+	<script src="__PUBLIC__/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+	<script src="__PUBLIC__/js/common.js"></script>
+	<script src="__PUBLIC__/js/myFormValidate.js"></script>
+	<script src="__PUBLIC__/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="__PUBLIC__/js/layer/layer-min.js"></script><!-- 弹窗js 参考文档 http://layer.layui.com/-->
+	<script src="__PUBLIC__/js/myAjax.js"></script>
+	<script type="text/javascript">
+		function delfunc(obj){
+			layer.confirm('确认删除？', {
+						btn: ['确定','取消'] //按钮
+					}, function(){
+						// 确定
+						$.ajax({
+							type : 'post',
+							url : $(obj).attr('data-url'),
+							data : {act:'del',del_id:$(obj).attr('data-id')},
+							dataType : 'json',
+							success : function(data){
+								if(data==1){
+									layer.msg('操作成功', {icon: 1});
+									$(obj).parent().parent().remove();
+								}else{
+									layer.msg(data, {icon: 2,time: 2000});
+								}
+								layer.closeAll();
+							}
+						})
+					}, function(index){
+						layer.close(index);
+						return false;// 取消
+					}
+			);
+		}
+
+		function selectAll(name,obj){
+			$('input[name*='+name+']').prop('checked', $(obj).checked);
+		}
+	</script>
+</head>
+<style>
+	#allmap {width:600px;height:500px;overflow: hidden;}
+
+	dl,dt,dd,ul,li{
+		margin:0;
+		padding:0;
+		list-style:none;
+	}
+	p{font-size:12px;}
+	dt{
+		font-size:14px;
+		font-family:"微软雅黑";
+		font-weight:bold;
+		border-bottom:1px dotted #000;
+		padding:5px 0 5px 5px;
+		margin:5px 0;
+	}
+	dd{
+		padding:5px 0 0 5px;
+	}
+	li{
+		line-height:28px;
+	}
+</style>
+<div class="wrapper">
+	<!-- Content Header (Page header) -->
+	<include file="Public/breadcrumb"/>
+	<section class="content">
+		<!-- Main content -->
+		<!--<div class="container-fluid">-->
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><i class="fa fa-list"></i> 用户信息</h3>
+					</div>
+					<div class="panel-body">
+						<table class="table table-bordered">
+							<tbody>
+							<tr>
+								<td class="text-center">门店后台账号</td>
+								<td>
+									<?PHP
+                                            if($store[merchant_name] != null)
+                                            {
+                                        ?>
+									{$store.merchant_name}
+									<?PHP
+                                         }else{
+                                         ?>
+									<input type="text" class="form-control" name="merchant_name" value="">
+									<?PHP } ?>
+								</td>
+
+							</tr>
+							<tr>
+								<td class="text-center">新密码:</td>
+								<td><input type="password" class="form-control" name="password" value="{$store.password}"></td>
+							</tr>
+							<tr>
+								<td class="text-center">确认密码:</td>
+								<td><input type="password" class="form-control" name="password2" value="{$store.password}"></td>
+							</tr>
+							<tr>
+								<td class="text-center">店铺名称:</td>
+								<td><input type="text" class="form-control" name="store_name" value="{$store.store_name}"></td>
+							</tr>
+							<tr>
+								<td class="text-center">店铺LOGO:</td>
+								<td>
+									<input type="button" value="上传店铺logo"  onclick="GetUploadify(1,'','goods','call_back_logo');"/>
+									<input type="text" class="input-sm"  name="store_logo" id="store_logo" value="{$detail.store_logo}"/>
+									<if condition="$detail['store_logo'] neq null">
+										&nbsp;&nbsp;
+										<a target="_blank" href="{$goodsInfo.original_img}" id="store_logo_img">
+											<img width="25" height="25" src="/Public/images/image_icon.jpg">
+										</a>
+									</if>
+
+									<script>
+										function call_back_logo(path){
+											$("#store_logo").val(path);
+										}
+									</script>
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">店铺详情:</td>
+								<td>
+									<textarea name="introduce" class="form-control" style="width: 80%;height: 100px;">{$store.introduce}</textarea>
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">邮箱:</td>
+								<td><input type="text" class="form-control" name="email" value="{$store.email}"></td>
+							</tr>
+							<!--<tr>-->
+							<!--<td>会员等级:</td>-->
+							<!--<td>{$user.user_rank}</td>-->
+							<!--</tr>-->
+							<tr>
+								<td class="text-center">状态:</td>
+								<td>
+									<input name="state" type="radio" value="0" <if condition="$store.state eq 0"> checked='checked' </if> >停业
+									<input name="state" type="radio" value="1" <if condition="$store.state eq 1"> checked='checked' </if> >营业
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">手机:</td>
+								<td>
+									<input type="text" class="form-control" name="mobile" value="{$store.mobile}">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">商户类型:</td>
+								<td>
+									<label><input type="radio" class="store_from" name="store_from" value="0" <if condition="$store.store_from eq 0">checked='checked' </if> >个人</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<label><input type="radio" class="store_from" name="store_from" value="1" <if condition="$store.store_from eq 1">checked='checked' </if> >公司</label>
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">店铺类型:</td>
+								<td>
+									<label><input type="radio" name="store_type" value="0" <if condition="$store.store_type eq 0">checked='checked' </if> >个人</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<label><input type="radio" name="store_type" value="1"  <if condition="$store.store_type eq 1">checked='checked' </if> >旗舰店</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<label><input type="radio" name="store_type" value="2"  <if condition="$store.store_type eq 2">checked='checked' </if> >专卖店</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<label><input type="radio" name="store_type" value="3"  <if condition="$store.store_type eq 3">checked='checked' </if> >专营店</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<label><input type="radio" name="store_type" value="4"  <if condition="$store.store_type eq 4">checked='checked' </if> >普通店</label>&nbsp;&nbsp;&nbsp;&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">商铺地址:</td>
+								<td>
+									<input type="text" class="form-control" style="width: 350px;" id="address" name="address" value="{$store.address}">
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">最后修改人:</td>
+								<td>
+									{$store.operation_admin}
+								</td>
+							</tr>
+							<tr>
+								<td class="text-center">最后修改时间:</td>
+								<td>
+									<?PHP
+                                        if($store[operation_time])
+                                        {
+                                        ?>
+									{$store.operation_time|date='Y-m-d H:i',###}
+									<?PHP
+                                        }else{
+                                        ?>
+
+									<?PHP } ?>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!--个人身份-->
+				<div class="panel panel-default" id="person_div" <if condition="$store.store_from eq 1">style="display:none"</if>>
+				<div class="panel-heading">
+					<h3 class="panel-title"><i class="fa fa-list"></i>个人商户信息</h3>
+				</div>
+				<div class="panel-body">
+					<table class="table table-bordered">
+						<tbody>
+						<tr>
+							<td class="text-center">店主姓名:</td>
+							<td><input type="text" class="form-control" name="show_ower_name" value="{$detail.show_ower_name}"></td>
+						</tr>
+						<tr>
+							<td class="text-center">店主邮箱:</td>
+							<td><input type="text" class="form-control" name="show_ower_mail" value="{$detail.show_ower_mail}"></td>
+						</tr>
+
+						<tr>
+							<td class="text-center">店主手机号</td>
+							<td><input type="text" class="form-control" name="show_ower_mobile" value="{$detail.show_ower_mobile}"></td>
+						</tr>
+						<tr>
+							<td class="text-center">重复店主手机号</td>
+							<td><input type="text" class="form-control" name="show_ower_mobile_re" value="{$detail.show_ower_mobile}"></td>
+						</tr>
+						<tr>
+							<td class="text-center">店主身份证</td>
+							<td><input type="text" class="form-control" name="show_ower_idcard" value="{$detail.show_ower_idcard}"></td>
+						</tr>
+						<tr>
+							<td class="text-center">是否海淘</td>
+							<td>
+								<input type="radio" name="is_haitao" value="0" <if condition="$detail.is_haitao eq 0 "> checked="checked" </if> >非海淘 &nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="radio" name="is_haitao" value="1" <if condition="$detail.is_haitao eq 1 "> checked="checked" </if> >海淘
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" style="text-align: center">店铺管理人基本信息</td>
+						</tr>
+						<tr>
+							<td class="text-center">身份证有效期</td>
+							<td>
+
+							</td>
+						</tr>
+						<tr>
+							<td class="text-center">身份证正面</td>
+							<td>
+								<input type="button" value="上传身份证正面照"  onclick="GetUploadify(1,'','goods','call_back_img1');"/>
+								<input type="text" class="input-sm"  name="idcard_img_1" id="idcard_img_1" value="{$detail.idcard_img_1}"/>
+								<if condition="$goodsInfo['original_img'] neq null">
+									&nbsp;&nbsp;
+									<a target="_blank" href="{$goodsInfo.original_img}" id="original_img1">
+										<img width="25" height="25" src="/Public/images/image_icon.jpg">
+									</a>
+								</if>
+
+								<script>
+									function call_back_img1(path){
+										$("#idcard_img_1").val(path);
+									}
+								</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="text-center">身份证反面:</td>
+							<td>
+								<input type="button" value="上传身份证反面照"  onclick="GetUploadify(1,'','goods','call_back_img2');"/>
+								<input type="text" class="input-sm"  name="idcard_img_2" id="idcard_img_2" value="{$detail.idcard_img_1}"/>
+								<if condition="$goodsInfo['original_img'] neq null">
+									&nbsp;&nbsp;
+									<a target="_blank" href="{$goodsInfo.original_img}" id="original_img2">
+										<img width="25" height="25" src="/Public/images/image_icon.jpg">
+									</a>
+								</if>
+
+								<script>
+									function call_back_img2(path){
+										$("#idcard_img_2").val(path);
+									}
+								</script>
+
+							</td>
+						</tr>
+						<tr>
+							<td class="text-center">手持身份证头部照:</td>
+							<td>
+								<input type="button" value="上传身份证头部照"  onclick="GetUploadify(1,'','goods','call_back_img3');"/>
+								<input type="text" class="input-sm"  name="idcard_img_3" id="idcard_img_3" value="{$detail.idcard_img_1}"/>
+								<if condition="$goodsInfo['original_img'] neq null">
+									&nbsp;&nbsp;
+									<a target="_blank" href="{$goodsInfo.original_img}" id="original_img3">
+										<img width="25" height="25" src="/Public/images/image_icon.jpg">
+									</a>
+								</if>
+
+								<script>
+									function call_back_img3(path){
+										$("#idcard_img_3").val(path);
+									}
+								</script>
+							</td>
+						</tr>
+						<tr>
+							<td class="text-center">半身照片:</td>
+							<td>
+								<input type="button" value="上传身份证半身照"  onclick="GetUploadify(1,'','goods','call_back_img4');"/>
+								<input type="text" class="input-sm"  name="idcard_img_4" id="idcard_img_4" value="{$detail.idcard_img_1}"/>
+								<if condition="$goodsInfo['original_img'] neq null">
+									&nbsp;&nbsp;
+									<a target="_blank" href="{$goodsInfo.original_img}" id="original_img4">
+										<img width="25" height="25" src="/Public/images/image_icon.jpg">
+									</a>
+								</if>
+
+								<script>
+									function call_back_img4(path){
+										$("#idcard_img_4").val(path);
+									}
+								</script>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+					<div>
+						<button type="button" id="person_store_submit" class="btn btn-info">
+							<i class="ace-icon fa fa-check bigger-110"></i> 保存
+						</button>
+						<a href="javascript:history.go(-1)" data-toggle="tooltip" title="" class="btn btn-default pull-right" data-original-title="返回"><i class="fa fa-reply"></i></a>
+					</div>
+				</div>
+			</div>
+
+
+			<!--企业身份-->
+			<div class="panel panel-default"  id="company_div" <if condition="$store.store_from eq 0">style="display:none"</if>   >
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="fa fa-list"></i>企业商户信息</h3>
+			</div>
+			<div class="panel-body">
+				<table class="table table-bordered">
+					<tbody>
+					<tr>
+						<td class="text-center">企业法人姓名:</td>
+						<td><input type="text" class="form-control" name="company_user_name" value="{$detail.company_user_name}"></td>
+					</tr>
+					<tr>
+						<td class="text-center">身份证号:</td>
+						<td><input type="text" class="form-control" name="show_ower_idcard" value="{$detail.show_ower_idcard}"></td>
+					</tr>
+
+					<tr>
+						<td class="text-center">公司名称</td>
+						<td>
+							<input type="text" class="form-control" name="company_name" value="{$detail.company_name}">
+						</td>
+
+					</tr>
+					<tr>
+						<td class="text-center">营业执照注册号:</td>
+						<td><input type="text" class="form-control" name="company_regiter_num" value="{$detail.company_regiter_num}"></td>
+					</tr>
+					<tr>
+						<td class="text-center">组织机构代码:</td>
+						<td><input type="text" class="form-control" name="company_organ_code" value="{$detail.company_organ_code}"></td>
+					</tr>
+					<!--<tr>-->
+					<!--<td>会员等级:</td>-->
+					<!--<td>{$user.user_rank}</td>-->
+					<!--</tr>-->
+					<tr>
+						<td class="text-center">纳税人识别码:</td>
+						<td>
+							<input type="text" class="form-control" name="company_identi_code" value="{$detail.company_identi_code}">
+						</td>
+					</tr>
+					<tr>
+						<td class="text-center">统一社会信用代码:</td>
+						<td>
+							<input type="text" class="form-control" name="company_credit_code" value="{$detail.company_credit_code}">
+						</td>
+					</tr>
+					</tbody>
+				</table>
+				<div>
+					<button type="submit" class="btn btn-info" id="company_store_submit">
+						<i class="ace-icon fa fa-check bigger-110"></i> 保存
+					</button>
+					<a href="javascript:history.go(-1)" data-toggle="tooltip" title="" class="btn btn-default pull-right" data-original-title="返回"><i class="fa fa-reply"></i></a>
+				</div>
+			</div>
+		</div>
+</div>
+</div>    <!-- /.content -->
+</section>
+</div>
+<script>
+
+</script>
+<script type="text/javascript">
+
+	$(".store_from").click(function(){
+		var store_from = $(this).val();
+		if(store_from==0){
+			$("#company_div").hide();
+			$("#person_div").show();
+			$("[name='store_type']").eq(0).attr('checked','checked');
+		}else {
+			$("#company_div").show();
+			$("#person_div").hide();
+			$("[name='store_type']").eq(3).attr('checked','checked');
+		}
+	});
+
+	var data ;
+	var store_id = {$store.id};
+
+	function check_baseinfo(){
+		var  store_name = $("[name='store_name']").val(),
+				email = $("[name='email']").val(),
+				password = $("[name='password']").val(),
+				password2 = $("[name='password2']").val(),
+				state = $("[name='state']:checked ").val(),
+				mobile = $("[name='mobile']").val(),
+				store_from = $("[name='store_from']:checked ").val(),
+				store_type = $("[name='store_type']:checked ").val(),
+				store_logo = $("[name='store_logo']").val(),
+				introduce = $("[name='introduce']").val(),
+				address = $("[name='address']").val();
+
+		var is_true = true;
+		var msg ;
+
+		if(!store_name){
+			msg = "请输入门店名称<br>";
+			is_true = false;
+		}
+		if(!email){
+			msg += "请输入邮箱<br>";
+			is_true = false;
+		}
+		if(!password){
+			msg += "请输入密码<br>";
+			is_true = false;
+		}
+		if(!password2){
+			msg += "请输入确认密码<br>";
+			is_true = false;
+		}
+		if(!mobile){
+			msg += "请输入手机号码<br>";
+			is_true = false;
+		}
+		if(! address){
+			msg += "请输入地址<br>";
+			is_true = false;
+		}
+
+		if(is_true == false){
+			layer.alert(msg);
+			return false;
+		}
+
+		data = {'store_name':store_name,'email':email,'password':password,'mobile':mobile,'store_logo':store_logo,
+			'introduce':introduce,'address':address,'store_from':store_from,'store_type':store_type,'state':state};
+
+		return data;
+	}
+
+	$("#person_store_submit").click(function(){
+		check_baseinfo();
+		var msg = "";
+		var is_true = true;
+		var show_ower_name = $("[name='show_ower_name']").val(),
+				show_ower_mail = $("[name='show_ower_mail']").val(),
+				show_ower_mobile = $("[name='show_ower_mobile']").val(),
+				show_ower_mobile_re = $("[name='show_ower_mobile_re']").val(),
+				show_ower_idcard = $("[name='show_ower_idcard']").val(),
+				is_haitao = $("[name='is_haitao']:checked").val(),
+				idcard_img_1 = $("[name='idcard_img_1']").val(),
+				idcard_img_2 = $("[name='idcard_img_2']").val(),
+				idcard_img_3 = $("[name='idcard_img_3']").val(),
+				idcard_img_4 = $("[name='idcard_img_4']").val();
+
+		if(!show_ower_name){
+			msg = "请输入店主姓名<br>";
+			is_true = false;
+		}
+		if(!show_ower_mail){
+			msg += "请输入店主邮箱<br>";
+			is_true = false;
+		}
+		if(!show_ower_mobile){
+			msg += "请输入店主手机号码<br>";
+			is_true = false;
+		}
+		if(!show_ower_mobile_re){
+			msg += "请重复输入店主手机号码<br>";
+			is_true = false;
+		}
+		if(!show_ower_idcard){
+			msg += "请输入店主身份证号码<br>";
+			is_true = false;
+		}
+		if(!idcard_img_1){
+			msg += "请上传身份证正面照<br>";
+			is_true = false;
+		}
+		if(!idcard_img_2){
+			msg += "请上传身份证背面照<br>";
+			is_true = false;
+		}
+		if(!idcard_img_3){
+			msg += "请上传手持身份证头部照<br>";
+			is_true = false;
+		}
+		if(!idcard_img_4){
+			msg += "请上传半身照片<br>";
+			is_true = false;
+		}
+
+		if(is_true == false){
+			layer.alert(msg);
+			return false;
+		}
+
+		var person = {'show_ower_name':show_ower_name,'show_ower_mail':show_ower_mail,'show_ower_mobile':show_ower_mobile,
+			'show_ower_idcard':show_ower_idcard,'idcard_img_1':idcard_img_1,'idcard_img_2':idcard_img_2,'idcard_img_3':idcard_img_3,
+			'idcard_img_4':idcard_img_4,'is_haitao':is_haitao};
+		$.ajax({
+			url : '/Admin/Store/addStore',
+			type : 'POST',
+			data : {'base':data,'detail':person,'type':'person'},
+			dataType : 'JSON',
+			success : function(res){
+				if(res.status==1){
+					layer.alert(res.mgs, function (index) {
+						location.href="/Admin/Store/index";
+					});
+				}else{
+					layer.alert(res.msg);
+				}
+			}
+		});
+
+		return false;
+	});
+
+	$("#company_store_submit").click(function(){
+		check_baseinfo();
+
+		var company_user_name = $("[name='company_user_name']").val(),
+				show_ower_idcard = $("[name='show_ower_idcard']").val(),
+				company_name = $("[name='company_name']").val(),
+				company_regiter_num = $("[name='company_regiter_num]").val(),
+				company_organ_code = $("[name='company_organ_code']").val(),
+				company_identi_code = $("[name='company_identi_code']").val(),
+				company_credit_code = $("[name='company_credit_code']").val();
+
+		var msg ="";
+		var is_true = true;
+		if(!company_user_name){
+			msg += '请输入企业法人姓名<br>';
+			is_true = false;
+		}
+		if(!company_name){
+			msg += "请输入公司名称<br>";
+			is_true = false;
+		}
+		if(!show_ower_idcard){
+			msg += '请输入企业法人身份证号<br>';
+			is_true = false;
+		}
+		if(!company_regiter_num){
+			msg += '请输入营业执照注册号<br>';
+			is_true = false;
+		}
+		if(!company_organ_code){
+			msg += '请输入组织机构代码<br>';
+			is_true = false;
+		}
+		if(!company_identi_code){
+			msg += '请输入纳税人识别码<br>';
+			is_true = false;
+		}
+		if(!company_credit_code){
+			msg += '请输入同意社会信用代码<br>';
+			is_true = false;
+		}
+
+		if(is_true==false){
+			layer.alert(msg);
+			return false;
+		}
+
+		var detail = {'company_user_name':company_user_name,'show_ower_idcard':show_ower_idcard,'company_name':company_name,
+			'company_regiter_num':company_regiter_num,'company_organ_code':company_organ_code,'company_identi_code':company_identi_code,
+			'company_credit_code':company_credit_code};
+
+		$.ajax({
+			url : '/Admin/Store/addStore',
+			type : 'POST',
+			data : {'base':data,'detail':detail,'type':'company'},
+			dataType : 'JSON',
+			success : function(res){
+				if(res.status==1){
+					layer.alert(res.mgs, function (index) {
+						location.href="/Admin/Store/index";
+					});
+				}else{
+					layer.alert(res.msg);
+				}
+			}
+		});
+
+		return false;
+	});
+</script>
+
+</body>
+</html>

@@ -21,12 +21,12 @@ class BaseController extends Controller {
      */
     function __construct() {
         parent::__construct();
-        if($_REQUEST['test'] == '1')
-        {
-            $test_str = 'POST'.print_r($_POST,true);
-            $test_str .= 'GET'.print_r($_GET,true);
-            file_put_contents('a.html', $test_str);
-        }
+//        if($_REQUEST['test'] == '1')
+//        {
+//            $test_str = 'POST'.print_r($_POST,true);
+//            $test_str .= 'GET'.print_r($_GET,true);
+//            file_put_contents('a.html', $test_str);
+//        }
         $this->user_id = I("user_id",0); // 用户id   
         if($this->user_id)
         {
