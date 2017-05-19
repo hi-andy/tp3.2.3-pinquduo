@@ -38,7 +38,7 @@ class BaseController extends Controller {
      * 初始化操作
      */
     public function _initialize() {
-        
+        $this->injection_prevention();
     }
 
     /**
@@ -657,5 +657,19 @@ class BaseController extends Controller {
 
     public function getdb(){
 
+    }
+
+    public function injection_prevention(){
+        $arr = empty($_GET) ? $_POST : $_GET;
+        foreach ($arr as $value){
+            if (
+                strstr($value, "select") !== false ||
+                strstr($value, "update") !== false ||
+                strstr($value, "insert") !== false
+            ) {
+                $json_arr = array('status'=>-1,'msg'=>'非法接入','result'=>'');
+                exit(json_encode($json_arr));
+            }
+        }
     }
 }
