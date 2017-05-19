@@ -1762,48 +1762,48 @@ class UserController extends BaseController {
         }
 
         //将时间到了团又没有成团的团解散
-        $where = null;
-        $conditon = null;
-        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<='.time()-30)->field('id,order_id,start_time,end_time,goods_num')->select();
-        if(count($prom_order)>0)
-        {
-            //将团ＩＤ一次性拿出来
-            $where = $this->getPromid($prom_order);
-            //找出这个团的团长和团员
-            $join_proms = M('group_buy')->where($where)->select();
-
-            //统计每个团的人数
-            $prom_man = array();
-            foreach($join_proms as $k=>$v)
-            {
-                $n = array();
-                foreach($join_proms as $k1=>$v1)
-                {
-                    if($v['id']==$v1['mark'])
-                    {
-                        $n['id'][]="'".$v1['id']."',";
-                        $n['order_id'][]="'".$v1['order_id']."',";
-                    }elseif($v['id']==$v1['id'])
-                    {
-                        $n['id'][]="'".$v['id']."',";
-                        $n['order_id'][]="'".$v['order_id']."',";
-                    }
-                }
-                $prom_man[$k]=$n;
-            }
-
-            $wheres = $this->ReturnSQL($prom_man);
-            $i_d = $wheres['id'];
-            $res = M('group_buy')->where("`id` IN ".$i_d)->data(array('is_dissolution'=>1))->save();
-            $result1 = M('order')->where("`order_id` IN ".$wheres['order_id'])->data(array('order_status'=>9,'order_type'=>12))->save();
-
-            if($res&&$result1)
-            {
-                //给未成团订单退款
-                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
-                $this->BackPay($pay_cod);
-            }
-        }
+//        $where = null;
+//        $conditon = null;
+//        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<='.time()-30)->field('id,order_id,start_time,end_time,goods_num')->select();
+//        if(count($prom_order)>0)
+//        {
+//            //将团ＩＤ一次性拿出来
+//            $where = $this->getPromid($prom_order);
+//            //找出这个团的团长和团员
+//            $join_proms = M('group_buy')->where($where)->select();
+//
+//            //统计每个团的人数
+//            $prom_man = array();
+//            foreach($join_proms as $k=>$v)
+//            {
+//                $n = array();
+//                foreach($join_proms as $k1=>$v1)
+//                {
+//                    if($v['id']==$v1['mark'])
+//                    {
+//                        $n['id'][]="'".$v1['id']."',";
+//                        $n['order_id'][]="'".$v1['order_id']."',";
+//                    }elseif($v['id']==$v1['id'])
+//                    {
+//                        $n['id'][]="'".$v['id']."',";
+//                        $n['order_id'][]="'".$v['order_id']."',";
+//                    }
+//                }
+//                $prom_man[$k]=$n;
+//            }
+//
+//            $wheres = $this->ReturnSQL($prom_man);
+//            $i_d = $wheres['id'];
+//            $res = M('group_buy')->where("`id` IN ".$i_d)->data(array('is_dissolution'=>1))->save();
+//            $result1 = M('order')->where("`order_id` IN ".$wheres['order_id'])->data(array('order_status'=>9,'order_type'=>12))->save();
+//
+//            if($res&&$result1)
+//            {
+//                //给未成团订单退款
+//                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
+//                $this->BackPay($pay_cod);
+//            }
+//        }
 
         //将自动确认收货的订单的状态进行修改
         //单买的订单拿出来
