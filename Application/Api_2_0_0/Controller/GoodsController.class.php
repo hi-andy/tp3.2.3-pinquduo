@@ -434,9 +434,9 @@ class GoodsController extends BaseController {
 		$free_num = $join_num[0]['free'];
 		M()->startTrans();
 		//把所有人的状态改成发货
-		for($i=0;$i<$prom_num;$i++)
+		for($i=0;$i<count($join_num);$i++)
 		{
-            redis("getUserPromList_status".$join_num[$i]['user_id'], "1");
+            $this->order_redis_status_ref($join_num[$i]['user_id']);
 			if(!empty($join_num[0]['is_raise']))
 			{
 				if($i==0)
