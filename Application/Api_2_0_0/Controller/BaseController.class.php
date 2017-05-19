@@ -39,6 +39,7 @@ class BaseController extends Controller {
      */
     public function _initialize() {
         header("Access-Control-Allow-Origin:*");
+        $this->injection_prevention();
     }
 
     /**
@@ -800,5 +801,20 @@ class BaseController extends Controller {
             ->join('INNER JOIN tp_group_buy gb on gb.order_id = o.order_id ')
             ->where($where)->find();
         return $order;
+    }
+
+    //防注入
+    public function injection_prevention(){
+        $arr = empty($_GET) ? $_POST : $_GET;
+        foreach ($arr as $value){
+            if (
+                strstr($value, "select") !== false ||
+                strstr($value, "update") !== false ||
+                strstr($value, "insert") !== false
+            ) {
+                $json_arr = array('status'=>-1,'msg'=>'非法接入','result'=>'');
+                exit(json_encode($json_arr));
+            }
+        }
     }
 }

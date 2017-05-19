@@ -659,6 +659,7 @@ class BaseController extends Controller {
 
     }
 
+    //防注入
     public function injection_prevention(){
         $arr = empty($_GET) ? $_POST : $_GET;
         foreach ($arr as $value){
