@@ -193,7 +193,7 @@ class BaseController extends Controller {
             $status['annotation'] = '拼团中,已付款';
             $status['order_type'] = '11';
         }
-        elseif(($num+1)<$prom['goods_num'] && $prom['end_time'] && $order['order_status']==9){//< time() && $order['pay_status']==1 && $order['order_status']==9
+        elseif(($num+1)<$prom['goods_num'] && $prom['end_time'] && $order['order_status']==9){//< time() && 
             $status['annotation'] = '未成团,待退款';
             $status['order_type'] = '12';
         }
