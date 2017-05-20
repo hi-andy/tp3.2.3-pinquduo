@@ -1758,6 +1758,7 @@ class UserController extends BaseController {
                 $where = $this->getPromid($prom_order);
                 //找出这个团的团长和团员
                 $join_proms = M('group_buy')->where($where)->select();
+                echo M()->getLastSql();
                 redis("get_Free_Order_status", "1");
                 //统计每个团的人数
                 $prom_man = array();
@@ -1840,9 +1841,7 @@ class UserController extends BaseController {
             $id .= $v['id'] . ",";
         }
         $id = substr($id, 0, -1);
-        $result['id'] = array('in', $id);
-        $result['mark'] = array('in', $id);
-        $result['is_pay'] = array('eq', 1);
+        $result = "(id in ($id) or mark in ($id)) and is_pay=1";
         return $result;
     }
 
