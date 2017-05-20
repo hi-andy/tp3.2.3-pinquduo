@@ -8,25 +8,25 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-//    if (REDIS_SWITCH) {
-//        $redis = new Redis();
-//        $redis->connect(REDISIP, PORT);
-//        $redis->auth(REDISPASS);
-//        if ($del == true) {
-//            $redis->delete($key);
-//        }
-//        if ($value) {
-//            if ($time) {
-//                $redis->setex($key, $time, $value);
-//            } else {
-//                $redis->set($key, $value);
-//            }
-//        } else {
-//            return $redis->get($key);
-//        }
-//    } else {
-//        redisdelall("*");
-//    }
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($del == true) {
+            $redis->delete($key);
+        }
+        if ($value) {
+            if ($time) {
+                $redis->setex($key, $time, $value);
+            } else {
+                $redis->set($key, $value);
+            }
+        } else {
+            return $redis->get($key);
+        }
+    } else {
+        redisdelall("*");
+    }
 }
 
 /**
@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-//    $redis = new Redis();
-//    $redis->connect(REDISIP, PORT);
-//    $redis->auth(REDISPASS);
-//    $redis->delete($redis->keys($key));
+    $redis = new Redis();
+    $redis->connect(REDISIP, PORT);
+    $redis->auth(REDISPASS);
+    $redis->delete($redis->keys($key));
 }
 /**
  * @param $arr
@@ -795,20 +795,6 @@ function getImgSize($arr)
 		$res[$i]['height']=$size[1];
 	}
 	return $res;
-}
-
-/**
- * 获取只读库配置
- * @return array
- */
-function read_only_db() {
-    return array(
-        'DB_HOST' => 'rr-wz9gfg905xeq4ngi1o.mysql.rds.aliyuncs.com', //数据库主机
-        'DB_NAME' => 'pinquduo', //数据库名称
-        'DB_USER' => 'rootmost', //数据库用户名
-        'DB_PWD' => 'Zuoapp_la', //数据库密码
-        'DB_PORT' => '3306', //数据库端口
-    );
 }
 
 //获取小数点后面的长度
