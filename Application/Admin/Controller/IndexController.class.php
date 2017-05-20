@@ -42,7 +42,7 @@ class IndexController extends BaseController {
             M('goods')->where(array('goods_id' => array('in', $in_goods_id)))->save(array('sales'=>intval($sales),'refresh'=>0));
             $store_id = M('goods')->where(array('goods_id' => array('in', $in_goods_id)))->field('store_id')->select();
             foreach ($store_id as $value) {
-                redislist("set_sales_id", $value);
+                redislist("set_sales_id", $value['store_id']);
             }
         }
         $this->success('操作成功', '/Admin/Index/welcome');

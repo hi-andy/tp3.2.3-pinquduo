@@ -16,7 +16,8 @@ class StoreController extends BaseController{
      */
     public function store_sales(){
         $merchant = redislist("set_sales_id");
-        if ($merchant) M()->query("update tp_merchant set sales=(select SUM(sales) as a from tp_goods where store_id = {$merchant}),refresh=1 where id={$merchant}");
+        print_r($merchant);
+        if ($merchant) M()->query("update tp_merchant set sales=(select SUM(sales) as a from tp_goods where store_id = {$merchant}) where id={$merchant}");
     }
 
 	/*
