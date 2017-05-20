@@ -95,7 +95,6 @@ class AdminController extends BaseController {
     		$r = D('merchant')->where('id='.$data['id'])->delete();
     		exit(json_encode(1));
     	}
-    	
     	if($r){
     		$this->success("操作成功",U('Store/Report/index'));
     	}else{
@@ -160,23 +159,26 @@ class AdminController extends BaseController {
 	            $merchant['password'] = md5($merchant['password']);
                	$merchant_info = M('merchant')->where($merchant)->find();
 	            $haitao = M('store_detail')->where('storeid='.$merchant_info['id'])->field('is_haitao,is_pay,trade_no')->find();
+<<<<<<< HEAD
+                if(is_array($merchant_info)&&!empty($haitao)&&!empty($merchant_info)){
+	                if($merchant_info['is_check']==0){
+=======
                 if(is_array($merchant_info) && !empty($haitao) && !empty($merchant_info)){
 	                if($merchant_info['is_check']==0)
 	                {
+>>>>>>> d824fce2144204c7bd1308a3666f4f7278768055
 		                exit(json_encode(array('status'=>0,'msg'=>'您的申请暂时还没审核，请耐心等待或者和客服联系')));
 	                }elseif($merchant_info['is_check']==2){
 		                exit(json_encode(array('status'=>0,'msg'=>'您的申请未通过审核，有疑问可与客服联系')));
 	                }
 	                session('merchant_id',$merchant_info['id']);
 	                session('trade_no',$haitao['trade_no']);
-	                if($haitao['is_pay']==0)
-	                {
+	                if($haitao['is_pay']==0){
 		                $url = U('Store/Index/pay_money');
 		                exit(json_encode(array('status'=>1,'url'=>$url)));
 	                }
 	                //检查是否保存密码
-	                if($_POST['checkbox']==1)
-	                {
+	                if($_POST['checkbox']==1){
 		                $this->set_Cookie($_POST['merchantname'],$_POST['password']);
 	                }
                     session('act_list',$merchant_info['act_list']);

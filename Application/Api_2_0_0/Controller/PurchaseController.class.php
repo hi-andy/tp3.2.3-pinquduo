@@ -90,7 +90,7 @@ class PurchaseController extends  BaseController
             if (!empty($ajax_get))
                 $this->getJsonp($json);
             exit(json_encode($json));
-        }elseif ($spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
+        }elseif ($res1['is_special']==7 && $spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
             $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))
@@ -134,7 +134,6 @@ class PurchaseController extends  BaseController
                             echo "<script> alert('" . $json['msg'] . "') </script>";
                             exit;
                         }
-
                         exit(json_encode($json));
                     }
                 } elseif ($num == $result['goods_num']) {

@@ -54,6 +54,7 @@ class SecondBuyController extends Controller {
             $goods_info['shop_price'] = 0.1;
             $goods_info['prom_price'] = 0.1;
             $goods_info['is_support_buy'] = 0;
+            $goods_info['sales'] = 0;
             $goods_info['store_count'] = $value['quantity'];
             unset($goods_info['goods_id']);
             $new_goods_id = $Goods->add($goods_info);
