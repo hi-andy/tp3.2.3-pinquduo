@@ -657,11 +657,9 @@ class UserController extends BaseController {
                 $this->getJsonp($json);
             $returnjson = json_encode($json);
         }
-        $this->order_redis_status_ref($id);
+        $this->order_redis_status_ref($user_id);
         if(!empty($ajax_get))
             $this->getJsonp($json);
-
-        $this->order_redis_status_ref($user_id);
         exit(json_encode($returnjson));
     }
 
