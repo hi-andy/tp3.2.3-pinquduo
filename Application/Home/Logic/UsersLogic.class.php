@@ -504,7 +504,7 @@ class UsersLogic extends RelationModel
         M('goods')->where('`goods_id`='.$order['goods_id'])->setInc('store_count',$order['num']);
         $goods =  M('goods')->where('`goods_id`='.$order['goods_id'])->getField('is_special');
         if($goods['is_special']==7){
-            M('goods_activity')->where('`goods_id` = '.$goods['goods_id'])->setDec('quantity',$order['num']);
+            M('goods_activity')->where('`goods_id` = '.$goods['goods_id'])->setInc('quantity',$order['num']);
         }
         //规格库存回复到原来的样子
         $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
