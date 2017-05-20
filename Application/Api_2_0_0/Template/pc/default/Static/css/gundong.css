@@ -1,0 +1,32 @@
+@charset "utf-8";
+/* CSS Document */
+/*页面样式*/
+.rollBox img{border:none;}
+.rollBox{width:100%;overflow:hidden;margin:0 auto; margin-bottom:10px}
+.rollBox .Cont{width:430px;overflow:hidden;margin:0 auto;}
+.rollBox .ScrCont{width:10000000px;}
+.rollBox .Cont .pic{width:60px;float:left;text-align:center;padding-right:16px;}
+*+html .rollBox .Cont .pic{width:130px;float:left;text-align:center;padding-right:30px;}
+.rollBox .Cont .pic img{padding:4px;background:#fff;border:1px solid #ccc;display:block;margin:0 auto;}
+.rollBox .Cont .pic p{line-height:26px;color:#505050;}
+.rollBox .Cont a:link,.rollBox .Cont a:visited{color:#626466;text-decoration:none;}
+.rollBox .Cont a:hover{color:#f00;text-decoration:underline;}
+.rollBox #List1,.rollBox #List2{float:left;}
+.img1,.img2,.Cont{
+float:left;}
+.img1,.img2{
+width:25px;
+height:60px;
+display:block;
+cursor:pointer;
+}
+.img1{
+	background-image:url(../images/icc1.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.img2{
+	background-image:url(../images/icc2.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
