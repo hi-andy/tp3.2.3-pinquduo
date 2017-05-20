@@ -423,7 +423,7 @@ class PurchaseController extends  BaseController
                     $pay_detail = $qqPay->getQQPay($order);
                 }
                 $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-                $this->aftermath($user_id,$goods_id,$num,$o_id);
+                $this->aftermath($user_id,$goods,$num,$o_id);
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -687,7 +687,7 @@ class PurchaseController extends  BaseController
                 // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-            $this->aftermath($user_id,$goods_id,$num,$o_id);
+            $this->aftermath($user_id,$goods,$num,$o_id);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -865,7 +865,7 @@ class PurchaseController extends  BaseController
                 $pay_detail = $qqPay->getQQPay($order);
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
-            $this->aftermath($user_id,$goods_id,$num,$o_id);
+            $this->aftermath($user_id,$goods,$num,$o_id);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
