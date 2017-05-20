@@ -15,8 +15,8 @@ class StoreController extends BaseController{
      * 更新销量自动脚本
      */
     public function store_sales(){
-        $merchant = M('merchant')->where(array('refresh'=>array('eq',0)))->field('id')->find();
-        M()->query("update tp_merchant set sales=(select SUM(sales) as a from tp_goods where store_id = {$merchant['id']}),refresh=1 where id={$merchant['id']}");
+        $merchant = redislist("set_sales_id");
+        if ($merchant) M()->query("update tp_merchant set sales=(select SUM(sales) as a from tp_goods where store_id = {$merchant}),refresh=1 where id={$merchant}");
     }
 
 	/*
