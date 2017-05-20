@@ -1,7 +1,6 @@
 <?php
 namespace Admin\Controller;
 use Admin\Logic\GoodsLogic;
-use Api\Controller\BaseController;
 use Think\AjaxPage;
 
 class JiujiuController extends BaseController{

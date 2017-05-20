@@ -1764,7 +1764,8 @@ class UserController extends BaseController {
         //将时间到了团又没有成团的团解散
         $where = null;
         $conditon = null;
-        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<='.time())->field('id,order_id,start_time,end_time,goods_num')->select();
+        $time = time()-30;
+        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<='.$time)->field('id,order_id,start_time,end_time,goods_num')->select();
         if(count($prom_order)>0)
         {
             //将团ＩＤ一次性拿出来
@@ -1838,26 +1839,15 @@ class UserController extends BaseController {
 
     public function getPromid($prom)
     {
-        $id = null;
-        $mark = null;
-        $num = count($prom);
-        for($i=0;$i<$num;$i++)
-        {
-            if($num==1){
-                $id = $id."('".$prom[$i]['id']."')";
-                $mark = $mark."('".$prom[$i]['id']."')";
-            }elseif($i==$num-1) {
-                $id = $id."'".$prom[$i]['id']."')";
-                $mark = $mark."'".$prom[$i]['id']."')";
-            }elseif($i==0){
-                $id = $id."('".$prom[$i]['id']."',";
-                $mark = $mark."('".$prom[$i]['id']."',";
-            }else{
-                $id = $id."'".$prom[$i]['id']."',";
-                $mark = $mark."'".$prom[$i]['id']."',";
-            }
+        $id = "";
+        foreach ($prom as $v) {
+            $id .= $v['id'] . ",";
         }
-        return "`id` IN $id or `mark` IN $mark and `is_pay`=1 ";
+        $id = substr($id, 0, -1);
+        $result['id'] = array('in', $id);
+        $result['mark'] = array('in', $id);
+        $result['is_pay'] = array('eq', 1);
+        return $result;
     }
 
     public function ReturnSQL($array)

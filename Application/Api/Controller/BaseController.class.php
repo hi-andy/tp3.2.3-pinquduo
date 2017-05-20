@@ -21,12 +21,12 @@ class BaseController extends Controller {
      */
     function __construct() {
         parent::__construct();
-        if($_REQUEST['test'] == '1')
-        {
-            $test_str = 'POST'.print_r($_POST,true);
-            $test_str .= 'GET'.print_r($_GET,true);
-            file_put_contents('a.html', $test_str);
-        }
+//        if($_REQUEST['test'] == '1')
+//        {
+//            $test_str = 'POST'.print_r($_POST,true);
+//            $test_str .= 'GET'.print_r($_GET,true);
+//            file_put_contents('a.html', $test_str);
+//        }
         $this->user_id = I("user_id",0); // 用户id   
         if($this->user_id)
         {
@@ -38,7 +38,7 @@ class BaseController extends Controller {
      * 初始化操作
      */
     public function _initialize() {
-        
+        $this->injection_prevention();
     }
 
     /**
@@ -657,5 +657,20 @@ class BaseController extends Controller {
 
     public function getdb(){
 
+    }
+
+    //防注入
+    public function injection_prevention(){
+        $arr = empty($_GET) ? $_POST : $_GET;
+        foreach ($arr as $value){
+            if (
+                strstr($value, "select") !== false ||
+                strstr($value, "update") !== false ||
+                strstr($value, "insert") !== false
+            ) {
+                $json_arr = array('status'=>-1,'msg'=>'非法接入','result'=>'');
+                exit(json_encode($json_arr));
+            }
+        }
     }
 }
