@@ -822,9 +822,13 @@ function getFloatLength($num) {
     return $count;
 }
 
-//操作价格
+//取天花板值
 function operationPrice($price)
 {
-    $price = number_format($price, 2, '.', '');
-    return $price;
+	$price = (float)$price;
+	$price = explode(".",$price);
+	$price[1]=substr($price[1],0,2);
+	$price = (float)($price[0].'.'.$price[1]);
+	$price = $price+0.01;
+	return $price;
 }

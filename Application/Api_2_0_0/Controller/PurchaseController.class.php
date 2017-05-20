@@ -241,18 +241,18 @@ class PurchaseController extends  BaseController
             redis("get_Free_Order_status", "1");
             if(!empty($prom)){
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
+                $count = getFloatLength($goods['prom_price']);
                 if($count>=3){
-                    $price = $this->operationPrice($goods['prom_price']);
+                    $price = operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
                     $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
+                $count = getFloatLength($goods['prom_price']);
                 if($count>=3){
-                    $price = $this->operationPrice($goods['prom_price']);
+                    $price = operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
                     $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
@@ -482,20 +482,20 @@ class PurchaseController extends  BaseController
             if(!empty($prom))
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
+                $count = getFloatLength($goods['prom_price']);
                 if($count>=3)
                 {
-                    $price = $this->operationPrice($goods['prom_price']);
+                    $price = operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
                     $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
+                $count = getFloatLength($goods['prom_price']);
                 if($count>=3)
                 {
-                    $price = $this->operationPrice($goods['prom_price']);
+                    $price = operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
                     $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
@@ -507,20 +507,20 @@ class PurchaseController extends  BaseController
             if(!empty($prom))
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
-                $count = $this->getFloatLength($goods['prom_price']);
+                $count = getFloatLength($goods['prom_price']);
                 if($count>=3)
                 {
-                    $price = $this->operationPrice($goods['prom_price']);
+                    $price = operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }else{
                     $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
-                $count = $this->getFloatLength($goods['prom_price']);
+                $count = getFloatLength($goods['prom_price']);
                 if($count>=3)
                 {
-                    $price = $this->operationPrice($goods['prom_price']);
+                    $price = operationPrice($goods['prom_price']);
                     $goods['prom_price'] = $price-$coupon['money'];
                 }
             }
@@ -530,8 +530,7 @@ class PurchaseController extends  BaseController
         $data['start_time'] = time();
         $data['end_time'] = time()+24*60*60;
         $data['goods_id'] = $goods_id;
-        if(!empty($prom))
-        {
+        if(!empty($prom)){
             $data['goods_num'] = $prom;
         }else{
             $data['goods_num'] = $goods['prom'];
@@ -880,25 +879,6 @@ class PurchaseController extends  BaseController
                 exit;
             }
         }
-    }
-
-    //获取小数点后面的长度
-    private function getFloatLength($num) {
-        $count = 0;
-        $temp = explode ( '.', $num );
-        if (sizeof ( $temp ) > 1) {
-            $decimal = end ( $temp );
-            $count = strlen ( $decimal );
-        }
-        return $count;
-    }
-
-    //操作价格
-    public function operationPrice($price)
-    {
-        $price = number_format($price, 2, '.', '');
-        $price = $price+0.01;
-        return $price;
     }
 
     //获取coupon_list的id，将用户的优惠券状态改掉

@@ -696,23 +696,25 @@ class GoodsController extends BaseController {
 		}
 
 		$user_coupon = M('coupon_list', '', 'DB_CONFIG2')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
+        if(!empty($user_coupon)){
+	        $id =array_column($user_coupon,'cid');
+	        //拿到所有优惠券，并根据condition倒叙输出
+	        $coupon = M('coupon', '', 'DB_CONFIG2')->alias('c')
+		        ->join('INNER JOIN tp_merchant m on m.id = c.store_id')
+		        ->where('c.`id` in ('.join(',',$id).') and c.`condition`<='.$price.' and c.`use_end_time`>'.time())->order('c.`money` desc')
+		        ->field('c.`id`,c.`name`,c.`money`,c.`condition`,c.`use_start_time`,c.`use_end_time`,m.`store_name`')
+		        ->select();
 
-		$id =array_column($user_coupon,'cid');
-		//拿到所有优惠券，并根据condition倒叙输出
-		$coupon = M('coupon', '', 'DB_CONFIG2')->alias('c')
-			->join('INNER JOIN tp_merchant m on m.id = c.store_id')
-			->where('c.`id` in ('.join(',',$id).') and c.`condition`<='.$price.' and c.`use_end_time`>'.time())->order('c.`money` desc')
-			->field('c.`id`,c.`name`,c.`money`,c.`condition`,c.`use_start_time`,c.`use_end_time`,m.`store_name`')
-			->select();
+	        for ($i=0;$i<count($coupon);$i++){
+		        for($j=0;$j<count($user_coupon);$j++){
+			        if($coupon[$i]['id']==$user_coupon[$j]['cid'])
+				        $coupon[$i]['coupon_list_id'] = $user_coupon[$i]['id'];
+		        }
+	        }
+        }else{
+	        $coupon=null;
+        }
 
-		for ($i=0;$i<count($coupon);$i++){
-			for($j=0;$j<count($user_coupon);$j++){
-				if($coupon[$i]['id']==$user_coupon[$j]['cid'])
-					$coupon[$i]['coupon_list_id'] = $user_coupon[$i]['id'];
-			}
-		}
-		if(empty($coupon))
-			$coupon=null;
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('items'=>$coupon));
 		if(!empty($ajax_get))
