@@ -41,14 +41,9 @@ class IndexController extends BaseController {
             $in_goods_id = str_replace(" ，", ",", $in_goods_id);
             M('goods')->where(array('goods_id' => array('in', $in_goods_id)))->save(array('sales'=>intval($sales),'refresh'=>0));
             $store_id = M('goods')->where(array('goods_id' => array('in', $in_goods_id)))->field('store_id')->select();
-            $id = '';
             foreach ($store_id as $value) {
-                $id .= $value . ",";
+                redislist("set_sales_id", $value);
             }
-            $id = substr($id, 0, -1);
-//            $sales = M()->query("select SUM(sales) as a from tp_goods where store_id = {$store_id}");
-//            M('merchant')->where(array("id"=>array("eq",$store_id)))->save(array("sales"=>$sales['a']));
-            M('merchant')->where(array("id"=>array("in",$id)))->getField('refresh',0);
         }
         $this->success('操作成功', '/Admin/Index/welcome');
     }
