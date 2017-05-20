@@ -789,10 +789,12 @@ function getImgSize($arr)
 	$num = count($arr);
 	$res = array();
 	for($i=0;$i<$num;$i++){
-		$size = getimagesize($arr[$i]);
+//		$size = getimagesize($arr[$i]);
 		$res[$i]['origin'] = $arr[$i];
-		$res[$i]['width']=$size[0];
-		$res[$i]['height']=$size[1];
+//		$res[$i]['width']=$size[0];
+//		$res[$i]['height']=$size[1];
+        $res[$i]['width']=imagesx($arr[$i]);
+        $res[$i]['height']=imagesy($arr[$i]);
 	}
 	return $res;
 }
