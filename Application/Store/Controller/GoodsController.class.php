@@ -275,8 +275,6 @@ class GoodsController extends BaseController {
         }
         $GoodsLogic = new GoodsLogic();
         $Goods = D('Goods'); //
-
-        $_POST['refresh'] = 0;
         if(IS_POST)
         {
             $min_num = key($_POST['item']);
@@ -376,8 +374,7 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    $rdsname = "getDetaile".$goods_id;
-                    redisdelall($rdsname);//删除商品详情缓存
+                    redislist("goods_refresh_id", $goods_id);
                 }
                 else
                 {
@@ -678,8 +675,7 @@ class GoodsController extends BaseController {
             $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
         }
         $HaitaoLogic = new HaitaoLogic();
-        $Goods = D('Goods'); //
-        $_POST['refresh'] = 0;
+        $Goods = D('Goods');
         if(IS_POST)
         {
             $min_num = key($_POST['item']);
@@ -744,9 +740,7 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    $rdsname = "getDetaile".$goods_id;
-                    redisdelall($rdsname);//删除商品详情缓存
-//					M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
+                    redislist("goods_refresh_id", $goods_id);
                 }else{
                     $Goods->is_on_sale = 0 ;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库

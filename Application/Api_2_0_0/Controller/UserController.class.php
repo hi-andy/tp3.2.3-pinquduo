@@ -651,13 +651,13 @@ class UserController extends BaseController {
         $data = $this->userLogic->cancel_order($user_id,$id);
         $json = $data;
         $returnjson = $json;
+        $this->order_redis_status_ref($user_id);
         if(!$user_id > 0 || !$id > 0){
             $json = array('status'=>-1,'msg'=>'参数有误','result'=>'');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
             $returnjson = json_encode($json);
         }
-        $this->order_redis_status_ref($id);
         if(!empty($ajax_get))
             $this->getJsonp($json);
 

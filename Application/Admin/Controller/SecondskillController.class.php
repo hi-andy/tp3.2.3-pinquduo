@@ -226,10 +226,6 @@ class SecondskillController extends BaseController
 			$grandson_ids = getCatGrandson(I('cat_id'));
 			$where = " $where  and cat_id in(" . implode(',', $grandson_ids) . ") "; // 初始化搜索条件
 		}
-//		if (I('brand_id')) {
-//			$this->assign('brand_id', I('brand_id'));
-//			$where = "$where and brand_id = " . I('brand_id');
-//		}
 		if (!empty($_REQUEST['keywords'])) {
 			$this->assign('keywords', I('keywords'));
 			$where = "$where and (goods_name like '%" . I('keywords') . "%' or keywords like '%" . I('keywords') . "%')";
@@ -333,7 +329,6 @@ class SecondskillController extends BaseController
 		$Goods = D('Goods'); //
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
 		//ajax提交验证
-		$_POST['refresh'] = 0;
 		if(($_GET['is_ajax'] == 1) && IS_POST)
 		{
 			C('TOKEN_ON',false);
@@ -368,8 +363,7 @@ class SecondskillController extends BaseController
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
 					$this->prom_goods_save($_POST['date'],$_POST['time'],$goods_id);
-					$rdsname = "getDetaile_".$goods_id;
-					redisdelall($rdsname);//删除商品详情缓存
+					redislist("goods_refresh_id", $goods_id);
 				}
 				else
 				{

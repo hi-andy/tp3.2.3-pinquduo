@@ -158,7 +158,6 @@ class HaitaoController extends BaseController{
 		$Goods = D('Goods'); //
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
 		//ajax提交验证
-		$_POST['refresh'] = 0;
 		if(($_GET['is_ajax'] == 1) && IS_POST)
 		{
 			C('TOKEN_ON',false);
@@ -181,8 +180,7 @@ class HaitaoController extends BaseController{
 				if ($type == 2)
 				{
 					$goods_id = $_POST['goods_id'];
-					$rdsname = "getDetaile".$goods_id."*";
-					redisdelall($rdsname);//删除商品详情缓存
+					redislist("goods_refresh_id", $goods_id);
 					$goods = M('goods')->where("goods_id = $goods_id")->find();
 					if($_POST['original_img']!=$goods['original_img'])
 					{
@@ -193,8 +191,7 @@ class HaitaoController extends BaseController{
 					}
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
-					$rdsname = "getDetaile_".$goods_id;
-					redisdelall($rdsname);//删除商品详情缓存
+					redislist("goods_refresh_id", $goods_id);
 				}
 				else
 				{
@@ -202,9 +199,6 @@ class HaitaoController extends BaseController{
 					$Goods->afterSave($goods_id);
 
 				}
-
-//				$HaitaoLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
-//				M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
 				$return_arr = array(
 					'status' => 1,
 					'msg'   => '操作成功',
@@ -220,7 +214,6 @@ class HaitaoController extends BaseController{
 		}
 
 		$goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
-//		$cat_list = $HaitaoLogic->goods_cat_list(); // 已经改成联动菜单
 		$level_cat = $HaitaoLogic->find_parent_cat($goodsInfo['haitao_cat']); // 获取分类默认选中的下拉框
 		$cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
 		$haitao_style = M('haitao_style')->select();
