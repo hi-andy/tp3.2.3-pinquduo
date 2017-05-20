@@ -502,6 +502,10 @@ class UsersLogic extends RelationModel
     {
         //商品销量减去订单中的数量
         M('goods')->where('`goods_id`='.$order['goods_id'])->setInc('store_count',$order['num']);
+        $goods =  M('goods')->where('`goods_id`='.$order['goods_id'])->getField('is_special');
+        if($goods['is_special']==7){
+            M('goods_activity')->where('`goods_id` = '.$goods['goods_id'])->setDec('quantity',$order['num']);
+        }
         //规格库存回复到原来的样子
         $spec_name = M('order_goods')->where('`order_id`='.$order['order_id'])->field('spec_key')->find();
         M('spec_goods_price')->where('`goods_id`='.$order['goods_id']." and `key`='".$spec_name['spec_key']."'")->setInc('store_count',$order['num']);
