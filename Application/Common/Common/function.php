@@ -789,28 +789,12 @@ function getImgSize($arr)
 	$num = count($arr);
 	$res = array();
 	for($i=0;$i<$num;$i++){
-//		$size = getimagesize($arr[$i]);
+		$size = getimagesize($arr[$i]);
 		$res[$i]['origin'] = $arr[$i];
-//		$res[$i]['width']=$size[0];
-//		$res[$i]['height']=$size[1];
-        $res[$i]['width']=imagesx($arr[$i]);
-        $res[$i]['height']=imagesy($arr[$i]);
+		$res[$i]['width']=$size[0];
+		$res[$i]['height']=$size[1];
 	}
 	return $res;
-}
-
-/**
- * 获取只读库配置
- * @return array
- */
-function read_only_db() {
-    return array(
-        'DB_HOST' => 'rr-wz9gfg905xeq4ngi1o.mysql.rds.aliyuncs.com', //数据库主机
-        'DB_NAME' => 'pinquduo', //数据库名称
-        'DB_USER' => 'rootmost', //数据库用户名
-        'DB_PWD' => 'Zuoapp_la', //数据库密码
-        'DB_PORT' => '3306', //数据库端口
-    );
 }
 
 //获取小数点后面的长度
