@@ -280,7 +280,11 @@ class PurchaseController extends  BaseController
             $data['start_time'] = time();
             $data['end_time'] = $result['end_time'];
             $data['goods_id'] = $result['goods_id'];
-            $data['price'] = (string)($goods['prom_price']-$coupon['money'])*$num;
+            if(!empty($coupon_list_id)){
+                $data['price'] = (string)($goods['prom_price']*$num-$coupon['money']);
+            }else{
+                $data['price'] = (string)($goods['prom_price']*$num);
+            }
             $data['goods_num'] = $result['goods_num'];
             $data['order_num'] = (M('group_buy')->where("`mark`=". $result['id'])->count())+1;
             $data['intro'] = $result['intro'];
@@ -309,17 +313,13 @@ class PurchaseController extends  BaseController
             $order['address_base'] = $address['address_base'];
             $order['address'] = $address['address'];
             $order['mobile'] = $address['mobile'];
-            if(I('code')=='weixin')
-            {
+            if(I('code')=='weixin'){
                 $order['pay_code'] = 'weixin' ;
                 $order['pay_name'] = '微信支付';
-            }
-            elseif(I('code')=='alipay')
-            {
+            }elseif(I('code')=='alipay'){
                 $order['pay_code'] = 'alipay' ;
                 $order['pay_name'] = '支付宝支付';
-            }elseif(I('code')=='qpay')
-            {
+            }elseif(I('code')=='qpay'){
                 $order['pay_code'] = 'qpay';
                 $order['pay_name'] = 'QQ钱包支付';
             }
@@ -337,8 +337,7 @@ class PurchaseController extends  BaseController
             $order['free'] = $result['free'];
             $order['store_id'] = $result['store_id'];
             $order['num'] = $num;
-            if(!empty($ajax_get))
-            {
+            if(!empty($ajax_get)){
                 $order['is_jsapi'] = 1;
             }
             $o_id = M('order')->data($order)->add();
@@ -350,8 +349,7 @@ class PurchaseController extends  BaseController
             $spec_data['goods_name'] = $one_order['goods_name'];
             $spec_data['goods_num'] = $num;
             $spec_data['market_price'] = $one_order['market_price'];
-            if(!empty($spec_key))
-            {
+            if(!empty($spec_key)){
                 $spec_data['goods_price'] = $goods_spec['prom_price'];
             }else{
                 $spec_data['goods_price'] = $goods['prom_price'];
@@ -483,45 +481,33 @@ class PurchaseController extends  BaseController
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
                 $count = getFloatLength($goods['prom_price']);
-                if($count>=3)
-                {
+                if($count>=3){
                     $price = operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                    $goods['prom_price'] = $price;
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
                 $count = getFloatLength($goods['prom_price']);
-                if($count>=3)
-                {
+                if($count>=3){
                     $price = operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                    $goods['prom_price'] = $price;
                 }
             }
         }
-        elseif(!empty($goods['free']))
-        {
-            if(!empty($prom))
-            {
+        elseif(!empty($goods['free'])){
+            if(!empty($prom)){
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
                 $count = getFloatLength($goods['prom_price']);
-                if($count>=3)
-                {
+                if($count>=3){
                     $price = operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                    $goods['prom_price'] = $price;
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
                 $count = getFloatLength($goods['prom_price']);
-                if($count>=3)
-                {
+                if($count>=3){
                     $price = operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
+                    $goods['prom_price'] = $price;
                 }
             }
         }
@@ -537,7 +523,11 @@ class PurchaseController extends  BaseController
         }
         $data['order_num'] = 1;
         $data['buy_num'] = $data['order_num'] = 1;
-        $data['price'] = $goods['prom_price']*$num;
+        if(!empty($coupon_list_id)){
+            $data['price'] = (string)($goods['prom_price']*$num-$coupon['money']);
+        }else{
+            $data['price'] = (string)($goods['prom_price']*$num);
+        }
         $data['intro'] = $goods['goods_name'];
         $data['goods_price'] = $goods['market_price'];
         $data['goods_name'] = $goods['goods_name'];
@@ -568,17 +558,13 @@ class PurchaseController extends  BaseController
         $order['address_base'] = $address['address_base'];
         $order['address'] = $address['address'];
         $order['mobile'] = $address['mobile'];
-        if(I('code')=='weixin')
-        {
+        if(I('code')=='weixin'){
             $order['pay_code'] = 'weixin' ;
             $order['pay_name'] = '微信支付';
-        }
-        elseif(I('code')=='alipay')
-        {
+        }elseif(I('code')=='alipay'){
             $order['pay_code'] = 'alipay' ;
             $order['pay_name'] = '支付宝支付';
-        }elseif(I('code')=='qpay')
-        {
+        }elseif(I('code')=='qpay'){
             $order['pay_code'] = 'qpay';
             $order['pay_name'] = 'QQ钱包支付';
         }
