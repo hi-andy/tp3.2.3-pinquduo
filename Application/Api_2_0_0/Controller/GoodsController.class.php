@@ -1064,10 +1064,8 @@ class GoodsController extends BaseController {
         $goods_id = I('goods_id');
         //自动脚本
         if ($refresh) {
-            $result = M('goods')->where(array('refresh'=>array('eq',0)))->field('goods_id')->order('sales desc,goods_id desc')->find();
-            if ($result) {
-                M('goods')->where(array("goods_id" => array("eq", $result['goods_id'])))->setField('refresh', 1);
-                $goods_id = $result['goods_id'];
+            $goods_id = redislist("goods_refresh_id");
+            if ($goods_id){
                 redisdelall("getDetaile_".$goods_id);
             } else {
                 exit;
