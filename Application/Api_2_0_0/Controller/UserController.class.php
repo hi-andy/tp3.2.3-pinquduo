@@ -1821,7 +1821,7 @@ class UserController extends BaseController {
             }
 
             //更新限时秒杀列表
-            $is_special = M('goods','','')
+            $is_special = M('goods','','DB_CONFIG2')
                 ->where(array(
                     'is_special'=>array('EQ',1),
                     'on_time'=>array('ELT',time()),
