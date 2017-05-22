@@ -837,4 +837,9 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
+    function  test($order_sn,$order_a){
+        $orderLogic = new OrderLogic();
+        $result = $orderLogic->weixinBackPay($order_sn, $order_a);
+    }
 }
