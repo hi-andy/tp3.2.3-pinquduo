@@ -1760,7 +1760,6 @@ class UserController extends BaseController {
                 $where = $this->getPromid($prom_order);
                 //找出这个团的团长和团员
                 $join_proms = M('group_buy')->where($where)->select();
-                echo M()->getLastSql();
                 redis("get_Free_Order_status", "1");
                 //统计每个团的人数
                 $prom_man = array();
@@ -1784,8 +1783,7 @@ class UserController extends BaseController {
                 $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
                 $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
 
-                if ($res && $result1) {
-                    //给未成团订单退款
+                if ($res && $result1) {//给未成团订单退款
                     $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
                     $this->BackPay($pay_cod);
                 }
