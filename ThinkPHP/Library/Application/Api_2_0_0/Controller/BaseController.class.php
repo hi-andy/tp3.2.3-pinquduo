@@ -508,19 +508,19 @@ class BaseController extends Controller {
         switch ($bigType) {
             case 1: //gif
 //                header('Content-Type:image/gif');
-                $pic = '/data/wwwroot/default/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.gif';
+                $pic = '/sites/pqd/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.gif';
                 $pin = '/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.gif';
                 imagejpeg($bigImg, $pic);
                 break;
             case 2: //jpg
 //                header('Content-Type:image/jpg');
-                $pic = '/data/wwwroot/default/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.jpg';
+                $pic = '/sites/pqd/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.jpg';
                 $pin = '/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.jpg';
                 imagejpeg($bigImg, $pic);
                 break;
             case 3: //png
 //                header('Content-Type:image/png');
-                $pic = '/data/wwwroot/default/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.png';
+                $pic = '/sites/pqd/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.png';
                 $pin = '/Public/upload/fenxiang/'.$goods_id.'_'.$store_id.'.png';
                 imagejpeg($bigImg, $pic);
                 break;

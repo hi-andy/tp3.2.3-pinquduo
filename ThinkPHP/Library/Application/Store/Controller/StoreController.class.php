@@ -498,17 +498,17 @@ class StoreController extends BaseController{
         list($bgWidth, $bgHight, $bgType) = getimagesize($bigImgPath);
         switch ($bgType) {
             case 1: //gif
-                $pic = '/data/wwwroot/default/Public/upload/receipt/'.$store['id'].'.gif';
+                $pic = '/sites/pqd/Public/upload/receipt/'.$store['id'].'.gif';
                 $pic2 = '/Public/upload/receipt/'.$store['id'].'.gif';
                 imagejpeg($img,$pic);
                 break;
             case 2: //jpg
-                $pic = '/data/wwwroot/default/Public/upload/receipt/'.$store['id'].'.jpg';
+                $pic = '/sites/pqd/Public/upload/receipt/'.$store['id'].'.jpg';
                 $pic2 = '/Public/upload/receipt/'.$store['id'].'.jpg';
                 imagejpeg($img,$pic);
                 break;
             case 3: //png
-                $pic = '/data/wwwroot/default/Public/upload/receipt/'.$store['id'].'.png';
+                $pic = '/sites/pqd/Public/upload/receipt/'.$store['id'].'.png';
                 $pic2 = '/Public/upload/receipt/'.$store['id'].'.png';
                 imagejpeg($img,$pic);
                 break;
