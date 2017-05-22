@@ -770,7 +770,7 @@ function async_get_url($url_array,$post_data = array(), $wait_usec = 0){
 
 //提取内容中的图片地址
 function getImgs($content,$order='ALL'){
-	$pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg]))[\'|\"].*?[\/]?>/";
+	$pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.png|\.bmp|\.GIF|\.JPG|\.PNG|\.BMP]))[\'|\"].*?[\/]?>/";
 	preg_match_all($pattern,$content,$match);
 	if(isset($match[1])&&!empty($match[1])){
 		if($order==='ALL'){

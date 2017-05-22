@@ -40,8 +40,8 @@ class WxPayConfig
 	 */
 	//	const SSLCERT_PATH = dirname(dirname(__FILE__)).'/cert/apiclient_cert.pem';
 	//	const SSLKEY_PATH = dirname(dirname(__FILE__)).'/cert/apiclient_key.pem';
-    const SSLCERT_PATH = '/data/wwwroot/default/plugins/payment/weixin/cert/apiclient_cert.pem';
-    const SSLKEY_PATH = '/data/wwwroot/default/plugins/payment/weixin/cert/apiclient_key.pem';
+    const SSLCERT_PATH = '/sites/pqd/plugins/payment/weixin/cert/apiclient_cert.pem';
+    const SSLKEY_PATH = '/sites/pqd/plugins/payment/weixin/cert/apiclient_key.pem';
 	
 	//=======【curl代理设置】===================================
 	/**

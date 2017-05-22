@@ -365,12 +365,20 @@ class GoodsController extends BaseController {
                 {
                     $goods_id = $_POST['goods_id'];
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
+                    // 如果上传新图，删除旧图
                     if($_POST['original_img']!=$goods['original_img'])
                     {
                         $link =  C('DATA_URL').goods_thum_images($_POST['goods_id'],400,400);
                         $res = unlink($link);
                         $link1 = C('DATA_URL').$goods['original_img'];
                         $res1 = unlink($link1);
+                    }
+                    if($_POST['list_img']!=$goods['list_img'])
+                    {
+                        $llink =  C('DATA_URL').goods_thum_images($_POST['goods_id'],640,300);
+                        $res = unlink($llink);
+                        $llink1 = C('DATA_URL').$goods['list_img'];
+                        $res1 = unlink($llink1);
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
@@ -705,6 +713,22 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
+            if(empty($_POST['goods_images'][0])){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => $_POST['goods_images'][0].'请上传商品轮播图！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+            if(empty($_POST['goods_content'])){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '请填写商品详细描述！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
         }
         
 
@@ -727,16 +751,25 @@ class GoodsController extends BaseController {
                 $Goods->on_time = time(); // 上架时间
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 session('goods',$_POST);
+
                 if ($type == 2){
                     $goods_id = $_POST['goods_id'];
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
+                    // 如果上传新图，删除旧图
                     if($_POST['original_img']!=$goods['original_img']){
                         $link =  C('DATA_URL').goods_thum_images($_POST['goods_id'],400,400);
                         $res = unlink($link);
                         $link1 = C('DATA_URL').$goods['original_img'];
                         $res1 = unlink($link1);
+                    }
+                    if($_POST['list_img']!=$goods['list_img'])
+                    {
+                        $llink =  C('DATA_URL').goods_thum_images($_POST['goods_id'],640,300);
+                        $res = unlink($llink);
+                        $llink1 = C('DATA_URL').$goods['list_img'];
+                        $res1 = unlink($llink1);
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
@@ -751,7 +784,7 @@ class GoodsController extends BaseController {
                 $return_arr = array(
                     'status' => 1,
                     'msg'   => '操作成功',
-                    'data'  => array('url'=>U('Store/Goods/goodsList')),
+                    'data'  => array('url'=>U('Store/Goods/haitaogoodsList')),
                 );
 
                 $this->ajaxReturn(json_encode($return_arr));
@@ -759,13 +792,10 @@ class GoodsController extends BaseController {
         }
 
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
-//		$cat_list = $HaitaoLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $HaitaoLogic->find_parent_cat($goodsInfo['haitao_cat']); // 获取分类默认选中的下拉框
         $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
         $haitao_style = M('haitao_style')->select();
-        $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
-        if(empty($goodsType))
-            $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+        $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
         $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
         $this->assign('haitao_style',$haitao_style);

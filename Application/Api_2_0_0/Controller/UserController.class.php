@@ -1746,7 +1746,6 @@ class UserController extends BaseController {
                 $where = $this->getPromid($prom_order);
                 //找出这个团的团长和团员
                 $join_proms = M('group_buy')->where($where)->select();
-                echo M()->getLastSql();
                 redis("get_Free_Order_status", "1");
                 //统计每个团的人数
                 $prom_man = array();
@@ -1808,7 +1807,7 @@ class UserController extends BaseController {
             }
 
             //更新限时秒杀列表
-            $is_special = M('goods','','')
+            $is_special = M('goods','','DB_CONFIG2')
                 ->where(array(
                     'is_special'=>array('EQ',1),
                     'on_time'=>array('ELT',time()),

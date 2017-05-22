@@ -89,6 +89,10 @@ class AdminController extends BaseController {
 		    unset($data['password2']);
 
     		$r = D('merchant')->where('id='.$data['id'])->save($data);
+            $result = M('goods')->where(array('store_id'=>array('eq',$data['id'])))->field('id')->select();
+            foreach ($result as $value){
+                redislist("goods_refresh_id", $value);
+            }
     	}
     	
         if($data['act'] == 'del' && $data['admin_id']>1){
