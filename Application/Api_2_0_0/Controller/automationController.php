@@ -10,7 +10,7 @@ namespace Api_2_0_0\Controller;
 use Admin\Logic\OrderLogic;
 
 
-class automationController extends BaseController
+class AutomationController extends BaseController
 {
     public $userLogic;
     public function _initialize(){
@@ -202,7 +202,7 @@ class automationController extends BaseController
     }
 
     //更新限时秒杀列表
-    public function Seconds_Kill_list() {
+    public function seconds_kill_list() {
         $is_special = M('goods','','DB_CONFIG2')
             ->where(array(
                 'is_special'=>array('EQ',1),
