@@ -289,9 +289,9 @@ return array(
 //		),
 //	),
     'SHARE_URL' => 'http://wx.pinquduo.cn',
-    'DATA_URL' => '/data/wwwroot/default',
+    'DATA_URL' => '/sites/pqd',
     'SHARE_URL' => 'http://wx.pinquduo.cn',
-    'DATA_URL' => '/data/wwwroot/default',
+    'DATA_URL' => '/sites/pqd',
 
     'UPLOAD_FILE_QINIU'     => array (
         'maxSize'           => 20*1024*1024,//文件大小
