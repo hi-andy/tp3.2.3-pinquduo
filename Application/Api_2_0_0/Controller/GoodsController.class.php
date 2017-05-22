@@ -1156,7 +1156,7 @@ class GoodsController extends BaseController {
         $goods = M('goods', '', 'DB_CONFIG2')->alias('g')
 	        ->join('INNER JOIN tp_merchant m on m.id = g.store_id')
 	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
-	        ->field('g.store_count,g.sales,g.is_special,g.on_time,g.is_support_buy,m.sales as store_sales')
+	        ->field('g.store_count,g.sales,g.is_special,g.on_time,g.is_support_buy,m.sales as store_sales,g.is_prom_buy')
 	        ->find();
 		//默认
 		$data['buy_type'] = 1;
@@ -1192,11 +1192,13 @@ class GoodsController extends BaseController {
 			}
 		}
 		$data['support_prompt'] = '该商品不支持单买哦T_T';
+		$data['prom_prompt'] = '该商品不支持团购哦T_T';
         $data['collect'] = $collect;
         $data['store_count'] = $goods['store_count'];
         $data['sales'] = $goods['sales'];
 		$data['is_special'] = $goods['is_special'];
 		$data['is_support_buy'] = $goods['is_support_buy'];
+		$data['is_prom_buy'] = $goods['is_prom_buy'];
 		$data['store_sales'] = $goods['store_sales'];
 		$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
 		if(!empty($ajax_get))

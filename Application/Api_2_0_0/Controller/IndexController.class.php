@@ -1,5 +1,6 @@
 <?php
 namespace Api_2_0_0\Controller;
+use Admin\Logic\OrderLogic;
 use Think\Controller;
 class IndexController extends BaseController {
 
@@ -837,4 +838,9 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
+    function  test($order_sn,$order_a){
+        $orderLogic = new OrderLogic();
+        $result = $orderLogic->weixinBackPay($order_sn, $order_a);
+    }
 }

@@ -824,6 +824,7 @@ class PurchaseController extends  BaseController
         if(!empty($o_id))
         {
             M()->commit();//都操作s成功的时候才真的把数据放入数据库
+
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             $rdsname = "getOrderList_".$only_userid."*";
             redisdelall($rdsname);//删除订单列表

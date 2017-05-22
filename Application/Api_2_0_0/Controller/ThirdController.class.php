@@ -1,148 +1,19 @@
 <?php
 /**
- * User: admin
+ * Created by PhpStorm.
+ * User: admin_wu
+ * Date: 2017/5/22
+ * Time: 17:51
  */
-
-namespace Api\Controller;
-
-class StoreController extends BaseController{
-
+namespace Api_2_0_0\Controller;
+class ThirdController {
 	/*
-	 * 商户详情
-	 * */
-	public function getStoreList()
-	{
-		$store_id = I('store_id');
-		$stor = I('stor','sales');//last_update
-
-		$page = I('page',1);
-		$pagesize = I('pagesize',10);
-		$store = M('merchant')->where('`id` = '.$store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
-		$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id='.$store_id;
-
-		$count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->count();
-		$goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
-
-		$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
-		$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0|imageslim/dissolve/100/gravity/South/dx/0/dy/0";
-		$store['store_logo'] = TransformationImgurl($store['store_logo']);
-
-		if(empty($count))
-		{
-			$count = null;
-		}
-		elseif(empty($goods))
-		{
-			$goods = null;
-		}
-		//获取店铺优惠卷store_logo_compression
-		$coupon = M('coupon')->where('`store_id` = '.$store_id.' and `send_start_time` <= '.time().' and `send_end_time` >= '.time().' and createnum!=send_num' )->select();
-		if(empty($coupon))
-		{
-			$coupon = null;
-		}
-
-		foreach($goods as &$v)
-		{
-			$v['original_img'] = goods_thum_images($v['goods_id'],400,400);
-		}
-
-		$data = $this->listPageData($count,$goods);
-
-		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status'=>1,'msg'=>'','result'=>array('store'=>$store,'goods'=>$data,'coupon'=>$coupon));
-		if(!empty($ajax_get))
-			$this->getJsonp($json);
-		exit(json_encode($json));
-	}
-	
-	function storeLOGO($path,$store_id)
-	{
-		$bigImgPath = $this->store_thum_images($path,$store_id,80,80);
-		//'Public/images/goods_thumb_1055_400_400_58a8643127a2c.jpeg'
-		$qCodePath = 'Public/images/stroe_logo.jpg';
-
-		$bigImg = imagecreatefromstring(file_get_contents($bigImgPath));
-		$qCodeImg = imagecreatefromstring(file_get_contents($qCodePath));
-
-		list($qCodeWidth, $qCodeHight, $qCodeType) = getimagesize($qCodePath);
-		// imagecopymerge使用注解
-		imagecopymerge($bigImg, $qCodeImg, 0, 50, 0, 0, $qCodeWidth, $qCodeHight, 100);
-
-		list($bigWidth, $bigHight, $bigType) = getimagesize($bigImgPath);
-
-		switch ($bigType) {
-			case 1: //gif
-//                header('Content-Type:image/gif');
-				$pic = '/data/wwwroot/default/Public/upload/store_fenxiang/'.$store_id.'.gif';
-				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.gif';
-				imagejpeg($bigImg, $pic);
-				break;
-			case 2: //jpg
-//                header('Content-Type:image/jpg');
-				$pic = '/data/wwwroot/default/Public/upload/store_fenxiang/'.$store_id.'.jpg';
-				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.jpg';
-				imagejpeg($bigImg, $pic);
-				break;
-			case 3: //png
-//                header('Content-Type:image/png');
-				$pic = '/data/wwwroot/default/Public/upload/store_fenxiang/'.$store_id.'.png';
-				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.png';
-				imagejpeg($bigImg,$pic);
-				break;
-			default:
-				# code...
-				break;
-		}
-		return $pin;
-	}
-
-	function store_thum_images($logo,$store_id,$width,$height){
-
-		if(empty($store_id))
-			return '';
-
-		$img = explode('/',$logo);
-		$img1 = explode('.',$img[6]);
-
-		//判断缩略图是否存在
-		$path = "Public/upload/store_logo_compression/";
-		$goods_thumb_name =$store_id.$img1[0];
-
-		// 这个商品 已经生成过这个比例的图片就直接返回了
-		if(file_exists($path.$goods_thumb_name.'.jpg'))  return $path.$goods_thumb_name.'.jpg';
-		if(file_exists($path.$goods_thumb_name.'.jpeg')) return $path.$goods_thumb_name.'.jpeg';
-		if(file_exists($path.$goods_thumb_name.'.gif'))  return $path.$goods_thumb_name.'.gif';
-		if(file_exists($path.$goods_thumb_name.'.png'))  return $path.$goods_thumb_name.'.png';
-
-		if(empty($logo)) return '';
-
-		$logo = '.'.$logo; // 相对路径
-		if(!file_exists($logo)) return '';
-
-		$image = new \Think\Image();
-		$image->open($logo);
-
-		$goods_thumb_name = $goods_thumb_name. '.'.$image->type();
-		// 生成缩略图
-		if(!is_dir($path))
-			mkdir($path,0777,true);
-
-		// 参考文章 http://www.mb5u.com/biancheng/php/php_84533.html  改动参考 http://www.thinkphp.cn/topic/13542.html
-		$image->thumb($width, $height,2)->save($path.$goods_thumb_name,NULL,100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
-		return $path.$goods_thumb_name;
-	}
-
-	/*
-     * 易掌柜接口
+     * 第三方接口
      * */
-	//
-	function Y_login()
-	{
+	function Third_login(){
 		$store_name = I('post.store_name');
 		$store_pass_word = I('post.pass_word');
 		$y_time = I('post.timeStamp');
-
 		$res = M('merchant')->where("merchant_name = '$store_name' and password = '".md5($store_pass_word)."'")->find();
 
 		if(!empty($res)){
@@ -161,7 +32,7 @@ class StoreController extends BaseController{
 		}
 	}
 
-	function Y_orderlist()
+	function Third_orderlist()
 	{
 		$store_id = I('store_id',910);//商户ID
 		$page = I('page',1);//页码
@@ -224,7 +95,7 @@ class StoreController extends BaseController{
 		}
 	}
 
-	function Y_changestatus()
+	function Third_changestatus()
 	{
 		$store_id = I('post.store_id');
 		$data['order_sn'] = I('post.order_sn');
@@ -298,19 +169,6 @@ class StoreController extends BaseController{
 		$res1 = M('order')->where("order_sn=".$data['order_sn'])->save($updata);//改变订单状态
 
 		return $did and $res1;
-	}
-	//多维数组去重
-	function mult_unique($array)
-	{
-		$return = array();
-		foreach($array as $key=>$v)
-		{
-			if(!in_array($v, $return))
-			{
-				$return[$key]=$v;
-			}
-		}
-		return $return;
 	}
 
 	//地址处理问题

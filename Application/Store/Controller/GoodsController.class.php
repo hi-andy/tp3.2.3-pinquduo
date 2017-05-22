@@ -706,7 +706,7 @@ class GoodsController extends BaseController {
                 $this->ajaxReturn(json_encode($return_arr));
             }
         }
-
+        
 
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
         //ajax提交验证

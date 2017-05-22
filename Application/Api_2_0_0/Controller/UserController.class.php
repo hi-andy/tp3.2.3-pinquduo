@@ -245,20 +245,6 @@ class UserController extends BaseController {
 
     }
     /*
-     * 获取商品收藏列表
-     */
-    public function getGoodsCollect(){
-        $user_id = I('user_id',0);
-        if(!$user_id > 0)
-            exit(json_encode(array('status'=>-1,'msg'=>'参数有误','result'=>'')));
-        $data = $this->userLogic->get_goods_collect($user_id);
-        foreach($data['result'] as &$r){
-
-        }
-        unset($data['show']);
-        exit(json_encode($data));
-    }
-    /*
      * 获取拼团或订单详情
      */
     public function getPromDetail(){
@@ -1714,7 +1700,7 @@ class UserController extends BaseController {
             $where = null;
             $join_prom_order = M('group_buy')->alias('gb')
                 ->join(" LEFT JOIN tp_order AS o ON o.order_id = gb.order_id ")
-                ->where('gb.`is_pay`=0 and gb.is_cancel=0')
+                ->where('gb.`is_pay`=0 and gb.is_cancel=0 and o.pay_status=0')
                 ->field('gb.id,gb.order_id,gb.start_time,gb.user_id,gb.goods_id,gb.free,gb.goods_id,o.num')
                 ->select();
             if (count($join_prom_order) > 0) {

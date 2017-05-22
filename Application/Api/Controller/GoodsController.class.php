@@ -602,9 +602,7 @@ class GoodsController extends BaseController {
 
 		$res = str_replace('renderReverse&&renderReverse(','',$res);
 		$res = substr($res,0,strlen($res)-1);
-
 		$res = json_decode($res,true);
-
 		return $res['result']['addressComponent']['city'];
 	}
 
