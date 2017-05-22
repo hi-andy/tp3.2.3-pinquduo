@@ -285,11 +285,7 @@ class StoreController extends BaseController{
 			$updata['order_status'] = $action['order_status'] = 11;
 			$updata['order_type'] = 15;
 		}else{
-<<<<<<< HEAD
 			$updata['order_status'] = 1;
-=======
-            $updata['order_status'] = 1;
->>>>>>> d5594510887f93e35d35e10c7f7717d626deb7de
 			$updata['order_type'] = 3;
 		}
 		if($goods['is_special']==1)
