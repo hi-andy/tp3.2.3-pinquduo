@@ -451,8 +451,7 @@ class IndexController extends BaseController {
 
             for ($i = 0; $i < count($cat1); $i++) {
                 $cat1[$i]['logo'] = TransformationImgurl($cat1[$i]['logo']);
-                $cat1[$i]['cat2'] = $category->where('`parent_id` = ' . $cat1[$i]['id'])->field('id,name,img')->select();
-//            array_unshift($cat1[$i]['cat2'],array('id'=>'0','name'=>'全部'));
+                $cat1[$i]['cat2'] = $category->where('`parent_id` = ' . $cat1[$i]['id'])->order('sort_order asc')->field('id,name,img')->select();
                 for ($j = 0; $j < count($cat1[$i]['cat2']); $j++) {
                     $cat1[$i]['cat2'][$j]['cat3'] = $category->where('`parent_id` = ' . $cat1[$i]['cat2'][$j]['id'])->field('id,name')->select();
                     $cat1[$i]['cat2'][$j]['img'] = TransformationImgurl($cat1[$i]['cat2'][$j]['img']);

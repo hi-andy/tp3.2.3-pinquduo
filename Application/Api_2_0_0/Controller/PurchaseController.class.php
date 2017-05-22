@@ -584,12 +584,10 @@ class PurchaseController extends  BaseController
         $order['free'] = $free;
         $order['num'] = $num;
         //如果是众筹订单
-        if($goods['the_raise']==1)
-        {
+        if($goods['the_raise']==1){
             $order['the_raise']=1;
         }
-        if(!empty($ajax_get))
-        {
+        if(!empty($ajax_get)){
             $order['is_jsapi'] = 1;
         }
         $o_id = M('order')->data($order)->add();
@@ -826,7 +824,6 @@ class PurchaseController extends  BaseController
         if(!empty($o_id))
         {
             M()->commit();//都操作s成功的时候才真的把数据放入数据库
-
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             $rdsname = "getOrderList_".$only_userid."*";
             redisdelall($rdsname);//删除订单列表
