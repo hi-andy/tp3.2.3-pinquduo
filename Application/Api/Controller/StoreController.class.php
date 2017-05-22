@@ -280,13 +280,12 @@ class StoreController extends BaseController{
 		$updata['shipping_name'] = $data['shipping_name'];
 		$updata['shipping_order'] = $data['shipping_order'];
 		$updata['shipping_price'] = $order['shipping_price'];
-		$updata['order_status'] = 11;
-		$updata['order_type'] = 15;
 		$updata['shipping_status'] = 1;
 		if(!empty($order['prom_id'])){
 			$updata['order_status'] = $action['order_status'] = 11;
 			$updata['order_type'] = 15;
 		}else{
+            $updata['order_status'] = 1;
 			$updata['order_type'] = 3;
 		}
 		if($goods['is_special']==1)
