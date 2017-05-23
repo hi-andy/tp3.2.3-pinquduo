@@ -244,18 +244,14 @@ class PurchaseController extends  BaseController
                 $count = getFloatLength($goods['prom_price']);
                 if($count>=3){
                     $price = operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                    $goods['prom_price'] = $price;
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
                 $count = getFloatLength($goods['prom_price']);
                 if($count>=3){
                     $price = operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                    $goods['prom_price'] = $price;
                 }
             }
         }
@@ -830,7 +826,6 @@ class PurchaseController extends  BaseController
             redisdelall($rdsname);//删除订单列表
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
-
             if($order['pay_code'] == 'weixin'){
                 $weixinPay = new WeixinpayController();
                 //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')

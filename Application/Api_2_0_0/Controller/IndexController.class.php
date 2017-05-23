@@ -1,10 +1,8 @@
 <?php
 namespace Api_2_0_0\Controller;
 use Admin\Logic\OrderLogic;
-<<<<<<< HEAD
-=======
+
 use Qiniu\Processing\Operation;
->>>>>>> d5594510887f93e35d35e10c7f7717d626deb7de
 use Think\Controller;
 class IndexController extends BaseController {
 
@@ -453,7 +451,6 @@ class IndexController extends BaseController {
         if(empty(redis($rdsname))) {//判断是否有缓存
             $category = M('goods_category', '', 'DB_CONFIG2');
             $cat1 = $category->where('`parent_id` = 0 and id != 10044')->order('sort_order asc')->field('id,name,logo')->select();
-
             for ($i = 0; $i < count($cat1); $i++) {
                 $cat1[$i]['logo'] = TransformationImgurl($cat1[$i]['logo']);
                 $cat1[$i]['cat2'] = $category->where('`parent_id` = ' . $cat1[$i]['id'])->order('sort_order asc')->field('id,name,img')->select();

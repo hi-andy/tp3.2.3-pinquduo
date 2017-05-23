@@ -32,8 +32,7 @@ class ThirdController {
 		}
 	}
 
-	function Third_orderlist()
-	{
+	function Third_orderlist(){
 		$store_id = I('store_id',910);//商户ID
 		$page = I('page',1);//页码
 		$page_num = I('page_num',10);//分页变量
