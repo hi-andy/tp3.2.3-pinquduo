@@ -382,7 +382,6 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    redislist("goods_refresh_id", $goods_id);
                 }
                 else
                 {
@@ -390,6 +389,7 @@ class GoodsController extends BaseController {
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                 }
+                redislist("goods_refresh_id", $goods_id);
 
                 $GoodsLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
                 $return_arr = array(
@@ -779,6 +779,7 @@ class GoodsController extends BaseController {
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                 }
+                redislist("goods_refresh_id", $goods_id);
                 $HaitaoLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
                 M('goods')->where('`goods_id`='.$goods_id)->save(array('cat_id'=>0,'haitao_cat'=>$_POST['cat_id_2']));
                 $return_arr = array(
