@@ -172,16 +172,6 @@ class PurchaseController extends  BaseController
                 } else {
                     $num2 = M('group_buy')->where('`id`=' . $prom_id . ' or `mark` = ' . $prom_id . ' and `is_pay`=1')->count();
                 }
-
-                if ($num2 == $result['goods_num']) {
-                    $json = array('status' => -1, 'msg' => '该团已经满员开团了，请选择别的团参加');
-                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if (!empty($ajax_get)) {
-                        echo "<script> alert('" . $json['msg'] . "') </script>";
-                        exit;
-                    }
-                    exit(json_encode($json));
-                }
                 $this->joinGroupBuy($parameter);
             } else if ($type == 1)    //开团
             {
@@ -266,12 +256,6 @@ class PurchaseController extends  BaseController
         }
         if($result)
         {
-            //是否使用优惠卷
-            if(!empty($coupon_id)){
-                $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
-            }else{
-                $coupon['money'] = 0;
-            }
             //在团购表加一张单
             $data['start_time'] = time();
             $data['end_time'] = $result['end_time'];
