@@ -89,11 +89,11 @@ class GoodsController extends BaseController {
 					$condition2['is_audit'] =1;
 					$condition2['show_type'] =0;
 					$condition2['the_raise'] =0;
-					$data = $this->getGoodsList($condition2,$page,$pagesize,'sales desc');
+					$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
 					return $data;
 				}else{
 					$where = '`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1';
-					$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+					$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
 					return $data;
 				}
 			}
@@ -113,7 +113,7 @@ class GoodsController extends BaseController {
 				}else{//array_column()将二维数组转成一维
 					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 				}
-				$data = $this->getGoodsList($condition,$page,$pagesize,'sales desc');
+				$data = $this->getGoodsList($condition,$page,$pagesize,'sort asc,sales desc');
 			}
 		}else{
 			$json = array('status'=>-1,'msg'=>'参数错误');
@@ -875,7 +875,6 @@ class GoodsController extends BaseController {
 		$rdsname = "getsearch".$key.$page.$pagesize;
         if (empty(redis($rdsname))) {//判断是否有缓存
             $where = "`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
-            //$where = "MATCH('goods_name') AGAINST('$key')";
             $data = $this->getGoodsList($where,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
