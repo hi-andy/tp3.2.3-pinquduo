@@ -565,14 +565,19 @@ class BaseController extends Controller {
 
     //版本2.0.0
     //调度商品列表
-    function getGoodsList($where,$page,$pagesize,$order='is_recommend desc,sort asc')
+    function getGoodsList($where,$page,$pagesize,$order='is_recommend desc')
     {
         if($page<=2){
             $order = 'sort asc';
             $id_arr = '1=1';
         }else{
             $id = M('goods')->where('`show_type`=0 and is_show=1 and is_on_sale=1 and is_audit=1')->order('sort asc')->limit('0,40')->field('goods_id')->select();
-            $id_arr = array('not in',array_column($id,'goods_id'));
+            $id_arr = ' goods_id not in (';
+            foreach ($id as $v) {
+                $id_arr .= $v['goods_id'] . ",";
+            }
+            $id_arr = substr($id_arr, 0, -1);
+            $id_arr = $id_arr.")";
         }
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->where($id_arr)->count();
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->where($id_arr)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();

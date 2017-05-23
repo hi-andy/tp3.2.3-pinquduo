@@ -386,6 +386,7 @@ class GoodsController extends BaseController {
                 else
                 {
                     $Goods->is_on_sale = 0 ;    // 默认
+                    $Goods->is_show = 0 ;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                 }

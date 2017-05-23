@@ -52,12 +52,11 @@ class GoodsController extends BaseController {
 		$type = I('type');
 		$page=I('page',1);
 		$pagesize = 20;
-		$version = I('version');
 		$ajax_get=null;
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$rdsname = "getMore".$id.$type.$page.$pagesize.$ajax_get;
 		if (empty(redis($rdsname))) {//判断是否有缓存
-			$data = $this->getOtheyMore($id,$type,$page,$pagesize,$version,$ajax_get);
+			$data = $this->getOtheyMore($id,$type,$page,$pagesize,$ajax_get);
 			$json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存
 		} else {
@@ -69,13 +68,13 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
-	function getOtheyMore($id,$type,$page,$pagesize,$version,$ajax_get)
+	function getOtheyMore($id,$type,$page,$pagesize,$ajax_get)
 	{
 		if($type==0){
 			$parent_id = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`=0 and id != 10044 ')->field('id')->select();
 			$ids =array(array_column($parent_id,'id'));
 			if(in_array("$id", $ids[0])){
-				$data = $this->getNextCat($id,$version);
+				$data = $this->getNextCat($id);
 				return $data;
 			}else{
 				$condition['parent_id'] = $ids =array('in',array_column($parent_id,'id'));
@@ -94,7 +93,7 @@ class GoodsController extends BaseController {
 					return $data;
 				}else{
 					$where = '`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1';
-					$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
+					$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
 					return $data;
 				}
 			}
@@ -114,7 +113,7 @@ class GoodsController extends BaseController {
 				}else{//array_column()将二维数组转成一维
 					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 				}
-				$data = $this->getGoodsList($condition,$page,$pagesize,'sort asc,sales desc');
+				$data = $this->getGoodsList($condition,$page,$pagesize,'sales desc');
 			}
 		}else{
 			$json = array('status'=>-1,'msg'=>'参数错误');
@@ -126,7 +125,7 @@ class GoodsController extends BaseController {
 		return $data;
 	}
 
-	function getNextCat($id,$version)
+	function getNextCat($id)
 	{
 		$page = I('page',1);
 		$pagesize = I('pagesize',20);
@@ -877,7 +876,7 @@ class GoodsController extends BaseController {
         if (empty(redis($rdsname))) {//判断是否有缓存
             $where = "`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
             //$where = "MATCH('goods_name') AGAINST('$key')";
-            $data = $this->getGoodsList($where,$page,$pagesize,'');
+            $data = $this->getGoodsList($where,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
