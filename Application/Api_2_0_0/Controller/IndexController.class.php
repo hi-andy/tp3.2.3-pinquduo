@@ -1,9 +1,6 @@
 <?php
 namespace Api_2_0_0\Controller;
 use Admin\Logic\OrderLogic;
-
-use Qiniu\Processing\Operation;
-use Think\Controller;
 class IndexController extends BaseController {
 
     public function _initialize() {

@@ -9,7 +9,6 @@
 namespace Api_2_0_0\Controller;
 use Admin\Logic\OrderLogic;
 
-
 class AutomationController extends BaseController
 {
     public $userLogic;
@@ -126,13 +125,14 @@ class AutomationController extends BaseController
 
     //将时间到了团又没有成团的团解散
     public function incomplete_mass_overtime() {
+        $user = new UserController();
         $where = null;
         $conditon = null;
         $time = time()-30;
         $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->select();
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
-            $where = $this->getPromid($prom_order);
+            $where = $user->getPromid($prom_order);
             //找出这个团的团长和团员
             $join_proms = M('group_buy')->where($where)->select();
             redis("get_Free_Order_status", "1");
@@ -152,8 +152,6 @@ class AutomationController extends BaseController
                 }
                 $prom_man[$k] = $n;
             }
-
-            $user = new UserController();
             $wheres = $user->ReturnSQL($prom_man);
             $i_d = $wheres['id'];
             $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
