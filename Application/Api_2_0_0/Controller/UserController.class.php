@@ -34,7 +34,7 @@ class UserController extends BaseController {
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
         $map['version'] = I('version');
-        redis('unionid',I('unionid',''));
+        if(I('oauth','') == 'qq') redis('unionid',I('unionid',''),REDISTIME);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $data = $this->userLogic->thirdLogin($map);
         if($data['status'] ==1){
