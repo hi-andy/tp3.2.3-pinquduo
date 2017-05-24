@@ -1,0 +1,29 @@
+<?php
+return array(
+   'API_SECRET_KEY'=>'zuoapp.la', // app 调用的签名秘钥// app 调用的签名秘钥
+	'PAGE_SIZE' =>20,
+	'HTTP_URL'=>'http://pinquduo.cn',
+	'SIGN_KEY' => 'pinquduo',
+	'order_sn'         => date('YmdHis').rand(1000,9999), // 订单编号
+	'automatic_time' => 5*24*60*60,
+	'SHARE_URL' => 'http://wx.pinquduo.cn',
+	'alipay_config'=>array(
+		'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接
+		//口后获取到的PID；
+                'private_key_path' => getcwd().'/Application/Common/Conf/alipaykey/rsa_private_key.pem', //商户的私钥（后缀是.pen）文件相对路径
+                'ali_public_key_path'=> getcwd().'/Application/Common/Conf/alipaykey/rsa_public_key.pem', //支付宝公钥（后缀是.pen）文件相对路径
+                'sign_type'=>strtoupper('RSA'),
+                'input_charset'=> strtolower('utf-8'),
+                'cacert'=> getcwd().'\\cacert.pem',
+                'transport'=> 'http',
+        ),
+    'DB_CONFIG2' => array(
+        'db_type'  => 'mysql',
+        'db_host'  => 'rr-wz9gfg905xeq4ngi1o.mysql.rds.aliyuncs.com',
+        'db_name'  => 'pinquduo',
+        'db_user'  => 'rootmost',
+        'db_pwd'   => 'Zuoapp_la',
+        'db_port'  => '3306',
+        'DB_PREFIX' => 'tp_', //数据库前缀
+    ),
+);

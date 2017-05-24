@@ -207,22 +207,11 @@ class IndexController extends BaseController {
         $pagesize = I('pagesize',10);
         $version= I('version');
         $rdsname = "getJIuJIuCategory".$id.$page.$pagesize;
-        if(empty(redis($rdsname))) {//判断是否有缓存
-            //获取轮播图
+        if(empty(redis($rdsname))) {//判断是否有缓存 //获取轮播图
             $banner = M('exclusive', '', 'DB_CONFIG2')->where('id =' . $id)->field(array('banner'))->find();
             $banner['banner'] = TransformationImgurl($banner['banner']);
-            if($version=='2.0.0'){
-                $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
-                $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            }else{
-                $count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->count();
-                $goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
-                for ($i = 0; $i < count($goods); $i++) {
-                    $goods[$i]['original_img'] = goods_thum_images($goods[$i]['goods_id'], 400, 400);
-                }
-                $data = $this->listPageData($count, $goods);
-            }
-
+            $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
+            $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods' => $data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -233,7 +222,6 @@ class IndexController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-
     /*
 	 *  免单拼
 	 */
@@ -258,8 +246,7 @@ class IndexController extends BaseController {
 
         $count = M('group_buy', '', 'DB_CONFIG2')->where($condition)->count();
         $prom = M('group_buy', '', 'DB_CONFIG2')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
-        foreach($prom as &$v)
-        {
+        foreach($prom as &$v){
             $goods_info = M('goods', '', 'DB_CONFIG2')->where('`goods_id`='.$v['goods_id'])->field('original_img,goods_name')->find();
             $v['goods_name'] = $goods_info['goods_name'];
             $v['original'] = TransformationImgurl($goods_info['original_img']);
@@ -301,43 +288,6 @@ class IndexController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
-//        //查询该用户是否是第一个签到
-//        $first = M('signin')->order('id desc')->find();
-//        if($first['datetime'] != $data['datetime'])
-//        {
-//            $result = M('signin')->data($data)->add();
-//            $result2 = M('users')->where('`user_id` = '.$data['user_id'])->setInc('integral',10);
-//
-//            if($result && $result2)
-//            {
-//                exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>'签到成功')));
-//            }else{
-//                exit(json_encode(array('status'=>-1,'msg'=>'获取失败','result'=>'签到失败')));
-//            }
-//        }else{
-//            //在第一个人之后签到的人
-//            $date = date("Y-m-d",time());
-//            $user_id = M('signin')->where("`datetime` = '$date'")->order('id desc')->find();
-//            //判断是否重复签到
-//
-//            $ids = explode(',',$user_id['user_id']);
-//
-//            if(in_array($data['user_id'],$ids))
-//            {
-//                exit(json_encode(array('status'=>-1,'msg'=>'获取失败','result'=>'您已经签到咯')));
-//            }else{
-//                $data['user_id'] = $user_id['user_id'].','.$data['user_id'];
-//                $result = M('signin')->where(' `id` = '.$user_id['id'])->save($data);
-//                $result2 = M('users')->where('`user_id` = '.$id)->setInc('integral',10);
-//
-//                if($result && $result2)
-//                {
-//                    exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>'签到成功')));
-//                }else{
-//                    exit(json_encode(array('status'=>-1,'msg'=>'获取失败','result'=>'签到失败')));
-//                }
-//            }
-//        }
     }
 
     /*
