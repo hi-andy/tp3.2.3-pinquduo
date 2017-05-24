@@ -1150,8 +1150,7 @@ class GoodsController extends BaseController {
 			$goods_spec['key_name']= '默认';
 			$goods['prom_price']=(string)$goods['prom_price'];
 		}
-		if(!empty($free))//是否免单
-		{
+		if(!empty($free)){//是否免单
 			if(!empty($prom))
 			{
 				$goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
@@ -1159,7 +1158,7 @@ class GoodsController extends BaseController {
 				if($count>3)
 				{
 					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
+					$goods['prom_price'] = $price;
 				}
 			}else{
 				$goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
@@ -1167,7 +1166,7 @@ class GoodsController extends BaseController {
 				if($count>3)
 				{
 					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
+					$goods['prom_price'] = $price;
 				}
 			}
 		}
@@ -1180,7 +1179,7 @@ class GoodsController extends BaseController {
 				if($count>3)
 				{
 					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
+					$goods['prom_price'] = $price;
 				}
 			}else{
 				$goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$goods['free']));
@@ -1188,7 +1187,7 @@ class GoodsController extends BaseController {
 				if($count>3)
 				{
 					$price = $this->operationPrice($goods['prom_price']);
-					$goods['prom_price'] = $price-$coupon['money'];
+					$goods['prom_price'] = $price;
 				}
 			}
 		}
@@ -1205,7 +1204,7 @@ class GoodsController extends BaseController {
 		}
 		$data['order_num'] = 1;
 		$data['buy_num'] = $data['order_num'] = 1;
-		$data['price'] = $goods['prom_price']*$num;
+		$data['price'] = $goods['prom_price']*$num-$coupon['money'];
 		$data['intro'] = $goods['goods_name'];
 		$data['goods_price'] = $goods['market_price'];
 		$data['goods_name'] = $goods['goods_name'];
@@ -1299,8 +1298,6 @@ class GoodsController extends BaseController {
 		{
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'开团失败');
-//			if(!empty($ajax_get))
-//				$this->getJsonp($json);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1316,8 +1313,6 @@ class GoodsController extends BaseController {
 			{
 				M()->rollback();//有数据库操作不成功时进行数据回滚
 				$json = array('status'=>-1,'msg'=>'开团失败');
-//				if(!empty($ajax_get))
-//					$this->getJsonp($json);
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -1451,18 +1446,14 @@ class GoodsController extends BaseController {
 		$order['add_time'] = $order['pay_time'] = time();
 		$order['store_id'] = $store_id;
 		$o_id = M('order')->data($order)->add();
-		if(!empty($ajax_get))
-		{
+		if(!empty($ajax_get)){
 			$order['is_jsapi'] = 1;
 		}
 		$order['order_id'] = $o_id;
 
-		if(empty($o_id))
-		{
+		if(empty($o_id)){
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'购买失败');
-//			if(!empty($ajax_get))
-//				$this->getJsonp($json);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1476,8 +1467,7 @@ class GoodsController extends BaseController {
 		$spec_data['goods_num'] = $num;
 		$spec_data['market_price'] = $goods['market_price'];
 
-		if(!empty($spec_key))
-		{
+		if(!empty($spec_key)){
 			$spec_data['goods_price'] = $goods_spec['price'];
 		}else{
 			$spec_data['goods_price'] = $goods['shop_price'];

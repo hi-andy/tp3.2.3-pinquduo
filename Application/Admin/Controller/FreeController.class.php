@@ -226,6 +226,7 @@ class FreeController extends BaseController
 		$data['is_special'] = 6;
 		$data['prom'] = 0;
 		$data['free'] = 0;
+		$data['is_support_buy'] = 0;
 		for($i=0;$i<count($_POST['goods_id']);$i++)
 		{
 			$res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();
