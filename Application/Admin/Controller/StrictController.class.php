@@ -178,6 +178,7 @@ class StrictController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
+                    redislist("goods_refresh_id", $goods_id);
                     M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->getField('refresh',0);
                 }
                 else
@@ -319,14 +320,12 @@ class StrictController extends BaseController {
 
     public function goods_save()
     {
-        $data['exclusive_cat'] = $_POST['exclusive'];
         $data['is_special'] = 9;
-        for($i=0;$i<count($_POST['goods_id']);$i++)
-        {
+        for($i=0;$i<count($_POST['goods_id']);$i++){
             $res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();
+            redislist("goods_refresh_id", $_POST['goods_id'][$i]);
         }
-        if($res)
-        {
+        if($res){
             $this->success("添加成功",U('Strict/Goodsindex'));
         }else{
             $this->success("添加失败",U('Strict/jiujiu_info'));

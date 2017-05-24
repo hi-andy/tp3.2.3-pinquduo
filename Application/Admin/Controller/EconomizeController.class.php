@@ -31,6 +31,7 @@ class EconomizeController extends Controller {
         foreach ($data['goods_id'] as $value) {
             $data['goods_id'] = $value;
             $res = M('goods_activity')->data($data)->add();
+            redislist("goods_refresh_id", $value);
         }
         if($res)
         {

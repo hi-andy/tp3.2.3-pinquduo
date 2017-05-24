@@ -150,8 +150,7 @@ class FreeController extends BaseController
 					}
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
-					$rdsname = "getDetaile_".$goods_id;
-					redisdelall($rdsname);//删除商品详情缓存
+					redislist("goods_refresh_id", $goods_id);
 				}
 				else
 				{
@@ -230,6 +229,7 @@ class FreeController extends BaseController
 		for($i=0;$i<count($_POST['goods_id']);$i++)
 		{
 			$res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();
+			redislist("goods_refresh_id", $_POST['goods_id'][$i]);
 		}
 		if($res)
 		{

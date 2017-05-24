@@ -263,6 +263,7 @@ class CrowdfundController extends BaseController {
         for($i=0;$i<count($_POST['goods_id']);$i++)
         {
             $res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();
+            redislist("goods_refresh_id", $_POST['goods_id'][$i]);
         }
         if($res)
         {

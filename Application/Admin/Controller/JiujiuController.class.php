@@ -315,12 +315,11 @@ class JiujiuController extends BaseController{
 	{
 		$data['exclusive_cat'] = $_POST['exclusive'];
 		$data['is_special'] = 4;
-		for($i=0;$i<count($_POST['goods_id']);$i++)
-		{
+		for($i=0;$i<count($_POST['goods_id']);$i++){
 			$res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();
+			redislist("goods_refresh_id", $_POST['goods_id'][$i]);
 		}
-		if($res)
-		{
+		if($res){
 			$this->success("添加成功",U('Jiujiu/Goodsindex'));
 		}else{
 			$this->success("添加失败",U('Jiujiu/jiujiu_info'));
