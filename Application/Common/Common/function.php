@@ -816,5 +816,5 @@ function operationPrice($price)
 	$price[1]=substr($price[1],0,2);
 	$price = (float)($price[0].'.'.$price[1]);
 	$price = $price+0.01;
-	return $price;
+	return (string)$price;
 }

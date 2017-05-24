@@ -434,6 +434,11 @@ class StoreController extends BaseController{
         $this->display();
     }
 
+    public function rules()
+    {
+        $this->display();
+    }
+    
     function receiptindex()
     {
         $this->display();

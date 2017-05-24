@@ -647,12 +647,11 @@ class IndexController extends BaseController {
             ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img,g.prom,g.prom_price,g.is_special')
             ->select();
         $data = $this->listPageData($count,$goodsList);
-        foreach ($data['items'] as &$v) {
-            $v['original'] = TransformationImgurl($v['original_img']);
-            $v['original_img'] = TransformationImgurl($v['original_img']);
-        }
+
+        $ad = M('ad')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->select();
+
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+        $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
         if(I('ajax_get')) {
             $this->getJsonp($json);
         }

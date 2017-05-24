@@ -195,7 +195,7 @@ return array(
      */
     
     // 'site_url'=>'http://www.tp-shop.cn', // tpshop 网站域名 已经改写入数据库
-    'MODULE_ALLOW_LIST' => array('Home','Admin','Store','Api','Chat','Api_2_0_0'),
+    'MODULE_ALLOW_LIST' => array('Home','Admin','Store','Api','Chat','Api_2_0_0','Api_2_0_1'),
 
     'DEFAULT_MODULE'        =>  'Home',  // 默认模块
     //'DEFAULT_MODULE'        =>  'Index',  // 默认模块
