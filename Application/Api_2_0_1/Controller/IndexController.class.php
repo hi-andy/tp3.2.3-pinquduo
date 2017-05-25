@@ -2,8 +2,9 @@
 namespace Api_2_0_1\Controller;
 use Admin\Logic\OrderLogic;
 class IndexController extends BaseController {
-
+    public $version = null;
     public function _initialize() {
+        $version = I('version');
 //        $this->encryption();
     }
 
@@ -26,6 +27,7 @@ class IndexController extends BaseController {
      * 获取首页数据
      */
     public function home(){
+        var_dump($version);die;
         $page = I('page', 1);
         $pagesize = I('pagesize', 8);
         $version = I('version');

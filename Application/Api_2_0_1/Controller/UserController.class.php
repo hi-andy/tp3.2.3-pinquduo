@@ -7,6 +7,7 @@ class UserController extends BaseController {
     public $userLogic;
     public function _initialize(){
         parent::_initialize();
+        $version = I('version');
         $this->userLogic = new \Home\Logic\UsersLogic();
 //        $this->encryption();
     }
@@ -33,7 +34,6 @@ class UserController extends BaseController {
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
-        $map['version'] = I('version');
         if(I('oauth','') == 'qq') redis('unionid',I('unionid',''),REDISTIME);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $data = $this->userLogic->thirdLogin($map);
@@ -129,11 +129,8 @@ class UserController extends BaseController {
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        if($version=='2.0.0'){
-            $coupons_list = M('coupon_list', '', 'DB_CONFIG2')->where('`uid` = '.$user_id)->field('cid,is_use')->page($page,$pagesize)->select();
-        }else{
-            $coupons_list = M('coupon_list', '', 'DB_CONFIG2')->where('`uid` = '.$user_id)->field('cid,is_use')->select();
-        }
+        $coupons_list = M('coupon_list', '', 'DB_CONFIG2')->where('`uid` = '.$user_id)->field('cid,is_use')->page($page,$pagesize)->select();
+
         if($state == 0)
         {
             $j=0;
