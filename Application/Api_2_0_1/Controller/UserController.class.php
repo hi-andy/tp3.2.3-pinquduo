@@ -1526,16 +1526,10 @@ class UserController extends BaseController {
         $version = I('version');
         $rdsname = "TuiSong".$user_id.$version;
         if(empty(redis($rdsname))) {//
-            if($version=='2.0.0'){
-                $field = 'id as prom_id,user_id';
-            }else{
-                $field = 'order_id,user_id';
-            }
-
             if (empty($user_id)) {
-                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field($field)->limit('0,20')->select();
+                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,20')->select();
             } else {
-                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field($field)->limit('0,10')->select();
+                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,10')->select();
             }
             for ($i = 0; $i < count($new_prom); $i++) {
                 $new_prom[$i]['userInfo'] = M('users')->where('`user_id`=' . $new_prom[$i]['user_id'])->field('mobile,nickname,oauth,head_pic')->find();
