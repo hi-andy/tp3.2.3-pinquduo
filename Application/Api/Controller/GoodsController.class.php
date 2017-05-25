@@ -1523,6 +1523,9 @@ class GoodsController extends BaseController {
 			}elseif($order['pay_code'] == 'alipay'){
 				$AliPay = new AlipayController();
 				$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+			}elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+				$AlipayWap = new AlipayWapController();
+				$pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
 			}elseif($order['pay_code'] == 'qpay'){
                 // Begin code by lcy
                 $qqPay = new QQPayController();

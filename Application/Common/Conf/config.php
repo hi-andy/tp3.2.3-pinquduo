@@ -256,24 +256,52 @@ return array(
 		//支付失败跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参unpay（未支付列表）
 		'errorpage'=>'Admin/login',
     ),
-	//支付宝配置参数
-	'alipay_config_face'=>array(
-		'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接口后获取到的PID
-		'sign_type'=>strtoupper('MD5'),
-		'input_charset'=> strtolower('utf-8'),
-		'transport'=> 'http',
-		'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
-		//这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
-		'notify_url'=>'http://pinquduo.cn/Store/Index/notify_url',
-		//这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
-		'return_url'=>'http://pinquduo.cn/Store/Index/returnurl',
-		//这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
-		'seller_email'=>'2660357732@qq.com',
-		//支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
-		'successpage'=>'Index/index',
-		//支付失败跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参unpay（未支付列表）
-		'errorpage'=>'Admin/login',
-	),
+	// 支付宝手机 wap 支付配置参数
+	'alipay_wap' => array (
+        //应用ID,您的APPID。
+        'app_id' => "2016111702900487",
+
+        //商户私钥，您的原始格式RSA私钥
+        'merchant_private_key' => "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANkVr5ECsVBjlXFWanoMTHGFRid3hYgfyqSy2gR8UiPsj2RJt2yQ7Jw3K4kwmystM3QWoPGN7Sd6qMdLxAGQWaOe8wCy9h+Zd4+06xhscKHxddJH47fqZvmOdP3DvVoxNNFvLQRfphKOXz5uXDvg7yAzwwHM09E5fNWFFosIdy8pAgMBAAECgYEAnjoINZHY29c53do20a6VKUkS0UF0ursxYMpbzlkvJbAO8/InF6KqU1KDEQO0lcvkbQDxXh8sdFIbIug+fUVRj3Cnz5YjmYJPDtPtZyfogCqqpYi+x94SWZf4FzZlipmUmABCJk/AMtIws1FZ7xMTi+yF4Cj0fjpPQo7HsyEz5GECQQD8BOAQeRyVMi5dvch8jqELJB0Omn+lkYFBGIwG2Ld04saLhNGzmJQVGFWNlV666h7vfkS4eb9CZMJuPtjTIH8TAkEA3IOKrD8akM7/1E2fZZLQpksasCb11MrhwnDQU2XaLSBB6dHAGlUUZBQTGQrGGS+recP2lGQmYS1xSy3yuo2UUwJBAKMANDvzWX1WG48d9NI7HgYqsXCElRLtbYBA9DBpcx7yniAXI9rZUM3kE1GjzsVuL9wO+zul4wJ6URclJvBHEGkCQGT2PSm8ArfGbs+PcqmY3Lsmq+N3ExsIgPD7ogZtHcWHfWZGyMPFrH5dypiunCCv+LzZgi5S5Fed7L9VHEtZw00CQHAXeT6sA+We4qOSUOsj4dqMGFTk+veE/C11ojodnzaoW/RTey8k01FfqFOW5jZmTK4x7xHj4i5c9Jg74Cao8Ts=",
+
+        //异步通知地址
+        'notify_url' => "http://pinquduo.cn/alipay.trade.wap.pay-PHP-UTF-8/notify_url.php",
+
+        //同步跳转
+        'return_url' => "http://mitsein.com/alipay.trade.wap.pay-PHP-UTF-8/return_url.php",
+
+        //编码格式
+        'charset' => "UTF-8",
+
+        //签名方式
+        'sign_type'=>"RSA",
+
+        //支付宝网关
+        'gatewayUrl' => "https://openapi.alipay.com/gateway.do",
+
+        //支付宝公钥,查看地址：https://openhome.alipay.com/platform/keyManage.htm 对应APPID下的支付宝公钥。
+        'alipay_public_key' => "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB",
+
+
+    ),
+	//支付宝配置参数   2017-5-26 注释，后续删除。
+//	'alipay_config_face'=>array(
+//		'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接口后获取到的PID
+//		'sign_type'=>strtoupper('MD5'),
+//		'input_charset'=> strtolower('utf-8'),
+//		'transport'=> 'http',
+//		'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
+//		//这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
+//		'notify_url'=>'http://pinquduo.cn/Store/Index/notify_url',
+//		//这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
+//		'return_url'=>'http://pinquduo.cn/Store/Index/returnurl',
+//		//这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
+//		'seller_email'=>'2660357732@qq.com',
+//		//支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
+//		'successpage'=>'Index/index',
+//		//支付失败跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参unpay（未支付列表）
+//		'errorpage'=>'Admin/login',
+//	),
 
 //	'payment' => array(
 //		'tenpay' => array(
