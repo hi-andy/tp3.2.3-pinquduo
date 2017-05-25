@@ -34,7 +34,7 @@ class UserController extends BaseController {
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
         $map['version'] = I('version');
-        if(I('oauth','') == 'qq') redis('unionid',I('unionid',''),REDISTIME);
+        redis('unionid',serialize($map),REDISTIME);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $data = $this->userLogic->thirdLogin($map);
         if($data['status'] ==1){
@@ -1415,8 +1415,7 @@ class UserController extends BaseController {
         $order_id = I('order_id');
 
         $return_order = M('return_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->find();
-        if(empty($return_order))
-        {
+        if(empty($return_order)){
             exit(json_encode(array('status'=>1,'msg'=>'订单不存在','result'=>'')));
         }
 
@@ -1586,15 +1585,12 @@ class UserController extends BaseController {
     public function getUserMoney()
     {
         $order_id = I('order_id');
-
         $money = M('getwhere', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->find();
-        if(empty($money))
-        {
+        if(empty($money)){
             exit(json_encode(array('status'=>-1,'msg'=>'该订单不存在')));
         }
 
-        if($money['code']=='weixin')
-        {
+        if($money['code']=='weixin'){
             $pay_name = '微信支付';
         } else {
             $pay_name = '支付宝支付';

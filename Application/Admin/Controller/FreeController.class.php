@@ -226,13 +226,12 @@ class FreeController extends BaseController
 		$data['is_special'] = 6;
 		$data['prom'] = 0;
 		$data['free'] = 0;
-		for($i=0;$i<count($_POST['goods_id']);$i++)
-		{
+		$data['is_support_buy'] = 0;
+		for($i=0;$i<count($_POST['goods_id']);$i++){
 			$res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();
 			redislist("goods_refresh_id", $_POST['goods_id'][$i]);
 		}
-		if($res)
-		{
+		if($res){
 			$this->success("添加成功",U('Free/goodsList'));
 		}else{
 			$this->success("添加失败",U('Free/free_info'));
@@ -255,8 +254,7 @@ class FreeController extends BaseController
 			$this->assign('keywords', I('keywords'));
 			$where = "$where and (goods_name like '%" . I('keywords') . "%' or keywords like '%" . I('keywords') . "%')";
 		}
-		if(!empty(I('store_name')))
-		{
+		if(!empty(I('store_name'))){
 			$this->assign('store_name', I('store_name'));
 			$where = $this->getStoreWhere($where,I('store_name'));
 		}

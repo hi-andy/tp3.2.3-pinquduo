@@ -60,7 +60,7 @@ class AdController extends BaseController{
         	}
         }
                                      
-        $ad_position_list = M('AdPosition')->getField("position_id,position_name");                        
+        $ad_position_list = M('AdPosition')->field("position_id,position_name")->select();
         $this->assign('ad_position_list',$ad_position_list);//广告位 
         $show = $Page->show();// 分页显示输出
         $this->assign('list',$list);// 赋值数据集

@@ -15,9 +15,9 @@
 				            <div class="form-group">
 				            	 <select name="pid" class="form-control">
                                       <volist name="ad_position_list" id="item" key="k">
-                                            <option value="{$item.position_id}" <if condition="$pid eq $k">selected</if>>{$item}</option>
+                                            <option value="{$item.position_id}" <if condition="$pid eq $k.position_id">selected</if>>{$item.position_name}</option>
                                       </volist>                  
-                                 </select>   
+                                 </select>
 				            </div>
 				            <button type="submit" class="btn btn-primary">查询</button>
 				            <div class="form-group pull-right">
@@ -26,27 +26,6 @@
 				          </form>
 				      	</div>
 	    			</nav>
-	    			<!--<nav class="navbar navbar-default">	     -->
-				      <!--<div class="collapse navbar-collapse">-->
-	    				<!--<div class="navbar-form form-inline">-->
-				            <!--<div class="form-group">-->
-				            	<!--<p class="text-success margin blod">预览广告所在页面:</p>-->
-				            <!--</div>-->
-				             <!--<div class="form-group">-->
-                                 <!--&lt;!&ndash;<a class="btn btn-default" href="{:U('/Home/Index/index',array('edit_ad'=>1))}">首页</a>&nbsp;&nbsp;&nbsp;&nbsp;                                            &ndash;&gt;-->
-                                 <!--&lt;!&ndash;<a class="btn btn-default" href="{:U('/Home/Index/promoteList',array('edit_ad'=>1))}" >商品促销页</a>&nbsp;&nbsp;&nbsp;&nbsp;                                            &ndash;&gt;-->
-                                 <!--&lt;!&ndash;<a class="btn btn-default" href="{:U('/Home/GroupBuy/GroupBuyList',array('edit_ad'=>1))}" >团购页面</a>&nbsp;&nbsp;&nbsp;&nbsp;&ndash;&gt;-->
-                                    <!--<select class="form-control" name="intro" onchange="if(this.value != 0) location.href='/index.php?m=Home&c=Channel&a=index&edit_ad=1&id='+this.value;">-->
-                                        <!--<option value="0">请选择频道页广告</option>-->
-                                        <!--<tpshop sql="select * from `__PREFIX__goods_category` where `level` = 1" key="k" item='v'>-->
-	                                        <!--<option value="{$v[id]}">{$v[name]}</option>-->
-                                      	<!--</tpshop>-->
-                                    <!--</select>-->
-                                 <!--&lt;!&ndash; <a class="btn btn-default" href="{:U('/Mobile/Index/index',array('edit_ad'=>1))}">手机首页</a>&nbsp;&nbsp;&nbsp;&nbsp;&ndash;&gt;-->
-				            <!--</div>			          -->
-				          <!--</div>-->
-				       <!--</div>-->
-	    		 <!--</nav>	-->
 	             </div>
 	             <div class="box-body">
 	           	 <div class="row">
@@ -68,14 +47,11 @@
 						<tbody>
                           <foreach name="list" item="vo" key="k" >
                              <tr role="row">    
-                                     <td>{$vo[ad_id]}</td>
-                                     <td>{$ad_position_list[$vo[pid]]}</td>
-		                     <td>{$vo.ad_name}</td>	                    
+                             <td>{$vo[ad_id]}</td>
+                             <td>{$ad_position_list[$vo[pid]-1][position_name]}</td>
+		                     <td>{$vo.ad_name}</td>
 		                     <td><img alt="" src="{$vo.ad_code}" width="80px" height="50px"></td>
 		                     <td>{$vo.ad_link}</td>
-		                     <!--<td>-->
-                                         <!--<img width="20" height="20" src="__PUBLIC__/images/<if condition='$vo[target] eq 1'>yes.png<else />cancel.png</if>" onclick="changeTableVal('ad','ad_id','{$vo.ad_id}','target',this)"/>-->
-		                     <!--</td>                                     -->
 		                     <td>
                                          <img width="20" height="20" src="__PUBLIC__/images/<if condition='$vo[enabled] eq 1'>yes.png<else />cancel.png</if>" onclick="changeTableVal('ad','ad_id','{$vo.ad_id}','enabled',this)"/>
 		                     </td>
@@ -91,17 +67,10 @@
 		                  </foreach>
 		                   </tbody>
 		                 <tfoot>
-		                 
 		                 </tfoot>
 		               </table>
 	               </div>
 	          </div>
-              <!--<div class="row">-->
-              	    <!--<div class="col-sm-6 text-left">-->
-              	    	<!--<button class="btn btn-default btn-sm checkbox-toggle"><i class="fa fa-square-o"></i></button>-->
-              	    <!--</div>-->
-                    <!--<div class="col-sm-6 text-right">{$page}</div>		-->
-              <!--</div>-->
 	          </div>
 	        </div>
        	</div>

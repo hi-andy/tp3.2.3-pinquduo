@@ -816,5 +816,27 @@ function operationPrice($price)
 	$price[1]=substr($price[1],0,2);
 	$price = (float)($price[0].'.'.$price[1]);
 	$price = $price+0.01;
-	return $price;
+	return (string)$price;
+}
+
+//混合分割中英文字符
+function str_split_utf8($str){
+    $split=1;
+    $array=array();
+    for($i=0;$i<strlen($str);){
+        $value=ord($str[$i]);
+        if($value>127){
+            if($value>=192&&$value<=223) $split=2;
+            elseif($value>=224 && $value<=239) $split=3;
+            elseif($value>=240 && $value<=247) $split=4;
+        }else{
+            $split=1;
+        }
+        $key=NULL;
+        for($j=0;$j<$split;$j++,$i++){
+            $key.=$str[$i];
+        }
+        array_push($array,$key);
+    }
+    return $array;
 }
