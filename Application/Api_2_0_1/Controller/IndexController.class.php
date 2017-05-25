@@ -51,7 +51,7 @@ class IndexController extends BaseController {
             $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
             $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
             $activity['logo_url'] = 'http://cdn.pinquduo.cn/0d1miaosha.gif';
-            
+
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
@@ -171,13 +171,9 @@ class IndexController extends BaseController {
         $rdsname = "getJiuJiu".$page.$pagesize.$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $banner = M('ad', '', 'DB_CONFIG2')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
-            $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
             //中间四个小块
             $banner2 = M('exclusive', '', 'DB_CONFIG2')->select();
 
-            foreach ($banner2 as &$v) {
-                $v['img'] = TransformationImgurl($v['img']);
-            }
             if($version=='2.0.0'){
                 $where = '`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
                 $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
@@ -185,9 +181,6 @@ class IndexController extends BaseController {
                 $count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->count();
                 $goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ')->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
 
-                foreach ($goods as &$v) {
-                    $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-                }
                 $data = $this->listPageData($count, $goods);
             }
 
@@ -211,7 +204,6 @@ class IndexController extends BaseController {
         $rdsname = "getJIuJIuCategory".$id.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存 //获取轮播图
             $banner = M('exclusive', '', 'DB_CONFIG2')->where('id =' . $id)->field(array('banner'))->find();
-            $banner['banner'] = TransformationImgurl($banner['banner']);
             $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods' => $data));
@@ -251,8 +243,6 @@ class IndexController extends BaseController {
         foreach($prom as &$v){
             $goods_info = M('goods', '', 'DB_CONFIG2')->where('`goods_id`='.$v['goods_id'])->field('original_img,goods_name')->find();
             $v['goods_name'] = $goods_info['goods_name'];
-            $v['original'] = TransformationImgurl($goods_info['original_img']);
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
         }
         $data=$this->listPageData($count,$prom);
 
@@ -602,7 +592,8 @@ class IndexController extends BaseController {
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 6')->field('ad_id,ad_code,ad_link,type')->find();
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -622,7 +613,7 @@ class IndexController extends BaseController {
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            $ad = M('ad')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->select();
+            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -652,7 +643,7 @@ class IndexController extends BaseController {
             ->select();
         $data = $this->listPageData($count,$goodsList);
 
-        $ad = M('ad')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->select();
+        $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->find();
 
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
@@ -769,7 +760,7 @@ class IndexController extends BaseController {
 		if(empty(redis($rdsname))) {//判断是否有缓存
 			$where = '`is_special`=9 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
 			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            $ad = M('ad')->where('pid = 5')->field('ad_id,ad_code,ad_link,type')->select();
+            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 5')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存
 		}else{

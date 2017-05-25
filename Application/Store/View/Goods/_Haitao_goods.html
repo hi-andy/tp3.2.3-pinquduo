@@ -60,8 +60,6 @@
                         <li class="active"><a href="#tab_tongyong" data-toggle="tab">通用信息</a></li>
                         <li><a href="#tab_goods_images" data-toggle="tab">商品轮播图</a></li>
                         <li><a href="#tab_goods_desc" data-toggle="tab">商品详情</a></li>
-                        <!--<li><a href="#tab_goods_spec" data-toggle="tab">商品规格</a></li>-->
-                        <!--<li><a href="#tab_goods_attr" data-toggle="tab">商品属性</a></li>                        -->
                     </ul>
                     <!--表单数据-->
                     <form method="post" id="addEditGoodsForm">
@@ -98,30 +96,36 @@
                                 <tr>
                                     <td>商品分类:</td>
                                     <td>
-                                      <div class="col-xs-3">
-                                      <select name="cat_id" id="cat_id" onchange="get_category(this.value,'cat_id_2','0');" class="form-control" style="width:250px;margin-left:-15px;">
-                                        <option value="0">请选择商品分类</option>
-                                             <foreach name="cat_list" item="v" key="k" >
-                                               <option value="{$v['id']}" <if condition="$v['id'] eq $level_cat['1']">selected="selected"</if> >
-                                               		{$v['name']}
-                                               </option>
-                                             </foreach>
-                                      </select>
-
-                                      </div>
-                                      <div class="col-xs-3">
-                                      <select name="cat_id_2" id="cat_id_2" onchange="get_category(this.value,'cat_id_3','0');" class="form-control" style="width:250px;margin-left:-15px;">
-                                        <option value="0">请选择商品分类</option>
-                                      </select>
-                                      </div>
-                                      <div class="col-xs-3">
-                                      <select name="cat_id_3" id="cat_id_3" class="form-control" style="display:inline;width:250px;margin-left:-15px;">
-                                        <option value="0">请选择商品分类</option>
-                                      </select>
-                                          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 必选</span>
-                                      </div>
-
-                                      <span id="err_cat_id" style="color:#F00; display:none;"></span>
+                                        <div class="col-xs-3">
+                                            <select name="cat_id" id="cat_id" onchange="get_category_haitao(this.value,'cat_id_2','0');" class="form-control" style="width:250px;margin-left:-15px;">
+                                                <option value="0">请选择商品分类</option>
+                                                <foreach name="cat_list" item="v" key="k" >
+                                                    <option value="{$v['id']}" <if condition="$v['id'] eq $level_cat['1']">selected="selected"</if> >
+                                                    {$v['name']}
+                                                    </option>
+                                                </foreach>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <select name="cat_id_2" id="cat_id_2" onchange="get_category_haitao(this.value,'cat_id_3','0');" class="form-control" style="width:250px;margin-left:-15px;">
+                                                <option value="0">请选择商品分类</option>
+                                            </select>
+                                        </div>
+                                        <span id="err_cat_id" style="color:#F00; display:none;"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>商品归属:</td>
+                                    <td>
+                                        <select name="countries_type" id="countries_type" class="form-control" style="width:250px;">
+                                            <option value="0">所有归属</option>
+                                            <foreach name="haitao_style" item="v" key="k" >
+                                                <option value="{$v['id']}"  <if condition="$v['id'] eq $goodsInfo['countries_type'] ">selected="selected"</if>>
+                                                {$v['name']}
+                                                </option>
+                                            </foreach>
+                                        </select>
+                                        <label id="err_is_special" style="color:#F00; ">*必须选择</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -265,32 +269,6 @@
                                 <div style="width:65%">
                                     <textarea class="span12 ckeditor" id="goods_content" name="goods_content" title="">{$goodsInfo.goods_content}</textarea>
                                     <span id="err_goods_content" style="color:#F00; display:none;"></span>
-                                    <!--<table class="table table-bordered">-->
-                                        <!--<tbody>-->
-                                        <!--<tr>-->
-                                            <!--<td>-->
-                                                <!--<foreach name="goodsContent" item="vo" key="k" >-->
-                                                    <!--<div style="width:100px; text-align:center; margin: 5px; display:inline-block;" class="goods_xc2">-->
-                                                        <!--<input type="hidden" value="{$vo}" name="goods_content[]">-->
-                                                        <!--<a onclick="" href="{$vo}" target="_blank"><img width="100" height="100" src="{$vo}"></a>-->
-                                                        <!--<br>-->
-                                                        <!--<a href="javascript:void(0)" onclick="ClearPicArr2(this,'{$vo}','{$goodsInfo['goods_id']}')">删除</a>-->
-                                                    <!--</div>-->
-                                                <!--</foreach>-->
-
-                                                <!--<div class="goods_xc2" style="width:100px; text-align:center; margin: 5px; display:inline-block;">-->
-                                                    <!--<input type="hidden" name="goods_content[]" value="" />-->
-                                                    <!--<a href="javascript:void(0);" onclick="GetUploadify(20,'','goods2','call_back4');"><img src="/Public/images/add-button.jpg" width="100" height="100" /></a>-->
-                                                    <!--<br/>-->
-                                                    <!--<a href="javascript:void(0)">&nbsp;&nbsp;</a>-->
-                                                <!--</div>-->
-                                            <!--</td>-->
-                                        <!--</tr>-->
-                                        <!--<tr>-->
-                                            <!--<td><span style="color: red">必填：点击 + 号上传商品详情描述图片，640px * 960px（宽 * 高）</span></td>-->
-                                        <!--</tr>-->
-                                        <!--</tbody>-->
-                                    <!--</table>-->
                                 </div>
                         </div>
                         <!-- 商品描述-->
@@ -313,7 +291,7 @@
                         <if condition="$goodsInfo.is_audit neq 2">
                             <input type="hidden" name="is_audit" value="{$goodsInfo.is_audit}" >
                         </if>
-                        <button class="btn btn-primary" onclick="ajax_submit_form('addEditGoodsForm','{:U('Goods/addEditGoods?is_ajax=1')}');" title="" data-toggle="tooltip" type="button" data-original-title="保存">保存</button>
+                        <button class="btn btn-primary" onclick="ajax_submit_form('addEditGoodsForm','{:U('Goods/addEditHaitaoGoods?is_ajax=1')}');" title="" data-toggle="tooltip" type="button" data-original-title="保存">保存</button>
                     </div>
 			    </form>
                     <!--表单数据-->
