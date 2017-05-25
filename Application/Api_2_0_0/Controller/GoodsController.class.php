@@ -874,7 +874,11 @@ class GoodsController extends BaseController {
 		$pagesize = I('pagesize',50);
 		$rdsname = "getsearch".$key.$page.$pagesize;
         if (empty(redis($rdsname))) {//判断是否有缓存
-            $where = "`goods_name` like '%$key%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+            $where = "";
+            for ($i=0; $i < strlen($key); $i++) {
+                $where .= "`goods_name` like '%{$key[$i]}%' and ";
+            }
+            $where .= "`is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
             $data = $this->getGoodsList($where,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
