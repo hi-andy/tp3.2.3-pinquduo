@@ -1415,8 +1415,7 @@ class UserController extends BaseController {
         $order_id = I('order_id');
 
         $return_order = M('return_goods', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->find();
-        if(empty($return_order))
-        {
+        if(empty($return_order)){
             exit(json_encode(array('status'=>1,'msg'=>'订单不存在','result'=>'')));
         }
 
@@ -1586,15 +1585,12 @@ class UserController extends BaseController {
     public function getUserMoney()
     {
         $order_id = I('order_id');
-
         $money = M('getwhere', '', 'DB_CONFIG2')->where('`order_id`='.$order_id)->find();
-        if(empty($money))
-        {
+        if(empty($money)){
             exit(json_encode(array('status'=>-1,'msg'=>'该订单不存在')));
         }
 
-        if($money['code']=='weixin')
-        {
+        if($money['code']=='weixin'){
             $pay_name = '微信支付';
         } else {
             $pay_name = '支付宝支付';
