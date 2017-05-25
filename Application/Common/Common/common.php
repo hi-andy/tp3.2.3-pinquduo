@@ -19,7 +19,7 @@ function is_login(){
  * @return mixed
  */
 function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
-    $unionid = I('unionid');
+    $unionid = I('unionid','');
     $map = array();
     if($type == 0)
         $map['user_id'] = $user_id_or_name;
@@ -28,7 +28,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
 //    if($type == 2)
 //        $map['mobile'] = $user_id_or_name;
     if($type == 3){
-        if ($oauth != 'weixin' || empty($unionid)) {
+        if (empty($unionid)) {
             $map['openid'] = $user_id_or_name;
             $map['oauth'] = array("eq", $oauth);
             redis("get_user_info","4");
@@ -39,7 +39,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
     }
     $user = M('users')->where($map)->find();
     M('users')->where($map)->save(array('version'=>I('version'),'openid'=>$user_id_or_name));
-    if ($user && $oauth == 'weixin' && !empty($unionid)) {
+    if ($user && !empty($unionid)) {
         $data['unionid'] = $unionid;
         $where['user_id'] = array("eq", $user['user_id']);
         M('users')->where($where)->save($data);
@@ -47,7 +47,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
         if (count($users) > 0) {
             $user_id = "";
             foreach ($users as $v) {
-                $user_id .= $v['user_id'] . ",";
+                $user_id .= $v . ",";
             }
             $user_id = substr($user_id, 0, -1);
             M('user_address')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
@@ -64,8 +64,8 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
             M('cart')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
             M('account_log')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
             M('users')->where(array("user_id"=>array("in",$user_id)))->delete();
+            redis("get_user_info","6");
         }
-        redis("get_user_info","6");
     }
     return $user;
 }

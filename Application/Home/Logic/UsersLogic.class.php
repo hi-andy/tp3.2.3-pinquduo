@@ -46,6 +46,7 @@ class UsersLogic extends RelationModel
             //获取用户信息
             redis("get_user_info","2");
             $user = get_user_info($openid, 3, $oauth, $unionid);
+            redis('head_pic',$data['head_pic'],REDISTIME);
             if ($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile'])) {
                 //$map['head_pic'] = saveimage($data['head_pic']);
                 //拉取微信头像传到七牛云
