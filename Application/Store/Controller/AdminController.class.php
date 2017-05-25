@@ -70,6 +70,7 @@ class AdminController extends BaseController {
     			$r = D('admin')->add($data);
     		}
     	}
+
     	if($data['act'] == 'edit'){
 		    if(empty($data['store_logo']))
 			    unset($data['store_logo']);
