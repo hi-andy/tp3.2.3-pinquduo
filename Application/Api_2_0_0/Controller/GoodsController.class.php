@@ -869,11 +869,12 @@ class GoodsController extends BaseController {
 	//搜索
     function getsearch()
     {
-        $key = str_split_utf8(I('key'));
+        $key = I('key');
         $page = I('page',1);
         $pagesize = I('pagesize',50);
         $rdsname = "getsearch".$key.$page.$pagesize;
         if (empty(redis($rdsname))) {//判断是否有缓存
+            $key = str_split_utf8($key);
             $where = "";
             for ($i=0; $i < count($key); $i++) {
                 $where .= "`goods_name` like '%{$key[$i]}%' and ";
