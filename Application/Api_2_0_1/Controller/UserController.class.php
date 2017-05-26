@@ -1150,15 +1150,10 @@ class UserController extends BaseController {
             redisdelall("getUserCollection_status".$user_id);
         }
         if (empty(redis($rdsname))) {//是否有缓存
-            $goods_array = M('goods_collect', '', 'DB_CONFIG2')->where('`user_id` = ' . $user_id)->order('collect_id desc')->page($page, $pagesize)->select();
+            $goods_array = M('goods_collect', '', 'DB_CONFIG2')->where('`user_id` = ' . $user_id)->order('collect_id desc')->select();
+            $counts = count($goods_array);
             if(!empty($goods_array)){
                 $ids['g.goods_id'] = array('IN', array_column($goods_array, 'goods_id'));
-                $count = M('goods', '', 'DB_CONFIG2')
-                    ->alias('g')
-                    ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
-                    ->where('g.is_show = 1 and g.is_on_sale = 1 and c.user_id=' . $user_id)
-                    ->where($ids)
-                    ->count();
                 $goods = M('goods', '', 'DB_CONFIG2')
                     ->alias('g')
                     ->join(" LEFT JOIN tp_goods_collect AS c ON c.goods_id = g.goods_id ")
@@ -1166,11 +1161,12 @@ class UserController extends BaseController {
                     ->where($ids)
                     ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.prom,g.list_img as original_img,g.original_img as original,g.sales,g.store_count,g.prom_price,g.free,g.is_special')
                     ->order(' c.add_time desc')
+                    ->page($page, $pagesize)
                     ->select();
                 foreach ($goods as $k => $v){
                     $goods[$k]['original_img'] = empty($v['original_img'])?$v['original'] : $v['original_img'];
                 }
-                $collection = $this->listPageData($count, $goods);
+                $collection = $this->listPageData($counts, $goods);
                 $json = array('status' => 1, 'msg' => '获取成功', 'result' => $collection);
             }else{
                 $json = array('status' => 1, 'msg' => '获取成功', 'result' => null);
