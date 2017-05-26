@@ -38,7 +38,9 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
         }
     }
     $user = M('users')->where($map)->find();
-    M('users')->where($map)->save(array('version'=>I('version'),'openid'=>$user_id_or_name));
+    if (I('webweixin') == 1) $savedata['openid'] = $user_id_or_name;
+    $savedata['version'] = I('version');
+    M('users')->where($map)->save($savedata);
     if ($user && !empty($unionid)) {
         $data['unionid'] = $unionid;
         $where['user_id'] = array("eq", $user['user_id']);
