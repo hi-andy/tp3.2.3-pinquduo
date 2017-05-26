@@ -673,20 +673,8 @@ class GoodsController extends BaseController {
 		$countries = M('haitao_style', '', 'DB_CONFIG2')->where('`id` = '.$id)->find();
 		$countries['img'] = TransformationImgurl($countries['img']);
 
-		if($version=='2.0.0'){
-			$where ='`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id;
-			$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
-		}else{
-			$count = M('goods', '', 'DB_CONFIG2')->where('`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->count();
-			$goods = M('goods', '', 'DB_CONFIG2')->where('`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
-
-			foreach($goods as &$v)
-			{
-				$v['original_img'] =  TransformationImgurl($v['goods_id']);
-			}
-
-			$data = $this->listPageData($count,$goods);
-		}
+		$where ='`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id;
+		$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
 
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('countries'=>$countries,'goods'=>$data));

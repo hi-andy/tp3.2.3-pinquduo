@@ -40,26 +40,11 @@ class StoreController extends BaseController{
 			if (empty($coupon)) {
 				$coupon = null;
 			}
-			if($version='2.0.0'){
-				$where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id;
-				$data = $this->getGoodsList($where,$page,$pagesize,"$stor desc ");
-				$store['coupon'] = $coupon;
-				$store['goods'] = $data;
-				$json = array('status' => 1, 'msg' => '', 'result' => array('id'=>$store_id,'store_name' => $store['store_name'],'mobile' => $store['mobile'],'store_logo' => $store['store_logo'],'sales' => $store['sales'],'introduce' => $store['introduce'],'store_share_url' => $store['store_share_url'],'logo_share_url' => $store['logo_share_url'], 'goods' => $data, 'coupon' => $coupon));
-			}else{
-				$count = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->count();
-				$goods = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id)->page($page, $pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
-				if (empty($count)) {
-					$count = null;
-				} elseif (empty($goods)) {
-					$goods = null;
-				}
-				foreach ($goods as &$v) {
-					$v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
-				}
-				$data = $this->listPageData($count, $goods);
-				$json = array('status' => 1, 'msg' => '', 'result' => array('store' => $store, 'goods' => $data, 'coupon' => $coupon));
-			}
+			$where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id;
+			$data = $this->getGoodsList($where,$page,$pagesize,"$stor desc ");
+			$store['coupon'] = $coupon;
+			$store['goods'] = $data;
+			$json = array('status' => 1, 'msg' => '', 'result' => array('id'=>$store_id,'store_name' => $store['store_name'],'mobile' => $store['mobile'],'store_logo' => $store['store_logo'],'sales' => $store['sales'],'introduce' => $store['introduce'],'store_share_url' => $store['store_share_url'],'logo_share_url' => $store['logo_share_url'], 'goods' => $data, 'coupon' => $coupon));
 
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存
 		} else {

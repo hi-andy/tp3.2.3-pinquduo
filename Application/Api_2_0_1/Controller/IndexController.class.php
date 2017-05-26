@@ -27,7 +27,7 @@ class IndexController extends BaseController {
      * 获取首页数据
      */
     public function home(){
-        var_dump($version);die;
+//        var_dump($version);die;
         $page = I('page', 1);
         $pagesize = I('pagesize', 8);
         $version = I('version');
@@ -427,18 +427,7 @@ class IndexController extends BaseController {
         $condition2['is_show'] = 1;
         $condition2['show_type'] = 0;
         $condition2['is_recommend'] = 0;$order = "sales desc";//筛选条件
-        if($version=='2.0.0'){
-            $data = $this->getGoodsList($condition2,$page,$pagesize,$order);
-        }else{
-            $count = M('goods', '', 'DB_CONFIG2')->where($condition2)->count();
-            $goods = M('goods', '', 'DB_CONFIG2')->where($condition2)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->order($order)->select();
-
-            foreach($goods as &$v)
-            {
-                $v['original_img'] =  goods_thum_images($v['goods_id'],400,400);
-            }
-            $data = $this->listPageData($count,$goods);
-        }
+        $data = $this->getGoodsList($condition2,$page,$pagesize,$order);
         return $data;
     }
 
