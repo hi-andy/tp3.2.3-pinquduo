@@ -92,7 +92,7 @@ class AdminController extends BaseController {
     		$r = D('merchant')->where('id='.$data['id'])->save($data);
             $result = M('goods')->where(array('store_id'=>array('eq',$data['id'])))->field('goods_id')->select();
             foreach ($result as $value){
-                redislist("goods_refresh_id", $value);
+                redislist("goods_refresh_id", $value['goods_id']);
             }
 		    redisdelall("getStoreList".$_SESSION['merchant_id']);
     	}
