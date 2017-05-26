@@ -299,7 +299,14 @@ class PurchaseController extends  BaseController
             }elseif(I('code')=='alipay'){
                 $order['pay_code'] = 'alipay' ;
                 $order['pay_name'] = '支付宝支付';
-            }elseif(I('code')=='qpay'){
+			}
+            elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
+            {
+                $order['pay_code'] = 'alipay_wap' ;
+                $order['pay_name'] = '支付宝手机网页支付';
+            }
+			elseif(I('code')=='qpay')
+			{
                 $order['pay_code'] = 'qpay';
                 $order['pay_name'] = 'QQ钱包支付';
             }
@@ -396,14 +403,19 @@ class PurchaseController extends  BaseController
                 }elseif($order['pay_code'] == 'alipay'){//AlipayController
                     $AliPay = new AlipayController();
                     $pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
-                }elseif($order['pay_code'] == 'qpay'){//QQPayController
+				}
+                elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+                    $AlipayWap = new AlipayWapController();
+                    $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+                }
+				elseif($order['pay_code'] == 'qpay'){
                     $qqPay = new QQPayController();
                     $pay_detail = $qqPay->getQQPay($order);
                 }
                 $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
                 $this->aftermath($user_id,$goods,$num,$o_id);
                 if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
+                    //echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
                 exit(json_encode($json));
@@ -544,7 +556,14 @@ class PurchaseController extends  BaseController
         }elseif(I('code')=='alipay'){
             $order['pay_code'] = 'alipay' ;
             $order['pay_name'] = '支付宝支付';
-        }elseif(I('code')=='qpay'){
+		}
+        elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
+        {
+            $order['pay_code'] = 'alipay_wap' ;
+            $order['pay_name'] = '支付宝手机网页支付';
+        }
+		elseif(I('code')=='qpay')
+		{
             $order['pay_code'] = 'qpay';
             $order['pay_name'] = 'QQ钱包支付';
         }
@@ -642,8 +661,13 @@ class PurchaseController extends  BaseController
                 }
             }elseif($order['pay_code'] == 'alipay'){
                 $AliPay = new AlipayController();
-                $pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-            }elseif($order['pay_code'] == 'qpay'){
+				$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+			}
+            elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+                $AlipayWap = new AlipayWapController();
+                $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+            }
+			elseif($order['pay_code'] == 'qpay'){
                 // Begin code by lcy
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
@@ -652,7 +676,7 @@ class PurchaseController extends  BaseController
             $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
             $this->aftermath($user_id,$goods,$num,$o_id);
             if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
+                //echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
             exit(json_encode($json));
@@ -719,6 +743,11 @@ class PurchaseController extends  BaseController
         {
             $order['pay_code'] = 'alipay' ;
             $order['pay_name'] = '支付宝支付';
+        }
+        elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
+        {
+            $order['pay_code'] = 'alipay_wap' ;
+            $order['pay_name'] = '支付宝手机网页支付';
         }
         // Begin code by lcy
         elseif(I('code')=='qpay')
@@ -821,7 +850,10 @@ class PurchaseController extends  BaseController
                 }
             }elseif($order['pay_code'] == 'alipay'){
                 $AliPay = new AlipayController();
-                $pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
+				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
+			}elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+				$AlipayWap = new AlipayWapController();
+				$pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
             }elseif($order['pay_code'] == 'qpay'){
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
@@ -838,7 +870,7 @@ class PurchaseController extends  BaseController
             $json = array('status'=>-1,'msg'=>'购买失败');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
+                //echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
         }

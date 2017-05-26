@@ -472,7 +472,11 @@ class GoodsController extends BaseController {
 			if($pay_code=='alipay')
 			{
 				$pay_name = '支付宝支付';
-			}elseif($pay_code=='weixin'){
+			}
+            elseif($pay_code=='alipay_wap'){
+                $pay_name = '手机支付宝网页支付';
+            }
+			elseif($pay_code=='weixin'){
 				$pay_name = '微信支付';
 			}else{
 				$pay_name = 'QQ支付';
@@ -491,7 +495,12 @@ class GoodsController extends BaseController {
 		} elseif($pay_code=='alipay') {
 				$AliPay = new AlipayController();
 				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-		}elseif($pay_code == 'qpay'){
+		}
+        elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+            $AlipayWap = new AlipayWapController();
+            $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn']);
+        }
+		elseif($pay_code == 'qpay'){
 			$qqPay = new QQPayController();
 			$pay_detail = $qqPay->getQQPay($order);
 		} else {

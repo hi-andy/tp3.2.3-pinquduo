@@ -992,7 +992,13 @@ class GoodsController extends BaseController {
 			{
 				$order['pay_code'] = 'alipay' ;
 				$order['pay_name'] = '支付宝支付';
-			}elseif(I('code')=='qpay')
+			}
+            elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
+            {
+                $order['pay_code'] = 'alipay_wap' ;
+                $order['pay_name'] = '支付宝手机网页支付';
+            }
+			elseif(I('code')=='qpay')
 			{
 				$order['pay_code'] = 'qpay';
 				$order['pay_name'] = 'QQ钱包支付';
@@ -1077,7 +1083,12 @@ class GoodsController extends BaseController {
 				}elseif($order['pay_code'] == 'alipay'){
 					$AliPay = new AlipayController();
 					$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
-				}elseif($order['pay_code'] == 'qpay'){
+				}
+                elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+                    $AlipayWap = new AlipayWapController();
+                    $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+                }
+				elseif($order['pay_code'] == 'qpay'){
 					$qqPay = new QQPayController();
 					$pay_detail = $qqPay->getQQPay($order);
 				}
@@ -1096,7 +1107,7 @@ class GoodsController extends BaseController {
                 $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
                 async_get_url($url);
                 if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
+                    //echo "<script> alert('".$json['msg']."') </script>";
                     exit;
                 }
 				exit(json_encode($json));
@@ -1247,7 +1258,13 @@ class GoodsController extends BaseController {
 		{
 			$order['pay_code'] = 'alipay' ;
 			$order['pay_name'] = '支付宝支付';
-		}elseif(I('code')=='qpay')
+		}
+        elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
+        {
+            $order['pay_code'] = 'alipay_wap' ;
+            $order['pay_name'] = '支付宝手机网页支付';
+        }
+		elseif(I('code')=='qpay')
 		{
 			$order['pay_code'] = 'qpay';
 			$order['pay_name'] = 'QQ钱包支付';
@@ -1336,15 +1353,18 @@ class GoodsController extends BaseController {
 			}elseif($order['pay_code'] == 'alipay'){
 				$AliPay = new AlipayController();
 				$pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
-			}elseif($order['pay_code'] == 'qpay'){
+			}
+            elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+                $AlipayWap = new AlipayWapController();
+                $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+            }
+			elseif($order['pay_code'] == 'qpay'){
 				// Begin code by lcy
 				$qqPay = new QQPayController();
 				$pay_detail = $qqPay->getQQPay($order);
 				// End code by lcy
 			}
 			$json = array('status'=>1,'msg'=>'开团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-//			if(!empty($ajax_get))
-//				$this->getJsonp($json);
             $rdsname = "getUserOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
@@ -1359,15 +1379,13 @@ class GoodsController extends BaseController {
             $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
             async_get_url($url);
             if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
+                //echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
 			exit(json_encode($json));
 		}else{
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'开团失败');
-//			if(!empty($ajax_get))
-//				$this->getJsonp($json);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1429,6 +1447,11 @@ class GoodsController extends BaseController {
 			$order['pay_code'] = 'alipay' ;
 			$order['pay_name'] = '支付宝支付';
 		}
+        elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
+        {
+            $order['pay_code'] = 'alipay_wap' ;
+            $order['pay_name'] = '支付宝手机网页支付';
+        }
         // Begin code by lcy
         elseif(I('code')=='qpay')
         {
@@ -1483,8 +1506,6 @@ class GoodsController extends BaseController {
 		{
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'购买失败');
-//			if(!empty($ajax_get))
-//				$this->getJsonp($json);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
                 exit;
@@ -1499,8 +1520,6 @@ class GoodsController extends BaseController {
 			{
 				M()->rollback();//有数据库操作不成功时进行数据回滚
 				$json = array('status'=>-1,'msg'=>'购买失败');
-//				if(!empty($ajax_get))
-//					$this->getJsonp($json);
                 if(!empty($ajax_get)){
                     echo "<script> alert('".$json['msg']."') </script>";
                     exit;
@@ -1527,17 +1546,12 @@ class GoodsController extends BaseController {
 				$AlipayWap = new AlipayWapController();
 				$pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
 			}elseif($order['pay_code'] == 'qpay'){
-                // Begin code by lcy
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
-                // End code by lcy
             }
 			$json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
-//			if(!empty($ajax_get)){
-//				$this->getJsonp($json);
-//				die;
-//			}
-            $rdsname = "getUserOrderList".$user_id."*";
+
+			$rdsname = "getUserOrderList".$user_id."*";
             redisdelall($rdsname);//删除用户订单缓存
             $rdsname = "getGoodsDetails".$goods_id."*";
             redisdelall($rdsname);//删除商品详情缓存
@@ -1551,17 +1565,15 @@ class GoodsController extends BaseController {
             $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
             async_get_url($url);
             if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
+                //echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
 			exit(json_encode($json));
 		}else{
 			M()->rollback();//有数据库操作不成功时进行数据回滚
 			$json = array('status'=>-1,'msg'=>'购买失败');
-//			if(!empty($ajax_get))
-//				$this->getJsonp($json);
             if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
+                //echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
 			exit(json_encode($json));
@@ -1615,7 +1627,11 @@ class GoodsController extends BaseController {
 			if($pay_code=='alipay')
 			{
 				$pay_name = '支付宝支付';
-			}elseif($pay_code=='weixin'){
+			}
+            elseif($pay_code=='alipay_wap'){
+                $pay_name = '手机支付宝网页支付';
+            }
+			elseif($pay_code=='weixin'){
 				$pay_name = '微信支付';
 			}else{
 				$pay_name = 'QQ支付';
@@ -1629,7 +1645,12 @@ class GoodsController extends BaseController {
 		} elseif($pay_code=='alipay') {
 				$AliPay = new AlipayController();
 				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-		}elseif($pay_code == 'qpay'){
+		}
+        elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+            $AlipayWap = new AlipayWapController();
+            $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn']);
+        }
+		elseif($pay_code == 'qpay'){
 			$qqPay = new QQPayController();
 			$pay_detail = $qqPay->getQQPay($order);
 		} else {
