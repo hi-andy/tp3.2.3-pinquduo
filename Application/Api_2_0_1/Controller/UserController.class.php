@@ -529,7 +529,6 @@ class UserController extends BaseController {
                 $promInfo['successful_time'] = null;
             }
             $order['promInfo'] = $promInfo;
-
             //找到order表里的详情
             $order['address'] = M('user_address', '', 'DB_CONFIG2')->where("`address` = '".$order['address']."' and `address_base` = '".$order['address_base']."' and `user_id` = ".$user_id)->field('consignee,address_base,address,mobile')->find();
             $order['goods'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = '.$order['goods_id'])->field('goods_name,original_img,store_id,market_price')->find();
@@ -599,7 +598,6 @@ class UserController extends BaseController {
     }
     public function get_prom_share()
     {
-//        $id=$_GET['id'];
         $this->show();
     }
 

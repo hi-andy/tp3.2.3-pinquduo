@@ -94,6 +94,7 @@ class AdminController extends BaseController {
             foreach ($result as $value){
                 redislist("goods_refresh_id", $value);
             }
+		    redisdelall("getStoreList".$_SESSION['merchant_id']);
     	}
     	
         if($data['act'] == 'del' && $data['admin_id']>1){
