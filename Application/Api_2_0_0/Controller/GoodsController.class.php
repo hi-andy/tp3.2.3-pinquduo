@@ -1039,8 +1039,10 @@ class GoodsController extends BaseController {
         //自动脚本
         if ($refresh) {
             $goods_id = redislist("goods_refresh_id");
+            if (!$goods_id) $goods_id = M('goods')->where(array('refresh'=>array('eq',0)))->getField('goods_id');
             if ($goods_id){
                 redisdelall("getDetaile_".$goods_id);
+                M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->save(array('refresh'=>1));
             } else {
                 exit;
             }
