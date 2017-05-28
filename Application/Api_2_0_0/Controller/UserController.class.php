@@ -1320,7 +1320,6 @@ class UserController extends BaseController {
                 exit(json_encode(array('status' => -1, 'msg' => '参数错误')));
             }
             $data = $this->get_OrderList($condition,$page,$pagesize);
-
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json));//写入缓存
         } else {
