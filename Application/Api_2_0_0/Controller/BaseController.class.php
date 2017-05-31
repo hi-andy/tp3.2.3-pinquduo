@@ -569,7 +569,7 @@ class BaseController extends Controller {
     {
 //        if($page<=2){
 //            $order = 'sort asc';
-//            $id_arr = '1=1';
+//            $id_arr = '1=1 and ';
 //        }else{
 //            $id = M('goods')->where('`show_type`=0 and is_show=1 and is_on_sale=1 and is_audit=1')->where($where)->order('sort asc')->limit('0,40')->field('goods_id')->select();
 //            $id_arr = ' goods_id not in (';
