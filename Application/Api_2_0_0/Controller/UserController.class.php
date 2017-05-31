@@ -1019,8 +1019,7 @@ class UserController extends BaseController {
      */
     public function confirm()
     {
-        if($_REQUEST)
-        {
+        if($_REQUEST)        {
             $mobile = I('mobile');
             $code = I('code');
             $user_id = M('users')->where(array('mobile' => $mobile))->getField('user_id');

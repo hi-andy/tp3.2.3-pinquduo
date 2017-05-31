@@ -1406,4 +1406,35 @@ class GoodsController extends BaseController {
 
 		return $time;
 	}
+
+	function test(){
+		$this->display();
+	}
+
+	public function imgApp(){
+		//方式一：电脑上传文件
+		$image = $_FILES["photo"]["tmp_name"];
+		$fp = fopen($image, "r");
+		$file = fread($fp, $_FILES["photo"]["size"]); //二进制数据流
+		//保存地址
+		$imgDir = './Public/';
+		//要生成的图片名字
+		$filename = date("Ym")."/".md5(time().mt_rand(10, 99)).".png"; //新图片名称
+		$riqi = date("Ym");
+		$path = "./Public/".$riqi;
+		if (!file_exists($path)){
+			mkdir($path);
+		}
+		$newFilePath = $imgDir.$filename;
+		$data = $file;
+		$newFile = fopen($newFilePath,"w"); //打开文件准备写入
+		fwrite($newFile,$data); //写入二进制流到文件
+		fclose($newFile); //关闭文件
+
+		if(1){
+			$this->success("保存成功", "Goods/test");
+		} else {
+			$this->error("失败");
+		}
+	}
 }
