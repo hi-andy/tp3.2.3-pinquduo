@@ -32,6 +32,7 @@ class UserController extends BaseController {
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        redis('unionid',serialize($map),REDISTIME);
         redis("get_user_info","1");
         $data = $this->userLogic->thirdLogin($map);
         redis("thirdLogin", serialize($data));
