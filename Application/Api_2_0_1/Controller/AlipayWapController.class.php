@@ -1,5 +1,5 @@
 <?php
-namespace Api\Controller;
+namespace Api_2_0_1\Controller;
 use Think\Controller;
 
 class AlipayWapController extends BaseController
