@@ -140,7 +140,7 @@
                                     <td>单独售价:</td>
                                     <td>
                                         <input type="text" value="{$goodsInfo.shop_price}" disabled="disabled" placeholder="自动获取" name="shop_price" class="form-control" style="display:inline;width:150px;"   onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
-                                        <span class="notice" title="单独售价由程序自动生成，无需填写"></span>
+                                        <span class="notice" notice="单独售价由程序自动生成，无需填写"></span>
                                         <span id="err_shop_price" style="color:#F00; display:none;"></span>
                                     </td>
                                 </tr>
@@ -148,7 +148,7 @@
                                     <td>团购售价:</td>
                                     <td>
                                         <input type="text" value="{$goodsInfo.prom_price}"  disabled="disabled" placeholder="自动获取"  name="prom_price" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
-                                        <span class="notice" title="团购售价由程序自动生成，无需填写"></span>
+                                        <span class="notice" notice="团购售价由程序自动生成，无需填写"></span>
                                         <span id="err_prom_price" style="color:#F00; display:none;"></span>
                                     </td>
                                 </tr>
@@ -188,7 +188,7 @@
                                             </a>
                                         </if>
                                         <span id="err_list_img" style="color:#F00; display:none;"></span>
-                                        <span  style="color:red; ">列表展示主图：640*300px </span>
+                                        <span  style="color:red; ">列表展示主图：640*300px， 必须为白底无文字 （非首页商品可选填） </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -203,7 +203,7 @@
                                             </a>
                                         </if>
                                         <span id="err_original_img" style="color:#F00; display:none;"></span>
-                                        <span  style="color:red; ">列表展示副图：400*400px 纯白底无Logo/无文字（服饰箱包除外）</span>
+                                        <span  style="color:red; ">列表展示副图：400*400px， 纯白底无Logo/无文字（服饰箱包除外）</span>
                                     </td>
                                 </tr>
 
