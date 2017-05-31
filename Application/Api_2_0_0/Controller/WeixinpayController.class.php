@@ -87,11 +87,11 @@ class WeixinpayController extends BaseController {
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
             $type = $prom_info['mark']>0?1:0;
-            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+            $go_url ='http://wx.pinquduo.cn/pinquduowx_test/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
         }else{
-            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+            $go_url ='http://wx.pinquduo.cn/pinquduowx_test/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
         }
-        $back_url = "http://wx.pinquduo.cn/goods_detail.html?goods_id={$order['goods_id']}";
+        $back_url = "http://wx.pinquduo.cn/pinquduowx_test/goods_detail.html?goods_id={$order['goods_id']}";
 
         //①、获取用户openid
         $tools = new \JsApiPay();
@@ -136,9 +136,11 @@ class WeixinpayController extends BaseController {
 				 if(res.err_msg == "get_brand_wcpay_request:ok") {
 				    location.href='$go_url';
 				 }else if(res.err_msg == "get_brand_wcpay_request:cancel")  {
-                     location.href='$back_url';
+                     //location.href='$back_url';
+                     location.href='$go_url';
                  }else{
-				    location.href='$back_url';
+				    //location.href='$back_url';
+				    location.href='$go_url';
 				 }
 			}
 		);

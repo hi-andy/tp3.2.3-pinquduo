@@ -12,6 +12,18 @@
 	</style>
 </head>
 <body>
-<a href="{$test}">立即抢购</a>
+<form action="{:U('Api_2_0_0/Goods/imgApp')}" method="post" enctype="multipart/form-data" class="form-horizontal">
+	<div class="form-group">
+		<label class="col-lg-2 col-sm-2 control-label">上传图片</label>
+		<div class="col-lg-4">
+			<input type="file" name="photo">
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-lg-offset-2 col-lg-4">
+			<button type="submit" name="submit" class="btn btn-default">确定</button>
+		</div>
+	</div>
+</form>
 </body>
 </html>

@@ -137,9 +137,11 @@ class WeixinpayController extends BaseController {
 				 if(res.err_msg == "get_brand_wcpay_request:ok") {
 				    location.href='$go_url';
 				 }else if(res.err_msg == "get_brand_wcpay_request:cancel")  {
-                     location.href='$back_url';
+                     //location.href='$back_url';
+                     location.href='$go_url';
                  }else{
-				    location.href='$back_url';
+				    //location.href='$back_url';
+				    location.href='$go_url';
 				 }
 			}
 		);

@@ -52,7 +52,7 @@ class IndexController extends BaseController {
             //中间活动模块
             $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
             $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
-            $activity['logo_url'] = 'http://cdn.pinquduo.cn/0d1miaosha.gif';
+            $activity['logo_url'] = 'http://cdn.pinquduo.cn/dh.gif';
 
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
@@ -612,8 +612,11 @@ class IndexController extends BaseController {
             ->join('INNER JOIN tp_goods g on g.goods_id = ga.goods_id ')
             ->where($where)
             ->page($page,$pagesize)
-            ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img,g.prom,g.prom_price,g.is_special')
+            ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img as original,g.list_img as original_img,g.prom,g.prom_price,g.is_special')
             ->select();
+        foreach ($goodsList as &$v) {
+            $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
+        }
         $data = $this->listPageData($count,$goodsList);
 
         $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->find();

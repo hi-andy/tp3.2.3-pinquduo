@@ -48,7 +48,7 @@ class UsersLogic extends RelationModel
             $user = get_user_info($openid, 3, $oauth, $unionid);
             redis('head_pic',$data['head_pic'],REDISTIME);
             if ($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile'])) {
-                //$map['head_pic'] = saveimage($data['head_pic']);
+                $map['head_pic'] = saveimage($data['head_pic']);
                 //拉取微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();
                 $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
