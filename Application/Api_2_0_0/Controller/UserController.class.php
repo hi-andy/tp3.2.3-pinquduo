@@ -1319,41 +1319,7 @@ class UserController extends BaseController {
             } else {
                 exit(json_encode(array('status' => -1, 'msg' => '参数错误')));
             }
-            if($version=='2.0.0'){
-                $data = $this->get_OrderList($condition,$page,$pagesize);
-            }else{
-                $count = M('order', '', 'DB_CONFIG2')->where($condition)->count();
-                $order = M('order', '', 'DB_CONFIG2')->where($condition)->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->order('order_id desc')->select();
-                for ($i = 0; $i < count($order); $i++) {
-                    $prom = M('group_buy', '', 'DB_CONFIG2')->where('`id`=' . $order[$i]['prom_id'])->find();
-                    $goods_spec = M('order_goods', '', 'DB_CONFIG2')->where('`prom_id`=' . $prom['id'])->field('spec_key_name')->find();
-                    if ($prom['mark'] == 0) {
-                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark`=' . $prom['id'])->count();
-                    } else {
-                        $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark`=' . $prom['mark'])->count();
-                    }
-                    $order[$i]['goodsInfo'] = M('goods', '', 'DB_CONFIG2')->where('`goods_id` = ' . $prom['goods_id'])->field('goods_name,,list_img as original_img,original_img as original')->find();
-                    if(empty($order[$i]['goodsInfo']['original_img'])){
-                        $order[$i]['goodsInfo']['original_img'] = $order[$i]['goodsInfo']['original'];
-                    }
-                    $order[$i]['storeInfo'] = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $prom['store_id'])->field('store_name,store_logo')->find();
-                    $order[$i]['storeInfo']['store_logo'] = $order[$i]['storeInfo']['store_logo'];
-                    $order[$i]['goods_num'] = $prom['goods_num'];
-
-                    $order[$i]['end_time'] = $prom['end_time'];
-                    $order[$i]['goods_price'] = $prom['goods_price'];
-                    $order[$i]['mark'] = $prom['mark'];
-
-                    $order_status = $this->getPromStatus($order[$i], $prom, $num);
-                    $order[$i]['annotation'] = $order_status['annotation'];
-                    $order[$i]['order_type'] = $order_status['order_type'];
-
-                    $order[$i] = $this->FormatOrderInfo($order[$i]);
-                    $order[$i]['key_name'] = $goods_spec['spec_key_name'];
-                }
-                $data = $this->listPageData($count, $order);
-            }
-
+            $data = $this->get_OrderList($condition,$page,$pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json));//写入缓存
         } else {

@@ -805,6 +805,7 @@ class BaseController extends Controller {
         redis("getOrderList_status_".$user_id,"1");
         redis("getCountUserOrder_status".$user_id,"1");
         redis("return_goods_list_status".$user_id,"1");
+        redis("getUserPromList_status".$user_id,"1");
         redisdelall("TuiSong*");//删除推送缓存
     }
 

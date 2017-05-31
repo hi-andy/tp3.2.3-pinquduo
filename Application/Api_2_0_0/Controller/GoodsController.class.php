@@ -1039,8 +1039,10 @@ class GoodsController extends BaseController {
         //自动脚本
         if ($refresh) {
             $goods_id = redislist("goods_refresh_id");
+            if (!$goods_id) $goods_id = M('goods', '', 'DB_CONFIG2')->where(array('refresh'=>array('eq',0)))->getField('goods_id');
             if ($goods_id){
                 redisdelall("getDetaile_".$goods_id);
+                M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->save(array('refresh'=>1));
             } else {
                 exit;
             }
@@ -1101,7 +1103,11 @@ class GoodsController extends BaseController {
                 }
 
                 //提供保障
-                $security = array(array('type' => '全场包邮', 'desc' => '所有商品均无条件包邮'), array('type' => '7天退换', 'desc' => '商家承诺7天无理由退换货'), array('type' => '48小时发货', 'desc' => '成团后，商家将在48小时内发货'), array('type' => '假一赔十', 'desc' => '若收到的商品是假货，可获得加倍赔偿'));
+                if ($goods['is_special'] == 1) {
+                    $security = array(array('type' => '全场包邮', 'desc' => '所有商品均无条件包邮'), array('type' => '假一赔十', 'desc' => '若收到的商品是假货，可获得加倍赔偿'));
+                } else {
+                    $security = array(array('type' => '全场包邮', 'desc' => '所有商品均无条件包邮'), array('type' => '7天退换', 'desc' => '商家承诺7天无理由退换货'), array('type' => '48小时发货', 'desc' => '成团后，商家将在48小时内发货'), array('type' => '假一赔十', 'desc' => '若收到的商品是假货，可获得加倍赔偿'));
+                }
 
                 $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'],'original'=>$goods['original'],'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'], 'original_img' => $goods['original_img'], 'img_arr' => $goods['img_arr'], 'security' => $security, 'store' => $goods['store'], 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
                 redis($rdsname, serialize($json));//写入缓
