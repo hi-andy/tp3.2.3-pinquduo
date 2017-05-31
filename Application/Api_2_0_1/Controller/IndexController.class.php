@@ -732,7 +732,8 @@ class IndexController extends BaseController {
 	public function getStrict_selection(){
 		$page = I('page',1);
 		$pagesize = I('pagesize',10);
-		$rdsname = "getStrict_selection".$page.$pagesize;
+        $version = I('version','');
+		$rdsname = "getStrict_selection".$version.$page.$pagesize;
 		if(empty(redis($rdsname))) {//判断是否有缓存
 			$where = '`is_special`=9 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
 			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');

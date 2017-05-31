@@ -17,7 +17,7 @@ class ChatController extends BaseController
     public function set_msglist(){
         $num = 500;
         $values  = "";
-        $sql = "INSERT INTO users(f_userid, userid, data, status) VALUES";
+        $sql = "INSERT INTO tp_chat(f_userid, userid, data, status) VALUES";
         for ($i=0; $i<$num; $i++) {
             $msg = (array) $this->get_decrypt(redislist("msglist"));
             if (!empty($msg)) {
