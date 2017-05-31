@@ -45,12 +45,13 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
         $data['unionid'] = $unionid;
         $where['user_id'] = array("eq", $user['user_id']);
         M('users')->where($where)->save($data);
-        $users = M()->query("select user_id from tp_users where user_id <> {$user['user_id']} and (unionid='{$unionid}' or openid='{$user_id_or_name}')");
+        $sql = "select user_id from tp_users where user_id <> {$user['user_id']} and (unionid='{$unionid}' or openid='{$user_id_or_name}')";
+        $users = M()->query($sql);
         //$users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
         if (count($users) > 0) {
             $user_id = "";
             foreach ($users as $v) {
-                $user_id .= $v . ",";
+                $user_id .= $v['user_id'] . ",";
             }
             $user_id = substr($user_id, 0, -1);
             M('user_address')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
@@ -67,7 +68,11 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
             M('cart')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
             M('account_log')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$user['user_id']));
             M('users')->where(array("user_id"=>array("in",$user_id)))->delete();
-            redis("get_user_info","6");
+            redis("getOrderList_status_".$user['user_id'],"1");
+            redis("getCountUserOrder_status".$user['user_id'],"1");
+            redis("return_goods_list_status".$user['user_id'],"1");
+            redis("getUserPromList_status".$user['user_id'],"1");
+            redis("get_user_info",'6');
         }
     }
     return $user;

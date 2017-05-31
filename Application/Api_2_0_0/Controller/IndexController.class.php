@@ -20,6 +20,8 @@ class IndexController extends BaseController {
             redisdelall($rdsname);//删除推送缓存
         }
         print_r(unserialize(redis('unionid')));
+        print_r('<br>');
+        print_r(redis('get_user_info'));
     }
 
     /*
