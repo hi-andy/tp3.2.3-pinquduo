@@ -45,7 +45,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid=''){
         $data['unionid'] = $unionid;
         $where['user_id'] = array("eq", $user['user_id']);
         M('users')->where($where)->save($data);
-        $users = M()->query("select user_id from tp_users where user_id <> {$user['user_id']} and (unionid='{$unionid}' or openid='$user_id_or_name')");
+        $users = M()->query("select user_id from tp_users where user_id <> {$user['user_id']} and (unionid='{$unionid}' or openid='{$user_id_or_name}')");
         //$users = M('users')->where(array("unionid" => array("eq", $unionid),"user_id" => array("neq", $user['user_id'])))->field('user_id')->select();
         if (count($users) > 0) {
             $user_id = "";
