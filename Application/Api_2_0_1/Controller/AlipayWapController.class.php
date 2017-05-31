@@ -42,6 +42,14 @@ class AlipayWapController extends BaseController
 
         //服务器异步通知页面路径
         $config['notify_url'] = C('HTTP_URL') . '/Api/AlipayWap/alipayendpay';
+        if($order['prom_id']){
+            $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+            $type = $prom_info['mark'] > 0 ? 1 : 0;
+            $config['return_url'] ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+        }else{
+            $config['return_url'] ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+        }
+
         $timeout_express="30m";
 
         $payRequestBuilder = new \AlipayTradeWapPayContentBuilder();
