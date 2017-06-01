@@ -52,6 +52,7 @@ class AutomationController extends BaseController
         if ($ids) {
             $ids = substr($ids, 0, -1);
             M('getwhere')->where(array('id' => array('in', $ids)))->data($data)->save();
+            print_r($ids);
         }
     }
 
@@ -59,6 +60,7 @@ class AutomationController extends BaseController
     public function single_buy_overtime() {
         $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
         if (count($self_cancel_order) > 0) {
+            $goods_ids = "";
             for ($j = 0; $j < count($self_cancel_order); $j++) {
                 $data_time = $self_cancel_order[$j]['add_time'] + ORDER_END_TIME;
                 if ($data_time <= time()) {
