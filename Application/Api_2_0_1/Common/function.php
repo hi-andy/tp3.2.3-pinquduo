@@ -106,3 +106,22 @@ function reserve_logistics($order_id){
 //    $result = curl_exec($ch);		//返回提交结果，格式与指定的格式一致（result=true代表成功）
     //return $result;
 }
+
+/**
+ * 正常返回
+ * @param string $msg
+ * @param string $result
+ * @return string
+ */
+function json($msg="", $result=""){
+    echo json_encode(array('status' => 1, 'msg' => $msg, 'result' => $result));
+}
+
+/**
+ * 输出错误信息
+ * @param string $str
+ * @return string
+ */
+function errjson($msg=""){
+    echo json_encode(array('status' => -1, 'msg' => $msg, 'result' => ''));
+}

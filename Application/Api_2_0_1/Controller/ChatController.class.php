@@ -25,10 +25,10 @@ class ChatController extends BaseController
      * @param string $from 发送人
      * @param string $chat_type 用来判断单聊还是群聊。chat: 单聊；groupchat: 群聊
      * @param string $payload 内容
-     * @param string $status 状态1查看0未查看
+     * @param string $status 状态 0未查看 1查看 2删除
      */
     public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status=''){
-        if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload && $status) {
+        if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload && $status != '') {
             $msgdata = array(
                 'msg_id' => $msg_id,
                 'timestamp' => $timestamp,
@@ -39,10 +39,10 @@ class ChatController extends BaseController
                 'payload' => $payload,
                 'status' => $status
             );
-            redislist("chatlist", serialize($msgdata));//写入redis队列
-            $this->json('保存成功',$msgdata);
+            redislist("chatlist", json_encode($msgdata));//写入redis队列
+            json('保存成功',$msgdata);
         } else {
-            $this->errjson('缺少参数');
+            errjson('缺少参数');
         }
     }
 
@@ -50,13 +50,13 @@ class ChatController extends BaseController
      * 自动脚本保存消息队列
      */
     public function auto_set_chatlist(){
-        $num = 500;//每次读取500条
+        $num = 10;//每次读取N条
         $values  = "";
-        $sql = "INSERT INTO tp_chat(msg_id, timestamp, direction, to, from, chat_type, payload, status) VALUES";
+        $sql = "INSERT INTO tp_chat(msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
         for ($i=0; $i<$num; $i++) {
-            $msg = (array) unserialize(redislist("chatlist"));//读取redis队列
-            if (!empty($msg)) {
-                $values .= "({$msg['msg_id']},{$msg['timestamp']},{$msg['direction']},{$msg['to']},{$msg['from']},{$msg['chat_type']},{$msg['payload']},{$msg['status']}),";
+            $msg = (array) json_decode(redislist("chatlist"));//读取redis队列
+            if ($msg) {
+                $values .= "('{$msg['msg_id']}',{$msg['timestamp']},'{$msg['direction']}','{$msg['to']}','{$msg['from']}','{$msg['chat_type']}','{$msg['payload']}',{$msg['status']}),";
             }
         }
         $values = substr($values, 0, -1);
@@ -73,31 +73,42 @@ class ChatController extends BaseController
      * @param int $page
      * @param int $pagesize
      */
-    public function get_chat($to='', $chat_type='', $page=1, $pagesize=20){
+    public function get_chat($to='', $chat_type='', $page=0, $pagesize=20){
         if ($to && $chat_type) {
-            $result = M('chat')->where(array('user_id'))->limit($page,$pagesize)->select();
-            $this->json('读取成功',$result);
+            $in_msg_id = "";
+            $result = M('chat')->where(array('tos'=>array('eq',$to),'chat_type'=>array('eq',$chat_type),'status'=>array('neq',2)))->order('timestamp asc')->limit($page,$pagesize)->select();
+            foreach ($result as $key => $value){
+                $data[$key]['msg_id'] = $value['msg_id'];
+                $data[$key]['timestamp'] = $value['timestamp'];
+                $data[$key]['to'] = $value['tos'];
+                $data[$key]['from'] = $value['froms'];
+                $data[$key]['chat_type'] = $value['chat_type'];
+                $data[$key]['payload'] = $value['payload'];
+                $data[$key]['status'] = $value['status'];
+                $in_msg_id .= "'{$value['msg_id']}',";
+            }
+            $in_msg_id = substr($in_msg_id, 0, -1);
+            M('chat')->where("msg_id in({$in_msg_id})")->save(array('status'=>1));
+            json('读取成功',$data);
         } else {
-            $this->errjson('缺少参数');
+            errjson('缺少参数');
         }
     }
 
     /**
-     * 正常返回
-     * @param string $msg
-     * @param string $result
-     * @return string
+     * 删除聊天记录
+     * @param string $msg_id
      */
-    public function json($msg="", $result=""){
-        echo json_encode(array('status' => 1, 'msg' => $msg, 'result' => $result));
-    }
-
-    /**
-     * 输出错误信息
-     * @param string $str
-     * @return string
-     */
-    public function errjson($msg=""){
-        echo json_encode(array('status' => -1, 'msg' => $msg, 'result' => ''));
+    public function del_chat($msg_id=''){
+        if ($msg_id){
+            $result = M('chat')->where(array('msg_id'=>array('eq',$msg_id)))->save(array('status'=>2));
+            if ($result) {
+                json('删除成功',$result);
+            } else {
+                errjson('删除失败');
+            }
+        } else {
+            errjson('缺少参数');
+        }
     }
 }
