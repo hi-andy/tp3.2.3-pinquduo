@@ -274,12 +274,7 @@
                         <!-- 商品描述-->
                     </div>
                     <div class="pull-right">
-                        <if condition="$goodsInfo.is_special eq 1">
-                            <input type="hidden" name="is_special" value="1">
-                        </if>
-                        <if condition="$goodsInfo.is_special neq 1">
-                            <input type="hidden" name="is_special" value="{$goodsInfo.is_special}">
-                        </if>
+                        <input type="hidden" name="is_special" value="1">
                         <input type="hidden" name="goods_id" value="{$goodsInfo.goods_id}">
                         <input type="hidden" name="store_id" value="{$_SESSION[merchant_id]}">
                         <input type="hidden" name="exclusive_cat" value="{$goodsInfo.exclusive_cat}">
