@@ -551,7 +551,7 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         $version = I('version','');
-        $rdsname = "getFreeProm201".$version.$page.$pagesize;
+        $rdsname = "getFreeProm".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
