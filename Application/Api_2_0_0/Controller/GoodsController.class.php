@@ -1075,7 +1075,7 @@ class GoodsController extends BaseController {
 	            }
                 //商品规格
                 $goodsLogic = new \Home\Logic\GoodsLogic();
-                $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
+                $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->order('key_name')->select(); // 规格 对应 价格 库存表
                 $filter_spec = $goodsLogic->get_spec($goods_id,$goods['is_special']);//规格参数
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
