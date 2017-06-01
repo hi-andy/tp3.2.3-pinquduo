@@ -29,18 +29,23 @@ class ChatController extends BaseController
      */
     public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status=''){
         if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload && $status != '') {
-            $msgdata = array(
-                'msg_id' => $msg_id,
-                'timestamp' => $timestamp,
-                'direction' => $direction,
-                'to' => $to,
-                'from' => $from,
-                'chat_type' => $chat_type,
-                'payload' => $payload,
-                'status' => $status
-            );
-            redislist("chatlist", json_encode($msgdata));//写入redis队列
-            json('保存成功',$msgdata);
+            $chatcount = M('chat')->where(array('msg_id'=>array('eq',$msg_id)))->count();
+            if ($chatcount < 1) {
+                $msgdata = array(
+                    'msg_id' => $msg_id,
+                    'timestamp' => $timestamp,
+                    'direction' => $direction,
+                    'to' => $to,
+                    'from' => $from,
+                    'chat_type' => $chat_type,
+                    'payload' => $payload,
+                    'status' => $status
+                );
+                redislist("chatlist", json_encode($msgdata));//写入redis队列
+                json('保存成功',$msgdata);
+            } else {
+                errjson('msg_id已存在');
+            }
         } else {
             errjson('缺少参数');
         }
@@ -50,7 +55,7 @@ class ChatController extends BaseController
      * 自动脚本保存消息队列
      */
     public function auto_set_chatlist(){
-        $num = 10;//每次读取N条
+        $num = 100;//每次读取N条
         $values  = "";
         $sql = "INSERT INTO tp_chat(msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
         for ($i=0; $i<$num; $i++) {
