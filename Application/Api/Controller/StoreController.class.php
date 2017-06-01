@@ -74,19 +74,19 @@ class StoreController extends BaseController{
 		switch ($bigType) {
 			case 1: //gif
 //                header('Content-Type:image/gif');
-				$pic = '/data/wwwroot/default/Public/upload/store_fenxiang/'.$store_id.'.gif';
+				$pic = '/sites/pqd/Public/upload/store_fenxiang/'.$store_id.'.gif';
 				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.gif';
 				imagejpeg($bigImg, $pic);
 				break;
 			case 2: //jpg
 //                header('Content-Type:image/jpg');
-				$pic = '/data/wwwroot/default/Public/upload/store_fenxiang/'.$store_id.'.jpg';
+				$pic = '/sites/pqd/Public/upload/store_fenxiang/'.$store_id.'.jpg';
 				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.jpg';
 				imagejpeg($bigImg, $pic);
 				break;
 			case 3: //png
 //                header('Content-Type:image/png');
-				$pic = '/data/wwwroot/default/Public/upload/store_fenxiang/'.$store_id.'.png';
+				$pic = '/sites/pqd/Public/upload/store_fenxiang/'.$store_id.'.png';
 				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.png';
 				imagejpeg($bigImg,$pic);
 				break;
@@ -280,8 +280,6 @@ class StoreController extends BaseController{
 		$updata['shipping_name'] = $data['shipping_name'];
 		$updata['shipping_order'] = $data['shipping_order'];
 		$updata['shipping_price'] = $order['shipping_price'];
-		$updata['order_status'] = 11;
-		$updata['order_type'] = 15;
 		$updata['shipping_status'] = 1;
 		if(!empty($order['prom_id'])){
 			$updata['order_status'] = $action['order_status'] = 11;
