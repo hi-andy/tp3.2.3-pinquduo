@@ -7,21 +7,8 @@ class IndexController extends BaseController {
 //        $this->encryption();
     }
 
-    public function index($getGoodsDetails="",$user_id="", $goods_id=""){
-        //跨域删除缓存
-        if ($getGoodsDetails == "1") {
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "getUserOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getUserPromList".$user_id."*";
-            redisdelall($rdsname);//删除我的拼团缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
-        }
-        print_r(unserialize(redis('unionid')));
-        print_r('<br>');
-        print_r(redis('get_user_info'));
+    public function index(){
+
     }
 
     /*
