@@ -371,13 +371,10 @@ class GoodsController extends BaseController {
 		$free_num = $join_num[0]['free'];
 		M()->startTrans();
 		//把所有人的状态改成发货
-		for($i=0;$i<count($join_num);$i++)
-		{
+		for($i=0;$i<count($join_num);$i++){
             $this->order_redis_status_ref($join_num[$i]['user_id']);
-			if(!empty($join_num[0]['is_raise']))
-			{
-				if($i==0)
-				{
+			if(!empty($join_num[0]['is_raise'])){
+				if($i==0){
 					$res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
 				} else {
 					$res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
@@ -386,24 +383,17 @@ class GoodsController extends BaseController {
 				$res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
 			}
 			$res2 = M('group_buy')->where('`id`='.$join_num[$i]['id'])->data(array('is_successful'=>1))->save();
-			if($res && $res2)
-			{
+			if($res && $res2){
 				M()->commit();
 			}else{
 				M()->rollback();
 			}
 		}
 
-		if($free_num>0)//如果有免单，才执行getRand操作
-		{
+		if($free_num>0){//如果有免单，才执行getRand操作
 			redis("get_Free_Order_status","1");
 			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
 			//给参团人和开团人推送信息
-			$message = "";
-			$custom = array('type' => '2','id'=>$join_num[0]['order_id']);
-			foreach($join_num as $val){
-				SendXinge($message,$val['user_id'],$custom);
-			}
 
 			$num = $this->getRand($free_num,($prom_num-1));//随机出谁免单
 			for ($j=0;$j<count($join_num);$j++){
@@ -425,13 +415,6 @@ class GoodsController extends BaseController {
 						SendXinge('您的免单拼团人已满，点击查看免单买家',$join_num[$j]['user_id'],$custom);
 					}
 				}
-			}
-		}else{
-			//给参团人和开团人推送信息
-			$message = "您拼的团已满，等待商家发货中";
-			$custom = array('type' => '1','id'=>$join_num[0]['order_id']);
-			foreach($join_num as $val){
-				SendXinge($message,$val['user_id'],$custom);
 			}
 		}
 		exit ;
