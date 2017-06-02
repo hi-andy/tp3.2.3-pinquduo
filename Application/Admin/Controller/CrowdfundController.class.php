@@ -61,6 +61,20 @@ class CrowdfundController extends BaseController {
         $this->display();
     }
 
+    function dels()
+    {
+        // 判断此商品是否有订单
+        $goods_count = M('goods')->where("goods_id = {$_GET['id']}")->find();
+        if($goods_count['show_type']==1)
+        {$return_arr = array('status' => -1,'msg' => '该商品已删除','data'  =>'',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+            $this->ajaxReturn(json_encode($return_arr));
+        }
+        // 删除此商品
+        // 删除此商品
+        M("Goods")->where('goods_id =' . $_GET['id'])->save(array('is_special'=>0));
+        $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
+        $this->ajaxReturn(json_encode($return_arr));
+    }
 
     /**
      * 显示众筹订单列表

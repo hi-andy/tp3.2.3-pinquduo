@@ -457,6 +457,7 @@ class GoodsController extends BaseController {
 	{
 		$order_id = I('order_id');
 		$pay_code = I('code');
+		$ajax_get = I('ajax_get');
 
 		$order = M('order')->where('`order_id`='.$order_id)->field('order_sn,user_id,add_time')->find();
 		//当订单已经是取消状态是不能继续支付
@@ -483,7 +484,7 @@ class GoodsController extends BaseController {
 		if($pay_code=='weixin')
 		{
             $weixinPay = new WeixinpayController();
-            if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
+            if(!empty($ajax_get)){
                 $code_str = $weixinPay->getJSAPI($order);
                 $pay_detail = $code_str;
             }else{

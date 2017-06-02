@@ -330,12 +330,19 @@ class StoreController extends BaseController{
 			}elseif(strstr($cha[1],'地区')){
 				$cha = explode('地区',$cha[1]);
 				$city = $cha[0].'地区';
-			}elseif(strstr($cha[1],'自治区')){
-				$cha = explode('自治区',$cha[1]);
-				$city = $cha[0].'自治区';
+			}elseif(strstr($cha[1],'自治区')) {
+				$cha = explode('自治区', $cha[1]);
+				$city = $cha[0] . '自治区';
 			}else{
-				$cha = explode('市',$cha[1]);
-				$city = $cha[0].'市';
+				$cunt = substr_count($cha[1],'市');
+				if($cunt>1){
+					$cha = explode('市',$cha[1]);
+					$cha[1] = '市'.$cha[2];
+					$city = $cha[0].'市';
+				}else{
+					$cha = explode('市',$cha[1]);
+					$city = $cha[0].'市';
+				}
 			}
 			$area = $cha[1];
 		}elseif(strstr($cha,"北京市") || strstr($cha,"天津市") || strstr($cha,"上海市") ||strstr($cha,"重庆市")){//判断是否为直辖市
@@ -343,7 +350,7 @@ class StoreController extends BaseController{
 			$cha = explode('市',$cha);
 			$province = $cha[0].'市';
 			$city = $cha[0].'市';
-			$area = $cha[1];
+			$area = $cha[2];
 		}elseif(strstr($cha,"内蒙古自治区") || strstr($cha,"广西壮族自治区") || strstr($cha,"宁夏回族自治区") || strstr($cha,"西藏自治区") || strstr($cha,"新疆维吾尔自治区")){ //判断是否为自治区
 			//按自治区切割
 			$cha = explode('自治区',$cha);
