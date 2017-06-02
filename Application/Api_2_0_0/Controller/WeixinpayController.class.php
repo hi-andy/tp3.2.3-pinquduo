@@ -89,7 +89,7 @@ class WeixinpayController extends BaseController {
             $type = $prom_info['mark']>0?1:0;
             $go_url ='http://wx.pinquduo.cn/pinquduowx-test/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
         }else{
-            $go_url ='http://wx.pinquduo.cn/pinquduowx-test/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+            $go_url ='http://wx.pinquduo.cn/pinquduowx-test/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];
         }
         $back_url = "http://wx.pinquduo.cn/pinquduowx-test/goods_detail.html?goods_id={$order['goods_id']}";
 
@@ -116,7 +116,7 @@ class WeixinpayController extends BaseController {
             $input->SetOpenid($openId['openid']);
         }
         $order2 = \WxPayApi::unifiedOrder($input);
-        //redis("wxpay", serialize($order2), 6000);
+        redis("wxpay", serialize($order2), 6000);
         //redisdelall("wxpay");
         if($_REQUEST['is_mobile_browser']==1) {
             echo $this->get_real_ip();

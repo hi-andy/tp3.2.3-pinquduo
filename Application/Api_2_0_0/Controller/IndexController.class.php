@@ -8,7 +8,7 @@ class IndexController extends BaseController {
     }
 
     public function index(){
-
+        print_r(unserialize(redis('wxpay')));
     }
 
     /*
