@@ -70,13 +70,15 @@
 
                                 <table class="table table-bordered">
                                     <tbody>
-                                    <if condition="$goodsInfo.is_audit eq 2">
-                                        <tr>
-                                            <td style="color: red">驳回原因:</td>
-                                            <td>
-                                                <textarea rows="3" cols="50" name="reason">{$goodsInfo.reason}</textarea>
-                                            </td>
-                                        </tr>
+                                    <if condition="$goodsInfo.goods_id neq 0">
+                                        <if condition="$goodsInfo.is_audit eq 0">
+                                            <tr>
+                                                <td>驳回原因:</td>
+                                                <td>
+                                                    <textarea rows="3" cols="50" name="reason">{$goodsInfo.reason}</textarea>
+                                                </td>
+                                            </tr>
+                                        </if>
                                     </if>
                                     <tr>
                                         <td>商品名称:</td>
