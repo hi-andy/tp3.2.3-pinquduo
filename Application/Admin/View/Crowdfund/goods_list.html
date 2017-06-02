@@ -75,7 +75,7 @@
         if(!confirm('确定要删除吗?'))
             return false;
         $.ajax({
-            url:"/Admin/goods/dels?id="+id,
+            url:"/Admin/Crowdfund/dels?id="+id,
             success: function(v){
                 var v =  eval('('+v+')');
                 if(v.hasOwnProperty('status') && (v.status == 1))
