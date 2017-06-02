@@ -453,68 +453,66 @@ class GoodsController extends BaseController {
 		return array_slice($rand_array,0,$num);//截取前$num个
 	}
 
-	public function getCompleteBuy()
-	{
-		$order_id = I('order_id');
-		$pay_code = I('code');
+    public function getCompleteBuy()
+    {
+        $order_id = I('order_id');
+        $pay_code = I('code');
+        $ajax_get = I('ajax_get');
 
-		$order = M('order')->where('`order_id`='.$order_id)->field('order_sn,user_id,add_time')->find();
-		//当订单已经是取消状态是不能继续支付
-		if($order['order_status']==3 || ($order['add_time'] + ORDER_END_TIME - 30) < time()){
-			$json = array('status'=>-1,'msg'=>'当前订单已经取消，请重新下单');
-			if(!empty($ajax_get))
-				$this->getJsonp($json);
-			exit(json_encode($json));
-		}
+        $order = M('order')->where(array('order_id'=>array('eq',$order_id)))->find();
+        //当订单已经是取消状态是不能继续支付
+        if($order['order_status']==3 || ($order['add_time'] + ORDER_END_TIME - 30) < time()){
+            $json = array('status'=>-1,'msg'=>'当前订单已经取消，请重新下单');
+            if(!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
         $this->order_redis_status_ref($order['user_id']);
-		if($pay_code!=$order['pay_code'])
-		{
-			if($pay_code=='alipay')
-			{
-				$pay_name = '支付宝支付';
-			}
-            elseif($pay_code=='alipay_wap'){
+        if($pay_code!=$order['pay_code'])
+        {
+            if($pay_code=='alipay'){
+                $pay_name = '支付宝支付';
+            }elseif($pay_code=='alipay_wap'){
                 $pay_name = '手机支付宝网页支付';
+            }elseif($pay_code=='weixin'){
+                $pay_name = '微信支付';
+            }else{
+                $pay_name = 'QQ支付';
             }
-			elseif($pay_code=='weixin'){
-				$pay_name = '微信支付';
-			}else{
-				$pay_name = 'QQ支付';
-			}
-			M('order')->where('order_id='.$order_id)->save(array('pay_code'=>$pay_code,'pay_name'=>$pay_name));
-		}
-		if($pay_code=='weixin')
-		{
+            M('order')->where('order_id='.$order_id)->save(array('pay_code'=>$pay_code,'pay_name'=>$pay_name));
+        }
+        if($pay_code=='weixin')
+        {
             $weixinPay = new WeixinpayController();
-            if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
+            if(!empty($ajax_get)){
                 $code_str = $weixinPay->getJSAPI($order);
                 $pay_detail = $code_str;
             }else{
                 $pay_detail = $weixinPay->addwxorder($order['order_sn']);
             }
-		} elseif($pay_code=='alipay') {
-				$AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-		}
+        } elseif($pay_code=='alipay') {
+            $AliPay = new AlipayController();
+            $pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
+        }
         elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
             $AlipayWap = new AlipayWapController();
             $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn']);
         }
-		elseif($pay_code == 'qpay'){
-			$qqPay = new QQPayController();
-			$pay_detail = $qqPay->getQQPay($order);
-		} else {
-			$json = array('status'=>-1,'msg'=>'错误参数');
-			if(!empty($ajax_get))
-				$this->getJsonp($json);
-			exit(json_encode($json));
-		}
+        elseif($pay_code == 'qpay'){
+            $qqPay = new QQPayController();
+            $pay_detail = $qqPay->getQQPay($order);
+        } else {
+            $json = array('status'=>-1,'msg'=>'错误参数');
+            if(!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
 
-		$json = array('status'=>1,'msg'=>'预支付信息','result'=>array('pay_detail'=>$pay_detail));
-		if(!empty($ajax_get))
-			$this->getJsonp($json);
-		exit(json_encode($json));
-	}
+        $json = array('status'=>1,'msg'=>'预支付信息','result'=>array('pay_detail'=>$pay_detail));
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
 
 	public function getInvitationNum()//获取邀请码
 	{
@@ -1041,20 +1039,20 @@ class GoodsController extends BaseController {
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
                     $new_spec_goods[] = $spec;
-                    $keys[] = $spec_goods_price[$spec]['key'];
                 }
-                array_multisort($keys, SORT_DESC, $new_spec_goods, SORT_ASC);
                 $new_filter_spec = array();
 
                 foreach ($filter_spec as $key => $filter) {
                     $new_filter_spec[] = array('title' => $key, 'items' => $filter);
                 }
                 for ($i = 0; $i < count($new_filter_spec); $i++) {
-                    foreach ($new_filter_spec[$i]['items'] as &$v) {
+                    foreach ($new_filter_spec[$i]['items'] as & $v) {
                         if (!empty($v['src'])) {
                             $v['src'] = $v['src'];
                         }
+                        $keys[] = $v['item_id'];
                     }
+                    array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
                 }
                 //如果有传规格过来就改变商品名字
                 if (!empty($spec_key)) {

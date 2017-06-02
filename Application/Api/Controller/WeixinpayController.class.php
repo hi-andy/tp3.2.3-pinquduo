@@ -87,18 +87,29 @@ class WeixinpayController extends BaseController {
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
             $type = $prom_info['mark']>0?1:0;
-            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+            if(I('wxv') != 2) {
+                $go_url = 'http://wx.pinquduo.cn/order_detail.html?order_id=' . $prom_info['order_id'] . '&type=' . $type . '&user_id=' . $order['user_id'];
+            } else {
+                $go_url ='http://wx.pinquduo.cn/pinquduowx-test/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+            }
         }else{
-            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+            if(I('wxv') != 2) {
+                $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];
+            } else {
+                $go_url ='http://wx.pinquduo.cn/pinquduowx-test/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];
+            }
         }
-
-        $back_url = "http://wx.pinquduo.cn/goods_detail.html?goods_id={$order['goods_id']}";
-
+        if(I('wxv') != 2) {
+            $back_url = "http://wx.pinquduo.cn/goods_detail.html?goods_id={$order['goods_id']}";
+        } else {
+            $back_url = "http://wx.pinquduo.cn/pinquduowx-test/goods_detail.html?goods_id={$order['goods_id']}";
+        }
         //①、获取用户openid
         $tools = new \JsApiPay();
         //$openId = $tools->GetOpenid();
         $user = M('users')->where(array("user_id"=>array("eq",$order['user_id'])))->field('openid')->find();
         $openId = $user['openid'];
+        redis("order", serialize($order), 6000);
         //②、统一下单
         $input = new \WxPayUnifiedOrder();
         $input->SetBody("支付订单：".$order['order_sn']);

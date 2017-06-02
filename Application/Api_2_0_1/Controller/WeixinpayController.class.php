@@ -89,7 +89,7 @@ class WeixinpayController extends BaseController {
             $type = $prom_info['mark']>0?1:0;
             $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
         }else{
-            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];
         }
         $back_url = "http://wx.pinquduo.cn/goods_detail.html?goods_id={$order['goods_id']}";
 
