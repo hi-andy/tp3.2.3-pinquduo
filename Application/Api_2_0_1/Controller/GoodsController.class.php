@@ -1041,20 +1041,20 @@ class GoodsController extends BaseController {
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
                     $new_spec_goods[] = $spec;
-                    $keys[] = $spec_goods_price[$spec]['key'];
                 }
-                array_multisort($keys, SORT_DESC, $new_spec_goods, SORT_ASC);
                 $new_filter_spec = array();
 
                 foreach ($filter_spec as $key => $filter) {
                     $new_filter_spec[] = array('title' => $key, 'items' => $filter);
                 }
                 for ($i = 0; $i < count($new_filter_spec); $i++) {
-                    foreach ($new_filter_spec[$i]['items'] as &$v) {
+                    foreach ($new_filter_spec[$i]['items'] as & $v) {
                         if (!empty($v['src'])) {
                             $v['src'] = $v['src'];
                         }
+                        $keys[] = $v['item_id'];
                     }
+                    array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
                 }
                 //如果有传规格过来就改变商品名字
                 if (!empty($spec_key)) {

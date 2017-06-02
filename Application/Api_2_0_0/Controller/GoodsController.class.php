@@ -1078,7 +1078,6 @@ class GoodsController extends BaseController {
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
                     $new_spec_goods[] = $spec;
-                    $keys[] = $spec_goods_price[$spec]['key'];
                 }
                 $new_filter_spec = array();
 
@@ -1086,13 +1085,14 @@ class GoodsController extends BaseController {
                     $new_filter_spec[] = array('title' => $key, 'items' => $filter);
                 }
                 for ($i = 0; $i < count($new_filter_spec); $i++) {
-                    foreach ($new_filter_spec[$i]['items'] as &$v) {
+                    foreach ($new_filter_spec[$i]['items'] as & $v) {
                         if (!empty($v['src'])) {
                             $v['src'] = $v['src'];
                         }
+                        $keys[] = $v['item_id'];
                     }
+                    array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
                 }
-                array_multisort($keys, SORT_DESC, $new_spec_goods, SORT_ASC);
                 //如果有传规格过来就改变商品名字
                 if (!empty($spec_key)) {
                     $key_name = M('spec_goods_price', '', 'DB_CONFIG2')->where("`key`='$spec_key'")->field('key_name')->find();
