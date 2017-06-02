@@ -45,9 +45,9 @@ class AlipayWapController extends BaseController
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
             $type = $prom_info['mark'] > 0 ? 1 : 0;
-            $config['return_url'] ='http://wx.pinquduo.cn/pinquduo_test/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+            $config['return_url'] ='http://wx.pinquduo.cn/pinquduo-test/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
         }else{
-            $config['return_url'] ='http://wx.pinquduo.cn/pinquduo_test/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+            $config['return_url'] ='http://wx.pinquduo.cn/pinquduo-test/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
         }
 
         $timeout_express="30m";
@@ -72,11 +72,6 @@ class AlipayWapController extends BaseController
             redisdelall($rdsname);//删除订单列表
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
-            //跨区同步订单、推送、详情缓存
-            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-            async_get_url($url);
-            $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
-            async_get_url($url);
             exit(json_encode(array('status'=>1,'msg'=>'支付宝预支付订单生成成功','data'=>$orderdetail)));
         }else {
             return $orderdetail;
