@@ -651,6 +651,8 @@ class PromController extends BaseController {
 			$data['status'] = I('status');
 			$data['remark'] = I('remark');
 			if ($data['status']==1&&empty($return_goods['one_time'])) {
+				$custom = array('type' => '2','id'=>$return_goods['order_id']);
+				SendXinge('卖家已同意退款，请点击此处查看',$return_goods['user_id'],$custom);
 				$data['one_time'] = time();
 			}elseif($data['status']==2&&empty($return_goods['two_time'])){
 				if(empty($return_goods['one_time']))

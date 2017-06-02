@@ -416,6 +416,12 @@ class GoodsController extends BaseController {
 					}
 				}
 			}
+		}else{
+			$message = "您拼的团已满，等待商家发货中";
+			foreach($join_num as $val){
+				$custom = array('type' => '1','id'=>$val['order_id']);
+				SendXinge($message,$val['user_id'],$custom);
+			}
 		}
 		exit ;
 	}
