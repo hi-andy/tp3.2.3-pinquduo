@@ -154,6 +154,14 @@ class HaitaoController extends BaseController{
 	 */
 	public function addEditGoods()
 	{
+		if(!empty(I('parent_id'))){
+			$parent_id = I('get.parent_id'); // 商品分类 父id
+			$list = M('haitao')->where("parent_id = $parent_id")->select();
+
+			foreach($list as $k => $v)
+				$html .= "<option value='{$v['id']}'>{$v['name']}</option>";
+			exit($html);
+		}
 		$HaitaoLogic = new HaitaoLogic();
 		$Goods = D('Goods'); //
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
@@ -177,13 +185,11 @@ class HaitaoController extends BaseController{
 				$_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
 				session('goods',$_POST);
 
-				if ($type == 2)
-				{
+				if ($type == 2){
 					$goods_id = $_POST['goods_id'];
 					redislist("goods_refresh_id", $goods_id);
 					$goods = M('goods')->where("goods_id = $goods_id")->find();
-					if($_POST['original_img']!=$goods['original_img'])
-					{
+					if($_POST['original_img']!=$goods['original_img']){
 						$link =  C('DATA_URL').goods_thum_images($_POST['goods_id'],400,400);
 						$res = unlink($link);
 						$link1 = C('DATA_URL').$goods['original_img'];
@@ -219,6 +225,10 @@ class HaitaoController extends BaseController{
 		$haitao_style = M('haitao_style')->select();
 		$merchantList = $HaitaoLogic->getSortMerchant();
 		$goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
+		if(!empty(I('GET.id'))){
+			$cat_list2 = M('haitao')->where("parent_id = ".$goodsInfo['haitao_cat'])->select();
+			$this->assign('cat_list2',$cat_list2);
+		}
 		if(empty($goodsType))
 			$goodsType = M("GoodsType")->select();
 		$this->assign('level_cat',$level_cat);

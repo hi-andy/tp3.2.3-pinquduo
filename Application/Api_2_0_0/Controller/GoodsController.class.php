@@ -469,14 +469,11 @@ class GoodsController extends BaseController {
         $this->order_redis_status_ref($order['user_id']);
 		if($pay_code!=$order['pay_code'])
 		{
-			if($pay_code=='alipay')
-			{
+			if($pay_code=='alipay'){
 				$pay_name = '支付宝支付';
-			}
-            elseif($pay_code=='alipay_wap'){
+			}elseif($pay_code=='alipay_wap'){
                 $pay_name = '手机支付宝网页支付';
-            }
-			elseif($pay_code=='weixin'){
+            }elseif($pay_code=='weixin'){
 				$pay_name = '微信支付';
 			}else{
 				$pay_name = 'QQ支付';

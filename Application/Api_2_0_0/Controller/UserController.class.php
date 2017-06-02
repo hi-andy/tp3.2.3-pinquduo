@@ -175,9 +175,7 @@ class UserController extends BaseController {
             if(!empty($ajax_get))
                 $this->getJsonp($json);
             exit(json_encode($json));
-        }
-        else
-        {
+        }else{
             $json = array('status'=>-1,'msg'=>'非法参数');
             if(!empty($ajax_get))
                 $this->getJsonp($json);

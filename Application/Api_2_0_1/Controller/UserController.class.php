@@ -119,7 +119,6 @@ class UserController extends BaseController {
     public function getCouponList(){
         $user_id = I('user_id');
         $state = I('state');
-        $version = I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',30);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示

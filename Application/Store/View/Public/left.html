@@ -55,13 +55,12 @@
                     <li onclick="makecss(this,41)" id="menu_41"><a href='{:U("Goods/goodsTypeList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品类型</a></li>
                     <!--<li onclick="makecss(this,40)" id="menu_40"><a href='{:U("Goods/goodsTypeList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品类型</a></li>-->
                     <li onclick="makecss(this,40)" id="menu_40"><a href='{:U("Special/specList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品规格</a></li>
-                    <li onclick="makecss(this,39)" id="menu_39"><a href='{:U("Goods/goodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品列表</a></li>
-                    <!--<if condition="$_SESSION['is_haitao'] neq 1">-->
-                    <!--<li onclick="makecss(this,42)" id="menu_42"><a href='{:U("Goods/Goodsindex")}' target='rightContent'><i class="fa fa-circle-o"></i>9.9专场商品管理</a></li>-->
-                    <!--<li onclick="makecss(this,43)" id="menu_43"><a href='{:U("Goods/Seconds_kill_goods")}' target='rightContent'><i class="fa fa-circle-o"></i>限时秒杀商品管理</a></li>-->
-                    <!--</if>-->
+
                     <if condition="$_SESSION['is_haitao'] eq 1">
-                        <li onclick="makecss(this,44)" id="menu_44"><a href='{:U("Goods/haitaogoodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>海淘商品管理</a></li>
+                        <li onclick="makecss(this,39)" id="menu_39"><a href='{:U("Goods/goodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品列表</a></li>
+                    </if>
+                    <if condition="$_SESSION['is_haitao'] eq 2">
+                        <li onclick="makecss(this,44)" id="menu_44"><a href='{:U("Goods/haitaogoodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品列表</a></li>
                     </if>
                 </ul>
             </li>

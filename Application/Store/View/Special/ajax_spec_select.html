@@ -100,35 +100,35 @@ function ajaxGetSpecInput2(spec_arr)
 
  // 合并单元格
  function hbdyg() {
-            var tab = document.getElementById("spec_input_tab"); //要合并的tableID
-            var maxCol = 2, val, count, start;  //maxCol：合并单元格作用到多少列
-            if (tab != null) {
-                for (var col = maxCol - 1; col >= 0; col--) {
-                    count = 1;
-                    val = "";
-                    for (var i = 0; i < tab.rows.length; i++) {
-                        if (val == tab.rows[i].cells[col].innerHTML) {
-                            count++;
-                        } else {
-                            if (count > 1) { //合并
-                                start = i - count;
-                                tab.rows[start].cells[col].rowSpan = count;
-                                for (var j = start + 1; j < i; j++) {
-                                    tab.rows[j].cells[col].style.display = "none";
-                                }
-                                count = 1;
-                            }
-                            val = tab.rows[i].cells[col].innerHTML;
-                        }
-                    }
-                    if (count > 1) { //合并，最后几行相同的情况下
-                        start = i - count;
-                        tab.rows[start].cells[col].rowSpan = count;
-                        for (var j = start + 1; j < i; j++) {
-                            tab.rows[j].cells[col].style.display = "none";
-                        }
-                    }
-                }
-            }
-        }
+	 var tab = document.getElementById("spec_input_tab"); //要合并的tableID
+	 var maxCol = 2, val, count, start;  //maxCol：合并单元格作用到多少列
+	 if (tab != null) {
+		 for (var col = maxCol - 1; col >= 0; col--) {
+			 count = 1;
+			 val = "";
+			 for (var i = 0; i < tab.rows.length; i++) {
+				 if (val == tab.rows[i].cells[col].innerHTML) {
+					 count++;
+				 } else {
+					 if (count > 1) { //合并
+						 start = i - count;
+						 tab.rows[start].cells[col].rowSpan = count;
+						 for (var j = start + 1; j < i; j++) {
+							 tab.rows[j].cells[col].style.display = "none";
+						 }
+						 count = 1;
+					 }
+					 val = tab.rows[i].cells[col].innerHTML;
+				 }
+			 }
+			 if (count > 1) { //合并，最后几行相同的情况下
+				 start = i - count;
+				 tab.rows[start].cells[col].rowSpan = count;
+				 for (var j = start + 1; j < i; j++) {
+					 tab.rows[j].cells[col].style.display = "none";
+				 }
+			 }
+		 }
+	 }
+ }
 </script>
