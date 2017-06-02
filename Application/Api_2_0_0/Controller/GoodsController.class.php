@@ -1075,7 +1075,7 @@ class GoodsController extends BaseController {
 	            }
                 //商品规格
                 $goodsLogic = new \Home\Logic\GoodsLogic();
-                $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->order('key_name')->select(); // 规格 对应 价格 库存表
+                $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->order('id desc')->select(); // 规格 对应 价格 库存表
                 $filter_spec = $goodsLogic->get_spec($goods_id,$goods['is_special']);//规格参数
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
@@ -1095,7 +1095,7 @@ class GoodsController extends BaseController {
                 }
                 //如果有传规格过来就改变商品名字
                 if (!empty($spec_key)) {
-                    $key_name = M('spec_goods_price', '', 'DB_CONFIG2')->where("`key`='$spec_key'")->field('key_name')->find();
+                    $key_name = M('spec_goods_price', '', 'DB_CONFIG2')->where("`key`='$spec_key'")->order('id desc')->field('key_name')->find();
                     $goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
                 }
                 if (!empty($ajax_get)) {
