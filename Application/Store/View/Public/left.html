@@ -56,10 +56,10 @@
                     <!--<li onclick="makecss(this,40)" id="menu_40"><a href='{:U("Goods/goodsTypeList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品类型</a></li>-->
                     <li onclick="makecss(this,40)" id="menu_40"><a href='{:U("Special/specList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品规格</a></li>
 
-                    <if condition="$_SESSION['is_haitao'] eq 1">
+                    <if condition="$_SESSION['is_haitao'] neq 1">
                         <li onclick="makecss(this,39)" id="menu_39"><a href='{:U("Goods/goodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品列表</a></li>
                     </if>
-                    <if condition="$_SESSION['is_haitao'] eq 2">
+                    <if condition="$_SESSION['is_haitao'] eq 1">
                         <li onclick="makecss(this,44)" id="menu_44"><a href='{:U("Goods/haitaogoodsList")}' target='rightContent'><i class="fa fa-circle-o"></i>商品列表</a></li>
                     </if>
                 </ul>
