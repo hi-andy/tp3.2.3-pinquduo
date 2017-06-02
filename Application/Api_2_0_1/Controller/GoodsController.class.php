@@ -1041,7 +1041,9 @@ class GoodsController extends BaseController {
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
                     $new_spec_goods[] = $spec;
+                    $keys[] = $spec_goods_price[$spec]['key'];
                 }
+                array_multisort($keys, SORT_DESC, $new_spec_goods, SORT_ASC);
                 $new_filter_spec = array();
 
                 foreach ($filter_spec as $key => $filter) {
