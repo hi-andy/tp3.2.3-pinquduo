@@ -51,7 +51,7 @@ class AutomationController extends BaseController
         }
         if ($ids) {
             $ids = substr($ids, 0, -1);
-            M('getwhere')->where(array('id' => array('in', $ids)))->data($data)->save();
+            M('getwhere')->where("id in('{$ids}'')")->data($data)->save();
             print_r($ids);
         }
     }

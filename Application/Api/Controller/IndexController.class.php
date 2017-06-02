@@ -14,7 +14,7 @@ class IndexController extends BaseController {
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
         }
-        print_r(unserialize(redis("wxpay")));
+        print_r(unserialize(redis("unionid")));
     }
 
     /*
