@@ -314,7 +314,7 @@ function GetRTime(end_time){
 	   return d + '天' + h + '小时' + m + '分' +s+'秒';
    }
 
-   
+
 /**
  * 获取多级联动的商品分类
  */
@@ -334,7 +334,6 @@ function get_category(id,next,select_id){
         }
     });
 }
-
 /**
  * 获取多级联动的商品分类
  */
@@ -351,6 +350,33 @@ function get_category_haitao(id,next,select_id){
 			v = "<option value='0'>请选择商品分类</option>" + v;
 			$('#'+next).empty().html(v);
 			(select_id > 0) && $('#'+next).val(select_id);//默认选中
+		}
+	});
+}
+
+/**
+ * 获取多级联动的商品分类
+ */
+function get_categoryforhaitao(id,next,select_id){
+	var url = '/Store/Goods/addEditHaitaoGoods?parent_id='+ id;
+	$.ajax({
+		type : "GET",
+		url  : url,
+		error: function(request) {
+			alert("服务器繁忙, 请联系管理员!");
+			return;
+		},
+		success: function(v) {
+			v = "<option value='0'>请选择商品分类</option>" + v;
+			$('#'+next).empty().html(v);
+			// console.log(v);
+			// console.log($("#cat_id_2").children())
+			$('#'+next).val(0);//默认选中
+			for(var i=0;i<$("#cat_id_2").children().length;i++){
+				if($("#cat_id_2").children()[i].value==select_id){
+					$('#'+next).val(select_id)
+				}
+			}
 		}
 	});
 }

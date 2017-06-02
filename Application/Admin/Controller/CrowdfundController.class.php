@@ -256,17 +256,15 @@ class CrowdfundController extends BaseController {
     }
 
     public function goods_save()
-    {
+    {   //狗哥说的不用改
         $data['is_support_buy']=0;
         $data['is_special']=8;
         $data['the_raise']=1;
-        for($i=0;$i<count($_POST['goods_id']);$i++)
-        {
+        for($i=0;$i<count($_POST['goods_id']);$i++){
             $res = M('goods')->where('`goods_id`='.$_POST['goods_id'][$i])->data($data)->save();
             redislist("goods_refresh_id", $_POST['goods_id'][$i]);
         }
-        if($res)
-        {
+        if($res){
             $this->success("添加成功",U('Crowdfund/goods_list'));
         }else{
             $this->success("添加失败",U('Crowdfund/Crowdfund_info'));
@@ -285,10 +283,7 @@ class CrowdfundController extends BaseController {
             $grandson_ids = getCatGrandson(I('cat_id'));
             $where = " $where  and cat_id in(" . implode(',', $grandson_ids) . ") "; // 初始化搜索条件
         }
-//		if (I('brand_id')) {
-//			$this->assign('brand_id', I('brand_id'));
-//			$where = "$where and brand_id = " . I('brand_id');
-//		}
+
         if (!empty($_REQUEST['keywords'])) {
             $this->assign('keywords', I('keywords'));
             $where = "$where and (goods_name like '%" . I('keywords')."%')";

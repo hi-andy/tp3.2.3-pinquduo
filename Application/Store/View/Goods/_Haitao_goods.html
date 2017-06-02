@@ -6,7 +6,7 @@
 <!--以下是在线编辑器 代码 -->
 <script type="text/javascript">
     /*
-	 * 在线编辑器相 关配置 js 
+	 * 在线编辑器相 关配置 js
 	 *  参考 地址 http://fex.baidu.com/ueditor/
 	 */
     window.UEDITOR_Admin_URL = "__ROOT__/Public/plugins/Ueditor/";
@@ -22,8 +22,8 @@
 <script type="text/javascript" charset="utf-8" src="__ROOT__/Public/plugins/Ueditor/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="__ROOT__/Public/plugins/Ueditor/ueditor.all.min.js"> </script>
  <script type="text/javascript" charset="utf-8" src="__ROOT__/Public/plugins/Ueditor/lang/zh-cn/zh-cn.js"></script>
-<script type="text/javascript">  
-  
+<script type="text/javascript">
+
     var editor;
     $(function () {
        // editor = new UE.ui.Editor(options);
@@ -63,9 +63,9 @@
                     </ul>
                     <!--表单数据-->
                     <form method="post" id="addEditGoodsForm">
-                    
+
                         <!--通用信息-->
-                    <div class="tab-content">                 	  
+                    <div class="tab-content">
                         <div class="tab-pane active" id="tab_tongyong">
 
                             <table class="table table-bordered">
@@ -90,14 +90,13 @@
                                     <td>
 	                                    <textarea maxlength="300" rows="3" cols="50" name="goods_remark">{$goodsInfo.goods_remark}</textarea>
                                         <span id="err_goods_remark" style="color:#F00; display:none;"></span>
-                                         
-                                    </td>                                                                       
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>商品分类:</td>
                                     <td>
                                         <div class="col-xs-3">
-                                            <select name="cat_id" id="cat_id" onchange="get_category_haitao(this.value,'cat_id_2','0');" class="form-control" style="width:250px;margin-left:-15px;">
+                                            <select name="cat_id"  id="cat_id" onchange="get_category_haitao(this.value,'cat_id_2','0');" class="form-control" style="width:250px;margin-left:-15px;">
                                                 <option value="0">请选择商品分类</option>
                                                 <foreach name="cat_list" item="v" key="k" >
                                                     <option value="{$v['id']}" <if condition="$v['id'] eq $level_cat['1']">selected="selected"</if> >
@@ -107,8 +106,12 @@
                                             </select>
                                         </div>
                                         <div class="col-xs-3">
-                                            <select name="cat_id_2" id="cat_id_2" onchange="get_category_haitao(this.value,'cat_id_3','0');" class="form-control" style="width:250px;margin-left:-15px;">
-                                                <option value="0">请选择商品分类</option>
+                                            <select name="cat_id_2"  id="cat_id_2"  class="form-control" style="width:250px;margin-left:-15px;">
+                                                <foreach name="cat_list2" item="v" key="k" >
+                                                    <option value="{$v['id']}" <if condition="$v['id'] eq $goodsInfo['category_id']">selected="selected"</if> >
+                                                    {$v['name']}
+                                                    </option>
+                                                </foreach>
                                             </select>
                                         </div>
                                         <span id="err_cat_id" style="color:#F00; display:none;"></span>
@@ -231,13 +234,13 @@
                             <!-- 商品规格-->
                         </div>
                          <!--其他信息-->
-                         
+
                         <!-- 商品相册/轮播图-->
                         <div class="tab-pane" id="tab_goods_images">
                             <table class="table table-bordered">
                                 <tbody>
-                                <tr>                                    
-                                    <td>                                    
+                                <tr>
+                                    <td>
                                         <foreach name="goodsImages" item="vo" key="k" >
                                             <div style="width:100px; text-align:center; margin: 5px; display:inline-block;" class="goods_xc">
                                                 <input type="hidden" value="{$vo['image_url']}" name="goods_images[]">
@@ -261,8 +264,8 @@
                                 </tbody>
                             </table>
                         </div>
-                         <!--商品相册--> 
-   
+                         <!--商品相册-->
+
                         <!-- 商品描述-->
                         <div class="tab-pane" id="tab_goods_desc">
                                 <p style="padding: 15px 0 0 0;"><span style="font-weight:bold;">商品详情描述:</span>  &nbsp;&nbsp; <span style="color: red">必填：商品详情图片 640px * 900px（宽 * 高）</span></p>
@@ -277,7 +280,6 @@
                         <input type="hidden" name="is_special" value="1">
                         <input type="hidden" name="goods_id" value="{$goodsInfo.goods_id}">
                         <input type="hidden" name="store_id" value="{$_SESSION[merchant_id]}">
-                        <input type="hidden" name="exclusive_cat" value="{$goodsInfo.exclusive_cat}">
                         <input type="hidden" name="haitao_cat" value="{$goodsInfo.haitao_cat}">
                         <input type="hidden" name="category_id" value="{$goodsInfo.category_id}" >
                         <if condition="$goodsInfo.is_audit eq 2">
@@ -328,22 +330,22 @@
         $("#original_img").val(fileurl_tmp);
     	$("#original_img2").attr('href', fileurl_tmp);
     }
- 
+
     // 上传商品相册回调函数
     function call_back2(paths){
-        
-        var  last_div = $(".goods_xc:last").prop("outerHTML");	
+
+        var  last_div = $(".goods_xc:last").prop("outerHTML");
         for (i=0;i<paths.length ;i++ )
-        {                    
+        {
             $(".goods_xc:eq(0)").before(last_div);	// 插入一个 新图片
                 $(".goods_xc:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
             $(".goods_xc:eq(0)").find('img').attr('src',paths[i]);// 修改他的图片路径
                 $(".goods_xc:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
             $(".goods_xc:eq(0)").find('input').val(paths[i]); // 设置隐藏域 要提交的值
-        } 			   
+        }
     }
     /*
-     * 上传之后删除组图input     
+     * 上传之后删除组图input
      * @access   public
      * @val      string  删除的图片input
      */
@@ -354,37 +356,18 @@
                     url:"{:U('Store/Uploadify/delupload')}",
                     data:{action:"del", filename:path,goods_id:goods_id},
                     success:function(){
-                                  $(obj).parent().remove(); // 删除完服务器的, 再删除 html上的图片				 
+                                  $(obj).parent().remove(); // 删除完服务器的, 再删除 html上的图片
                     }
 		});
     }
 
-/** 以下 商品属性相关 js*/
-//$(document).ready(function(){
-//
-//    // 商品类型切换时 ajax 调用  返回不同的属性输入框
-//    $("#goods_type").change(function(){
-//        var goods_id = $("input[name='goods_id']").val();
-//        var type_id = $(this).val();
-//            $.ajax({
-//                    type:'GET',
-//                    data:{goods_id:goods_id,type_id:type_id},
-//                    url:"/Store/Special/ajaxGetAttrInput",
-//                    success:function(data){
-//                            $("#goods_attr_table tr:gt(0)").remove()
-//                            $("#goods_attr_table").append(data);
-//                    }
-//            });
-//    });
-//	// 触发商品类型
-//	$("#goods_type").trigger('change');
-//});
+
 
 // 属性输入框的加减事件
 function addAttr(a)
 {
-	var attr = $(a).parent().parent().prop("outerHTML");	
-	attr = attr.replace('addAttr','delAttr').replace('+','-');	
+	var attr = $(a).parent().parent().prop("outerHTML");
+	attr = attr.replace('addAttr','delAttr').replace('+','-');
 	$(a).parent().parent().after(attr);
 }
 // 属性输入框的加减事件
@@ -395,42 +378,40 @@ function delAttr(a)
 
 /** 以下 商品规格相关 js*/
 $(document).ready(function(){
-	
+
     // 商品类型切换时 ajax 调用  返回不同的属性输入框
-    $("#spec_type").change(function(){        
+    $("#spec_type").change(function(){
         var goods_id = '{$goodsInfo.goods_id}';
         var spec_type = $(this).val();
             $.ajax({
                     type:'GET',
-                    data:{goods_id:goods_id,spec_type:spec_type}, 
+                    data:{goods_id:goods_id,spec_type:spec_type},
                     url:"{:U('Store/Special/ajaxGetSpecSelect')}",
-                    success:function(data){                            
+                    success:function(data){
                            $("#ajax_spec_data").html('')
                            $("#ajax_spec_data").append(data);
 						   //alert('132');
-						   ajaxGetSpecInput();	// 触发完  马上处罚 规格输入框
+						   ajaxGetSpecInput();	// 触发完  马上触发 规格输入框
                     }
-            });			                
+            });
     });
 	// 触发商品规格
-	$("#spec_type").trigger('change'); 
+	$("#spec_type").trigger('change');
 });
 
     /** 以下是编辑时默认选中某个商品分类*/
     $(document).ready(function(){
-
         <if condition="$level_cat['2'] gt 0">
-            // 商品分类第二个下拉菜单
-            get_category('{$level_cat[1]}','cat_id_2','{$level_cat[2]}');
+                // 商品分类第二个下拉菜单
+                get_category_haitao('{$level_cat[1]}','cat_id_2','{$level_cat[2]}');
         </if>
+
         <if condition="$level_cat['3'] gt 0">
-                    // 商品分类第二个下拉菜单
-                get_category('{$level_cat[2]}','cat_id_3','{$level_cat[3]}');
+                // 商品分类第二个下拉菜单
+                get_category_haitao('{$level_cat[2]}','cat_id_3','{$level_cat[3]}');
         </if>
 
-        });
-
-
+    });
 </script>
 </body>
 </html>

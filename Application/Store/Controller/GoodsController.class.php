@@ -531,9 +531,6 @@ class GoodsController extends BaseController {
         // 判断 商品规格
         $count = M("Spec")->where("type_id = $id and is_show=1")->count("1");
         $count > 0 && $this->error('该类型下有商品规格不得删除!',U('Store/Goods/goodsTypeList'));
-//        // 判断 商品属性
-//        $count = M("GoodsAttribute")->where("type_id =$id")->count("1");
-//        $count > 0 && $this->error('该类型下有商品属性不得删除!',U('Store/Goods/goodsTypeList'));
         // 删除分类
         $spec_id_arr = M('spec')->where('is_show = 0 and type_id = '.$id )->delete();
         M('GoodsType')->where("id = $id")->delete();
@@ -675,6 +672,14 @@ class GoodsController extends BaseController {
      */
     public function addEditHaitaoGoods()
     {
+        if(!empty(I('parent_id'))){
+            $parent_id = I('get.parent_id'); // 商品分类 父id
+            $list = M('haitao')->where("parent_id = $parent_id")->select();
+
+            foreach($list as $k => $v)
+                $html .= "<option value='{$v['id']}'>{$v['name']}</option>";
+            exit($html);
+        }
         if(empty($_SESSION['merchant_id']))
         {
             session_unset();
@@ -729,8 +734,9 @@ class GoodsController extends BaseController {
                 $this->ajaxReturn(json_encode($return_arr));
             }
         }
-        
-
+        $_POST['haitao_cat'] = $_POST['cat_id'];
+        $_POST['category_id'] = $_POST['cat_id_2'];
+//        unset($_POST['cat_id']);unset($_POST['cat_id_2']);
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
         //ajax提交验证
         if(($_GET['is_ajax'] == 1) && IS_POST)
@@ -798,6 +804,10 @@ class GoodsController extends BaseController {
         $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
         $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
+        if(!empty(I('GET.id'))){
+            $cat_list2 = M('haitao')->where("parent_id = ".$goodsInfo['haitao_cat'])->select();
+            $this->assign('cat_list2',$cat_list2);
+        }
         $this->assign('haitao_style',$haitao_style);
         $this->assign('goodsType',$goodsType);
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情
@@ -828,15 +838,6 @@ class GoodsController extends BaseController {
             );
             $this->ajaxReturn(json_encode($return_arr));
         }
-    }
-
-    public function get_category_haitao(){
-        $parent_id = I('get.parent_id'); // 商品分类 父id
-        $list = M('haitao')->where("parent_id = $parent_id")->select();
-
-        foreach($list as $k => $v)
-            $html .= "<option value='{$v['id']}'>{$v['name']}</option>";
-        exit($html);
     }
 
     function addeditSecondskill()
