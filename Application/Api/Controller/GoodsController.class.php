@@ -1614,7 +1614,7 @@ class GoodsController extends BaseController {
         $pay_code = I('code');
         $ajax_get = I('ajax_get');
 
-        $order = M('order')->where('`order_id`='.$order_id)->field('order_sn,user_id,add_time')->find();
+        $order = M('order')->where(array('order_id'=>array('eq',$order_id)))->find();
         //当订单已经是取消状态是不能继续支付
         if($order['order_status']==3 || ($order['add_time'] + ORDER_END_TIME - 30) < time()){
             $json = array('status'=>-1,'msg'=>'当前订单已经取消，请重新下单');

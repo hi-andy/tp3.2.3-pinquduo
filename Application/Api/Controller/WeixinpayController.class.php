@@ -104,12 +104,12 @@ class WeixinpayController extends BaseController {
         } else {
             $back_url = "http://wx.pinquduo.cn/pinquduowx-test/goods_detail.html?goods_id={$order['goods_id']}";
         }
-
         //①、获取用户openid
         $tools = new \JsApiPay();
         //$openId = $tools->GetOpenid();
         $user = M('users')->where(array("user_id"=>array("eq",$order['user_id'])))->field('openid')->find();
         $openId = $user['openid'];
+        redis("order", serialize($order), 6000);
         //②、统一下单
         $input = new \WxPayUnifiedOrder();
         $input->SetBody("支付订单：".$order['order_sn']);
