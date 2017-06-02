@@ -19,8 +19,9 @@ class AutomationController extends BaseController
 
     //把所有免单自动退款
     public function free_single(){
-        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->select();
+        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->limit(0,10)->select();
         $orderLogic = new OrderLogic();
+        $ids = "";
         for ($i = 0; $i < count($free_order); $i++) {
             $order = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->field('order_sn,user_id,goods_id')->find();
             if ($free_order[$i]['code'] == 'weixin') {
@@ -31,22 +32,27 @@ class AutomationController extends BaseController
                 }
                 if ($result['status'] == 1) {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                    M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
+                    $ids .= $order['user_id'].",";
                 }
             } elseif ($free_order[$i]['code'] == 'alipay') {
                 $result = $orderLogic->alipayBackPay($order['order_sn'], $free_order[$i]['price']);
                 if ($result['status'] == 1) {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                    M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
+                    $ids .= $order['user_id'].",";
                 }
             } elseif ($free_order[$i]['code'] == 'qpay') {
                 $qqPay = new QQPayController();
                 $qqPay->doRefund($free_order[$i]['order_sn'], $free_order[$i]['order_amount']);
                 $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
+                $ids .= $order['user_id'].",";
             }
             redis("getOrderList_status_".$order['user_id'], "1");
             redisdelall("TuiSong*");//删除推送缓存
+        }
+        if ($ids) {
+            $ids = substr($ids, 0, -1);
+            M('getwhere')->where(array('id' => array('in', $ids)))->data($data)->save();
+            print_r($ids);
         }
     }
 
@@ -54,6 +60,7 @@ class AutomationController extends BaseController
     public function single_buy_overtime() {
         $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
         if (count($self_cancel_order) > 0) {
+            $goods_ids = "";
             for ($j = 0; $j < count($self_cancel_order); $j++) {
                 $data_time = $self_cancel_order[$j]['add_time'] + ORDER_END_TIME;
                 if ($data_time <= time()) {
@@ -63,21 +70,19 @@ class AutomationController extends BaseController
                     $spec_name = M('order_goods')->where('`order_id`='.$self_cancel_order[$j]['order_id'])->field('spec_key,store_id')->find();
                     M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',$self_cancel_order[$j]['num']);
                 }
-                {
-                    //优惠卷回到原来的数量
-                    if ($self_cancel_order[$j]['coupon_id'] != 0) {
-                        M('coupon')->where('`id`=' . $self_cancel_order[$j]['coupon_id'])->setDec('use_num');
-                        //把优惠卷还给用户
-                        $data['use_time'] = 0;
-                        $data['is_use'] = 0;
-                        $data['order_id'] = 0;
-                        $data['order_id'] = 0;
-                        M('coupon_list')->where('`id`=' . $self_cancel_order[$j]['coupon_list_id'])->data($data)->save();
-                    }
+                //优惠卷回到原来的数量
+                if ($self_cancel_order[$j]['coupon_id'] != 0) {
+                    M('coupon')->where('`id`=' . $self_cancel_order[$j]['coupon_id'])->setDec('use_num');
+                    //把优惠卷还给用户
+                    $data['use_time'] = 0;
+                    $data['is_use'] = 0;
+                    $data['order_id'] = 0;
+                    $data['order_id'] = 0;
+                    M('coupon_list')->where('`id`=' . $self_cancel_order[$j]['coupon_list_id'])->data($data)->save();
                 }
             }
             $where['order_id'] = array('IN', array_column($ids, 'id'));
-            $res = M('order')->where($where)->data(array('order_status' => 3, 'order_type' => 5, 'is_cancel' => 1))->save();
+            M('order')->where($where)->data(array('order_status' => 3, 'order_type' => 5, 'is_cancel' => 1))->save();
         }
     }
 

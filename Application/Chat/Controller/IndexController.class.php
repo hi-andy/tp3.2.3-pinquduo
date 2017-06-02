@@ -101,8 +101,8 @@ class IndexController
             }
             $id = substr($id, 0, -1);
             $result = $this->json("get_msglist", $result);
-            $where['id'] = array('in', $id);
-            M("chat")->where($where)->save(array("status" => 1));
+            $update_where['id'] = array('in', $id);
+            M("chat")->where($update_where)->save(array("status" => 1));
         } else {
             $result = $this->errjson("参数错误");
         }
@@ -115,9 +115,9 @@ class IndexController
     public function set_msglist(){
         $num = 500;
         $values  = "";
-        $sql = "INSERT INTO users(f_userid, userid, data, status) VALUES";
+        $sql = "INSERT INTO tp_chat(f_userid, userid, data, status) VALUES";
         for ($i=0; $i<$num; $i++) {
-            $msg = (array) get_decrypt(redislist("msglist"));
+            $msg = (array) $this->get_decrypt(redislist("msglist"));
             if (!empty($msg)) {
                 $values .= "({$msg['f_userid']},{$msg['userid']},{$msg['data']},{$msg['status']}),";
             }

@@ -1082,4 +1082,32 @@ class OrderController extends BaseController {
 		fclose($fp);
 	}
 
+    public function edit_consignee(){
+        $order_id = I('get.order_id');
+        $order = M('order')->field('order_id,address,address_base')->where('order_id='.$order_id)->find();
+        if($order['shipping_status'] != 0){
+            $this->error('已发货订单不允许编辑');
+            exit;
+        }
+
+        if(IS_POST) {
+            $order['address'] = I('address');           // 收货地址
+            $order['address_base'] = I('address_base'); // 收货地址
+
+            $o = M('order')->where('order_id='.$order_id)->save($order);
+
+            $orderLogic = new OrderLogic();
+            $l = $orderLogic->orderActionLog($order_id,'edit','修改订单——收货人地址');//操作日志
+            if($o && $l){
+                $this->success('修改成功',U('Store/Order/edit_consignee',array('order_id'=>$order_id)));
+            }else{
+                $this->success('修改失败',U('Store/Order/detail',array('order_id'=>$order_id)));
+            }
+            exit;
+        }
+
+        $this->assign('order',$order);
+        $this->display();
+    }
+
 }

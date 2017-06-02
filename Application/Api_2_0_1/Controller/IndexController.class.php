@@ -8,19 +8,8 @@ class IndexController extends BaseController {
 //        $this->encryption();
     }
 
-    public function index($getGoodsDetails="",$user_id="", $goods_id=""){
-        //跨域删除缓存
-        if ($getGoodsDetails == "1") {
-            $rdsname = "getGoodsDetails".$goods_id."*";
-            redisdelall($rdsname);//删除商品详情缓存
-            $rdsname = "getUserOrderList".$user_id."*";
-            redisdelall($rdsname);//删除用户订单缓存
-            $rdsname = "getUserPromList".$user_id."*";
-            redisdelall($rdsname);//删除我的拼团缓存
-            $rdsname = "TuiSong*";
-            redisdelall($rdsname);//删除推送缓存
-        }
-        print_r(redis("unionid"));
+    public function index(){
+
     }
 
     /*
@@ -561,7 +550,8 @@ class IndexController extends BaseController {
     {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
-        $rdsname = "getFreeProm201".$page.$pagesize;
+        $version = I('version','');
+        $rdsname = "getFreeProm".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
@@ -732,7 +722,8 @@ class IndexController extends BaseController {
 	public function getStrict_selection(){
 		$page = I('page',1);
 		$pagesize = I('pagesize',10);
-		$rdsname = "getStrict_selection".$page.$pagesize;
+        $version = I('version','');
+		$rdsname = "getStrict_selection".$version.$page.$pagesize;
 		if(empty(redis($rdsname))) {//判断是否有缓存
 			$where = '`is_special`=9 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
 			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
