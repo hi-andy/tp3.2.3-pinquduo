@@ -43,7 +43,6 @@ class OrderController extends BaseController {
     	$begin = date('Y/m/d',(time()-30*60*60*24));//30天前
     	$end = date('Y/m/d',strtotime('+1 days'));
 	    $this->assign('order_type',$this->order_type);
-//	    var_dump($this->order_type);die;
     	$this->assign('timegap',$begin.'-'.$end);
         $this->display();
     }
@@ -485,10 +484,11 @@ class OrderController extends BaseController {
         $status_msg = array('拒绝退款','未处理','已确认','处理中','已完成');
         if(IS_POST)
         {
-//	        $data['type'] = I('type');
 	        $data['status'] = I('status');
 	        $data['remark'] = I('remark');
 	        if ($data['status']==1&&empty($return_goods['one_time'])) {
+		        $custom = array('type' => '2','id'=>$return_goods['order_id']);
+		        SendXinge('卖家已同意退款，请点击此处查看',$return_goods['user_id'],$custom);
 		        $data['one_time'] = time();
 	        }elseif($data['status']==2&&empty($return_goods['two_time'])){
 		        if(empty($return_goods['one_time']))

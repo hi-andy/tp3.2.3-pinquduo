@@ -399,32 +399,36 @@ class GoodsController extends BaseController {
 			redis("get_Free_Order_status","1");
 			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
 			//给参团人和开团人推送信息
-			$message = "你参与的团购,即将揭晓免单人";
+			$message = "";
 			$custom = array('type' => '2','id'=>$join_num[0]['order_id']);
 			foreach($join_num as $val){
 				SendXinge($message,$val['user_id'],$custom);
 			}
 
 			$num = $this->getRand($free_num,($prom_num-1));//随机出谁免单
-			for($i=0;$i<count($num);$i++)
-			{
-				$j = $num[$i];
-				$order_id = $order_ids[$j];
-				$res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
-				$res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
-				if($res && $res2){
-					$this->getWhere($order_id);
-					M()->commit();
-				}else{
-					M()->rollback();
+			for ($j=0;$j<count($join_num);$j++){
+				for($i=0;$i<count($num);$i++){
+					if($j == $num[$i]){
+						$order_id = $order_ids[$j];
+						$res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+						$res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+						if($res && $res2){
+							$custom = array('type' => '2','id'=>$join_num[$j]['order_id']);
+							SendXinge('恭喜！您参与的免单拼团获得了免单',$join_num[$j]['user_id'],$custom);
+							$this->getWhere($order_id);
+							M()->commit();
+						}else{
+							M()->rollback();
+						}
+					}else{
+						$custom = array('type' => '2','id'=>$join_num[$j]['order_id']);
+						SendXinge('您的免单拼团人已满，点击查看免单买家',$join_num[$j]['user_id'],$custom);
+					}
 				}
 			}
 		}else{
-//			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
-
 			//给参团人和开团人推送信息
-//			$user_ids = M('order')->where(array('order_id'=>array('in',$order_ids)))->field('user_id')->select();
-			$message = "你参与的团购,团满开团成功";
+			$message = "您拼的团已满，等待商家发货中";
 			$custom = array('type' => '1','id'=>$join_num[0]['order_id']);
 			foreach($join_num as $val){
 				SendXinge($message,$val['user_id'],$custom);
@@ -481,8 +485,7 @@ class GoodsController extends BaseController {
 			}
 			M('order')->where('order_id='.$order_id)->save(array('pay_code'=>$pay_code,'pay_name'=>$pay_name));
 		}
-		if($pay_code=='weixin')
-		{
+		if($pay_code=='weixin'){
             $weixinPay = new WeixinpayController();
             if(!empty($ajax_get)){
                 $code_str = $weixinPay->getJSAPI($order);

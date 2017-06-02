@@ -163,12 +163,12 @@ class StoreController extends BaseController{
 
 	function Y_orderlist()
 	{
-		$store_id = I('store_id',910);//商户ID
-		$page = I('page',1);//页码
-		$page_num = I('page_num',10);//分页变量
-		I('start_time') && $start_time = I('start_time');
-		I('end_time') && $end_time = I('end_time');
-		I('order_sn') && $order_sn = I('order_sn');
+		$store_id = I('post.store_id');//商户ID
+		$page = I('post.page',1);//页码
+		$page_num = I('post.page_num',10);//分页变量
+		I('post.start_time') && $start_time = I('post.start_time');
+		I('post.end_time') && $end_time = I('post.end_time');
+		I('post.order_sn') && $order_sn = I('post.order_sn');
 
 		$where = "o.store_id = $store_id and o.order_type in (2,14)";
 		if (!empty($start_time) && !empty($end_time)) {
@@ -256,6 +256,8 @@ class StoreController extends BaseController{
 	function deliveryHandle($data)
 	{
 		$order = M('order')->where('`order_sn` = '.$data['order_sn'])->find();
+		$custom = array('type' => '2','id'=>$order['order_id']);
+		SendXinge('卖家已经发货，请点击此处查看',$order['user_id'],$custom);
 		$datas['order_id'] = $order['order_id'];
 		$datas['order_sn'] = $order['order_sn'];
 		$datas['store_id'] = $order['store_id'];

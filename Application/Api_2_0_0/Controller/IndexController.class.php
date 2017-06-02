@@ -770,4 +770,5 @@ class IndexController extends BaseController {
         $orderLogic = new OrderLogic();
         $result = $orderLogic->weixinBackPay($order_sn, $order_a);
     }
+
 }
