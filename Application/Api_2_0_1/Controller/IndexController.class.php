@@ -607,14 +607,14 @@ class IndexController extends BaseController {
                 ->join('INNER JOIN tp_goods g on g.goods_id = ga.goods_id ')
                 ->where($where)
                 ->page($page, $pagesize)
-                ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img,g.prom,g.prom_price,g.is_special')
+                ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img as original,g.prom,g.prom_price,g.is_special,g.list_img as original_img')
                 ->select();
             $data = $this->listPageData($count, $goodsList);
             foreach ($data['items'] as &$v) {
-                $v['original'] = TransformationImgurl($v['original_img']);
-                $v['original_img'] = TransformationImgurl($v['original_img']);
+                $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);
         } else {
             $json = unserialize(redis($rdsname));
