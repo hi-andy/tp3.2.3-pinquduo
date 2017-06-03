@@ -631,7 +631,7 @@ class GoodsController extends BaseController {
     public function ajaxHaitaoGoodsList()
     {
         $store_id = $_SESSION['merchant_id'];
-        $where = "`show_type`=0  `is_special`=1 and `the_raise`=0 and store_id=$store_id  "; // 搜索条件
+        $where = "`show_type`=0 and `is_special`=1 and `the_raise`=0 and store_id=$store_id  "; // 搜索条件
         I('intro')    && $where = "$where and ".I('intro')." = 1" ;
         (I('is_on_sale') !== '') && $where = "$where and is_on_sale = ".I('is_on_sale') ;
 
