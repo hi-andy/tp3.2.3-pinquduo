@@ -97,7 +97,7 @@ class PurchaseController extends  BaseController
                     }
                     exit(json_encode($json));
                 }
-                if ($spec_res['store_count'] <= 0 && $result['is_raise']!=0) {
+                if ($spec_res['store_count'] <= 0 && $result['is_raise']!=1) {
                     $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if (!empty($ajax_get))
