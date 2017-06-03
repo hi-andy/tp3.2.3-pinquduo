@@ -33,12 +33,12 @@ class ThirdController {
 	}
 
 	function Third_orderlist(){
-		$store_id = I('store_id',910);//商户ID
-		$page = I('page',1);//页码
-		$page_num = I('page_num',10);//分页变量
-		I('start_time') && $start_time = I('start_time');
-		I('end_time') && $end_time = I('end_time');
-		I('order_sn') && $order_sn = I('order_sn');
+		$store_id = I('post.store_id');//商户ID
+		$page = I('post.page',1);//页码
+		$page_num = I('post.page_num',10);//分页变量
+		I('post.start_time') && $start_time = I('post.start_time');
+		I('post.end_time') && $end_time = I('post.end_time');
+		I('post.order_sn') && $order_sn = I('post.order_sn');
 
 		$where = "o.store_id = $store_id and o.order_type in (2,14)";
 		if (!empty($start_time) && !empty($end_time)) {
@@ -187,12 +187,19 @@ class ThirdController {
 			}elseif(strstr($cha[1],'地区')){
 				$cha = explode('地区',$cha[1]);
 				$city = $cha[0].'地区';
-			}elseif(strstr($cha[1],'自治区')){
-				$cha = explode('自治区',$cha[1]);
-				$city = $cha[0].'自治区';
+			}elseif(strstr($cha[1],'自治区')) {
+				$cha = explode('自治区', $cha[1]);
+				$city = $cha[0] . '自治区';
 			}else{
-				$cha = explode('市',$cha[1]);
-				$city = $cha[0].'市';
+				$cunt = substr_count($cha[1],'市');
+				if($cunt>1){
+					$cha = explode('市',$cha[1]);
+					$cha[1] = '市'.$cha[2];
+					$city = $cha[0].'市';
+				}else{
+					$cha = explode('市',$cha[1]);
+					$city = $cha[0].'市';
+				}
 			}
 			$area = $cha[1];
 		}elseif(strstr($cha,"北京市") || strstr($cha,"天津市") || strstr($cha,"上海市") ||strstr($cha,"重庆市")){//判断是否为直辖市
@@ -200,7 +207,7 @@ class ThirdController {
 			$cha = explode('市',$cha);
 			$province = $cha[0].'市';
 			$city = $cha[0].'市';
-			$area = $cha[1];
+			$area = $cha[2];
 		}elseif(strstr($cha,"内蒙古自治区") || strstr($cha,"广西壮族自治区") || strstr($cha,"宁夏回族自治区") || strstr($cha,"西藏自治区") || strstr($cha,"新疆维吾尔自治区")){ //判断是否为自治区
 			//按自治区切割
 			$cha = explode('自治区',$cha);

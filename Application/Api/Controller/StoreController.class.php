@@ -168,7 +168,7 @@ class StoreController extends BaseController{
 		$page_num = I('post.page_num',10);//分页变量
 		I('post.start_time') && $start_time = I('post.start_time');
 		I('post.end_time') && $end_time = I('post.end_time');
-		I('post.order_sn') && $order_sn = I('post.order_sn');
+		I('post.order_sn') && $order_sn = I('order_sn');
 
 		$where = "o.store_id = $store_id and o.order_type in (2,14)";
 		if (!empty($start_time) && !empty($end_time)) {

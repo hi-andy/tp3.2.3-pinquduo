@@ -14,7 +14,7 @@ class IndexController extends BaseController {
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
         }
-        print_r(unserialize(redis("order")));
+        print_r(unserialize(redis("unionid")));
     }
 
     /*
@@ -775,5 +775,4 @@ class IndexController extends BaseController {
         redisdelall($rdsname);
         echo "删除 ".$rdsname;
     }
-    
 }
