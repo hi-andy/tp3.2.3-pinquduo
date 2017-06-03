@@ -10,7 +10,7 @@ class UploadifyController extends BaseController{
         	'num'=> I('num'),
             'title' => '',       	
         	'upload' =>U('Admin/Ueditor/imageUp',array('savepath'=>$path,'pictitle'=>'banner','dir'=>'images')),
-            'size' => '5M',
+            'size' => '20M',
             'type' =>'jpg,png,gif,jpeg,apk',
             'input' => I('input'),
             'func' => empty($func) ? 'undefined' : $func,

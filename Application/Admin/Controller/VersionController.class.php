@@ -64,9 +64,9 @@ class VersionController extends BaseController {
 			$data['createtime'] = time();
 			$res = M('version')->data($data)->add();
 			if($res) {
-				$this->ajaxReturn('添加成功');
+                $this->success("添加成功!", U('Admin/Version/index'));
 			} else {
-				$this->ajaxReturn('添加失败');
+                $this->error('添加失败!', U('Admin/Version/addVersion'));
 			}
 		}
 		$this->display();
