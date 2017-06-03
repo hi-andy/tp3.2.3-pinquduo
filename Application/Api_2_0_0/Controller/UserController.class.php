@@ -2059,7 +2059,7 @@ class UserController extends BaseController {
                 $not = 2;
             }
         }
-        $share_url = C('SHARE_URL').'/prom_regiment.html?order_id='.$order['order_id'].'&user_id='.$user_id;
+        $share_url = C('SHARE_URL').'/prom_regiment.html?order_id='.$order['order_id'].'&user_id='.$user_id.'&prom_id='.$prom_id;
         //将团员的信息补全
         $num = count($res);
         for($i=0;$i<$num;$i++){

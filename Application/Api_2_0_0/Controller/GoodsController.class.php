@@ -1433,6 +1433,6 @@ class GoodsController extends BaseController {
 
 	function test1(){
 		$custom = array('type' => '2','id'=>31065);
-		SendXinge('卖家已同意退款，请点击此处查看',10925,$custom);
+		var_dump(SendXinge('卖家已同意退款，请点击此处查看','10928',$custom));
 	}
 }
