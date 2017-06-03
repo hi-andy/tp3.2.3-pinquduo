@@ -93,7 +93,8 @@
 						<div class="box-footer">
 							<!--<input type="hidden" name="id" value="{$goods_category_info.id}">-->
 							<button type="reset" class="btn btn-primary pull-left"><i class="icon-ok"></i>重填  </button>
-							<button type="button" id="submit_version" class="btn btn-primary pull-right"><i class="icon-ok"></i>提交  </button>
+							<input type="submit" value="提交" class="btn btn-primary pull-right"  />
+							<!--<button type="button" id="submit_version" class="btn btn-primary pull-right"><i class="icon-ok"></i>提交  </button>-->
 						</div>
 					</form>
 				</div>
@@ -149,8 +150,8 @@
 				versiondesc = $("[name='versiondesc']").val(),
 				force = $("[name='force']").val(),
 				terminal = $("[name='terminal']").val(),
-			file = $("[name='file']").val(),
-			filename = $("[name='filename']").val();
+			file = $("[name='file']").val();
+			//filename = $("[name='filename']").val();
 
 		var msg = '';
 		var is_true = true;
@@ -175,7 +176,7 @@
 		$.ajax({
 			type : 'POST',
 			url : '/Admin/Version/addVersion',
-			data : {'version':version,'versiondesc':versiondesc,'versionname':versionname,'force':force,'terminal':terminal,'file':file,'filename':filename},
+			data : {'version':version,'versiondesc':versiondesc,'versionname':versionname,'force':force,'terminal':terminal,'file':file},
 			dataType : 'json',
 			success:function(res){
 				layer.alert(res);

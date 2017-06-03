@@ -19,7 +19,7 @@ class AutomationController extends BaseController
 
     //把所有免单自动退款
     public function free_single(){
-        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->select();
+        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->limit(0,50)->select();
         $orderLogic = new OrderLogic();
         for ($i = 0; $i < count($free_order); $i++) {
             $order = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->field('order_sn,user_id,goods_id')->find();
@@ -52,7 +52,7 @@ class AutomationController extends BaseController
 
     //将单买超时支付的订单设置成取消
     public function single_buy_overtime() {
-        $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
+        $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->limit(0,50)->select();
         if (count($self_cancel_order) > 0) {
             for ($j = 0; $j < count($self_cancel_order); $j++) {
                 $data_time = $self_cancel_order[$j]['add_time'] + ORDER_END_TIME;
@@ -88,6 +88,7 @@ class AutomationController extends BaseController
             ->join(" LEFT JOIN tp_order AS o ON o.order_id = gb.order_id ")
             ->where('gb.`is_pay`=0 and gb.is_cancel=0')
             ->field('gb.id,gb.order_id,gb.start_time,gb.user_id,gb.goods_id,gb.free,gb.goods_id,o.num')
+            ->limit(0,50)
             ->select();
         if (count($join_prom_order) > 0) {
             for ($z = 0; $z < count($join_prom_order); $z++) {
@@ -129,7 +130,7 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time()-30;
-        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->select();
+        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0,50)->select();
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);

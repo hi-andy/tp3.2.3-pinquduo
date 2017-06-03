@@ -73,15 +73,16 @@ class ChatController extends BaseController
 
     /**
      * 读取聊天记录
-     * @param string $to 接收人
+     * @param string $user_id 接收人
      * @param string $chat_type 用来判断单聊还是群聊。chat: 单聊；groupchat: 群聊
      * @param int $page
      * @param int $pagesize
      */
-    public function get_chat($to='', $chat_type='', $page=0, $pagesize=20){
-        if ($to && $chat_type) {
-            $in_msg_id = "";
-            $result = M('chat')->where(array('tos'=>array('eq',$to),'chat_type'=>array('eq',$chat_type),'status'=>array('neq',2)))->order('timestamp asc')->limit($page,$pagesize)->select();
+    public function get_chat($user_id, $chat_type='', $page=0, $pagesize=20){
+        if ($user_id && $chat_type) {
+            $in_msg_id = "0,";
+            $where = "(tos = $user_id or froms = $user_id) and chat_type = $chat_type and status <> 2";
+            $result = M('chat')->where($where)->order('timestamp asc')->limit($page,$pagesize)->select();
             foreach ($result as $key => $value){
                 $data[$key]['msg_id'] = $value['msg_id'];
                 $data[$key]['timestamp'] = $value['timestamp'];
@@ -90,7 +91,7 @@ class ChatController extends BaseController
                 $data[$key]['chat_type'] = $value['chat_type'];
                 $data[$key]['payload'] = $value['payload'];
                 $data[$key]['status'] = $value['status'];
-                $in_msg_id .= "'{$value['msg_id']}',";
+                if ($value['tos'] == $user_id) $in_msg_id .= "'{$value['msg_id']}',";
             }
             $in_msg_id = substr($in_msg_id, 0, -1);
             M('chat')->where("msg_id in({$in_msg_id})")->save(array('status'=>1));
