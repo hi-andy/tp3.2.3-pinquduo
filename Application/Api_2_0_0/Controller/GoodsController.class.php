@@ -1432,7 +1432,10 @@ class GoodsController extends BaseController {
 	}
 
 	function test1(){
-		$custom = array('type' => '2','id'=>31065);
-		var_dump(SendXinge('卖家已同意退款，请点击此处查看','10928',$custom));
+		$id = I('order_id');
+		$type = I('type');
+		$user_id = I('user_id');
+		$custom = array('type' => "$type",'id'=>$id);
+		var_dump(SendXinge('卖家已同意退款，请点击此处查看',"$user_id",$custom));
 	}
 }

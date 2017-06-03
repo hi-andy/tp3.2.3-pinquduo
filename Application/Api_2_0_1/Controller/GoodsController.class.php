@@ -404,7 +404,8 @@ class GoodsController extends BaseController {
 						$res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
 						if($res && $res2){
 							$custom = array('type' => '2','id'=>$join_num[$j]['order_id']);
-							SendXinge('恭喜！您参与的免单拼团获得了免单',$join_num[$j]['user_id'],$custom);
+							$user_id = $join_num[$j]['user_id'];
+							SendXinge('您的免单拼团人已满，点击查看免单买家',"$user_id",$custom);
 							$this->getWhere($order_id);
 							M()->commit();
 						}else{
@@ -412,7 +413,8 @@ class GoodsController extends BaseController {
 						}
 					}else{
 						$custom = array('type' => '2','id'=>$join_num[$j]['order_id']);
-						SendXinge('您的免单拼团人已满，点击查看免单买家',$join_num[$j]['user_id'],$custom);
+						$user_id = $join_num[$j]['user_id'];
+						SendXinge('您的免单拼团人已满，点击查看免单买家',"$user_id",$custom);
 					}
 				}
 			}
@@ -420,7 +422,8 @@ class GoodsController extends BaseController {
 			$message = "您拼的团已满，等待商家发货中";
 			foreach($join_num as $val){
 				$custom = array('type' => '1','id'=>$val['order_id']);
-				SendXinge($message,$val['user_id'],$custom);
+				$user_id = $val['user_id'];
+				SendXinge($message,'$user_id',$custom);
 			}
 		}
 		exit ;
