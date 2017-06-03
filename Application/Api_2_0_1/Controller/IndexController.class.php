@@ -104,7 +104,7 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $version= I('version');
-        $rdsname = "getHaiTao".$page.$pagesize.$version;
+        $rdsname = "getHaiTao".$version.$page.$pagesize.$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
             //头部分类
             $directory = M('haitao_style', '', 'DB_CONFIG2')->select();
@@ -142,7 +142,8 @@ class IndexController extends BaseController {
     {
         $page = I('page', 1);
         $pagesize = I('pagesize', 20);
-        $rdsname = "getJiuJiu".$page.$pagesize;
+        $version = I('version');
+        $rdsname = "getJiuJiu".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $banner = M('ad', '', 'DB_CONFIG2')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
             $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
@@ -320,7 +321,7 @@ class IndexController extends BaseController {
         $version= I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',20);
-        $rdsname = "get_Seconds_Kill".$starttime.$page.$version;
+        $rdsname = "get_Seconds_Kill".$version.$starttime.$page;
         if (redis("get_Seconds_Kill_status") == "1"){
             redisdelall("get_Seconds_Kill*");
             redisdelall("get_Seconds_Kill_status");
@@ -572,7 +573,8 @@ class IndexController extends BaseController {
     {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
-        $rdsname = "getThe_raise".$page.$pagesize;
+        $version = I('version');
+        $rdsname = "getThe_raise".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
@@ -594,25 +596,31 @@ class IndexController extends BaseController {
      */
     public function getEconomizeGoods()
     {
-        $where = 'type=2';//type=2 省钱大法的类型
-        $count = M('goods_activity')->where($where)->count();
+        $version = I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',20);
-        $goodsList = M('goods_activity', '', 'DB_CONFIG2')->alias('ga')
-            ->join('INNER JOIN tp_goods g on g.goods_id = ga.goods_id ')
-            ->where($where)
-            ->page($page,$pagesize)
-            ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img as original,g.list_img as original_img,g.prom,g.prom_price,g.is_special')
-            ->select();
-        foreach ($goodsList as &$v) {
-            $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
+        $rdsname = "getEconomizeGoods".$version.$page.$pagesize;
+        if (empty(redis($rdsname))) {
+            $where = 'type=2';//type=2 省钱大法的类型
+            $count = M('goods_activity')->where($where)->count();
+            $goodsList = M('goods_activity', '', 'DB_CONFIG2')->alias('ga')
+                ->join('INNER JOIN tp_goods g on g.goods_id = ga.goods_id ')
+                ->where($where)
+                ->page($page, $pagesize)
+                ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img,g.prom,g.prom_price,g.is_special')
+                ->select();
+            $data = $this->listPageData($count, $goodsList);
+            foreach ($data['items'] as &$v) {
+                $v['original'] = TransformationImgurl($v['original_img']);
+                $v['original_img'] = TransformationImgurl($v['original_img']);
+            }
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+            redis($rdsname, serialize($json), REDISTIME);
+        } else {
+            $json = unserialize(redis($rdsname));
         }
-        $data = $this->listPageData($count,$goodsList);
-
-        $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->find();
 
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
         if(I('ajax_get')) {
             $this->getJsonp($json);
         }
