@@ -144,7 +144,6 @@ class GroupController extends BaseController {
     public function detail(){
 
         $group_id = $_REQUEST['group_id'];
-
         $group_info = M('group_buy')->where(array('id'=>$group_id))->find();
         $head_info=array();
         //如果是团长 获取团员信息
@@ -152,8 +151,8 @@ class GroupController extends BaseController {
             $member_infos = M('group_buy')->alias('g')
                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                ->where(array('mark'=>$group_info['mark']))
-                ->field('g.*,u.nickname,o.order_sn,o.pay_time')
+                ->where('g.mark = '.$group_info['mark'])
+                ->field('g.id,g.start_time,g.end_time,g.goods_num,g.order_num,g.price,g.mark,g.is_pay,g.is_freeg.is_successful,u.nickname,o.order_sn,o.pay_time')
                 ->order('g.id desc')
                 ->select();
         }else{
@@ -162,14 +161,6 @@ class GroupController extends BaseController {
                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
                 ->where(array('id'=>$group_info['mark']))
-                ->field('g.*,u.nickname,o.order_sn,o.pay_time')
-                ->order('g.id desc')
-                ->select();
-
-            $member_infos = M('group_buy')->alias('g')
-                ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-                ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                ->where(array('mark'=>$group_info['mark']))
                 ->field('g.*,u.nickname,o.order_sn,o.pay_time')
                 ->order('g.id desc')
                 ->select();
