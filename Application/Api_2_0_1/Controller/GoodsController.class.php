@@ -860,6 +860,7 @@ class GoodsController extends BaseController {
 	//搜索
     function getsearch()
     {
+        vendor('sphinx.sphinxapi');
         $key = I('key');
         $page = I('page',1);
         $pagesize = I('pagesize',50);
