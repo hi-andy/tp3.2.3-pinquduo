@@ -78,13 +78,7 @@ class PurchaseController extends  BaseController
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        if ($spec_res['store_count']<$num){
-            $json = array('status' => -1, 'msg' => '库存不足！');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }elseif ($res1['is_special']==7 && $spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
+        if ($res1['is_special']==7 && $spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
             $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))
