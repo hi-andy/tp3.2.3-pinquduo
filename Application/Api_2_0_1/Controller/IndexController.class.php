@@ -33,11 +33,11 @@ class IndexController extends BaseController {
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
 	        $category[3]['cat_name'] = '趣多严选';
-	        $category[3]['cat_img'] = CDN .'/home_quduoyanxuan@3x.png';
+	        $category[3]['cat_img'] = CDN .'/Public/upload/index/quduoyanxuan.jpg';
             $category[4]['cat_name'] = '为我拼';
-            $category[4]['cat_img'] = CDN .'/home_weiwopin@3x.png';
+            $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
             $category[7]['cat_name'] = '省钱大法';
-            $category[7]['cat_img'] = CDN . '/home_save@3x.png';
+            $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
             //中间活动模块
             $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
             $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
