@@ -56,47 +56,41 @@ class PurchaseController extends  BaseController
         if (empty(redis("getBuy_lock_".$goods_id))) {//如果无锁
             redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁
 
-        $res1 = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id ')
-            ->where("gb.`user_id`=$user_id and gb.`is_pay`=1 and gb.`goods_id`=$goods_id")
-            ->field("g.is_special,g.sales")
-            ->find();
-        if(!empty($res1) && $res1['is_special']==7){
-            $json =	array('status'=>-1,'msg'=>'您已购买过此宝贝T_T');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get)) {
-                echo "<script> alert('" . $json['msg'] . "') </script>";
-                exit;
+            $res1 = M('group_buy')->alias('gb')
+                ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id ')
+                ->where("gb.`user_id`=$user_id and gb.`is_pay`=1 and gb.`goods_id`=$goods_id")
+                ->field("g.is_special,g.sales")
+                ->find();
+            if(!empty($res1) && $res1['is_special']==7){
+                $json =	array('status'=>-1,'msg'=>'您已购买过此宝贝T_T');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get)) {
+                    echo "<script> alert('" . $json['msg'] . "') </script>";
+                    exit;
+                }
             }
-        }
-        if(!empty($spec_key)){
-            $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-        }else{
-            $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
-        if ($spec_res['store_count'] <= 0) {
-            $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }elseif ($spec_res['store_count']<$num){
-            $json = array('status' => -1, 'msg' => '库存不足！');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }elseif ($res1['is_special']==7 && $spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
-            $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
+            if(!empty($spec_key)){
+                $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
+            }else{
+                $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
+            if ($spec_res['store_count']<$num){
+                $json = array('status' => -1, 'msg' => '库存不足！');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }elseif ($res1['is_special']==7 && $spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
+                $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
             //参团购物
             if ($type == 0) {
                 $result = M('group_buy')->where("`id` = $prom_id")->find();
@@ -107,6 +101,13 @@ class PurchaseController extends  BaseController
                         echo "<script> alert('" . $json['msg'] . "') </script>";
                         exit;
                     }
+                    exit(json_encode($json));
+                }
+                if ($spec_res['store_count'] <= 0 && $result['is_raise']!=0) {
+                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
                 //为我点赞只允许每个人参团一次
@@ -175,9 +176,23 @@ class PurchaseController extends  BaseController
                 $this->joinGroupBuy($parameter);
             } else if ($type == 1)    //开团
             {
+                if ($spec_res['store_count'] <= 0 ) {
+                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
+                    exit(json_encode($json));
+                }
                 $this->openGroup($parameter);
             } //自己买
             else if ($type == 2) {
+                if ($spec_res['store_count'] <= 0 ) {
+                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
+                    exit(json_encode($json));
+                }
                 $this->buyBymyself($parameter);
             }
         } else {
@@ -270,7 +285,7 @@ class PurchaseController extends  BaseController
             $data['intro'] = $result['intro'];
             $data['goods_price'] = $result['goods_price'];
             $data['goods_name'] = $result['goods_name'];
-            $data['photo'] = '/Public/upload/logo/logo.jpg';
+            $data['photo'] = CDN.'/Public/upload/logo/logo.jpg';
             $data['mark'] = $result['id'];
             $data['user_id'] = $user_id;
             $data['store_id'] = $result['store_id'];
@@ -299,14 +314,14 @@ class PurchaseController extends  BaseController
             }elseif(I('code')=='alipay'){
                 $order['pay_code'] = 'alipay' ;
                 $order['pay_name'] = '支付宝支付';
-			}
+            }
             elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
             {
                 $order['pay_code'] = 'alipay_wap' ;
                 $order['pay_name'] = '支付宝手机网页支付';
             }
-			elseif(I('code')=='qpay')
-			{
+            elseif(I('code')=='qpay')
+            {
                 $order['pay_code'] = 'qpay';
                 $order['pay_name'] = 'QQ钱包支付';
             }
@@ -403,18 +418,18 @@ class PurchaseController extends  BaseController
                 }elseif($order['pay_code'] == 'alipay'){//AlipayController
                     $AliPay = new AlipayController();
                     $pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
-				}
+                }
                 elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
                     $AlipayWap = new AlipayWapController();
                     $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
                 }
-				elseif($order['pay_code'] == 'qpay'){
+                elseif($order['pay_code'] == 'qpay'){
                     $qqPay = new QQPayController();
                     $pay_detail = $qqPay->getQQPay($order);
                 }
                 $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
                 if($result['is_raise']!=1){
-                    $this->aftermath($user_id,$goods,$num,$o_id);
+                    $this->aftermath($user_id,$goods,$num,$o_id);//修改库存
                 }
                 if(!empty($ajax_get)){
                     //echo "<script> alert('".$json['msg']."') </script>";
@@ -558,14 +573,14 @@ class PurchaseController extends  BaseController
         }elseif(I('code')=='alipay'){
             $order['pay_code'] = 'alipay' ;
             $order['pay_name'] = '支付宝支付';
-		}
+        }
         elseif(I('code')=='alipay_wap')  // 添加手机网页版支付 2017-5-25 hua
         {
             $order['pay_code'] = 'alipay_wap' ;
             $order['pay_name'] = '支付宝手机网页支付';
         }
-		elseif(I('code')=='qpay')
-		{
+        elseif(I('code')=='qpay')
+        {
             $order['pay_code'] = 'qpay';
             $order['pay_name'] = 'QQ钱包支付';
         }
@@ -663,13 +678,13 @@ class PurchaseController extends  BaseController
                 }
             }elseif($order['pay_code'] == 'alipay'){
                 $AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-			}
+                $pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+            }
             elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
                 $AlipayWap = new AlipayWapController();
                 $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
             }
-			elseif($order['pay_code'] == 'qpay'){
+            elseif($order['pay_code'] == 'qpay'){
                 // Begin code by lcy
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
@@ -852,20 +867,18 @@ class PurchaseController extends  BaseController
                 }
             }elseif($order['pay_code'] == 'alipay'){
                 $AliPay = new AlipayController();
-				$pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
-			}elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
-				$AlipayWap = new AlipayWapController();
-				$pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+                $pay_detail = $AliPay->addAlipayOrder($order['order_sn']);
+            }elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
+                $AlipayWap = new AlipayWapController();
+                $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
             }elseif($order['pay_code'] == 'qpay'){
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
-            if($result['is_raise']!=1){
-                $this->aftermath($user_id,$goods,$num,$o_id);//修改库存
-            }
+            $this->aftermath($user_id,$goods,$num,$o_id);
             if(!empty($ajax_get)){
-                //echo "<script> alert('".$json['msg']."') </script>";
+                echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
             exit(json_encode($json));
@@ -874,7 +887,7 @@ class PurchaseController extends  BaseController
             $json = array('status'=>-1,'msg'=>'购买失败');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
+                //echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
         }

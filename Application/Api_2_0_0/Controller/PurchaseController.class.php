@@ -78,13 +78,7 @@ class PurchaseController extends  BaseController
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        if ($spec_res['store_count'] <= 0) {
-            $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }elseif ($spec_res['store_count']<$num){
+        if ($spec_res['store_count']<$num){
             $json = array('status' => -1, 'msg' => '库存不足！');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if (!empty($ajax_get))
@@ -107,6 +101,13 @@ class PurchaseController extends  BaseController
                         echo "<script> alert('" . $json['msg'] . "') </script>";
                         exit;
                     }
+                    exit(json_encode($json));
+                }
+                if ($spec_res['store_count'] <= 0 && $result['is_raise']!=0) {
+                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
                 //为我点赞只允许每个人参团一次
@@ -175,9 +176,23 @@ class PurchaseController extends  BaseController
                 $this->joinGroupBuy($parameter);
             } else if ($type == 1)    //开团
             {
+                if ($spec_res['store_count'] <= 0 ) {
+                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
+                    exit(json_encode($json));
+                }
                 $this->openGroup($parameter);
             } //自己买
             else if ($type == 2) {
+                if ($spec_res['store_count'] <= 0 ) {
+                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
+                    exit(json_encode($json));
+                }
                 $this->buyBymyself($parameter);
             }
         } else {
