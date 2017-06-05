@@ -61,7 +61,7 @@ class AutomationController extends BaseController
                     $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
                     M('goods')->where('`goods_id` = '.$self_cancel_order[$j]['goods_id'])->setDec('store_count',$self_cancel_order[$j]['num']);
                     $spec_name = M('order_goods')->where('`order_id`='.$self_cancel_order[$j]['order_id'])->field('spec_key,store_id')->find();
-                    M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',$self_cancel_order[$j]['num']);
+                    M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count',$self_cancel_order[$j]['num']);
                 }
                 {
                     //优惠卷回到原来的数量
@@ -100,7 +100,7 @@ class AutomationController extends BaseController
                     $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
                     M('goods')->where('`goods_id` = '.$join_prom_order[$z]['goods_id'])->setDec('store_count',$join_prom_order[$z]['num']);
                     $spec_name = M('order_goods')->where('`order_id`='.$join_prom_order[$z]['order_id'])->field('spec_key,store_id')->find();
-                    M('spec_goods_price')->where("`goods_id`=$join_prom_order[$z]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',$join_prom_order[$z]['num']);
+                    M('spec_goods_price')->where("`goods_id`=$join_prom_order[$z]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count',$join_prom_order[$z]['num']);
                 }
                 if ($join_prom_order[$z]['free'] > 0) redis("get_Free_Order_status", "1");
             }
