@@ -65,7 +65,7 @@ class AutomationController extends BaseController
                 if ($data_time <= time()) {
                     $ids[]['id'] = $self_cancel_order[$j]['order_id'];
                     $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
-                    M('goods')->where('`goods_id` = '.$self_cancel_order[$j]['goods_id'])->setDec('store_count',$self_cancel_order[$j]['num']);
+                    M('goods')->where('`goods_id` = '.$self_cancel_order[$j]['goods_id'])->setInc('store_count',$self_cancel_order[$j]['num']);
                     $spec_name = M('order_goods')->where('`order_id`='.$self_cancel_order[$j]['order_id'])->field('spec_key,store_id')->find();
                     M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count',$self_cancel_order[$j]['num']);
                 }
@@ -101,7 +101,7 @@ class AutomationController extends BaseController
                     $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                     $id[]['id'] = $join_prom_order[$z]['id'];
                     $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
-                    M('goods')->where('`goods_id` = '.$join_prom_order[$z]['goods_id'])->setDec('store_count',$join_prom_order[$z]['num']);
+                    M('goods')->where('`goods_id` = '.$join_prom_order[$z]['goods_id'])->setInc('store_count',$join_prom_order[$z]['num']);
                     $spec_name = M('order_goods')->where('`order_id`='.$join_prom_order[$z]['order_id'])->field('spec_key,store_id')->find();
                     M('spec_goods_price')->where("`goods_id`=$join_prom_order[$z]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count',$join_prom_order[$z]['num']);
                 }
