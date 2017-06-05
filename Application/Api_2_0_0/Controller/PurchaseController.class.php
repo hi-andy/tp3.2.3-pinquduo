@@ -396,7 +396,6 @@ class PurchaseController extends  BaseController
                 redis("group_buy", serialize($user_id_arr), 300);
                 for($i=0;$i<count($user_id_arr);$i++){
                     redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
-                    redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
                 }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存

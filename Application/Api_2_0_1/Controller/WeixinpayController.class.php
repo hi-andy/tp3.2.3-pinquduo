@@ -255,7 +255,7 @@ EOF;
                         if(($nums)==$group_info['goods_num'])
                         {
                             $Goods = new BaseController();
-                            $Goods->getFree($group_info['mark']);
+                            $Goods->getFree($group_info['mark'],$order);
                             M()->commit();
                         }
                         M()->commit();
