@@ -701,8 +701,10 @@ class BaseController extends Controller {
         if($join_num[0]['is_raise']==1) {
             $goods = M('goods')->where('`goods_id` = '.$join_num[0]['goods_id'])->find();
             $Purchase = new PurchaseController();
-            $Purchase->aftermath($join_num[0]['user_id'], $goods, $order['num'], $order['id']);
+            $Purchase->aftermath($join_num[0]['user_id'], $goods, $order['num'], $order['order_id']);
         }
+        //redis("join_num",serialize($join_num),6000);
+        //redis("getFreeorder",serialize($order),6000);
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         M()->startTrans();

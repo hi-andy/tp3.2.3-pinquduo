@@ -33,7 +33,7 @@ class AlipayController extends BaseController
         }
 
         //服务器异步通知页面路径
-        $notify_url = C('HTTP_URL') . '/Api_2_0_0/Alipay/alipayendpay';
+        $notify_url = C('HTTP_URL') . '/Api_2_0_1/Alipay/alipayendpay';
 
         //商户订单号
         $out_trade_no = $order['order_sn'];
