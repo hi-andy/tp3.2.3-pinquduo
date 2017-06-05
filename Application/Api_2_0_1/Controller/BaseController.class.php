@@ -698,10 +698,10 @@ class BaseController extends Controller {
     public function getFree($prom_id,$order)
     {
         $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id')->order('mark asc')->select();
-        if($join_num['is_raise']==1) {
-            $goods = M('goods')->where('`goods_id` = '.$join_num['goods_id'])->find();
+        if($join_num[0]['is_raise']==1) {
+            $goods = M('goods')->where('`goods_id` = '.$join_num[0]['goods_id'])->find();
             $Purchase = new PurchaseController();
-            $Purchase->aftermath($join_num['user_id'], $goods, $order['num'], $order['id']);
+            $Purchase->aftermath($join_num[0]['user_id'], $goods, $order['num'], $order['order_id']);
         }
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
