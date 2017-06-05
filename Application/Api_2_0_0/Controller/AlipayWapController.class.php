@@ -41,7 +41,7 @@ class AlipayWapController extends BaseController
         $config = C('alipay_wap');
 
         //服务器异步通知页面路径
-        $config['notify_url'] = C('HTTP_URL') . '/Api/AlipayWap/alipayendpay';
+        $config['notify_url'] = C('HTTP_URL') . '/Api_2_0_1/AlipayWap/alipayendpay';
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
             $type = $prom_info['mark'] > 0 ? 1 : 0;
@@ -139,7 +139,7 @@ class AlipayWapController extends BaseController
                         if(($nums)==$group_info['goods_num'])
                         {
                             $Goods = new GoodsController();
-                            $Goods->getFree($group_info['mark']);
+                            $Goods->getFree($group_info['mark'],$order);
                         }
                         M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
                         M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums+1));
