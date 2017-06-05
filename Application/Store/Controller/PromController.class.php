@@ -174,9 +174,7 @@ class PromController extends BaseController {
 	 * 显示团购订单详情
 	 */
 	public function detail(){
-
 		$group_id = $_REQUEST['group_id'];
-
 		$group_info = M('group_buy')->where(array('id'=>$group_id))->find();
 		$head_info=array();
 		//如果是团长 获取团员信息
@@ -654,15 +652,14 @@ class PromController extends BaseController {
 			$data['status'] = I('status');
 			$data['remark'] = I('remark');
 			if ($data['status']==1&&empty($return_goods['one_time'])) {
+				$data['one_time'] = time();
+			}elseif($data['status']==2&&empty($return_goods['two_time'])){
+				if(empty($return_goods['one_time'])){
+					$data['one_time'] = time();
+				}
 				$custom = array('type' => '3','id'=>$return_goods['order_id']);
 				$user_id = $return_goods['user_id'];
 				SendXinge('卖家已同意退款，请点击此处查看',"$user_id",$custom);
-				$data['one_time'] = time();
-			}elseif($data['status']==2&&empty($return_goods['two_time'])){
-				if(empty($return_goods['one_time']))
-				{
-					$data['one_time'] = time();
-				}
 				$data['two_time'] = time();
 			}elseif($data['status']==3&&empty($return_goods['ok_time'])){
 				$order = M('order')->where('order_id='.$return_goods['order_id'])->find();
