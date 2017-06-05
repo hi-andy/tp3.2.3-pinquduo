@@ -543,8 +543,8 @@ class PromController extends BaseController {
 			exit();
 		}
 		$data = I('post.');
-		$res = M('delivery_doc')->where('`order_id`='.$data['order_id'])->find();
-		if(!empty($res))
+		$res1 = M('delivery_doc')->where('`order_id`='.$data['order_id'])->find();
+		if(!empty($res1))
 		{
 			$this->success('已经发货了',U('Store/Prom/delivery_list',array('order_id'=>$data['order_id'])));
 			exit();
@@ -552,6 +552,9 @@ class PromController extends BaseController {
 		$res = $promLogic->deliveryHandle($data);
 		if($res){
 			reserve_logistics($data['order_id']);
+			$custom = array('type' => '3','id'=>$data['order_id']);
+			$user_id = $res1['user_id'];
+			SendXinge('卖家已经发货，请点击此处查看',"$user_id",$custom);
 			$this->success('操作成功',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
 		}else{
 			$this->success('操作失败',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
@@ -651,8 +654,9 @@ class PromController extends BaseController {
 			$data['status'] = I('status');
 			$data['remark'] = I('remark');
 			if ($data['status']==1&&empty($return_goods['one_time'])) {
-				$custom = array('type' => '2','id'=>$return_goods['order_id']);
-				SendXinge('卖家已同意退款，请点击此处查看',$return_goods['user_id'],$custom);
+				$custom = array('type' => '3','id'=>$return_goods['order_id']);
+				$user_id = $return_goods['user_id'];
+				SendXinge('卖家已同意退款，请点击此处查看',"$user_id",$custom);
 				$data['one_time'] = time();
 			}elseif($data['status']==2&&empty($return_goods['two_time'])){
 				if(empty($return_goods['one_time']))
