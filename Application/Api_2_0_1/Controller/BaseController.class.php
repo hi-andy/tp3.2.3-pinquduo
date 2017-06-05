@@ -839,12 +839,14 @@ class BaseController extends Controller {
 
     /**
      * 机器人
+     * @param string $not_in_user_id 排除的user_id
+     * @return mixed
      */
     public function get_robot($not_in_user_id='') {
-        if ($not_in_user_id) {
-            $user = M()->query("SELECT nickname,head_pic FROM `tp_user`
-WHERE user_id <> {$not_in_user_id} and user_id >= (SELECT floor( RAND() * ((SELECT MAX(user_id) FROM `tp_user`)-(SELECT MIN(user_id) FROM `tp_user`)) + (SELECT MIN(tp_user) FROM `tp_user`))) 
-ORDER BY user_id LIMIT 1;");
+        if (!empty($not_in_user_id)) {
+            $user = M()->query("SELECT nickname,head_pic FROM `tp_users`
+WHERE user_id <> {$not_in_user_id} AND user_id <> {$not_in_user_id} and user_id >= (SELECT floor( RAND() * ((SELECT MAX(user_id) FROM `tp_users`)-(SELECT MIN(user_id) FROM `tp_users`)) + (SELECT MIN(user_id) FROM `tp_users`))) 
+ORDER BY user_id LIMIT 1");
             return $user;
         }
     }
