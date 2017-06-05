@@ -224,28 +224,21 @@ class PurchaseController
         }
         $free = $result['free'];
         $prom = $result['goods_num'];
-        if(!empty($free))//是否免单
-        {
-            if(!empty($prom))
-            {
+        if(!empty($free)){//是否免单
+            redis("get_Free_Order_status", "1");
+            if(!empty($prom)){
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
-                {
-                    $price = $this->operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                $count = getFloatLength($goods['prom_price']);
+                if($count>=3){
+                    $price = operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price;
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
-                {
-                    $price = $this->operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                $count = getFloatLength($goods['prom_price']);
+                if($count>=3){
+                    $price = operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price;
                 }
             }
         }
@@ -475,26 +468,21 @@ class PurchaseController
         }
         if(!empty($free))//是否免单
         {
+            redis("get_Free_Order_status", "1");
             if(!empty($prom))
             {
                 $goods['prom_price'] = (string)($goods['prom_price']*$prom/($prom-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
-                {
-                    $price = $this->operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                $count = getFloatLength($goods['prom_price']);
+                if($count>=3){
+                    $price = operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price;
                 }
             }else{
                 $goods['prom_price'] = (string)($goods['prom_price']*$goods['prom']/($goods['prom']-$free));
-                $count = $this->getFloatLength($goods['prom_price']);
-                if($count>3)
-                {
-                    $price = $this->operationPrice($goods['prom_price']);
-                    $goods['prom_price'] = $price-$coupon['money'];
-                }else{
-                    $goods['prom_price'] = $goods['prom_price']-$coupon['money'];
+                $count = getFloatLength($goods['prom_price']);
+                if($count>=3){
+                    $price = operationPrice($goods['prom_price']);
+                    $goods['prom_price'] = $price;
                 }
             }
         }

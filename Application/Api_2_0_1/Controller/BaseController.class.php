@@ -117,8 +117,10 @@ class BaseController extends Controller {
      * @return array
      * author Fox
      */
-    function listPageData($total=0,$items=array()) {
-        $pagesize = I('request.pagesize', C('PAGE_SIZE'), 'intval');
+    function listPageData($total=0,$items=array(),$pagesize=null) {
+        if(empty($pagesize)){
+            $pagesize = I('request.pagesize', C('PAGE_SIZE'), 'intval');
+        }
         $totalpage = ceil($total/$pagesize);
         $currentpage = I('request.page', 1, 'intval');
         if( I('request.page')==0){
@@ -581,7 +583,7 @@ class BaseController extends Controller {
 //        }
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
-        $result = $this->listPageData($count, $goods);
+        $result = $this->listPageData($count, $goods,$pagesize);
         foreach ($result['items'] as &$v) {
             $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
         }
