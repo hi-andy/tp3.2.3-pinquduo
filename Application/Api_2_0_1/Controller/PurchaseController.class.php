@@ -396,7 +396,6 @@ class PurchaseController extends  BaseController
                 redis("group_buy", serialize($user_id_arr), 300);
                 for($i=0;$i<count($user_id_arr);$i++){
                     redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
-                    redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");
                 }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
@@ -534,7 +533,7 @@ class PurchaseController extends  BaseController
         $data['intro'] = $goods['goods_name'];
         $data['goods_price'] = $goods['market_price'];
         $data['goods_name'] = $goods['goods_name'];
-        $data['photo'] = '/Public/upload/logo/logo.jpg';
+        $data['photo'] = CDN.'/Public/upload/logo/logo.jpg';
         $data['mark'] = 0;
         $data['user_id'] = $user_id;
         $data['store_id'] = $goods['store_id'];
@@ -685,7 +684,9 @@ class PurchaseController extends  BaseController
                 // End code by lcy
             }
             $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
-            $this->aftermath($user_id,$goods,$num,$o_id);
+            if($goods['the_raise']!=1) {
+                $this->aftermath($user_id, $goods, $num, $o_id);
+            }
             if(!empty($ajax_get)){
                 //echo "<script> alert('".$json['msg']."') </script>";
                 exit;

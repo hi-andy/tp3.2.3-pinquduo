@@ -144,7 +144,7 @@ class AlipayWapController extends BaseController
                         if(($nums)==$group_info['goods_num'])
                         {
                             $Goods = new GoodsController();
-                            $Goods->getFree($group_info['mark']);
+                            $Goods->getFree($group_info['mark'],$order);
                         }
                         M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
                         M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums+1));
