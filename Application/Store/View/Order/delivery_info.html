@@ -43,7 +43,9 @@
                             <input class="input-sm" name="shipping_order" style="width: 200px;" id="shipping_order" value="{$order.shipping_order}">
                         </td>
                         <td class="text-right">订单号:</td>
-                        <td class="text-center">{$order.order_sn}</td>
+                        <td class="text-center">{$order.order_sn}
+                        <input type="hidden" name="user_id" value="{$order.user_id}">
+                        </td>
                     </tr>
                     </tbody></table>
             </div>
