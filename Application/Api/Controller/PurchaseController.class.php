@@ -272,7 +272,11 @@ class PurchaseController
             $data['goods_price'] = $result['goods_price'];
             $data['goods_name'] = $result['goods_name'];
             $data['photo'] = '/Public/upload/logo/logo.jpg';
-            $data['mark'] = $result['id'];
+            if($result['mark']!=0){
+                $data['mark'] = $result['mark'];
+            }else{
+                $data['mark'] = $result['id'];
+            }
             $data['user_id'] = $user_id;
             $data['store_id'] = $result['store_id'];
             $data['address_id'] = $address_id;
