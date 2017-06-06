@@ -485,8 +485,7 @@ class OrderController extends BaseController {
         $goods = M('goods')->where("goods_id = {$return_goods['goods_id']}")->find();
         $type_msg = array('退换','换货');
         $status_msg = array('拒绝退款','未处理','已确认','处理中','已完成');
-        if(IS_POST)
-        {
+        if(IS_POST){
 	        $data['status'] = I('status');
 	        $data['remark'] = I('remark');
 	        if ($data['status']==1&&empty($return_goods['one_time'])) {
