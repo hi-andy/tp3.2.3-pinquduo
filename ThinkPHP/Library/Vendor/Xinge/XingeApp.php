@@ -1370,7 +1370,7 @@ class ClickAction {
 	private $m_confirmOnPackageDownloadUrl;
 	private $m_packageName;
 	
-	const TYPE_ACTIVITY = 1;
+	const TYPE_ACTIVITY = 3; // 动作类型，1打开activity或app本身，2打开浏览器，3打开Intent
 	const TYPE_URL = 2;
 	const TYPE_INTENT = 3;
 }
