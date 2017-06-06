@@ -13,7 +13,7 @@ class XingeApp {
 	const DEVICE_IOS = 4;
 	const DEVICE_WINPHONE = 5;
 	
-	const IOSENV_PROD = 1;
+	const IOSENV_PROD = 2;//向iOS设备推送时必填，1表示推送生产环境；2表示推送开发环境。推送Android平台不填或填0
 	const IOSENV_DEV = 2;
 
 	const IOS_MIN_ID = 2200000000;
