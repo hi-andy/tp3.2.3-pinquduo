@@ -613,7 +613,7 @@ class IndexController extends BaseController {
             foreach ($data['items'] as &$v) {
                 $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }
-            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
+            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);
         } else {
