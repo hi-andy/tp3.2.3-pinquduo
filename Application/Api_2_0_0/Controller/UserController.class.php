@@ -1694,22 +1694,24 @@ class UserController extends BaseController {
 
     public function fallback($orders)
     {
-        //商品销量减去订单中的数量
-        M('goods')->where('`goods_id`='.$orders['goods_id'])->setDec('sales',$orders['num']);
-        //门店总销量减去订单中的数量
-        M('merchant')->where('`id`='.$orders['store_id'])->setDec('sales',$orders['num']);
-        //规格库存回复到原来的样子
-        $spec_name = M('order_goods')->where('`order_id`='.$orders['order_id'])->field('spec_key')->find();
-        M('spec_goods_price')->where('`goods_id`='.$orders['goods_id']." and `key`='".$spec_name['spec_key']."'")->setInc('store_count',$orders['num']);
-        //优惠卷回到原来的数量
-        if($orders['coupon_id']!=0)
-        {
-            M('coupon')->where('`id`='.$orders['coupon_id'])->setDec('use_num');
-            //把优惠卷还给用户
-            $data['use_time'] = 0;
-            $data['is_use'] = 0;
-            $data['order_id'] = 0;
-            M('coupon_list')->where('`id`='.$orders['coupon_list_id'])->data($data)->save();
+        $group_buy = M('group_buy')->where("order_id={$orders['order_id']}")->field('is_raise')->find();
+        if($group_buy['is_raise'] != 1) {
+            //商品销量减去订单中的数量
+            M('goods')->where('`goods_id`=' . $orders['goods_id'])->setDec('sales', $orders['num']);
+            //门店总销量减去订单中的数量
+            M('merchant')->where('`id`=' . $orders['store_id'])->setDec('sales', $orders['num']);
+            //规格库存回复到原来的样子
+            $spec_name = M('order_goods')->where('`order_id`=' . $orders['order_id'])->field('spec_key')->find();
+            M('spec_goods_price')->where('`goods_id`=' . $orders['goods_id'] . " and `key`='" . $spec_name['spec_key'] . "'")->setInc('store_count', $orders['num']);
+            //优惠卷回到原来的数量
+            if ($orders['coupon_id'] != 0) {
+                M('coupon')->where('`id`=' . $orders['coupon_id'])->setDec('use_num');
+                //把优惠卷还给用户
+                $data['use_time'] = 0;
+                $data['is_use'] = 0;
+                $data['order_id'] = 0;
+                M('coupon_list')->where('`id`=' . $orders['coupon_list_id'])->data($data)->save();
+            }
         }
     }
 

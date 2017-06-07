@@ -330,8 +330,8 @@ EOF;
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
                     if(($nums)==$group_info['goods_num'])
                     {
-                        $Goods = new GoodsController();
-                        $Goods->getFree($group_info['mark']);
+                        $Goods = new BaseController();
+                        $Goods->getFree($group_info['mark'],$order);
                         $log_->log_result($log_name,"【getFree】:\n".$group_info['mark']."\n");
                         M()->commit();
                     }
