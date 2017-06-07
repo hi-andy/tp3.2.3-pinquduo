@@ -874,7 +874,7 @@ class GoodsController extends BaseController {
                 $ids .= $k.',';
             }
             $ids = substr($ids, 0, -1);
-            $where = "`id` in(`{$ids}`) and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+            $where = "`goods_id` in({$ids}) and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
             $data = $this->getGoodsList($where, $page, $pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
         } else {
