@@ -858,27 +858,34 @@ class GoodsController extends BaseController {
 
 	//商品特殊类型 1-海淘，2-限时秒杀，3-一元夺宝，4-99专场，5-多人拼团
 	//搜索
-    function getsearch($new='')
+    function getsearch($terminal='')
     {
         $key = I('key');
-        if($new) {
-            vendor('sphinx.sphinxapi');
-            $sc = new \SphinxClient(); // 实例化Api
-            $sc->setServer('39.108.12.198', 9312); // 设置服务端，第一个参数sphinx服务器地址，第二个sphinx监听端口
-            $res = $sc->query($key, 'test1'); // 执行查询，第一个参数查询的关键字，第二个查询的索引名称，mysql索引名称（这个也是在配置文件中定义的），多个索引名称以,分开，也可以用*表示所有索引。
-            print_r($res);
-            exit;
-        }
         $page = I('page',1);
         $pagesize = I('pagesize',50);
         $rdsname = "getsearch".$key.$page.$pagesize;
-        if (empty(redis($rdsname))) {//判断是否有缓存
-            $where = "`goods_name` like '%{$key}%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
-            $data = $this->getGoodsList($where,$page,$pagesize);
+        if($terminal=="i") {
+            vendor('sphinx.sphinxapi');
+            $sc = new \SphinxClient(); // 实例化Api
+            $sc->setServer('39.108.12.198', 9312); // 设置服务端，第一个参数sphinx服务器地址，第二个sphinx监听端口
+            $res = (array) $sc->query($key, 'test1'); // 执行查询，第一个参数查询的关键字，第二个查询的索引名称，mysql索引名称（这个也是在配置文件中定义的），多个索引名称以,分开，也可以用*表示所有索引。
+            $ids = '';
+            foreach ($res['matches'] as $k => $v){
+                $ids .= $k.',';
+            }
+            $ids = substr($ids, 0, -1);
+            $where = "`id` in(`{$ids}`) and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+            $data = $this->getGoodsList($where, $page, $pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
-            $json = unserialize(redis($rdsname));//读出缓存
+            if (empty(redis($rdsname))) {//判断是否有缓存
+                $where = "`goods_name` like '%{$key}%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+                $data = $this->getGoodsList($where, $page, $pagesize);
+                $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+                redis($rdsname, serialize($json), REDISTIME);//写入缓存
+            } else {
+                $json = unserialize(redis($rdsname));//读出缓存
+            }
         }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
