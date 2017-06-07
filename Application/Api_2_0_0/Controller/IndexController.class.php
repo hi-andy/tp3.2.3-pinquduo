@@ -118,7 +118,7 @@ class IndexController extends BaseController {
                     $directory2 ['cat2'][$i]['cat3'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = ' . $directory2['cat2'][$i]['id'])->field('id,name')->select();
                     array_unshift($directory2['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
-                $where = '`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ';
+                $where = '`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 and haitao_cat != 65 ';
                 $order = 'is_recommend desc,sort asc';
                 $data = $this->getGoodsList($where,$page,$pagesize,$order);
             }else{
@@ -129,8 +129,8 @@ class IndexController extends BaseController {
                     $v['logo'] = TransformationImgurl($v['logo']);
                 }
 
-                $total = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ')->count();
-                $goods = M('goods', '', 'DB_CONFIG2')->where(array('is_special' => 1, 'is_show' => 1, 'is_audit' => 1, 'is_on_sale' => 1, 'shpw_type' => 0))->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+                $total = M('goods', '', 'DB_CONFIG2')->where('`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 and haitao_cat != 65')->count();
+                $goods = M('goods', '', 'DB_CONFIG2')->where('is_special = 1 and is_show= 1 and is_audit= 1 and is_on_sale = 1 and  shpw_type = 0 and category_id != 65')->field('goods_id,goods_name,original_img,shop_price,market_price,prom,prom_price,free')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
                 foreach ($goods as &$v) {
                     $v['original'] = TransformationImgurl($v['original_img']);
                     $v['original_img'] = goods_thum_images($v['goods_id'], 400, 400);
