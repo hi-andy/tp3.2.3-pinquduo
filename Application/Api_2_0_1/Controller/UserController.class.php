@@ -1743,7 +1743,7 @@ class UserController extends BaseController {
         $orderLogic = new OrderLogic();
         $num = count($order);
         for($i=0;$i<$num;$i++) {
-            $custom = array('type' => '2','id'=>$order[$i]['order_id']);
+            $custom = array('type' => '3','id'=>$order[$i]['order_id']);
             $user_id = $order[$i]['user_id'];
             SendXinge('抱歉您的拼团未成功，请重新开团',"$user_id",$custom);
             if ($order[$i]['pay_code'] == 'weixin') {

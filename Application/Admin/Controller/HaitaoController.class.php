@@ -179,7 +179,7 @@ class HaitaoController extends BaseController{
 					'data'  => $Goods->getError(),
 				);
 				$this->ajaxReturn(json_encode($return_arr));
-			}else {
+			} else {
 				//  form表单提交
 				// C('TOKEN_ON',true);
 				$Goods->on_time = time(); // 上架时间
