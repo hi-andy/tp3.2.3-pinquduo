@@ -121,7 +121,7 @@ class IndexController extends BaseController {
                     $directory2 ['cat2'][$i]['cat3'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = ' . $directory2['cat2'][$i]['id'])->field('id,name')->select();
                     array_unshift($directory2['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
-                $where = '`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 ';
+                $where = '`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 and haitao_cat != 65 ';
                 $order = 'is_recommend desc,sort asc';
                 $data = $this->getGoodsList($where,$page,$pagesize,$order);
 

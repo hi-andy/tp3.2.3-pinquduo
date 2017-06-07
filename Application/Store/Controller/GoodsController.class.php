@@ -736,7 +736,6 @@ class GoodsController extends BaseController {
         }
         $_POST['haitao_cat'] = $_POST['cat_id'];
         $_POST['category_id'] = $_POST['cat_id_2'];
-//        unset($_POST['cat_id']);unset($_POST['cat_id_2']);
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
         //ajax提交验证
         if(($_GET['is_ajax'] == 1) && IS_POST)

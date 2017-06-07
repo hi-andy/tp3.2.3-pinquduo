@@ -71,8 +71,7 @@ class SpecModel extends Model {
                 }
             }
             $all = array_merge($all);
-            for($k=0;$k<count($all);$k++)
-            {
+            for($k=0;$k<count($all);$k++){
                 $model->where('id = '.$all[$k]['id'])->save(array('is_show'=>0));
             }
         }elseif($all_num==$new_num)
@@ -86,8 +85,7 @@ class SpecModel extends Model {
                 }
             }
             $post_items = array_merge($post_items);
-            for($k=0;$k<count($post_items);$k++)
-            {
+            for($k=0;$k<count($post_items);$k++){
                 $model->add(array('spec_id'=>$id,'item'=>$post_items[$k]));
             }
         }elseif($all_num<$new_num)
@@ -101,8 +99,7 @@ class SpecModel extends Model {
                 }
             }
             $post_items = array_merge($post_items);
-            for($k=0;$k<count($post_items);$k++)
-            {
+            for($k=0;$k<count($post_items);$k++){
                 $model->add(array('spec_id'=>$id,'item'=>$post_items[$k]));
             }
         }

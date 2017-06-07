@@ -477,16 +477,6 @@ class HaitaoLogic extends RelationModel
         $parent_id = $cat_list[$cat_id]['parent_id'];
         if($parent_id > 0)
              $cat_level_arr[$cat_list[$parent_id]['level']] = $parent_id;
-//        // 找出他爷爷
-//        $grandpa_id = $cat_list[$parent_id]['parent_id'];
-//        if($grandpa_id > 0)
-//             $cat_level_arr[$cat_list[$grandpa_id]['level']] = $grandpa_id;
-        
-//        // 建议最多分 3级, 不要继续往下分太多级
-//        // 找出他祖父
-//        $grandfather_id = $cat_list[$grandpa_id]['parent_id'];
-//        if($grandfather_id > 0)
-//             $cat_level_arr[$cat_list[$grandfather_id]['level']] = $grandfather_id;
         
         return $cat_level_arr;      
     }

@@ -2050,7 +2050,7 @@ class UserController extends BaseController {
         }else{
             $res = $this->getStatus($order_info);
             $order_info['annotation'] = $res['annotation'];
-            $order_info['key_name'] = $spec_info['pec_key_name'];
+            $order_info['key_name'] = $spec_info['key_name'];
             $is_oneself = 0;
         }
         $is_self = $is_oneself;
