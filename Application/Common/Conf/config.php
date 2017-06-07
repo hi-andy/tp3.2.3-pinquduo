@@ -9,6 +9,7 @@ define("REDISPASS", "Wang1314");
 define("REDISTIME", 120);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
+define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 return array(
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
@@ -113,7 +114,7 @@ return array(
 		1 => '海淘商品',
 		2 => '限时秒杀',
 		4 => '9.9专场',
-		5 => '优惠组合',
+		5 => '多人拼',
 		6 => '免单拼',
 		7 => '0.1秒杀',
 		8 => '为我拼',
@@ -268,7 +269,7 @@ return array(
         'notify_url' => "http://pinquduo.cn/alipay.trade.wap.pay-PHP-UTF-8/notify_url.php",
 
         //同步跳转
-        'return_url' => "http://pinquduo.cn/Store/Alipayapi/returnurl",
+        'return_url' => "http://mitsein.com/alipay.trade.wap.pay-PHP-UTF-8/return_url.php",
 
         //编码格式
         'charset' => "UTF-8",

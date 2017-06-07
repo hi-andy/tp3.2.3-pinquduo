@@ -863,18 +863,17 @@ class GoodsController extends BaseController {
         $key = I('key');
         $page = I('page',1);
         $pagesize = I('pagesize',50);
+        $key = str_replace(' ', '', $key);
         $rdsname = "getsearch".$key.$page.$pagesize;
         if($terminal=="i") {
-            vendor('sphinx.sphinxapi');
-            $sc = new \SphinxClient(); // 实例化Api
-            $sc->setServer('39.108.12.198', 9312); // 设置服务端，第一个参数sphinx服务器地址，第二个sphinx监听端口
-            $res = (array) $sc->query($key, 'test1'); // 执行查询，第一个参数查询的关键字，第二个查询的索引名称，mysql索引名称（这个也是在配置文件中定义的），多个索引名称以,分开，也可以用*表示所有索引。
-            $ids = '';
-            foreach ($res['matches'] as $k => $v){
-                $ids .= $k.',';
+            $res = (array) json_decode(file_get_contents(SCWS.'/?key='.$key));
+            $keys = '(';
+            foreach ($res as $v){
+                $keys .= "goods_name like '%{$v->word}%' and ";
             }
-            $ids = substr($ids, 0, -1);
-            $where = "`goods_id` in({$ids}) and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+            $keys = substr($keys, 0, -4);
+            $keys .= ')';
+            $where = $keys . " and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
             $data = $this->getGoodsList($where, $page, $pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
         } else {
