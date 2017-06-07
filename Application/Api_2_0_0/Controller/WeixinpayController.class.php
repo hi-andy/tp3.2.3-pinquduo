@@ -87,11 +87,11 @@ class WeixinpayController extends BaseController {
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
             $type = $prom_info['mark']>0?1:0;
-            $go_url ='http://wx.pinquduo.cn/pinquduowx-test/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
         }else{
-            $go_url ='http://wx.pinquduo.cn/pinquduowx-test/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];
+            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];
         }
-        $back_url = "http://wx.pinquduo.cn/pinquduowx-test/goods_detail.html?goods_id={$order['goods_id']}";
+        $back_url = "http://wx.pinquduo.cn/goods_detail.html?goods_id={$order['goods_id']}";
 
         //①、获取用户openid
         $tools = new \JsApiPay();
@@ -107,7 +107,7 @@ class WeixinpayController extends BaseController {
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + $time_expire));
         $input->SetGoods_tag("tp_wx_pay");
-        $input->SetNotify_url(C('HTTP_URL').'/Api/Weixinpay/js_endpay');
+        $input->SetNotify_url(C('HTTP_URL').'/Api_2_0_0/Weixinpay/js_endpay');
         if($_REQUEST['is_mobile_browser']==1){
             $input->SetTrade_type("MWEB");
             $input->SetSpbill_create_ip($this->get_real_ip());
