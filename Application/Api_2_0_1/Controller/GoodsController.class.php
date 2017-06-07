@@ -864,7 +864,7 @@ class GoodsController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',50);
         $rdsname = "getsearch".$key.$page.$pagesize;
-        if($terminal=="i") {
+        if (empty(redis($rdsname))) {//判断是否有缓存
             $res = (array) json_decode(file_get_contents(SCWS.'/?key='.$key));
             $keys = '(';
             foreach ($res as $v){
@@ -875,15 +875,9 @@ class GoodsController extends BaseController {
             $where = $keys . " and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
             $data = $this->getGoodsList($where, $page, $pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
-            if (empty(redis($rdsname))) {//判断是否有缓存
-                $where = "`goods_name` like '%{$key}%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
-                $data = $this->getGoodsList($where, $page, $pagesize);
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
-                redis($rdsname, serialize($json), REDISTIME);//写入缓存
-            } else {
-                $json = unserialize(redis($rdsname));//读出缓存
-            }
+            $json = unserialize(redis($rdsname));//读出缓存
         }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))
