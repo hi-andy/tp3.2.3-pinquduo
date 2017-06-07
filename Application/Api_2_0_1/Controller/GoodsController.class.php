@@ -862,7 +862,7 @@ class GoodsController extends BaseController {
     {
         $key = I('key');
         $page = I('page',1);
-        $pagesize = I('pagesize',50)
+        $pagesize = I('pagesize',50);
         $rdsname = "getsearch".$key.$page.$pagesize;
         if($terminal=="i") {
             $res = (array) json_decode(file_get_contents(SCWS.'/?key='.$key));
