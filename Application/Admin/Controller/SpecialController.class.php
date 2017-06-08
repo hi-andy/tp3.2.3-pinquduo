@@ -55,7 +55,7 @@ class SpecialController extends BaseController
         // 点击过来编辑时
         $id = $_GET['id'] ? $_GET['id'] : 0;
         $spec = $model->find($id);
-        $GoodsLogic = new GoodsLogic();
+        $GoodsLogic = new \Admin\Logic\GoodsLogic();
         $items = $GoodsLogic->getSpecItem($id);
         $spec[items] = implode(PHP_EOL, $items);
         $this->assign('spec',$spec);
@@ -67,73 +67,10 @@ class SpecialController extends BaseController
     }
 
     /**
-     * 商品规格列表
-     */
-    public function specList(){
-        $condition['store_id'] = $_SESSION['merchant_id'];
-        $goodsTypeList = M("GoodsType")->where($condition)->select();
-
-        $this->assign('goodsTypeList',$goodsTypeList);
-        $this->display();
-    }
-    /**
-     *  ajax 返回商品规格列表
-     */
-    public function ajaxSpecList(){
-        //ob_start('ob_gzhandler'); // 页面压缩输出
-        $where = ' is_show=1 '; // 搜索条件
-        I('type_id')   && $where .= " and type_id = ".I('type_id') ;
-        // 关键词搜索
-        $model = D('spec');
-
-        $where .= 'and store_id='.$_SESSION['merchant_id'];
-        $count = $model->where($where)->count();
-        $Page = new AjaxPage($count,100);
-        $show = $Page->show();
-        $specList = $model->where($where)->order('`type_id` desc')->limit($Page->firstRow.','.$Page->listRows)->select();
-        $GoodsLogic = new GoodsLogic();
-        foreach ($specList as $k => $v) {       // 获取规格项
-            $arr = $GoodsLogic->getSpecItem($v['id']);
-            $specList[$k]['spec_item'] = implode(' , ', $arr);
-        }
-
-        $this->assign('specList',$specList);
-        $this->assign('page',$show);// 赋值分页输出
-        $goodsTypeList = M("GoodsType")->where(array('store_id'=>$_SESSION['merchant_id']))->select(); // 规格分类
-        $goodsTypeList = convert_arr_key($goodsTypeList, 'id');
-
-        $this->assign('goodsTypeList',$goodsTypeList);
-        $this->display();
-    }
-
-    /**
-     * 删除商品规格
-     */
-    public function delSpecial()
-    {
-        // 判断 商品规格项
-        $id = I('id');
-        $store_id = $_SESSION['merchant_id'];
-        $count = M("SpecItem")->where("spec_id = $id and is_show = 1")->count("1");
-        if ($count > 0 ) {
-            //$this->error('清空规格项后才可以删除!',U('Store/Goods/specList'));
-            $data[is_show] = 0;
-            M('Spec')->where("id = $id AND store_id = $store_id")->save($data);
-            M('SpecItem')->where('spec_id = '.$id)->save($data);
-        } else {
-            //删除分类 将它下面的所有规格删除
-            $id = M('spec')->where("id = $id AND store_id = $store_id")->find();
-            M('SpecItem')->where('spec_id = '.$id['id'])->delete();
-            M('spec')->where("id = ".$id['id'])->delete();
-        }
-        $this->success("操作成功!!!",U('Store/Special/specList'));
-    }
-
-    /**
      * 获取商品规格 的筛选规格 复选框
      */
     public function ajaxGetSpecList(){
-        $GoodsLogic = new GoodsLogic();
+        $GoodsLogic = new \Admin\Logic\GoodsLogic();
         $_REQUEST['category_id'] = $_REQUEST['category_id'] ? $_REQUEST['category_id'] : 0;
         $filter_spec = M('GoodsCategory')->where("id = ".$_REQUEST['category_id'])->getField('filter_spec');
         $filter_spec_arr = explode(',',$filter_spec);

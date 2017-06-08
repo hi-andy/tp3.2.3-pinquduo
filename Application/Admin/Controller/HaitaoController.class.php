@@ -199,7 +199,6 @@ class HaitaoController extends BaseController{
 
 				if ($type == 2){
 					$goods_id = $_POST['goods_id'];
-					redislist("goods_refresh_id", $goods_id);
 					$goods = M('goods')->where("goods_id = $goods_id")->find();
 					if($_POST['original_img']!=$goods['original_img']){
 						$link =  C('DATA_URL').goods_thum_images($_POST['goods_id'],400,400);
@@ -209,7 +208,6 @@ class HaitaoController extends BaseController{
 					}
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
-					redislist("goods_refresh_id", $goods_id);
 				}
 				else
 				{
