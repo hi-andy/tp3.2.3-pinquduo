@@ -208,6 +208,7 @@ class HaitaoController extends BaseController{
 					}
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
+					redislist("goods_refresh_id", $goods_id);
 				}
 				else
 				{
