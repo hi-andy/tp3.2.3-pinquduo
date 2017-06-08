@@ -281,9 +281,10 @@
                         <div class="pull-right">
                             <input type="hidden" name="is_special" value="1">
                             <input type="hidden" name="goods_id" value="{$goodsInfo.goods_id}">
-                            <input type="hidden" name="store_id" value="{$_SESSION[merchant_id]}">
+                            <input type="hidden" name="store_id" value="{$goodsInfo.store_id}">
                             <input type="hidden" name="haitao_cat" value="{$goodsInfo.haitao_cat}">
                             <input type="hidden" name="category_id" value="{$goodsInfo.category_id}" >
+                            <input type="hidden" name="goods_id" value="{$goodsInfo.goods_id}" >
                             <if condition="$goodsInfo.is_audit eq 2">
                                 <input type="hidden" name="is_audit" value="0" >
                             </if>
@@ -355,7 +356,7 @@
     {
         $.ajax({
             type:'GET',
-            url:"{:U('Store/Uploadify/delupload')}",
+            url:"{:U('Admin/Uploadify/delupload')}",
             data:{action:"del", filename:path,goods_id:goods_id},
             success:function(){
                 $(obj).parent().remove(); // 删除完服务器的, 再删除 html上的图片
@@ -388,7 +389,7 @@
             $.ajax({
                 type:'GET',
                 data:{goods_id:goods_id,spec_type:spec_type},
-                url:"{:U('Store/Special/ajaxGetSpecSelect')}",
+                url:"{:U('Admin/Special/ajaxGetSpecSelect')}",
                 success:function(data){
                     $("#ajax_spec_data").html('')
                     $("#ajax_spec_data").append(data);
