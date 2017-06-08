@@ -162,16 +162,24 @@ class HaitaoController extends BaseController{
 				$html .= "<option value='{$v['id']}'>{$v['name']}</option>";
 			exit($html);
 		}
-		$HaitaoLogic = new HaitaoLogic();
 		$Goods = D('Goods'); //
+		if(!empty($_POST['reason'])){
+			$res = M('goods')->where('goods_id = '.$_POST['goods_id'])->save(array('reason'=>$_POST['reason']));
+			if($res)// 根据表单提交的POST数据创建数据对象
+			{
+				$return_arr = array(
+					'status' => 1,
+					'msg'   => '操作成功',
+				);
+				$this->ajaxReturn(json_encode($return_arr));
+			}
+		}
+		$HaitaoLogic = new HaitaoLogic();
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
 		//ajax提交验证
-		$_POST['haitao_cat'] = $_POST['cat_id'];
-		$_POST['category_id'] = $_POST['cat_id_2'];
 		if(($_GET['is_ajax'] == 1) && IS_POST){
 			C('TOKEN_ON',false);
-			if(!$Goods->create(NULL,$type))// 根据表单提交的POST数据创建数据对象
-			{
+			if(!$Goods->create(NULL,$type)){// 根据表单提交的POST数据创建数据对象
 				//  编辑
 				$return_arr = array(
 					'status' => -1,
@@ -212,9 +220,9 @@ class HaitaoController extends BaseController{
 				);
 				if(I('is_special')==1)
 				{
-					$return_arr['data']=array('url'=>U('Admin/goods/goodsList'));
-				}else{
 					$return_arr['data']=array('url'=>U('Admin/Haitao/goodsList'));
+				}else{
+					$return_arr['data']=array('url'=>U('Admin/goods/goodsList'));
 				}
 				$this->ajaxReturn(json_encode($return_arr));
 			}
