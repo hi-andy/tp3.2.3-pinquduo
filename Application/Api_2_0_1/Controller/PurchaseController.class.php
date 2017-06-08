@@ -30,7 +30,7 @@ class PurchaseController extends  BaseController
         header("Access-Control-Allow-Origin:*");
         $user_id = I('user_id');
         $prom_id =I('prom_id');
-        $address_id = I('address_id');
+        $address_id = I('address_id',0);
         $goods_id = I('goods_id');
         $num = I('num',1);
         $free = I('free',0);
