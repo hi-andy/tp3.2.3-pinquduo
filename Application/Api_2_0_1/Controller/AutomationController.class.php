@@ -220,7 +220,7 @@ class AutomationController extends BaseController
         $conditon = null;
         $time = time() + 16 * 60 * 60;
         $prom_order = M('group_buy')
-            ->where('`user_id`=9222 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+            ->where('`user_id`=9222 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
             ->limit(0,50)
             ->select();
         if (count($prom_order) > 0) {
@@ -256,7 +256,7 @@ class AutomationController extends BaseController
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
             if (!empty($ids)) M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
-            if (!empty($order_ids)) M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>2, "shipping_status"=>1, "pay_status"=>1, "order_type"=>4));
+            if (!empty($order_ids)) M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>11, "shipping_status"=>0, "pay_status"=>1, "order_type"=>14));
         }
     }
 }
