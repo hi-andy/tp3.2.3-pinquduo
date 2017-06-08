@@ -529,25 +529,25 @@ class GoodsController extends BaseController {
 	/*
 	 * type:  0、参团、1、开团、2、单买
 	 */
-		function getOrder()
-			{
-			header("Access-Control-Allow-Origin:*");
-				$user_id = I('user_id');
-				$goods_id = I('goods_id');
-				$store_id = I('store_id');
-				$num = I('num',1);
-				$type = I('type');
-				$spec_key = I('spec_key');
-				$order_id = I('order_id');
+    function getOrder()
+        {
+        header("Access-Control-Allow-Origin:*");
+            $user_id = I('user_id');
+            $goods_id = I('goods_id');
+            $store_id = I('store_id');
+            $num = I('num',1);
+            $type = I('type');
+            $spec_key = I('spec_key');
+            $order_id = I('order_id');
 
-				$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
-				if(empty($user_address)){
-				$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
-			}
-			//库存
-			$store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
+            $user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
+            if(empty($user_address)){
+            $user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
+        }
+        //库存
+        $store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
 
-			$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
+        $goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
 		$goods['original_img'] = C('HTTP_URL').goods_thum_images($goods['goods_id'],400,400);
 		$goods['store'] = M('merchant')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
 		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
@@ -1222,6 +1222,7 @@ class GoodsController extends BaseController {
 		{
 			$price = $goods['prom_price']*$num;
 			$order_info = M('group_buy')->where(' id = '.$prom_id)->find();
+            if ($order_info['is_raise']==1) $user_address = null;
 		}
 		elseif($type==1){
 			$price = $goods_spec['prom_price']*$num;
