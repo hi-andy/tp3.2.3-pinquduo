@@ -674,7 +674,7 @@ class GoodsController extends BaseController {
 		$countries['img'] = TransformationImgurl($countries['img']);
 
 		if($version=='2.0.0'){
-			$where ='`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and category_id!=65 `countries_type` = '.$id;
+			$where ='`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and category_id!=65 and `countries_type` = '.$id;
 			$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
 		}else{
 			$count = M('goods', '', 'DB_CONFIG2')->where('`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id)->count();
@@ -695,19 +695,19 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
-//	//海淘中间分类
-//	function getCategory()
-//	{
-//		$id = I('id');
-//		$category = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$id)->field('id,name')->select();
-//
-//		array_unshift($category,array('id'=>'0','name'=>'全部'));
-//		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-//		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('category'=>$category));
-//		if(!empty($ajax_get))
-//			$this->getJsonp($json);
-//		exit(json_encode($json));
-//	}
+	//海淘中间分类
+	function getCategory()
+	{
+		$id = I('id');
+		$category = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$id)->field('id,name')->select();
+
+		array_unshift($category,array('id'=>'0','name'=>'全部'));
+		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('category'=>$category));
+		if(!empty($ajax_get))
+			$this->getJsonp($json);
+		exit(json_encode($json));
+	}
 
 	//海淘获取中间分类信息
 	function getCategoryData()
