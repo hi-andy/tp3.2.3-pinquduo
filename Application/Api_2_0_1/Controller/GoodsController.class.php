@@ -1222,7 +1222,6 @@ class GoodsController extends BaseController {
 		{
 			$price = $goods['prom_price']*$num;
 			$order_info = M('group_buy')->where(' id = '.$prom_id)->find();
-            if ($order_info['is_raise']==1) $user_address = null;
 		}
 		elseif($type==1){
 			$price = $goods_spec['prom_price']*$num;
