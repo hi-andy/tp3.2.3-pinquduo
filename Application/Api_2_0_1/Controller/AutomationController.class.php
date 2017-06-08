@@ -214,6 +214,7 @@ class AutomationController extends BaseController
         if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
     }
 
+    //八小时自动成团
     public function auto_group_buy (){
         $where = null;
         $conditon = null;
@@ -252,7 +253,7 @@ class AutomationController extends BaseController
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
             M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
-            M("order")->where("order_id in({$order_ids})")->save(array("is_successful"=>1));
+            M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>2, "shipping_status"=>1, "pay_status"=>1));
         }
     }
 }
