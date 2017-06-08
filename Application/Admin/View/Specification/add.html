@@ -1,0 +1,37 @@
+<include file="Public/min-header"/>  
+<!--公共js 代码 --><script src="__PUBLIC__/js/common.js" charset="utf-8" type="text/javascript"></script><!--公共js end代码 -->
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+		<section class="content">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">增加规格</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <form action="{:U('Specification/save')}" method="post" class="form-horizontal" id="category_form">
+                        <div class="box-body">                         
+                            <div class="form-group">
+                                 <label class="col-sm-2 control-label">规格名称</label>
+                                 <div class="col-sm-6">
+                                    <input type="text" placeholder="名称" class="form-control large" name="name">
+                                    <span class="help-inline" style="color:#F00; display:none;" id="err_name"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">                        	
+                            <button type="submit" class="btn btn-primary pull-right"><i class="icon-ok"></i>提交  </button>
+                        </div> 
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+</div>
+<script>
+ 
+</script>
+   
+</body>
+</html>
