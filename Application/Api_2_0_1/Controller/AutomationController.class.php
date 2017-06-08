@@ -221,7 +221,6 @@ class AutomationController extends BaseController
         $time = time() + 16 * 60 * 60;
         $prom_order = M('group_buy')
             ->where('`user_id`=9222 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
-            ->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')
             ->limit(0,50)
             ->select();
         if (count($prom_order) > 0) {
@@ -240,6 +239,7 @@ class AutomationController extends BaseController
                 $values = substr($values, 0, -1);
                 if ($values) {
                     $sql .= $values;
+                    print_r($sql);
                     M()->query($sql);
                 }
                 foreach ($group_buy_mark as $value) {
@@ -252,8 +252,8 @@ class AutomationController extends BaseController
 
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
-            M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
-            M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>2, "shipping_status"=>1, "pay_status"=>1));
+            if (!empty($ids)) M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
+            if (!empty($order_ids)) M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>2, "shipping_status"=>1, "pay_status"=>1));
         }
     }
 }
