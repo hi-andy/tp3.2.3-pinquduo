@@ -529,25 +529,25 @@ class GoodsController extends BaseController {
 	/*
 	 * type:  0、参团、1、开团、2、单买
 	 */
-		function getOrder()
-			{
-			header("Access-Control-Allow-Origin:*");
-				$user_id = I('user_id');
-				$goods_id = I('goods_id');
-				$store_id = I('store_id');
-				$num = I('num',1);
-				$type = I('type');
-				$spec_key = I('spec_key');
-				$order_id = I('order_id');
+    function getOrder()
+        {
+        header("Access-Control-Allow-Origin:*");
+            $user_id = I('user_id');
+            $goods_id = I('goods_id');
+            $store_id = I('store_id');
+            $num = I('num',1);
+            $type = I('type');
+            $spec_key = I('spec_key');
+            $order_id = I('order_id');
 
-				$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
-				if(empty($user_address)){
-				$user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
-			}
-			//库存
-			$store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
+            $user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
+            if(empty($user_address)){
+            $user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
+        }
+        //库存
+        $store_count =  M('goods')->where("`goods_id` = $goods_id")->field('store_count')->find();
 
-			$goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
+        $goods = M('goods')->where("`goods_id` = $goods_id")->field('goods_id,goods_name,shop_price,original_img,prom_price,the_raise,prom')->find();
 		$goods['original_img'] = C('HTTP_URL').goods_thum_images($goods['goods_id'],400,400);
 		$goods['store'] = M('merchant')->where("`id` = $store_id")->field('id,store_name,store_logo')->find();
 		$goods['store']['store_logo'] = C('HTTP_URL').$goods['store']['store_logo'];
@@ -864,28 +864,20 @@ class GoodsController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',50);
         $rdsname = "getsearch".$key.$page.$pagesize;
-        if($terminal=="i") {
-            vendor('sphinx.sphinxapi');
-            $sc = new \SphinxClient(); // 实例化Api
-            $sc->setServer('39.108.12.198', 9312); // 设置服务端，第一个参数sphinx服务器地址，第二个sphinx监听端口
-            $res = (array) $sc->query($key, 'test1'); // 执行查询，第一个参数查询的关键字，第二个查询的索引名称，mysql索引名称（这个也是在配置文件中定义的），多个索引名称以,分开，也可以用*表示所有索引。
-            $ids = '';
-            foreach ($res['matches'] as $k => $v){
-                $ids .= $k.',';
+        if (empty(redis($rdsname))) {//判断是否有缓存
+            $res = (array) json_decode(file_get_contents(SCWS.'/?key='.$key));
+            $keys = '(';
+            foreach ($res as $v){
+                $keys .= "goods_name like '%{$v->word}%' and ";
             }
-            $ids = substr($ids, 0, -1);
-            $where = "`id` in(`{$ids}`) and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+            $keys = substr($keys, 0, -4);
+            $keys .= ')';
+            $where = $keys . " and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
             $data = $this->getGoodsList($where, $page, $pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
-            if (empty(redis($rdsname))) {//判断是否有缓存
-                $where = "`goods_name` like '%{$key}%' and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
-                $data = $this->getGoodsList($where, $page, $pagesize);
-                $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
-                redis($rdsname, serialize($json), REDISTIME);//写入缓存
-            } else {
-                $json = unserialize(redis($rdsname));//读出缓存
-            }
+            $json = unserialize(redis($rdsname));//读出缓存
         }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         if(!empty($ajax_get))

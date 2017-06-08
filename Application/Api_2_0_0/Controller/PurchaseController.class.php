@@ -56,35 +56,42 @@ class PurchaseController extends  BaseController
         if (empty(redis("getBuy_lock_".$goods_id))) {//如果无锁
             redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁
 
-        $res1 = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id ')
-            ->where("gb.`user_id`=$user_id and gb.`is_pay`=1 and gb.`goods_id`=$goods_id")
-            ->field("g.is_special,g.sales")
-            ->find();
-        if(!empty($res1) && $res1['is_special']==7){
-            $json =	array('status'=>-1,'msg'=>'您已购买过此宝贝T_T');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get)) {
-                echo "<script> alert('" . $json['msg'] . "') </script>";
-                exit;
+            $res1 = M('group_buy')->alias('gb')
+                ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id ')
+                ->where("gb.`user_id`=$user_id and gb.`is_pay`=1 and gb.`goods_id`=$goods_id")
+                ->field("g.is_special,g.sales")
+                ->find();
+            if(!empty($res1) && $res1['is_special']==7){
+                $json =	array('status'=>-1,'msg'=>'您已购买过此宝贝T_T');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get)) {
+                    echo "<script> alert('" . $json['msg'] . "') </script>";
+                    exit;
+                }
             }
-        }
-        if(!empty($spec_key)){
-            $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-        }else{
-            $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
-        if ($res1['is_special']==7 && $spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
-            $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
-            redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
+            if(!empty($spec_key)){
+                $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
+            }else{
+                $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
+            if ($res1['is_special']==7 && $spec_res['store_count']<(($res1['sales']+$spec_res['store_count'])/2)&&$type==1){
+                $json = array('status' => -1, 'msg' => '库存不足，亲只能参团哦！^_^');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
+            if ($spec_res['store_count'] < $num) {
+                $json = array('status' => -1, 'msg' => '该规格库存小于亲购买的数量');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
             //参团购物
             if ($type == 0) {
                 $result = M('group_buy')->where("`id` = $prom_id")->find();
@@ -98,7 +105,7 @@ class PurchaseController extends  BaseController
                     exit(json_encode($json));
                 }
                 if ($spec_res['store_count'] <= 0 && $result['is_raise']!=1) {
-                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    $json = array('status' => -1, 'msg' => '该规格已经被亲们抢光了');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if (!empty($ajax_get))
                         $this->getJsonp($json);
@@ -168,8 +175,8 @@ class PurchaseController extends  BaseController
                     $num2 = M('group_buy')->where('`id`=' . $prom_id . ' or `mark` = ' . $prom_id . ' and `is_pay`=1')->count();
                 }
                 $this->joinGroupBuy($parameter);
-            } else if ($type == 1)    //开团
-            {
+            } //开团
+            else if ($type == 1) {
                 if ($spec_res['store_count'] <= 0 ) {
                     $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁

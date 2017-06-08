@@ -36,7 +36,7 @@ class PurchaseController extends  BaseController
         header("Access-Control-Allow-Origin:*");
         $user_id = I('user_id');
         $prom_id =I('prom_id');
-        $address_id = I('address_id');
+        $address_id = I('address_id',0);
         $goods_id = I('goods_id');
         $num = I('num',1);
         $free = I('free',0);
@@ -91,6 +91,13 @@ class PurchaseController extends  BaseController
                     $this->getJsonp($json);
                 exit(json_encode($json));
             }
+            if ($spec_res['store_count'] < $num) {
+                $json = array('status' => -1, 'msg' => '该规格库存小于亲购买的数量');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
             //参团购物
             if ($type == 0) {
                 $result = M('group_buy')->where("`id` = $prom_id")->find();
@@ -104,7 +111,7 @@ class PurchaseController extends  BaseController
                     exit(json_encode($json));
                 }
                 if ($spec_res['store_count'] <= 0 && $result['is_raise']!=1) {
-                    $json = array('status' => -1, 'msg' => '该商品已经被亲们抢光了');
+                    $json = array('status' => -1, 'msg' => '该规格已经被亲们抢光了');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if (!empty($ajax_get))
                         $this->getJsonp($json);
