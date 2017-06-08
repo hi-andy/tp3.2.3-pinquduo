@@ -127,17 +127,13 @@ class AutomationController extends BaseController
         }
     }
 
-    //将时间到了团又没有成团的团解散(已丢弃)
-    //八小时自动成团
+    //将时间到了团又没有成团的团解散
     public function incomplete_mass_overtime() {
         $user = new UserController();
         $where = null;
         $conditon = null;
-        $time = time();
-        $prom_order = M('group_buy')
-            ->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
-            ->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')
-            ->select();
+        $time = time()-30;
+        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0,50)->select();
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -162,13 +158,13 @@ class AutomationController extends BaseController
             }
             $wheres = $user->ReturnSQL($prom_man);
             $i_d = $wheres['id'];
-//            $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
-            $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 2, 'shipping_status' => 1, 'pay_status' => 1, 'order_type' => 4))->save();
+            $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
+            $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
 
-//            if ($res && $result1) {//给未成团订单退款
-//                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
-//                $user->BackPay($pay_cod);
-//            }
+            if ($res && $result1) {//给未成团订单退款
+                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
+                $user->BackPay($pay_cod);
+            }
         }
     }
 
@@ -216,5 +212,27 @@ class AutomationController extends BaseController
                 'store_count'=>array('GT',0)))
             ->count();
         if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
+    }
+
+    public function auto_group_buy (){
+        $user = new UserController();
+        $where = null;
+        $conditon = null;
+        $time = time() + 16 * 60 * 60;
+        $prom_order = M('group_buy')
+            ->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+            ->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')
+            ->limit(0,50)
+            ->select();
+        if (count($prom_order) > 0) {
+            $sql = "INSERT INTO tp_group_buy(start_time, start_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, order_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution) VALUES";
+            foreach ($prom_order as $v){
+                $value = "";
+                for ($i=0;$i<$v['goods_num'];$i++){
+                    $user = get_robot($v['user_id']);
+                    $value .= "({$v['start_time']}),";
+                }
+            }
+        }
     }
 }

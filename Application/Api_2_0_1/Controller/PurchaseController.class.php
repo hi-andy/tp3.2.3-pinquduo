@@ -27,12 +27,6 @@ class PurchaseController extends  BaseController
 	 */
     function getBuy()
     {
-        $cod = C('alipay_config');
-        var_dump($cod);
-        $priKey = file_get_contents($cod['private_key_path']);
-        var_dump($priKey);
-        $res = openssl_pkey_get_private($priKey);
-        var_dump($res);die;
         header("Access-Control-Allow-Origin:*");
         $user_id = I('user_id');
         $prom_id =I('prom_id');
