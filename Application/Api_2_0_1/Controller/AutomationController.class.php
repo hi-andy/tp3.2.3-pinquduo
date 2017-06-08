@@ -224,6 +224,7 @@ class AutomationController extends BaseController
             ->limit(0,50)
             ->select();
         if (count($prom_order) > 0) {
+            redis("get_Free_Order_status", "1");
             $ids = "";
             $order_ids = "";
             $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, order_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution) VALUES";
@@ -245,7 +246,9 @@ class AutomationController extends BaseController
                 foreach ($group_buy_mark as $value) {
                     $ids .= $value['id'] . ",";
                     $order_ids .= $value['order_id'] . ",";
+                    $this->order_redis_status_ref($value['user_id']);
                 }
+                $this->order_redis_status_ref($v['user_id']);
                 $ids .= $v['id'] . ",";
                 $order_ids .= $v['order_id'] . ",";
             }
@@ -253,7 +256,7 @@ class AutomationController extends BaseController
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
             if (!empty($ids)) M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
-            if (!empty($order_ids)) M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>2, "shipping_status"=>1, "pay_status"=>1));
+            if (!empty($order_ids)) M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>2, "shipping_status"=>1, "pay_status"=>1, "order_type"=>4));
         }
     }
 }

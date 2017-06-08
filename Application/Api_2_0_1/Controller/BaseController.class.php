@@ -845,7 +845,7 @@ class BaseController extends Controller {
     public function get_robot($not_in_user_id='') {
         if (!empty($not_in_user_id)) {
             $user = M('','','DB_CONFIG2')->query("SELECT user_id FROM `tp_users`
-WHERE user_id <> {$not_in_user_id} AND user_id <> {$not_in_user_id} and user_id >= (SELECT floor( RAND() * ((SELECT MAX(user_id) FROM `tp_users`)-(SELECT MIN(user_id) FROM `tp_users`)) + (SELECT MIN(user_id) FROM `tp_users`))) 
+WHERE user_id <> {$not_in_user_id} AND test=1 AND user_id <> {$not_in_user_id} and user_id >= (SELECT floor( RAND() * ((SELECT MAX(user_id) FROM `tp_users`)-(SELECT MIN(user_id) FROM `tp_users`)) + (SELECT MIN(user_id) FROM `tp_users`))) 
 ORDER BY user_id LIMIT 1");
             return $user[0];
         }
