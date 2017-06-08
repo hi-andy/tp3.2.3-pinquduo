@@ -173,7 +173,6 @@ class HaitaoController extends BaseController{
 				);
 				$this->ajaxReturn(json_encode($return_arr));
 			}
-			exit();
 		}
 		$HaitaoLogic = new HaitaoLogic();
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
