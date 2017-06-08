@@ -55,32 +55,6 @@ class ReportController extends BaseController{
         //售后订单数      0 待处理
         $today['service_order'] = M('return_goods')->where($where."(status=0)")->count();
 
-		//拿到总共能体现的资金
-//		$one = M('order')->where('order_type in (4,16) and store_id='.$_SESSION['merchant_id'])->select();
-//		$reflect = null;
-//		foreach($one as $v)
-//		{
-//			$temp = 2*3600*24;
-//			$cha = time()-$v['confirm_time'];
-//			if($cha>=$temp)
-//			{
-//				$reflect = $reflect+$v['order_amount'];
-//			}
-//		}
-		//获取以前的提取记录
-//		$total = 0;
-//		$withdrawal_total = M('store_withdrawal')->where('store_id='.$_SESSION['merchant_id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
-//
-//		foreach($withdrawal_total as $v)
-//		{
-//			$total = $total+$v['withdrawal_money'];
-//		}
-//		$today['reflect'] = $reflect-$total;
-//		if(empty($today['reflect']))
-//			$today['reflect'] = 0;
-
-
-
 		$today['sign'] = M('order')->where('pay_status=1 and store_id = '.$_SESSION['merchant_id'])->sum('order_amount');//总销售额
 
 		$this->assign('today',$today);

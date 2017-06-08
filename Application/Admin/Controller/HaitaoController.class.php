@@ -163,6 +163,7 @@ class HaitaoController extends BaseController{
 			exit($html);
 		}
 		$Goods = D('Goods'); //
+
 		if(!empty($_POST['reason'])){
 			$res = M('goods')->where('goods_id = '.$_POST['goods_id'])->save(array('reason'=>$_POST['reason']));
 			if($res)// 根据表单提交的POST数据创建数据对象
@@ -175,6 +176,8 @@ class HaitaoController extends BaseController{
 			}
 		}
 		$HaitaoLogic = new HaitaoLogic();
+		 $_POST['cat_id']=0;
+		 $_POST['cat_id_2']=0;
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
 		//ajax提交验证
 		if(($_GET['is_ajax'] == 1) && IS_POST){
@@ -218,12 +221,6 @@ class HaitaoController extends BaseController{
 					'status' => 1,
 					'msg'   => '操作成功',
 				);
-				if(I('is_special')==1)
-				{
-					$return_arr['data']=array('url'=>U('Admin/Haitao/goodsList'));
-				}else{
-					$return_arr['data']=array('url'=>U('Admin/goods/goodsList'));
-				}
 				$this->ajaxReturn(json_encode($return_arr));
 			}
 		}
