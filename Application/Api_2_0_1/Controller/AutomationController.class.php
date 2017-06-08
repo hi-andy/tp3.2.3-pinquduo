@@ -215,24 +215,44 @@ class AutomationController extends BaseController
     }
 
     public function auto_group_buy (){
-        $user = new UserController();
         $where = null;
         $conditon = null;
         $time = time() + 16 * 60 * 60;
         $prom_order = M('group_buy')
-            ->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+            ->where('`user_id`=9222 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
             ->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')
             ->limit(0,50)
             ->select();
         if (count($prom_order) > 0) {
-            $sql = "INSERT INTO tp_group_buy(start_time, start_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, order_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution) VALUES";
+            $ids = "";
+            $order_ids = "";
+            $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, order_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution) VALUES";
             foreach ($prom_order as $v){
-                $value = "";
-                for ($i=0;$i<$v['goods_num'];$i++){
+                $group_buy_mark = M('group_buy')
+                    ->where(array('mark'=>array('eq',$v['id'])))
+                    ->select();
+                $values = "";
+                for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                     $user = get_robot($v['user_id']);
-                    $value .= "({$v['start_time']}),";
+                    $values .= "({$v['start_time']},{$v['end_time']},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['order_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']}),";
                 }
+                $values = substr($values, 0, -1);
+                if ($values) {
+                    $sql .= $values;
+                    M()->query($sql);
+                }
+                foreach ($group_buy_mark as $value) {
+                    $ids .= $value['id'] . ",";
+                    $order_ids .= $value['order_id'] . ",";
+                }
+                $ids .= $v['id'] . ",";
+                $order_ids .= $v['order_id'] . ",";
             }
+
+            $ids = substr($ids, 0, -1);
+            $order_ids = substr($order_ids, 0, -1);
+            M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
+            M("order")->where("order_id in({$order_ids})")->save(array("is_successful"=>1));
         }
     }
 }

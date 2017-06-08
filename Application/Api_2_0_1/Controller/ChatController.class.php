@@ -67,7 +67,7 @@ class ChatController extends BaseController
         $values = substr($values, 0, -1);
         if ($values) {
             $sql .= $values;
-            M("chat")->query($sql);
+            M()->query($sql);
         }
     }
 
