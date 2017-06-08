@@ -122,7 +122,7 @@
                                     <tr>
                                         <td>商品归属:</td>
                                         <td>
-                                            <select name="countries_type" id="countries_type" class="form-control" style="width:250px;">
+                                            <select name="countries_type" disabled="disabled" id="countries_type" class="form-control" style="width:250px;">
                                                 <option value="0">所有归属</option>
                                                 <foreach name="haitao_style" item="v" key="k" >
                                                     <option value="{$v['id']}"  <if condition="$v['id'] eq $goodsInfo['countries_type'] ">selected="selected"</if>>

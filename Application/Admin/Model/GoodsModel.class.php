@@ -15,18 +15,10 @@ class GoodsModel extends Model {
         self::MODEL_BOTH或者3全部情况下验证（默认）       
      */
     protected $_validate = array(
-        array('goods_name','require','商品名称必须填写！',1 ,'',3),         
-        //array('cat_id','require','商品分类必须填写！',1 ,'',3),        
-        array('cat_id','0','商品分类必须填写。',1,'notequal',3),
-//        array('goods_sn','require','商品货号重复！',1,'',3),
-        array('prom_price','require','团购价格必须填写！',1,'',3),
+        array('goods_name','require','商品名称必须填写！',1 ,'',3),
         array('prom','require','团购人数必须填写！',1,'',3),
         array('shop_price','/\d{1,10}(\.\d{1,2})?$/','本店售价格式不对。',2,'regex'),
-        array('prom_price','/\d{1,10}(\.\d{1,2})?$/','团购价格式不对。',2,'regex'),
-        array('prom','/\d{1,10}(\.\d{1,2})?$/','开团人数格式不对。',2,'regex'),
-        array('member_price','/\d{1,10}(\.\d{1,2})?$/','会员价格式不对。',2,'regex'),        
-        array('market_price','/\d{1,10}(\.\d{1,2})?$/','市场价格式不对。',2,'regex'), // currency
-        array('weight','/\d{1,10}(\.\d{1,2})?$/','重量格式不对。',2,'regex'),        
+        array('prom','/\d{1,10}(\.\d{1,2})?$/','开团人数格式不对。',2,'regex')
      );   
     
     
