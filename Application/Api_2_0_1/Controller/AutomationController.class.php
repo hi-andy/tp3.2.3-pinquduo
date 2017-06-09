@@ -220,40 +220,47 @@ class AutomationController extends BaseController
         $conditon = null;
         $time = time() + 16 * 60 * 60;
         $prom_order = M('group_buy')
-            ->where('`user_id`=9222 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
-            ->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')
+            ->where('`is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
             ->limit(0,50)
             ->select();
         if (count($prom_order) > 0) {
+            redis("get_Free_Order_status", "1");
+            $message = "您拼的团已满，等待商家发货中";
             $ids = "";
             $order_ids = "";
             $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, order_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution) VALUES";
             foreach ($prom_order as $v){
-                $group_buy_mark = M('group_buy')
-                    ->where(array('mark'=>array('eq',$v['id'])))
-                    ->select();
-                $values = "";
-                for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
-                    $user = get_robot($v['user_id']);
-                    $values .= "({$v['start_time']},{$v['end_time']},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['order_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']}),";
+                if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
+                    redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
+                    $group_buy_mark = M('group_buy')
+                        ->where("id = {$v['id']} or mark = {$v['id']}")
+                        ->select();
+                    $values = "";
+                    for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
+                        $user = $this->get_robot($v['user_id']);
+                        $values .= "({$v['start_time']},{$v['end_time']},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['order_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']}),";
+                    }
+                    $values = substr($values, 0, -1);
+                    if ($values) {
+                        $sql .= $values;
+                        print_r($sql);
+                        M()->query($sql);
+                    }
+                    foreach ($group_buy_mark as $value) {
+                        $ids .= $value['id'] . ",";
+                        $order_ids .= $value['order_id'] . ",";
+                        $this->order_redis_status_ref($value['user_id']);
+                        $custom = array('type' => '2','id'=>$v['id']);
+                        $user_id = $value['user_id'];
+                        SendXinge($message,"$user_id",$custom);
+                    }
+                    redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
                 }
-                $values = substr($values, 0, -1);
-                if ($values) {
-                    $sql .= $values;
-                    M()->query($sql);
-                }
-                foreach ($group_buy_mark as $value) {
-                    $ids .= $value['id'] . ",";
-                    $order_ids .= $value['order_id'] . ",";
-                }
-                $ids .= $v['id'] . ",";
-                $order_ids .= $v['order_id'] . ",";
             }
-
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
-            M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
-            M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>2, "shipping_status"=>1, "pay_status"=>1));
+            if (!empty($ids)) M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
+            if (!empty($order_ids)) M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>11, "shipping_status"=>0, "pay_status"=>1, "order_type"=>14));
         }
     }
 }
