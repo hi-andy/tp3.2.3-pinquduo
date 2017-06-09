@@ -1151,7 +1151,7 @@ class GoodsController extends BaseController {
 	//获取已经开好的团
 	function  getAvailableGroup(){
 		$goods_id = I('goods_id');
-		$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free')->order('id asc')->limit(3)->select();
+		$group_buy = M('group_buy')->where("`goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free')->order('id asc')->limit(3)->select();
 		if (!empty($group_buy)) {
 			for ($i = 0; $i < count($group_buy); $i++) {
                 if($group_buy[$i]['auto']!=1){
