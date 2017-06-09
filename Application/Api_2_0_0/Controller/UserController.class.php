@@ -1824,10 +1824,9 @@ class UserController extends BaseController {
         $user_id = I('user_id');
         $page = I('page',1);
         $pagesize = I('pagesize',10);
-        $version = I('version');
         I('invitation_num') && $invitation_num = strtolower(I('invitation_num'));//统一大小写
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-
+        $prom = M('group_buy', '', 'DB_CONFIG2')->where('id ='.$prom_id)->field('goods_num,free,auto,goods_id')->find();
         if($invitation_num){
             $order = M('order', '', 'DB_CONFIG2')->alias('o')
                 ->join('INNER JOIN tp_order_goods og on o.order_id = og.order_id ')
@@ -1836,26 +1835,38 @@ class UserController extends BaseController {
                 ->field('o.order_id,o.user_id,o.goods_id,o.invitation_num,sgp.prom_price,o.free')
                 ->find();
         }else{
-            $order = M('order', '', 'DB_CONFIG2')->alias('o')
-                ->join('INNER JOIN tp_order_goods og on o.order_id = og.order_id ')
-                ->where('o.`prom_id`='.$prom_id)
-                ->field('o.order_id,o.user_id,o.goods_id,o.invitation_num,og.spec_key,o.free')
-                ->find();
+            if($prom['auto']==0){
+                $order = M('order', '', 'DB_CONFIG2')->alias('o')
+                    ->join('INNER JOIN tp_order_goods og on o.order_id = og.order_id ')
+                    ->where('o.`prom_id`='.$prom_id)
+                    ->field('o.order_id,o.user_id,o.goods_id,o.invitation_num,og.spec_key,o.free')
+                    ->find();
+            }else{
+                $order = M('group_buy', '', 'DB_CONFIG2')
+                    ->where('`id`='.$prom_id)
+                    ->field('user_id,goods_id')
+                    ->find();
+            }
         }
-        $prom = M('group_buy', '', 'DB_CONFIG2')->where('id ='.$prom_id)->field('goods_num,free')->find();
-        $spec_price = M('spec_goods_price', '', 'DB_CONFIG2')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
-        if($order['free']>0){
-            $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
-            $c = getFloatLength($price);
-            if($c>=3){
-                $price = operationPrice($price);
+        $goodsInfo = $this->getGoodsInfo($order['goods_id'],1);
+        if($prom['auto']==0){
+            $spec_price = M('spec_goods_price', '', 'DB_CONFIG2')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
+            if($order['free']>0){
+                $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
+                $c = getFloatLength($price);
+                if($c>=3){
+                    $price = operationPrice($price);
+                }
+            }else{
+                (string)$price=(string)$spec_price;
             }
         }else{
-            (string)$price=(string)$spec_price;
+            (string)$price = $goodsInfo['prom_price'];
         }
+
         //提供保障
         $security = array(array('type'=>'全场包邮','desc'=>'所有商品均无条件包邮'),array('type'=>'7天退换','desc'=>'商家承诺7天无理由退换货'),array('type'=>'48小时发货','desc'=>'成团后，商家将在48小时内发货'),array('type'=>'假一赔十','desc'=>'若收到的商品是假货，可获得加倍赔偿'));
-        $goodsInfo = $this->getGoodsInfo($order['goods_id'],1);
+
         $goodsInfo['security'] =$security;
         //判断进来的是团长还是团员
         $res = M('group_buy', '', 'DB_CONFIG2')->where('(id='.$prom_id.' or mark = '.$prom_id.') and is_pay = 1' )->order('id asc')->select();
@@ -1872,7 +1883,7 @@ class UserController extends BaseController {
                 $not = 2;
             }
         }
-        $share_url = C('SHARE_URL').'/prom_regiment.html?order_id='.$order['order_id'].'&user_id='.$user_id.'&prom_id='.$prom_id;
+        $share_url = C('SHARE_URL').'/prom_regiment.html?user_id='.$user_id.'&prom_id='.$prom_id;
         //将团员的信息补全
         $num = count($res);
         for($i=0;$i<$num;$i++){
@@ -1889,7 +1900,7 @@ class UserController extends BaseController {
         }
 
         //猜你喜欢
-        $goods_like = $this->if_you_like($goodsInfo['cat_id'],$page,$pagesize,$version);
+        $goods_like = $this->if_you_like($goodsInfo['cat_id'],$page,$pagesize);
         $json = array('status'=>1,'msg'=>'获取成功','result'=>array('goods'=>$goodsInfo,'prom_id'=>$prom_id,'end_time'=>$res[0]['end_time'],'invitation_num'=>$order['invitation_num'],'share_url'=>$share_url,'start_time'=>$res[0]['start_time'],'prom'=>$res[0]['goods_num'],'free'=>$res[0]['free'],'price'=>$price,'is_successful'=>$data['is_successful'],'successful_time'=>$data['successful_time'],'not'=>$data['not'],'join_num'=>$data['join_num'],'like'=>$goods_like));
 
         if(!empty($ajax_get))
