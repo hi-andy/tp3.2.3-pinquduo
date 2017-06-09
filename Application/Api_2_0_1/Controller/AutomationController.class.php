@@ -233,7 +233,7 @@ class AutomationController extends BaseController
                 if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
                     $group_buy_mark = M('group_buy')
-                        ->where(array('mark' => array('eq', $v['id'])))
+                        ->where("id = {$v['id']} or mark = {$v['id']}")
                         ->select();
                     $values = "";
                     for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark) - 1); $i++) {
