@@ -1995,7 +1995,6 @@ class UserController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
-
     }
 
     function getUserInfo($user_id,$prom_order){
