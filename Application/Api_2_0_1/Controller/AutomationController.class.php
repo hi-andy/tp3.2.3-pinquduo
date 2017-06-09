@@ -220,7 +220,7 @@ class AutomationController extends BaseController
         $conditon = null;
         $time = time() + 16 * 60 * 60;
         $prom_order = M('group_buy')
-            ->where('`user_id`=9222 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+            ->where('`is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
             ->limit(0,50)
             ->select();
         if (count($prom_order) > 0) {
