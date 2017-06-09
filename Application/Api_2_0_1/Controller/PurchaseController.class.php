@@ -535,7 +535,7 @@ class PurchaseController extends  BaseController
             $data['goods_num'] = $goods['prom'];
         }
         $data['order_num'] = 1;
-        $data['buy_num'] = $data['order_num'] = 1;
+        //$data['buy_num'] = $data['order_num'] = 1;
         if(!empty($coupon_list_id)){
             $data['price'] = (string)($goods['prom_price']*$num-$coupon['money']);
         }else{
