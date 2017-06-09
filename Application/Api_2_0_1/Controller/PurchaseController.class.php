@@ -350,12 +350,11 @@ class PurchaseController extends  BaseController
             $o_id = M('order')->data($order)->add();
 
             //将参与的团id在订单规格表查出第一张单
-            $one_order = M('order_goods')->where("`order_id`=".$result['order_id'])->find();
             $spec_data['order_id'] = $o_id;
             $spec_data['goods_id'] = $goods_id;
-            $spec_data['goods_name'] = $one_order['goods_name'];
+            $spec_data['goods_name'] = $result['goods_name'];
             $spec_data['goods_num'] = $num;
-            $spec_data['market_price'] = $one_order['market_price'];
+            $spec_data['market_price'] = $goods['market_price'];
             if(!empty($spec_key)){
                 $spec_data['goods_price'] = $goods_spec['prom_price'];
             }else{
@@ -365,7 +364,7 @@ class PurchaseController extends  BaseController
             $spec_data['spec_key'] = $spec_key;
             $spec_data['spec_key_name'] = $goods_spec['key_name'];
             $spec_data['prom_id'] = $group_buy;
-            $spec_data['store_id'] = $one_order['store_id'];
+            $spec_data['store_id'] = $result['store_id'];
             $spec_res = M('order_goods')->data($spec_data)->add();
 
             if(empty($spec_res) || empty($group_buy) || empty($o_id))
