@@ -281,8 +281,8 @@ class AutomationController extends BaseController
             $group_buy_values = substr($group_buy_values, 0, -1);
             $sql_group_buy = "INSERT INTO tp_group_buy(start_time,end_time,goods_id,goods_num,order_num,price,intro,goods_price,goods_name,photo,user_id,store_id,is_pay,auto) VALUES";
             $sql_group_buy .= $group_buy_values;
-            //M('goods')->where("goods_id in({$ids})")->save(array("auto_time" => time()));
-            //M()->query($sql_group_buy);
+            M('goods')->where("goods_id in({$ids})")->save(array("auto_time" => time()));
+            M()->query($sql_group_buy);
         }
     }
 }

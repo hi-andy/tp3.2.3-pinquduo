@@ -1383,7 +1383,7 @@ class UserController extends BaseController {
         $rdsname = "TuiSong".$user_id.$version;
         if(empty(redis($rdsname))) {//
             if (empty($user_id)) {
-                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,20')->select();
+                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('auto=0 and `mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,20')->select();
             } else {
                 $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,10')->select();
             }
