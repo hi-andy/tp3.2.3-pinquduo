@@ -236,7 +236,7 @@ class AutomationController extends BaseController
                         ->where("id = {$v['id']} or mark = {$v['id']}")
                         ->select();
                     $values = "";
-                    for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark) - 1); $i++) {
+                    for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                         $user = $this->get_robot($v['user_id']);
                         $values .= "({$v['start_time']},{$v['end_time']},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['order_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']}),";
                     }
@@ -254,13 +254,9 @@ class AutomationController extends BaseController
                         $user_id = $value['user_id'];
                         SendXinge($message,"$user_id",$custom);
                     }
-                    $this->order_redis_status_ref($v['user_id']);
-                    $ids .= $v['id'] . ",";
-                    $order_ids .= $v['order_id'] . ",";
                     redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
                 }
             }
-
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
             if (!empty($ids)) M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
