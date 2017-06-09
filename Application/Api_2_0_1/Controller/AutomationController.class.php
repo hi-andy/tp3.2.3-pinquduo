@@ -266,35 +266,18 @@ class AutomationController extends BaseController
 
     //机器人自动开团
     public function auto_add_group_buy() {
-        $time = 3*60*60;
-        $goods = M('goods','','DB_CONFIG2')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time+".$time." < ".time()." +")->limit(0,50)->select();
-        foreach ($goods as $v){
-            $user = $this->get_robot($v['user_id']);
-            $group_buy = M('','','DB_CONFIG2')->query('select * from tp_group_buy order by rand() LIMIT 1');
-            $order = M('','','DB_CONFIG2')->query('select * from tp_order order by rand() LIMIT 1');
-            $group_buy[0]['goods_id'] = $v['goods_id'];
-            $group_buy[0]['free'] = 0;
-            $group_buy[0]['is_raise'] = 0;
-            $group_buy[0]['is_pay'] = 1;
-            $group_buy[0]['is_free'] = 0;
-            $group_buy[0]['is_successful'] = 0;
-            $group_buy[0]['is_successful'] = 0;
-            $group_buy[0]['is_cancel'] = 0;
-            $group_buy[0]['is_return_or_exchange'] = 0;
-            $group_buy[0]['is_dissolution'] = 0;
-            $group_buy[0]['auto'] = 1;
-            $group_buy[0]['user_id'] = $user['user_id'];
-            $order[0]['goods_id'] = $v['goods_id'];
-            $order[0]['order_status'] = 8;
-            $order[0]['shipping_status'] = 0;
-            $order[0]['pay_status'] = 1;
-            $order[0]['order_type'] = 11;
-            $order[0]['out_refund_no'] = '';
-            $order[0]['auto'] = 1;
-            $order[0]['user_id'] = $user['user_id'];
-            M('group_buy')->add($group_buy[0]);
-            M('order')->add($order[0]);
-            M('goods')->where('goods_id='.$goods['goods_id'])->save(array('auto_time'=>time()));
+        $values = "";
+        $time = time()-3*60*60;
+        $end_time = time()+24*60*60;
+        $goods = M('goods','','DB_CONFIG2')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
+        foreach ($goods as $k => $v){
+            $user = $this->get_robot(1);
+            $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['prom']},1,1,{$v['prom_price']},'{$v['goods_name']}',{$v['market_price']},'{$v['goods_name']}','".CDN."/Public/upload/logo/logo.jpg',{$user['user_id']},{$v['store_id']},1),";
+
         }
+        $values = substr($values, 0, -1);
+        $sql_group_buy = "INSERT INTO tp_group_buy(start_time,end_time,goods_id,goods_num,order_num,buy_num,price,intro,goods_price,goods_name,photo,user_id,store_id,auto) VALUES";
+        $sql_group_buy .= $values;
+        print_r($sql_group_buy);
     }
 }
