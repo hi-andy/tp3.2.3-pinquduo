@@ -1189,40 +1189,44 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
-	//获取已经开好的团
-	function  getAvailableGroup(){
-		$goods_id = I('goods_id');
-		$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free')->order('id asc')->limit(3)->select();
-		if (!empty($group_buy)) {
-			for ($i = 0; $i < count($group_buy); $i++) {
-				$order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
-				$group_buy[$i]['id'] = $order_id['prom_id'];
+    //获取已经开好的团
+    function  getAvailableGroup(){
+        $goods_id = I('goods_id');
+        $group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free,auto')->order('id asc')->limit(3)->select();
+        if (!empty($group_buy)) {
+            for ($i = 0; $i < count($group_buy); $i++) {
+                if($group_buy[$i]['auto']!=1){
+                    $order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
+                    $group_buy[$i]['id'] = $order_id['prom_id'];
+                }else{
+                    $order_id['prom_id'] = $group_buy[$i]['id'];
+                }
 
-				$mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
-				$group_buy[$i]['prom_mens'] = $group_buy[$i]['goods_num'] - $mens - 1;
+                $mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+                $group_buy[$i]['prom_mens'] = $group_buy[$i]['goods_num'] - $mens - 1;
 
-				$user_name = M('users', '', 'DB_CONFIG2')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
-				if (!empty($user_name['oauth'])) {
-					$group_buy[$i]['user_name'] = $user_name['nickname'];
-					$group_buy[$i]['photo'] = TransformationImgurl($user_name['head_pic']);
-				} else {
-					$group_buy[$i]['photo'] = TransformationImgurl($user_name['head_pic']);
-					$group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
-				}
-			}
-			foreach ($group_buy as &$v) {
-				$v['photo'] = TransformationImgurl($v['photo']);
-			}
-		} else {
-			$group_buy = null;
-		}
+                $user_name = M('users', '', 'DB_CONFIG2')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
+                if (!empty($user_name['oauth'])) {
+                    $group_buy[$i]['user_name'] = $user_name['nickname'];
+                    $group_buy[$i]['photo'] = TransformationImgurl($user_name['head_pic']);
+                } else {
+                    $group_buy[$i]['photo'] = TransformationImgurl($user_name['head_pic']);
+                    $group_buy[$i]['user_name'] = substr_replace($user_name['mobile'], '****', 3, 4);
+                }
+            }
+            foreach ($group_buy as &$v) {
+                $v['photo'] = TransformationImgurl($v['photo']);
+            }
+        } else {
+            $group_buy = null;
+        }
 
-		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status' => 1, 'msg' => '获取成功', 'result' => array('group_buy' => $group_buy));
-		if(!empty($ajax_get))
-			$this->getJsonp($json);
-		exit(json_encode($json));
-	}
+        I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
+        $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('group_buy' => $group_buy));
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
 
 	function getGenerateOrder(){
 		header("Access-Control-Allow-Origin:*");
