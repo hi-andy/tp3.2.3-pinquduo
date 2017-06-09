@@ -219,8 +219,8 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time() + 16 * 60 * 60;
-        $prom_order = M('group_buy')
-            ->where('`is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+        $prom_order = M('group_buy','','DB_CONFIG2')
+            ->where('`auto`=0 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
             ->limit(0,50)
             ->select();
         if (count($prom_order) > 0) {
@@ -228,17 +228,17 @@ class AutomationController extends BaseController
             $message = "您拼的团已满，等待商家发货中";
             $ids = "";
             $order_ids = "";
-            $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, order_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution) VALUES";
+            $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, order_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution, auto) VALUES";
             foreach ($prom_order as $v){
                 if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
-                    $group_buy_mark = M('group_buy')
-                        ->where("id = {$v['id']} or mark = {$v['id']}")
+                    $group_buy_mark = M('group_buy','','DB_CONFIG2')
+                        ->where("(id = {$v['id']} or mark = {$v['id']}) and auto=0")
                         ->select();
                     $values = "";
                     for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                         $user = $this->get_robot($v['user_id']);
-                        $values .= "({$v['start_time']},{$v['end_time']},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['order_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']}),";
+                        $values .= "({$v['start_time']},{$v['end_time']},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['order_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
                     }
                     $values = substr($values, 0, -1);
                     if ($values) {
@@ -261,6 +261,40 @@ class AutomationController extends BaseController
             $order_ids = substr($order_ids, 0, -1);
             if (!empty($ids)) M("group_buy")->where("id in({$ids})")->save(array("is_successful"=>1));
             if (!empty($order_ids)) M("order")->where("order_id in({$order_ids})")->save(array("order_status"=>11, "shipping_status"=>0, "pay_status"=>1, "order_type"=>14));
+        }
+    }
+
+    //机器人自动开团
+    public function auto_add_group_buy() {
+        $time = 3*60*60;
+        $goods = M('goods','','DB_CONFIG2')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time+".$time." < ".time()." +")->limit(0,50)->select();
+        foreach ($goods as $v){
+            $user = $this->get_robot($v['user_id']);
+            $group_buy = M('','','DB_CONFIG2')->query('select * from tp_group_buy order by rand() LIMIT 1');
+            $order = M('','','DB_CONFIG2')->query('select * from tp_order order by rand() LIMIT 1');
+            $group_buy[0]['goods_id'] = $v['goods_id'];
+            $group_buy[0]['free'] = 0;
+            $group_buy[0]['is_raise'] = 0;
+            $group_buy[0]['is_pay'] = 1;
+            $group_buy[0]['is_free'] = 0;
+            $group_buy[0]['is_successful'] = 0;
+            $group_buy[0]['is_successful'] = 0;
+            $group_buy[0]['is_cancel'] = 0;
+            $group_buy[0]['is_return_or_exchange'] = 0;
+            $group_buy[0]['is_dissolution'] = 0;
+            $group_buy[0]['auto'] = 1;
+            $group_buy[0]['user_id'] = $user['user_id'];
+            $order[0]['goods_id'] = $v['goods_id'];
+            $order[0]['order_status'] = 8;
+            $order[0]['shipping_status'] = 0;
+            $order[0]['pay_status'] = 1;
+            $order[0]['order_type'] = 11;
+            $order[0]['out_refund_no'] = '';
+            $order[0]['auto'] = 1;
+            $order[0]['user_id'] = $user['user_id'];
+            M('group_buy')->add($group_buy[0]);
+            M('order')->add($order[0]);
+            M('goods')->where('goods_id='.$goods['goods_id'])->save(array('auto_time'=>time()));
         }
     }
 }
