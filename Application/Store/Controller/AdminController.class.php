@@ -163,7 +163,7 @@ class AdminController extends BaseController {
 
             if(!empty($merchant['merchant_name']) || !empty($merchant['password'])){
 	            $merchant['password'] = md5($merchant['password']);
-               	$merchant_info = M('merchant')->where($merchant)->find();$merchant_info['id'] = 5059;
+               	$merchant_info = M('merchant')->where($merchant)->find();
 	            $haitao = M('store_detail')->where('storeid='.$merchant_info['id'])->field('is_haitao,is_pay,trade_no')->find();
 
                 if(is_array($merchant_info) && !empty($haitao) && !empty($merchant_info)){
