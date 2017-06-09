@@ -1151,11 +1151,15 @@ class GoodsController extends BaseController {
 	//获取已经开好的团
 	function  getAvailableGroup(){
 		$goods_id = I('goods_id');
-		$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free')->order('id asc')->limit(3)->select();
+		$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free,auto')->order('id asc')->limit(3)->select();
 		if (!empty($group_buy)) {
 			for ($i = 0; $i < count($group_buy); $i++) {
-				$order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
-				$group_buy[$i]['id'] = $order_id['prom_id'];
+				if($group_buy[$i]['auto']!=1){
+					$order_id = M('order')->where('`prom_id`=' . $group_buy[$i]['id'] . ' and `is_return_or_exchange`=0')->field('order_id,prom_id')->find();
+					$group_buy[$i]['id'] = $order_id['prom_id'];
+				}else{
+					$order_id['prom_id'] = $group_buy[$i]['id'];
+				}
 
 				$mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
 				$group_buy[$i]['prom_mens'] = $group_buy[$i]['goods_num'] - $mens - 1;
