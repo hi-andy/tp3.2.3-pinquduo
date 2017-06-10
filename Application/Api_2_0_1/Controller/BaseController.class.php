@@ -730,7 +730,6 @@ class BaseController extends Controller {
             redis("get_Free_Order_status","1");
             $order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
             //给参团人和开团人推送信息
-
             $num = $this->getRand($free_num,($prom_num-1));//随机出谁免单
             for ($j=0;$j<count($join_num);$j++){
                 for($i=0;$i<count($num);$i++){

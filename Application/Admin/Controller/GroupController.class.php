@@ -59,6 +59,7 @@ class GroupController extends BaseController {
 
         $condition['g.is_raise'] = 0 ;
         $condition['o.is_show'] = 1 ;
+        $condition['g.auto'] = 0;
         if($begin && $end){
             $condition['o.add_time'] = array('GT',$begin);
             $condition['o.add_time'] = array('LT',$end);
