@@ -695,76 +695,70 @@ class BaseController extends Controller {
         return $return;
     }
 
-    public function getFree($prom_id,$order)
+    public function getFree($prom_id)
     {
-        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id')->order('mark asc')->select();
-        if($join_num[0]['is_raise']==1) {
-            $goods = M('goods')->where('`goods_id` = '.$join_num[0]['goods_id'])->find();
-            $Purchase = new PurchaseController();
-            $Purchase->aftermath($join_num[0]['user_id'], $goods, $order['num'], $order['order_id']);
-        }
+        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
+
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         M()->startTrans();
         //把所有人的状态改成发货
-        for($i=0;$i<count($join_num);$i++)
-        {
-            $this->order_redis_status_ref($join_num[$i]['user_id']);
-            if(!empty($join_num[0]['is_raise']))
-            {
-                if($i==0)
-                {
-                    $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+        for($i=0;$i<count($join_num);$i++){
+            if($join_num[$i]['auto']==0){
+                $this->order_redis_status_ref($join_num[$i]['user_id']);
+                if(!empty($join_num[0]['is_raise'])){
+                    if($i==0){
+                        $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+                    } else {
+                        $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
+                    }
                 } else {
-                    $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>4))->save();
+                    $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                 }
-            } else {
-                $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+            }else{
+                $res = 1;
             }
             $res2 = M('group_buy')->where('`id`='.$join_num[$i]['id'])->data(array('is_successful'=>1))->save();
-            if($res && $res2)
-            {
+            if($res && $res2){
                 M()->commit();
             }else{
                 M()->rollback();
             }
         }
 
-        if($free_num>0)//如果有免单，才执行getRand操作
-        {
+        if($free_num>0){//如果有免单，才执行getRand操作
             redis("get_Free_Order_status","1");
             $order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
             //给参团人和开团人推送信息
-            $message = "你参与的团购,即将揭晓免单人";
-            $custom = array('type' => '2','id'=>$join_num[0]['order_id']);
-            foreach($join_num as $val){
-                SendXinge($message,$val['user_id'],$custom);
-            }
 
             $num = $this->getRand($free_num,($prom_num-1));//随机出谁免单
-            for($i=0;$i<count($num);$i++)
-            {
-                $j = $num[$i];
-                $order_id = $order_ids[$j];
-                $res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
-                $res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
-                if($res && $res2)
-                {
-                    $this->getWhere($order_id);
-                    M()->commit();
-                }else{
-                    M()->rollback();
+            for ($j=0;$j<count($join_num);$j++){
+                for($i=0;$i<count($num);$i++){
+                    if($j == $num[$i]){
+                        $order_id = $order_ids[$j];
+                        $res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+                        $res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+                        if($res && $res2){
+                            $custom = array('type' => '2','id'=>$join_num[$j]['id']);
+                            SendXinge('恭喜！您参与的免单拼团获得了免单',$join_num[$j]['user_id'],$custom);
+                            $this->getWhere($order_id);
+                            M()->commit();
+                        }else{
+                            M()->rollback();
+                        }
+                    }else{
+                        $custom = array('type' => '2','id'=>$join_num[$j]['id']);
+                        SendXinge('您的免单拼团人已满，点击查看免单买家',$join_num[$j]['user_id'],$custom);
+                    }
                 }
             }
         }else{
-//			$order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
-
-            //给参团人和开团人推送信息
-//			$user_ids = M('order')->where(array('order_id'=>array('in',$order_ids)))->field('user_id')->select();
-            $message = "你参与的团购,团满开团成功";
-            $custom = array('type' => '1','id'=>$join_num[0]['order_id']);
+            $message = "您拼的团已满，等待商家发货中";
             foreach($join_num as $val){
-                SendXinge($message,$val['user_id'],$custom);
+                if($val['auto']==0){
+                    $custom = array('type' => '1','id'=>$val['id']);
+                    SendXinge($message,$val['user_id'],$custom);
+                }
             }
         }
         exit ;
