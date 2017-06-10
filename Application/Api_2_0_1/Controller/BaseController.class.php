@@ -27,11 +27,6 @@ class BaseController extends Controller {
 //            $test_str .= 'GET'.print_r($_GET,true);
 //            file_put_contents('a.html', $test_str);
 //        }
-        $this->user_id = I("user_id",0); // 用户id   
-        if($this->user_id)
-        {
-            $this->user = M('users', '', 'DB_CONFIG2')->where("user_id = {$this->user_id}")->find();
-        }
     }
 
     /*
