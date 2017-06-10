@@ -171,7 +171,7 @@ class AutomationController extends BaseController
     //将自动确认收货的订单的状态进行修改
     //单买的订单拿出来
     public function get_single_buy_order() {
-        $one_buy = M('order','','DB_CONFIG2')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
+        $one_buy = M('order')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
         $one_buy_number = count($one_buy);
         if ($one_buy_number > 0) {
             $data = null;
@@ -188,7 +188,7 @@ class AutomationController extends BaseController
 
     //拿出团购的订单
     public function group_purchase_order() {
-        $group_nuy = M('order','','DB_CONFIG2')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
+        $group_nuy = M('order')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
         $group_nuy_number = count($group_nuy);
         if ($group_nuy_number > 0) {
             $data = null;
@@ -205,7 +205,7 @@ class AutomationController extends BaseController
 
     //更新限时秒杀列表
     public function seconds_kill_list() {
-        $is_special = M('goods','','DB_CONFIG2')
+        $is_special = M('goods')
             ->where(array(
                 'is_special'=>array('EQ',1),
                 'on_time'=>array('ELT',time()),
@@ -219,7 +219,7 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time() + 16 * 60 * 60;
-        $prom_order = M('group_buy','','DB_CONFIG2')
+        $prom_order = M('group_buy')
             ->where('`auto`=0 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
             ->limit(0,50)
             ->select();
@@ -233,7 +233,7 @@ class AutomationController extends BaseController
             foreach ($prom_order as $v){
                 if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
-                    $group_buy_mark = M('group_buy','','DB_CONFIG2')
+                    $group_buy_mark = M('group_buy')
                         ->where("(id = {$v['id']} or mark = {$v['id']}) and auto=0")
                         ->select();
                     $values = "";
@@ -273,7 +273,7 @@ class AutomationController extends BaseController
         $group_buy_values = "";
         $time = time()-3*60*60;
         $end_time = time()+24*60*60;
-        $goods = M('goods','','DB_CONFIG2')->where("goods_id=17266 and is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
+        $goods = M('goods')->where("goods_id=17266 and is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
         foreach ($goods as $k => $v){
             $ids .= $v['goods_id'] . ",";
             $user = $this->get_robot(1);
