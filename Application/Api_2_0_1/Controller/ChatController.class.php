@@ -29,7 +29,7 @@ class ChatController extends BaseController
      */
     public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status=''){
         if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload && $status != '') {
-            $chatcount = M('chat')->where(array('msg_id'=>array('eq',$msg_id)))->count();
+            $chatcount = M('chat','','DB_CONFIG2')->where(array('msg_id'=>array('eq',$msg_id)))->count();
             if ($chatcount < 1) {
                 $msgdata = array(
                     'msg_id' => $msg_id,
@@ -78,11 +78,11 @@ class ChatController extends BaseController
      * @param int $page
      * @param int $pagesize
      */
-    public function get_chat($user_id, $chat_type='', $page=0, $pagesize=20){
+    public function get_chat($user_id='', $chat_type='', $page=0, $pagesize=20){
         if ($user_id && $chat_type) {
             $in_msg_id = "0,";
-            $where = "(tos = $user_id or froms = $user_id) and chat_type = $chat_type and status <> 2";
-            $result = M('chat')->where($where)->order('timestamp asc')->limit($page,$pagesize)->select();
+            $where = "(tos = '{$user_id}' or froms = '{$user_id}') and chat_type = '{$chat_type}' and status <> 2";
+            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp asc')->limit($page,$pagesize)->select();
             foreach ($result as $key => $value){
                 $data[$key]['msg_id'] = $value['msg_id'];
                 $data[$key]['timestamp'] = $value['timestamp'];
@@ -95,6 +95,15 @@ class ChatController extends BaseController
             }
             $in_msg_id = substr($in_msg_id, 0, -1);
             M('chat')->where("msg_id in({$in_msg_id})")->save(array('status'=>1));
+            json('读取成功',$data);
+        } else {
+            errjson('缺少参数');
+        }
+    }
+
+    public function get_unread($user_id=''){
+        if ($user_id){
+            $data = M('','','DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY count DESC");
             json('读取成功',$data);
         } else {
             errjson('缺少参数');
