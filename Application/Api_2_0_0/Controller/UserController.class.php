@@ -1923,7 +1923,7 @@ class UserController extends BaseController {
         return $info;
     }
     //订单详情
-    function get_Detaile_for_Order(){
+        function get_Detaile_for_Order(){
         $order_id = I('order_id');
         $user_id = I('user_id');
         $page = I('page',1);
