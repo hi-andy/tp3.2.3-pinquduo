@@ -127,18 +127,17 @@ class PurchaseController extends  BaseController
                 }
                 //每个团的最后一个人直接将订单锁住防止出现错误
                 $num = M('group_buy')->where('`id`=' . $result['id'] . ' or `mark`=' . $result['id'] . ' and `is_pay`=1 and `is_cancel`=0')->count();
-                if ($num == $result['goods_num']) {
-                    $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `is_pay`=0 and `is_cancel`=0')->find();
-                    if (!empty($on_buy)) {
-                        $json = array('status' => -1, 'msg' => '有用户尚未支付，您可以在他取消订单后进行支付');
-                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                        if (!empty($ajax_get)) {
-                            echo "<script> alert('" . $json['msg'] . "') </script>";
-                            exit;
-                        }
-                        exit(json_encode($json));
+                $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `is_pay`=0 and `is_cancel`=0')->find();
+                if (!empty($on_buy)) {
+                    $json = array('status' => -1, 'msg' => '有用户尚未支付，您可以在他取消订单后进行支付');
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    if (!empty($ajax_get)) {
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
                     }
-                } elseif ($num == $result['goods_num']) {
+                    exit(json_encode($json));
+                }
+               if ($num == $result['goods_num']) {
                     $json = array('status' => -1, 'msg' => '该团已经满员开团了，请选择别的团参加');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if (!empty($ajax_get)) {
