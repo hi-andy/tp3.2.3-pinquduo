@@ -133,7 +133,7 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time()-30;
-        $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0,50)->select();
+        $prom_order = M('group_buy')->where('（`is_raise`=1 or `is_free`=1） and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0,50)->select();
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -269,7 +269,7 @@ class AutomationController extends BaseController
         $group_buy_values = "";
         $time = time()-3*60*60;
         $end_time = time()+24*60*60;
-        $goods = M('goods','','DB_CONFIG2')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
+        $goods = M('goods','','DB_CONFIG2')->where("goods_id=17266 and is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
         foreach ($goods as $k => $v){
             $ids .= $v['goods_id'] . ",";
             $user = $this->get_robot(1);
