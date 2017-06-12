@@ -551,6 +551,13 @@ class BaseController extends Controller {
             if($type!=1){
                 $goods['img_arr'] = getImgs($goods['goods_content']);
                 $goods['img_arr'] = getImgSize($goods['img_arr']);
+
+                //获取店铺优惠卷store_logo_compression
+                $coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+                if (empty($coupon)) {
+                    $coupon = null;
+                }
+                $goods['store']['couponlist'] = $coupon;
             }
             unset($goods['goods_content']);
             unset($goods['list_img']);
