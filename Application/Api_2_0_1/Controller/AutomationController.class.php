@@ -219,6 +219,7 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time() + 16 * 60 * 60;
+        $end_time = time() + 24 * 60 * 60;
         $prom_order = M('group_buy')
             ->where('`auto`=0 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
             ->limit(0,50)
@@ -234,13 +235,13 @@ class AutomationController extends BaseController
                 if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
                     $group_buy_mark = M('group_buy')
-                        ->where("(id = {$v['id']} or mark = {$v['id']}) and auto=0")
+                        ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and auto=0")
                         ->select();
                     $values = "";
                     for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                         $num += 1;
                         $user = $this->get_robot($v['user_id']);
-                        $values .= "({$v['start_time']},{$v['end_time']},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
+                        $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
                     }
                     $values = substr($values, 0, -1);
                     if ($values) {
@@ -261,7 +262,7 @@ class AutomationController extends BaseController
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
             if (!empty($ids) && !empty($order_ids) && $num == count($prom_order)) {
-                M("group_buy")->where("id in({$ids})")->save(array("is_successful" => 1));
+                M("group_buy")->where("id in({$ids}) and is_pay=1")->save(array("is_successful" => 1));
                 M("order")->where("order_id in({$order_ids})")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
             }
         }
