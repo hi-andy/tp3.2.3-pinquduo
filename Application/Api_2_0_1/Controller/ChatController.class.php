@@ -103,7 +103,7 @@ class ChatController extends BaseController
 
     public function get_unread($user_id=''){
         if ($user_id){
-            $data = M('','','DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC");
+            $data = M('','','DB_CONFIG2')->query("SELECT froms,payload,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC");
             json('读取成功',$data);
         } else {
             errjson('缺少参数');
