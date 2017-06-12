@@ -261,7 +261,7 @@ class AutomationController extends BaseController
             }
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
-            if (!empty($ids) && !empty($order_ids) && $num == count($prom_order)) {
+            if (!empty($ids) && !empty($order_ids)) {
                 M("group_buy")->where("id in({$ids}) and is_pay=1")->save(array("is_successful" => 1));
                 M("order")->where("order_id in({$order_ids})")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
             }
@@ -274,7 +274,7 @@ class AutomationController extends BaseController
         $group_buy_values = "";
         $time = time()-3*60*60;
         $end_time = time()+24*60*60;
-        $goods = M('goods')->where("goods_id=17266 and is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
+        $goods = M('goods')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
         foreach ($goods as $k => $v){
             $ids .= $v['goods_id'] . ",";
             $user = $this->get_robot(1);
