@@ -163,16 +163,16 @@ class IndexController extends BaseController {
 		if($detail['store_from']==1)
 		{
 			if($detail['is_haitao']==1){
-				$fee = 1500.00;
+				$fee = 2000.00;
 			}else{
-				$fee = 1000.00;
+				$fee = 1500.00;
 			}
 		}elseif($detail['store_from']==0)
 		{
 			if($detail['is_haitao']==1){
-				$fee = 2000.00;
+				$fee = 2500.00;
 			}else{
-				$fee = 1500.00;
+				$fee = 2000.00;
 			}
 		}
 		$rand = rand(100000,999999);
@@ -181,10 +181,6 @@ class IndexController extends BaseController {
 
 		$data['margin'] = $fee;
 		$data['trade_no'] = $order;
-		if($store_name['id']==2)
-		{
-			$fee = 0.01;
-		}
 		$this->assign('subject',$store_name['store_name']);
 		$this->assign('order',$order);
 		$this->assign('body',$body);
