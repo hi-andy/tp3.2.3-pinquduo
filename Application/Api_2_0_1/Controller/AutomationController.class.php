@@ -219,7 +219,6 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time() + 16 * 60 * 60;
-        $start_time = time();
         $end_time = time() + 24 * 60 * 60;
         $prom_order = M('group_buy')
             ->where('`auto`=0 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
@@ -242,7 +241,7 @@ class AutomationController extends BaseController
                     for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                         $num += 1;
                         $user = $this->get_robot($v['user_id']);
-                        $values .= "({$start_time},{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
+                        $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},{$v['address_id']},{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
                     }
                     $values = substr($values, 0, -1);
                     if ($values) {
