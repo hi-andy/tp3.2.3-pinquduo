@@ -274,7 +274,7 @@ class AutomationController extends BaseController
         $group_buy_values = "";
         $time = time()-3*60*60;
         $end_time = time()+24*60*60;
-        $goods = M('goods')->where("goods_id=17266 and is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
+        $goods = M('goods')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
         foreach ($goods as $k => $v){
             $ids .= $v['goods_id'] . ",";
             $user = $this->get_robot(1);
