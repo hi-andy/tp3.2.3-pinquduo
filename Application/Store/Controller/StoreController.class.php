@@ -36,8 +36,7 @@ class StoreController extends BaseController{
         $store_id = $_SESSION['merchant_id'];
 
         $where = " `store_id`=".$store_id;
-        if(I('status') != null && I('status')!=99)
-        {
+        if(I('status') != null && I('status')!=99){
             $where .= " and status = ".I('status');
         }
 
