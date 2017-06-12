@@ -28,7 +28,7 @@ class ChatController extends BaseController
      * @param string $status 状态 0未查看 1查看 2删除
      */
     public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status=''){
-        if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload && $status != '') {
+        if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload != '' && $status != '') {
             $chatcount = M('chat','','DB_CONFIG2')->where(array('msg_id'=>array('eq',$msg_id)))->count();
             if ($chatcount < 1) {
                 $msgdata = array(
