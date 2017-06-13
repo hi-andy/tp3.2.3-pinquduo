@@ -557,7 +557,7 @@ class BaseController extends Controller {
                 if (empty($coupon)) {
                     $coupon = null;
                 }
-                $goods['store']['couponlist'] = $coupon;
+                $goods['store']['coupon'] = $coupon;
             }
             unset($goods['goods_content']);
             unset($goods['list_img']);

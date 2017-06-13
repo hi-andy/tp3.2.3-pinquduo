@@ -139,15 +139,13 @@ class OrderController extends BaseController {
 	    $consignee && $condition['consignee'] = array('like',$consignee);
 	    $order_sn && $condition['order_sn'] = array('like',$order_sn);
 	    $condition['is_return_or_exchange'] = array('eq',0);
-    	$shipping_status = I('shipping_status');
-	    if(I('shipping_status')==0 && empty($order_sn))
+	    if(I('shipping_status')==0 ||I('shipping_status')==1)
 	    {
-		    $condition['order_type']=array('eq',2);
+		    $condition['order_type'] = array('eq',2);
 	    }else{
-		    $condition['order_type']=array('eq',3);
+		    $condition['order_type'] = array('eq',3);
 	    }
-    	$condition['shipping_status'] = empty($shipping_status) ? array('neq',1) : $shipping_status;
-    	
+
     	$count = M('order')->where($condition)->count();
     	$Page  = new AjaxPage($count,10);
     	//搜索条件下 分页赋值
