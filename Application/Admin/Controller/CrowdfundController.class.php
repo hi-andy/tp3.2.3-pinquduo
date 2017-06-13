@@ -112,7 +112,12 @@ class CrowdfundController extends BaseController {
                 $condition['_string'] = " g.goods_num != g.order_num ";
             }
         }
-
+        if(!empty(I('store_name')))
+        {
+            $this->assign('store_name', I('store_name'));
+            $store_id = M('merchant')->where("store_name like '%".I('store_name')."%' and state=1")->getField('id');
+            $condition['g.store_id'] = array('eq',$store_id);
+        }
         if(I('consignee')){
             $condition['u.nickname'] =array('LIKE',"%".I('consignee')."%");
         }
