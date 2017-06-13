@@ -657,8 +657,8 @@ class GoodsController extends BaseController {
         $order_str = "`{$_POST['orderby1']}` {$_POST['orderby2']}";
         $goodsList = $model->where($where)->order($order_str)->limit($Page->firstRow,$Page->listRows)
             ->join('tp_merchant ON tp_merchant.id = tp_goods.store_id')
+            ->field('tp_goods.*,tp_merchant.store_name')
             ->select();
-
         $catList = D('haitao')->select();
         $catList = convert_arr_key($catList, 'id');
         $this->assign('catList',$catList);
