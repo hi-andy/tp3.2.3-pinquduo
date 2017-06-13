@@ -843,4 +843,37 @@ class BaseController extends Controller {
             return $user[0];
         }
     }
+
+    public function weixin_push($type,$openid){
+        require_once("plugins/payment/weixin/lib/WxPay.Api.php");
+        $client_credential = (array) json_decode(file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".\WxPayConfig::$appid."&secret=".\WxPayConfig::$appsecret));
+        $access_token = $client_credential['access_token'];
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={$access_token}";
+        switch ($type){
+            case 1;
+                $template_id = "Mauyu9oX0xPaysPov4vaYj0cfcXx-LlI-DzLwskXNSY";//订单提交成功
+                $url = C("SHARE_URL")."/goods_order.html?id=4";
+                break;
+            case 2;
+                $template_id = "YRyhnjefOtwOxIPtz34WuRhBkM4PfO-SXIv1NxgqDJE";//订单支付成功
+                $url = C("SHARE_URL")."/user_center.html";
+                break;
+            case 3;
+                $template_id = "maxXRoB8FzXgaLcEKEt63DrxNgDKUv69f_ysvX6gFqM";//购买成功通知
+                $url = C("SHARE_URL")."/goods_order.html?id=3";
+                break;
+            case 4;
+                $template_id = "jJAuHgR_wCKQo5ueg5yd19SnUM6rEc0jDrEQHmM_l7s";//商品已发出通知
+                $url = C("SHARE_URL")."/goods_order.html?id=3";
+                break;
+            case 5;
+                $template_id = "i0wA-7MTEz2dzxHpWvj-VyUCNEe5sGvahNF_ALCZzaE";//退款通知
+                $url = C("SHARE_URL")."/after_sales.html";
+                break;
+        }
+        $data['touser'] = $openid;
+        $data['template_id'] = $template_id;
+        $data['url'] = $url;
+        $result = async_get_url($url);
+    }
 }
