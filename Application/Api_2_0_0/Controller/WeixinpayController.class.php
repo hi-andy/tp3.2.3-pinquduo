@@ -360,12 +360,6 @@ EOF;
         }
         $this->order_redis_status_ref($order['user_id']);
         //销量、库存
-        $goods = M('goods')->where('`goods_id` = '.$order['goods_id'])->field('is_special')->find();
-        if($goods['is_special']==7){
-            M('goods_activity')->where('`goods_id` = '.$goods['goods_id'])->setDec('quantity',$order['num']);
-        }
-        //销量、库存//商品规格库存
-        M('goods')->where('`goods_id` = '.$goods['goods_id'])->setDec('store_count',$order['num']);
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
         M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
