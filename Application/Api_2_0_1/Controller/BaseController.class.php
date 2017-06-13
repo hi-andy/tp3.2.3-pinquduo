@@ -857,28 +857,41 @@ class BaseController extends Controller {
         switch ($type){
             case 1;
                 $template_id = "Mauyu9oX0xPaysPov4vaYj0cfcXx-LlI-DzLwskXNSY";//订单提交成功
-                $url = C("SHARE_URL")."/goods_order.html?id=4";
+                $pagepath = "goods_order.html?id=4";
                 break;
             case 2;
                 $template_id = "YRyhnjefOtwOxIPtz34WuRhBkM4PfO-SXIv1NxgqDJE";//订单支付成功
-                $url = C("SHARE_URL")."/user_center.html";
+                $pagepath = "user_center.html";
                 break;
             case 3;
-                $template_id = "maxXRoB8FzXgaLcEKEt63DrxNgDKUv69f_ysvX6gFqM";//购买成功通知
-                $url = C("SHARE_URL")."/goods_order.html?id=3";
+                $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";//拼团成功通知
+                $pagepath = "goods_order.html?id=2";
                 break;
             case 4;
-                $template_id = "jJAuHgR_wCKQo5ueg5yd19SnUM6rEc0jDrEQHmM_l7s";//商品已发出通知
-                $url = C("SHARE_URL")."/goods_order.html?id=3";
+                $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";//拼团失败通知
+                $pagepath = "goods_order.html?id=2";
                 break;
             case 5;
+                $template_id = "jJAuHgR_wCKQo5ueg5yd19SnUM6rEc0jDrEQHmM_l7s";//商品已发出通知
+                $pagepath = "goods_order.html?id=3";
+                break;
+            case 6;
                 $template_id = "i0wA-7MTEz2dzxHpWvj-VyUCNEe5sGvahNF_ALCZzaE";//退款通知
-                $url = C("SHARE_URL")."/after_sales.html";
+                $pagepath = "after_sales.html";
                 break;
         }
-        $data['touser'] = $openid;
-        $data['template_id'] = $template_id;
-        $data['url'] = $url;
+        $data = array(
+            'touser' => $openid,
+            'template_id' => $template_id,
+            'url' => C("SHARE_URL"),
+            'miniprogram' => array(
+                'appid' => \WxPayConfig::$appid,
+                'pagepath' => $pagepath
+            ),
+            'data' => array(
+
+            )
+        );
         $result = async_get_url($url);
     }
 }
