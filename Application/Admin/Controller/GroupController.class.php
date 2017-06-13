@@ -198,13 +198,12 @@ class GroupController extends BaseController {
         $consignee && $condition['consignee'] = array('like',$consignee);
         $order_sn && $condition['order_sn'] = array('like',$order_sn);
         $condition['prom_id'] = array('neq',0);
-        if(I('shipping_status')==0 && empty($order_sn))
+        if(I('shipping_status')==0 || I('shipping_status')==1)
         {
             $condition['order_type']=array('eq',14);
         }else{
             $condition['order_type']=array('eq',15);
         }
-        $condition['shipping_status'] = empty($shipping_status) ? array('neq',1) : $shipping_status;
 
         $count = M('order')->where($condition)->count();
         $Page  = new AjaxPage($count,10);

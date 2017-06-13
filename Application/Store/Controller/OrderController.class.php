@@ -107,7 +107,7 @@ class OrderController extends BaseController {
 		$consignee && $condition['consignee'] = array('like',$consignee);
 		$order_sn && $condition['order_sn'] = array('like',$order_sn);
 		$condition['store_id'] = $_SESSION['merchant_id'];
-		if(I('shipping_status')==0&&empty($condition['order_sn']))
+		if(I('shipping_status')==0 ||I('shipping_status')==1)
 		{
 			$condition['order_type'] = array('eq',2);
 		}else{
