@@ -38,7 +38,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#1C86EE'
+                'color' => '#436EEE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -74,7 +74,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#1C86EE'
+                'color' => '#436EEE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -110,7 +110,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#1C86EE'
+                'color' => '#436EEE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -151,7 +151,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#1C86EE'
+                'color' => '#436EEE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -182,7 +182,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#1C86EE'
+                'color' => '#436EEE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
