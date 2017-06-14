@@ -722,6 +722,7 @@ class BaseController extends Controller {
                         M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
                         //微信推送消息
                         $openid = M('users')->where("user_id={$join_num[$i]['user_id']}")->getField('openid');
+                        redis('abc',$openid);
                         $wxtmplmsg = new WxtmplmsgController();
                         $wxtmplmsg->spell_success($openid,$join_num[$i]['goods_name'],$nicknames);
                     } else {
