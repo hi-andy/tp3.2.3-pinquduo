@@ -748,8 +748,4 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test($order_sn,$order_a){
-        $orderLogic = new OrderLogic();
-        $result = $orderLogic->weixinBackPay($order_sn, $order_a);
-    }
 }

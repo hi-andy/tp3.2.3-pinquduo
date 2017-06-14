@@ -250,20 +250,20 @@ class BaseController extends Controller {
 //            return array();      //不存在图片则返回空
 //        }else{
 //            $endreturn=array();
-//            foreach ($result as $file) {
-//                $src=$file['savepath'].$file['savename'];
-//                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
-//                /*生成缩略图*/
-//                $image = new \Think\Image();
-//                $image->open(C("UPLOADPATH") . $src);
-//                $namearr=explode('.',$file['savename']);
-//                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
-//                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
-//                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
-//                $src=$file['savepath'].$file['savename'];
-//                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
-//                $endreturn[]=$returnData;
-//            }
+            foreach ($result as $file) {
+                $src=$file['savepath'].$file['savename'];
+                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
+                /*生成缩略图*/
+                $image = new \Think\Image();
+                $image->open(C("UPLOADPATH") . $src);
+                $namearr=explode('.',$file['savename']);
+                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
+                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
+                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
+                $src=$file['savepath'].$file['savename'];
+                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
+                $endreturn[]=$returnData;
+            }
 //            return $endreturn;
 //        }
 
@@ -712,10 +712,10 @@ class BaseController extends Controller {
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                         //销量、库存
-                        $goods = M('goods')->where('`goods_id` = '.$join_num[$i]['goods_id'])->field('is_special')->find();
+                        $goods_id = $join_num[$i]['goods_id'];
                         $spec_name = M('order_goods')->where('`order_id`='.$join_num[$i]['order_id'])->field('spec_key')->find();
-                        M('spec_goods_price')->where("`goods_id`=$goods[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods['goods_id'])->setDec('store_count',1);
+                        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
+                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
                     }
