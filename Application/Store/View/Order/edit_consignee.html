@@ -31,6 +31,23 @@
 										<input type="text" value="{$order.address}" class="form-control" name="address" >
 									</td>
 								</tr>
+                                <tr>
+                                    <td class="col-sm-2">配送方式:</td>
+                                    <td class="col-sm-4">
+                                        <select name="shipping_code" class="form-control">
+                                            <option>选择物流方式</option>
+                                            <volist name="logistics" id="v" key="k">
+                                                <option value="{$v.logistics_code}" <if condition="$v[logistics_code] eq $order[shipping_code]"> selected='selected' </if> >{$v.logistics_name}</option>
+                                            </volist>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-sm-2">配送单号:</td>
+                                    <td class="col-sm-4">
+                                        <input class="form-control" name="shipping_order"  id="shipping_order" value="{$order.shipping_order}">
+                                    </td>
+                                </tr>
 
                                 </tbody> 
                                 <tfoot>
