@@ -309,11 +309,12 @@ class CrowdfundController extends BaseController {
         if(!empty(I('store_name')))
         {
             $this->assign('store_name', I('store_name'));
-            $where = $this->getStoreWhere($where,I('store_name'));
+            $arr = $this->getStoreWhere($where,I('store_name'));
+            $where = $arr['where'];
         }
         if(I('store_id')){
             $store_id = I('store_id');
-            $where = "$where and store_id IN $store_id";
+            $where = "$where and store_id = $store_id";
         }
         $count = M('goods')->where($where)->count();
         $Page = new \Think\Page($count, 10);
@@ -325,7 +326,7 @@ class CrowdfundController extends BaseController {
             $goodsList[$i]['store_name'] = $store_name['store_name'];
         }
 
-        $show = $Page->show();//分页显示输出
+            $show = $Page->show($arr['store_id']);//分页显示输出
         $this->assign('page', $show);//赋值分页输出
         $this->assign('goodsList', $goodsList);
         $tpl = I('get.tpl', 'search_goods');

@@ -460,8 +460,7 @@ class BaseController extends Controller {
         $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->select();
         $store_ids =null;
         $num = count($store_id);
-        for($i=0;$i<$num;$i++)
-        {
+        for($i=0;$i<$num;$i++){
             if($num==1){
                 $store_ids = $store_ids."('".$store_id[$i]['id']."')";
             }elseif($i==$num-1) {
@@ -472,8 +471,10 @@ class BaseController extends Controller {
                 $store_ids = $store_ids."'".$store_id[$i]['id']."',";
             }
         }
-        $where = "$where and store_id IN $store_ids";
-        return $where;
+        $arr['where'] = "$where and store_id IN $store_ids";
+        $arr['store_id'] = $store_id[0]['id'];
+
+        return $arr;
     }
 
     function fenxiangLOGO($path,$goods_id,$store_id)

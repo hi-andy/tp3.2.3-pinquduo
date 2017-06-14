@@ -401,10 +401,8 @@ class PurchaseController extends  BaseController
             $res = M('group_buy')->where("`id` = $group_buy")->data(array('order_id'=>$o_id))->save();
             if(!empty($res) )
             {
-
+                M()->commit();//都操作成功的时候才真的把数据放入数据库
                 if($result['is_raise']!=1){
-                    M()->commit();//都操作成功的时候才真的把数据放入数据库
-
                     redisdelall("getBuy_lock_".$goods_id);//删除锁
                     $user_id_arr = M('group_buy')->where('id = '.$result['id'].' or mark ='.$result['id'])->field('user_id')->select();
                     redis("group_buy", serialize($user_id_arr), 300);
