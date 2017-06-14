@@ -22,7 +22,7 @@ class Page{
     public $p       = 'p'; //分页参数名
     public $url     = ''; //当前链接URL
     public $nowPage = 1;
-
+    public $store_id       = 'store_id'; //分页参数名
 	// 分页显示定制
     private $config  = array(
         'header' => '<span class="rows">共 %TOTAL_ROW% 条记录</span>',
@@ -74,12 +74,19 @@ class Page{
      * 组装分页链接
      * @return string
      */
-    public function show() {
+    public function show($store = '') {
         if(0 == $this->totalRows) return '';
 
         /* 生成URL */
-        $this->parameter[$this->p] = '[PAGE]';
-        $this->url = U(ACTION_NAME, $this->parameter);
+        if(!empty($store)){
+            $this->parameter[$this->p] = '[PAGE]';
+            $this->parameter[$this->p] = $store;
+            $this->url = U(ACTION_NAME, $this->parameter);
+        }else{
+            $this->parameter[$this->p] = '[PAGE]';
+            $this->url = U(ACTION_NAME, $this->parameter);
+        }
+
         /* 计算分页信息 */
         $this->totalPages = ceil($this->totalRows / $this->listRows); //总页数
         if(!empty($this->totalPages) && $this->nowPage > $this->totalPages) {
