@@ -8,25 +8,25 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-//    if (REDIS_SWITCH) {
-//        $redis = new Redis();
-//        $redis->connect(REDISIP, PORT);
-//        $redis->auth(REDISPASS);
-//        if ($del == true) {
-//            $redis->delete($key);
-//        }
-//        if ($value) {
-//            if ($time) {
-//                $redis->setex($key, $time, $value);
-//            } else {
-//                $redis->set($key, $value);
-//            }
-//        } else {
-//            return $redis->get($key);
-//        }
-//    } else {
-//        redisdelall("*");
-//    }
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($del == true) {
+            $redis->delete($key);
+        }
+        if ($value) {
+            if ($time) {
+                $redis->setex($key, $time, $value);
+            } else {
+                $redis->set($key, $value);
+            }
+        } else {
+            return $redis->get($key);
+        }
+    } else {
+        redisdelall("*");
+    }
 }
 
 /**
@@ -35,18 +35,18 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
-//    if (REDIS_SWITCH) {
-//        $redis = new Redis();
-//        $redis->connect(REDISIP, PORT);
-//        $redis->auth(REDISPASS);
-//        if ($key && $value) {
-//            $redis->rpush($key, $value);
-//        } else {
-//            return $redis->lpop($key);
-//        }
-//    } else {
-//        redisdelall("*");
-//    }
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($key && $value) {
+            $redis->rpush($key, $value);
+        } else {
+            return $redis->lpop($key);
+        }
+    } else {
+        redisdelall("*");
+    }
 }
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-//    $redis = new Redis();
-//    $redis->connect(REDISIP, PORT);
-//    $redis->auth(REDISPASS);
-//    $redis->delete($redis->keys($key));
+    $redis = new Redis();
+    $redis->connect(REDISIP, PORT);
+    $redis->auth(REDISPASS);
+    $redis->delete($redis->keys($key));
 }
 /**
  * @param $arr
@@ -839,4 +839,20 @@ function str_split_utf8($str){
         array_push($array,$key);
     }
     return $array;
+}
+
+//https请求(支持GET和POST)
+function http_request($url, $data=null){
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+    if (!empty($data)){
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+    }
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($curl);
+    curl_close($curl);
+    return $output;
 }

@@ -9,8 +9,9 @@ class IndexController extends BaseController {
     }
 
     public function index(){
+        require_once("plugins/payment/weixin/lib/WxPay.Api.php");
         $wxtmplmsg = new WxtmplmsgController();
-        $wxtmplmsg->order_payment_success('oHSHkvhi3tEOtGXciKfhNOZHKt_Y','0.01','测试商品');
+        print_r($wxtmplmsg->order_payment_success('oHSHkvhi3tEOtGXciKfhNOZHKt_Y','0.01','测试商品'));
     }
 
     /*
