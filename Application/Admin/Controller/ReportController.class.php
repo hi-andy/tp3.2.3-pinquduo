@@ -59,7 +59,7 @@ class ReportController extends BaseController{
 		$keti = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600).' and (order_type=4 or order_type = 16)')->sum('order_amount');
 		$data['keti'] = $keti-$data['ti'];
 		$data['keti'] = $this->operationPrice($data['keti']);
-		$data['tuikuan'] = M('order')->where("order_type IN ('8','9','13','14')")->sum('order_amount');
+		$data['tuikuan'] = M('order')->where("order_type IN ('8','9','12','13')")->sum('order_amount');
 //		var_dump(M()->getLastSql());die;
 		$this->assign('data',$data);
 
