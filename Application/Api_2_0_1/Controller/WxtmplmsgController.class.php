@@ -10,7 +10,7 @@
 namespace Api_2_0_1\Controller;
 
 
-class Wxtmplmsg
+class WxtmplmsgController
 {
 
     /**
