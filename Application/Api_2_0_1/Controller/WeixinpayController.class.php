@@ -373,8 +373,4 @@ EOF;
         $res = M('group_buy')->where('`id`='.$order_id)->data($data)->save();
         return $res;
     }
-
-
-
-
 }
