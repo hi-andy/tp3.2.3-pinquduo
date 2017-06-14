@@ -20,14 +20,26 @@ class Wxtmplmsg
      * @param $orderProductName 商品信息
      * @param $remark 备注
      */
-    public function order_payment_success($openid,$orderMoneySum,$orderProductName,$remark){
+    public function order_payment_success($openid,$orderMoneySum,$orderProductName,$remark='还有更省钱的办法？请点击此了解省钱大法'){
         $template_id = "YRyhnjefOtwOxIPtz34WuRhBkM4PfO-SXIv1NxgqDJE";
-        $pagepath = "user_center.html";
+        $pagepath = "save_money.html";
         $data = array(
-            'first' => '您购买的商品已支付成功',
-            'orderMoneySum' => $orderMoneySum,
-            'orderProductName' => $orderProductName,
-            'remark' => $remark
+            'first' => array(
+                'value' => '商品购买成功，商家已经为您准备货物中，请耐心等待',
+                'color' => '#000000'
+            ),
+            'orderMoneySum' => array(
+                'value' => $orderMoneySum,
+                'color' => '#000000'
+            ),
+            'orderProductName' => array(
+                'value' => $orderProductName,
+                'color' => '#000000'
+            ),
+            'remark' => array(
+                'value' => $remark,
+                'color' => '#000000'
+            )
         );
         $this->push($template_id,$pagepath,$data,$openid);
     }
@@ -40,15 +52,30 @@ class Wxtmplmsg
      * @param $keyword3 发货时间
      * @param $remark 备注
      */
-    public function spell_success($openid,$keyword1,$keyword2,$keyword3,$remark){
+    public function spell_success($openid,$keyword1,$keyword2,$keyword3,$remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
         $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";
-        $pagepath = "goods_order.html?id=2";
-            $data = array(
-                'first' => '您购买的商品已拼团成功',
-                'keyword1' => $keyword1,
-                'keyword2' => $keyword2,
-                'keyword3' => $keyword3,
-                'remark' => $remark
+        $pagepath = "special99.html";
+        $data = array(
+            'first' => array(
+                'value' => '您购买的商品已拼团成功',
+                'color' => '#000000'
+            ),
+            'keyword1' => array(
+                'value' => $keyword1,
+                'color' => '#000000'
+            ),
+            'keyword2' => array(
+                'value' => $keyword2,
+                'color' => '#000000'
+            ),
+            'keyword3' => array(
+                'value' => $keyword3,
+                'color' => '#000000'
+            ),
+            'remark' => array(
+                'value' => $remark,
+                'color' => '#000000'
+            )
         );
         $this->push($template_id,$pagepath,$data,$openid);
     }
@@ -65,11 +92,26 @@ class Wxtmplmsg
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
         $pagepath = "goods_order.html?id=2";
         $data = array(
-            'first' => '您购买的商品已拼团失败',
-            'keyword1' => $keyword1,
-            'keyword2' => $keyword2,
-            'keyword3' => $keyword3,
-            'remark' => $remark
+            'first' => array(
+                'value' => '您购买的商品已拼团失败',
+                'color' => '#000000'
+            ),
+            'keyword1' => array(
+                'value' => $keyword1,
+                'color' => '#000000'
+            ),
+            'keyword2' => array(
+                'value' => $keyword2,
+                'color' => '#000000'
+            ),
+            'keyword3' => array(
+                'value' => $keyword3,
+                'color' => '#000000'
+            ),
+            'remark' => array(
+                'value' => $remark,
+                'color' => '#000000'
+            )
         );
         $this->push($template_id,$pagepath,$data,$openid);
     }
@@ -83,16 +125,34 @@ class Wxtmplmsg
      * @param $keyword4 商品数量
      * @param $remark 备注
      */
-    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$remark){
+    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
-        $pagepath = "goods_order.html?id=2";
+        $pagepath = "special99.html";
         $data = array(
-            'first' => '您购买的商品已发货',
-            'keyword1' => $keyword1,
-            'keyword2' => $keyword2,
-            'keyword3' => $keyword3,
-            'keyword4' => $keyword4,
-            'remark' => $remark
+            'first' => array(
+                'value' => '您购买的商品已拼团失败',
+                'color' => '#000000'
+            ),
+            'keyword1' => array(
+                'value' => $keyword1,
+                'color' => '#000000'
+            ),
+            'keyword2' => array(
+                'value' => $keyword2,
+                'color' => '#000000'
+            ),
+            'keyword3' => array(
+                'value' => $keyword3,
+                'color' => '#000000'
+            ),
+            'keyword4' => array(
+                'value' => $keyword4,
+                'color' => '#000000'
+            ),
+            'remark' => array(
+                'value' => $remark,
+                'color' => '#000000'
+            )
         );
         $this->push($template_id,$pagepath,$data,$openid);
     }
@@ -104,14 +164,26 @@ class Wxtmplmsg
      * @param $refund 退款金额
      * @param $remark 备注
      */
-    public function refund($openid,$reason,$refund,$remark){
+    public function refund($openid,$reason,$refund,$remark='查看更多的好商品，选择高品质的商品就在趣多严选'){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
-        $pagepath = "goods_order.html?id=2";
+        $pagepath = "strict_selection.html";
         $data = array(
-            'first' => '您购买的商品已退款',
-            'reason' => $reason,
-            'refund' => $refund,
-            'remark' => $remark
+            'first' => array(
+                'value' => '您购买的商品已退款',
+                'color' => '#000000'
+            ),
+            'reason' => array(
+                'value' => $reason,
+                'color' => '#000000'
+            ),
+            'refund' => array(
+                'value' => $refund,
+                'color' => '#000000'
+            ),
+            'remark' => array(
+                'value' => $remark,
+                'color' => '#000000'
+            )
         );
         $this->push($template_id,$pagepath,$data,$openid);
     }
