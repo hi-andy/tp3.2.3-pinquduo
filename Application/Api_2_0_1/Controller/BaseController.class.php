@@ -699,7 +699,7 @@ class BaseController extends Controller {
 
     public function getFree($prom_id)
     {
-        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
+        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
         $nicknames = "";
         foreach ($join_num as $v){
             $nickname = M('users')->where("user_id={$v['user_id']}")->getField('nickname');
