@@ -41,7 +41,7 @@ class WxtmplmsgController
                 'color' => '#000000'
             )
         );
-        $this->push($template_id,$pagepath,$data,$openid);
+        return $this->push($template_id,$pagepath,$data,$openid);
     }
 
     /**
@@ -77,7 +77,7 @@ class WxtmplmsgController
                 'color' => '#000000'
             )
         );
-        $this->push($template_id,$pagepath,$data,$openid);
+        return $this->push($template_id,$pagepath,$data,$openid);
     }
 
     /**
@@ -113,7 +113,7 @@ class WxtmplmsgController
                 'color' => '#000000'
             )
         );
-        $this->push($template_id,$pagepath,$data,$openid);
+        return $this->push($template_id,$pagepath,$data,$openid);
     }
 
     /**
@@ -154,7 +154,7 @@ class WxtmplmsgController
                 'color' => '#000000'
             )
         );
-        $this->push($template_id,$pagepath,$data,$openid);
+        return $this->push($template_id,$pagepath,$data,$openid);
     }
 
     /**
@@ -185,7 +185,7 @@ class WxtmplmsgController
                 'color' => '#000000'
             )
         );
-        $this->push($template_id,$pagepath,$data,$openid);
+        return $this->push($template_id,$pagepath,$data,$openid);
     }
 
     /**
@@ -211,7 +211,7 @@ class WxtmplmsgController
             ),
             'data' => $data
         );
-        $result = async_get_url($url,urldecode(json_encode($push_data)));
+        $result = http_request($url,urldecode(json_encode($push_data)));
         return $result;
     }
 
