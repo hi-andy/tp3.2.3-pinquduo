@@ -700,7 +700,11 @@ class BaseController extends Controller {
     public function getFree($prom_id)
     {
         $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
-
+        $nicknames = "";
+        foreach ($join_num as $v){
+            $nickname = M('users')->where("user_id={$v['user_id']}")->getField('nickname');
+            $nicknames .= $nickname . '、';
+        }
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         M()->startTrans();
@@ -716,6 +720,10 @@ class BaseController extends Controller {
                         $spec_name = M('order_goods')->where('`order_id`='.$join_num[$i]['order_id'])->field('spec_key')->find();
                         M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
                         M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
+                        //微信推送消息
+                        $openid = M('users')->where("user_id={$join_num[$i]['user_id']}")->getField('openid');
+                        $wxtmplmsg = new WxtmplmsgController();
+                        $wxtmplmsg->spell_success($openid,$join_num[$i]['goods_name'],$nicknames);
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
                     }
