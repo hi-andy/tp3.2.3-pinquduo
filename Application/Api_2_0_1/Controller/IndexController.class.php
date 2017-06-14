@@ -1,6 +1,6 @@
 <?php
 namespace Api_2_0_1\Controller;
-use Admin\Logic\OrderLogic;
+
 class IndexController extends BaseController {
     public $version = null;
     public function _initialize() {
@@ -9,7 +9,7 @@ class IndexController extends BaseController {
     }
 
     public function index(){
-        $wxtmplmsg = new \Wxtmplmsg();
+        $wxtmplmsg = new WxtmplmsgController();
         $wxtmplmsg->order_payment_success('oHSHkvhi3tEOtGXciKfhNOZHKt_Y','0.01','测试商品');
     }
 
