@@ -26,7 +26,7 @@ class WxtmplmsgController
         $data = array(
             'first' => array(
                 'value' => '商品购买成功，商家已经为您准备货物中，请耐心等待',
-                'color' => '#000000'
+                'color' => '#FF0000'
             ),
             'orderMoneySum' => array(
                 'value' => $orderMoneySum,
