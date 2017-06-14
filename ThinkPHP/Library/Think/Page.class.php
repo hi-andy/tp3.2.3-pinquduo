@@ -80,7 +80,7 @@ class Page{
         /* 生成URL */
         if(!empty($store)){
             $this->parameter[$this->p] = '[PAGE]';
-            $this->parameter[$this->p] = $store;
+            $this->parameter[$this->store_id] = $store;
             $this->url = U(ACTION_NAME, $this->parameter);
         }else{
             $this->parameter[$this->p] = '[PAGE]';
