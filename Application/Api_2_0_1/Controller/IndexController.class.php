@@ -9,7 +9,8 @@ class IndexController extends BaseController {
     }
 
     public function index(){
-
+        $wxtmplmsg = new \Wxtmplmsg();
+        $wxtmplmsg->order_payment_success('oHSHkvhi3tEOtGXciKfhNOZHKt_Y','0.01','测试商品');
     }
 
     /*
