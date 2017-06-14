@@ -38,7 +38,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#000000'
+                'color' => '#1C86EE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -58,7 +58,7 @@ class WxtmplmsgController
         $data = array(
             'first' => array(
                 'value' => '您购买的商品已拼团成功',
-                'color' => '#000000'
+                'color' => '#FF0000'
             ),
             'keyword1' => array(
                 'value' => $keyword1,
@@ -74,7 +74,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#000000'
+                'color' => '#1C86EE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -94,7 +94,7 @@ class WxtmplmsgController
         $data = array(
             'first' => array(
                 'value' => '您购买的商品已拼团失败',
-                'color' => '#000000'
+                'color' => '#FF0000'
             ),
             'keyword1' => array(
                 'value' => $keyword1,
@@ -110,7 +110,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#000000'
+                'color' => '#1C86EE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -131,7 +131,7 @@ class WxtmplmsgController
         $data = array(
             'first' => array(
                 'value' => '您购买的商品已拼团失败',
-                'color' => '#000000'
+                'color' => '#FF0000'
             ),
             'keyword1' => array(
                 'value' => $keyword1,
@@ -151,7 +151,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#000000'
+                'color' => '#1C86EE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
@@ -170,7 +170,7 @@ class WxtmplmsgController
         $data = array(
             'first' => array(
                 'value' => '您购买的商品已退款',
-                'color' => '#000000'
+                'color' => '#FF0000'
             ),
             'reason' => array(
                 'value' => $reason,
@@ -182,7 +182,7 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => $Remark,
-                'color' => '#000000'
+                'color' => '#1C86EE'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
