@@ -435,6 +435,10 @@ class PurchaseController extends  BaseController
                     $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail,'pay_status'=>1));
                     $this->aftermath($user_id,$goods,$num,$o_id);//修改库存
                 }else{
+                    $count = M('group_buy')->where('`id` = '.$result['id'].' or mark = '.$result['id'])->count();
+                    if($count==$result['goods_num']){
+                       $re = $this->getFree($result['id'],1);
+                    }
                     $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_status'=>0));
                 }
                 if(!empty($ajax_get)){
@@ -705,6 +709,7 @@ class PurchaseController extends  BaseController
                 $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail,'pay_status'=>1));
                 $this->aftermath($user_id, $goods, $num, $o_id);
             }else{
+
                 $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_status'=>0));
             }
             if(!empty($ajax_get)){

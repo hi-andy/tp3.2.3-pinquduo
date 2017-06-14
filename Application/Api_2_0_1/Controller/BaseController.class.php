@@ -697,7 +697,7 @@ class BaseController extends Controller {
         return $return;
     }
 
-    public function getFree($prom_id)
+    public function getFree($prom_id,$type='')
     {
         $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
 
@@ -767,7 +767,12 @@ class BaseController extends Controller {
                 }
             }
         }
-        exit ;
+        if(empty($type)){
+            exit ;
+        }else{
+            return 1;
+        }
+
     }
 
     public function getWhere($order_id)
