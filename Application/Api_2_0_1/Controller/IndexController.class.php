@@ -1,6 +1,6 @@
 <?php
 namespace Api_2_0_1\Controller;
-use Admin\Logic\OrderLogic;
+
 class IndexController extends BaseController {
     public $version = null;
     public function _initialize() {
@@ -747,8 +747,4 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test($order_sn,$order_a){
-        $orderLogic = new OrderLogic();
-        $result = $orderLogic->weixinBackPay($order_sn, $order_a);
-    }
 }

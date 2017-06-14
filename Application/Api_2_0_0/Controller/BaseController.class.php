@@ -710,10 +710,10 @@ class BaseController extends Controller {
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                         //销量、库存
-                        $goods = M('goods')->where('`goods_id` = '.$join_num[$i]['goods_id'])->field('is_special')->find();
+                        $goods_id = $join_num[$i]['goods_id'];
                         $spec_name = M('order_goods')->where('`order_id`='.$join_num[$i]['order_id'])->field('spec_key')->find();
-                        M('spec_goods_price')->where("`goods_id`=$goods[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods['goods_id'])->setDec('store_count',1);
+                        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
+                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
                     }

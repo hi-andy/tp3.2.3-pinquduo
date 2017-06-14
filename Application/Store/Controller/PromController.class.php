@@ -150,7 +150,7 @@ class PromController extends BaseController {
 		$where = '1=1 ';
 		I('consignee') && $where = $where." and consignee like '%".I('consignee')."%'";
 		$order_sn && $where = $where." and order_sn like '%$order_sn%' ";
-		if(I('shipping_status')==0||I('shipping_status')==0)
+		if(I('shipping_status')==0||I('shipping_status')==1)
 		{
 			$where = $where." and order_type = 14";
 		}elseif(I('shipping_status')==2){

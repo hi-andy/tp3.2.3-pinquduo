@@ -250,20 +250,20 @@ class BaseController extends Controller {
 //            return array();      //不存在图片则返回空
 //        }else{
 //            $endreturn=array();
-//            foreach ($result as $file) {
-//                $src=$file['savepath'].$file['savename'];
-//                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
-//                /*生成缩略图*/
-//                $image = new \Think\Image();
-//                $image->open(C("UPLOADPATH") . $src);
-//                $namearr=explode('.',$file['savename']);
-//                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
-//                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
-//                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
-//                $src=$file['savepath'].$file['savename'];
-//                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
-//                $endreturn[]=$returnData;
-//            }
+            foreach ($result as $file) {
+                $src=$file['savepath'].$file['savename'];
+                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
+                /*生成缩略图*/
+                $image = new \Think\Image();
+                $image->open(C("UPLOADPATH") . $src);
+                $namearr=explode('.',$file['savename']);
+                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
+                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
+                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
+                $src=$file['savepath'].$file['savename'];
+                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
+                $endreturn[]=$returnData;
+            }
 //            return $endreturn;
 //        }
 
@@ -712,10 +712,10 @@ class BaseController extends Controller {
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                         //销量、库存
-                        $goods = M('goods')->where('`goods_id` = '.$join_num[$i]['goods_id'])->field('is_special')->find();
+                        $goods_id = $join_num[$i]['goods_id'];
                         $spec_name = M('order_goods')->where('`order_id`='.$join_num[$i]['order_id'])->field('spec_key')->find();
-                        M('spec_goods_price')->where("`goods_id`=$goods[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods['goods_id'])->setDec('store_count',1);
+                        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
+                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
                     }
@@ -849,49 +849,31 @@ class BaseController extends Controller {
         }
     }
 
-    public function weixin_push($type,$openid){
-        require_once("plugins/payment/weixin/lib/WxPay.Api.php");
-        $client_credential = (array) json_decode(file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".\WxPayConfig::$appid."&secret=".\WxPayConfig::$appsecret));
-        $access_token = $client_credential['access_token'];
-        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={$access_token}";
-        switch ($type){
-            case 1;
-                $template_id = "Mauyu9oX0xPaysPov4vaYj0cfcXx-LlI-DzLwskXNSY";//订单提交成功
-                $pagepath = "goods_order.html?id=4";
-                break;
-            case 2;
-                $template_id = "YRyhnjefOtwOxIPtz34WuRhBkM4PfO-SXIv1NxgqDJE";//订单支付成功
-                $pagepath = "user_center.html";
-                break;
-            case 3;
-                $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";//拼团成功通知
-                $pagepath = "goods_order.html?id=2";
-                break;
-            case 4;
-                $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";//拼团失败通知
-                $pagepath = "goods_order.html?id=2";
-                break;
-            case 5;
-                $template_id = "jJAuHgR_wCKQo5ueg5yd19SnUM6rEc0jDrEQHmM_l7s";//商品已发出通知
-                $pagepath = "goods_order.html?id=3";
-                break;
-            case 6;
-                $template_id = "i0wA-7MTEz2dzxHpWvj-VyUCNEe5sGvahNF_ALCZzaE";//退款通知
-                $pagepath = "after_sales.html";
-                break;
+    /**
+     * 修改订单状态
+     * @param  [type] $order [description]
+     * @return [type]        [description]
+     */
+    public function changeOrderStatus($order)
+    {
+        $data['pay_status'] = 1;
+        if(!empty($order['prom_id']))
+        {
+            $data['order_type'] = 11;
+        }else{
+            $data['order_type'] = 2;
         }
-        $data = array(
-            'touser' => $openid,
-            'template_id' => $template_id,
-            'url' => C("SHARE_URL"),
-            'miniprogram' => array(
-                'appid' => \WxPayConfig::$appid,
-                'pagepath' => $pagepath
-            ),
-            'data' => array(
+        $this->order_redis_status_ref($order['user_id']);
+        //微信推送消息
+        $openid = M('users')->where("user_id={$order['user_id']}")->getField('openid');
+        $goods_name = M('goods')->where("goods_id={$order['goods_id']}")->getField('goods_name');
+        $wxtmplmsg = new WxtmplmsgController();
+        $wxtmplmsg->order_payment_success($openid,$order['order_amount'],$goods_name);
 
-            )
-        );
-        $result = async_get_url($url);
+        //销量、库存
+        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
+        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
+        $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
+        return $res;
     }
 }
