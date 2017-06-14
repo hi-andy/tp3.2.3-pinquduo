@@ -72,7 +72,7 @@ class WxtmplmsgController
                 'value' => $keyword3,
                 'color' => '#000000'
             ),
-            'Remark' => array(
+            'remark' => array(
                 'value' => $Remark,
                 'color' => '#436EEE'
             )
@@ -108,7 +108,7 @@ class WxtmplmsgController
                 'value' => $keyword3,
                 'color' => '#000000'
             ),
-            'Remark' => array(
+            'remark' => array(
                 'value' => $Remark,
                 'color' => '#436EEE'
             )
@@ -149,7 +149,7 @@ class WxtmplmsgController
                 'value' => $keyword4,
                 'color' => '#000000'
             ),
-            'Remark' => array(
+            'remark' => array(
                 'value' => $Remark,
                 'color' => '#436EEE'
             )
@@ -180,7 +180,7 @@ class WxtmplmsgController
                 'value' => $refund,
                 'color' => '#000000'
             ),
-            'Remark' => array(
+            'remark' => array(
                 'value' => $Remark,
                 'color' => '#436EEE'
             )
