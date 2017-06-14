@@ -204,11 +204,7 @@ class WxtmplmsgController
         $push_data = array(
             'touser' => $openid,
             'template_id' => $template_id,
-            'url' => C("SHARE_URL"),
-            'miniprogram' => array(
-                'appid' => \WxPayConfig::$appid,
-                'pagepath' => $pagepath
-            ),
+            'url' => C("SHARE_URL").'/'.$pagepath,
             'data' => $data
         );
         $result = http_request($url,urldecode(json_encode($push_data)));
