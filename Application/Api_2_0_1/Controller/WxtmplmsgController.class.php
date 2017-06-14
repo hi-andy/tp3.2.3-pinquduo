@@ -20,13 +20,13 @@ class WxtmplmsgController
      * @param $orderProductName 商品信息
      * @param $remark 备注
      */
-    public function order_payment_success($openid,$orderMoneySum,$orderProductName,$remark='还有更省钱的办法？请点击此了解省钱大法'){
+    public function order_payment_success($openid,$orderMoneySum,$orderProductName,$Remark='还有更省钱的办法？请点击此了解省钱大法'){
         $template_id = "YRyhnjefOtwOxIPtz34WuRhBkM4PfO-SXIv1NxgqDJE";
         $pagepath = "save_money.html";
         $data = array(
             'first' => array(
                 'value' => '商品购买成功，商家已经为您准备货物中，请耐心等待',
-                'color' => '#000000'
+                'color' => '#FF0000'
             ),
             'orderMoneySum' => array(
                 'value' => $orderMoneySum,
@@ -36,8 +36,8 @@ class WxtmplmsgController
                 'value' => $orderProductName,
                 'color' => '#000000'
             ),
-            'remark' => array(
-                'value' => $remark,
+            'Remark' => array(
+                'value' => $Remark,
                 'color' => '#000000'
             )
         );
@@ -52,7 +52,7 @@ class WxtmplmsgController
      * @param $keyword3 发货时间
      * @param $remark 备注
      */
-    public function spell_success($openid,$keyword1,$keyword2,$keyword3,$remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
+    public function spell_success($openid,$keyword1,$keyword2,$keyword3,$Remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
         $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";
         $pagepath = "special99.html";
         $data = array(
@@ -72,8 +72,8 @@ class WxtmplmsgController
                 'value' => $keyword3,
                 'color' => '#000000'
             ),
-            'remark' => array(
-                'value' => $remark,
+            'Remark' => array(
+                'value' => $Remark,
                 'color' => '#000000'
             )
         );
@@ -88,7 +88,7 @@ class WxtmplmsgController
      * @param $keyword3 退款金额
      * @param $remark 备注
      */
-    public function failed_to_spell($openid,$keyword1,$keyword2,$keyword3,$remark){
+    public function failed_to_spell($openid,$keyword1,$keyword2,$keyword3,$Remark){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
         $pagepath = "goods_order.html?id=2";
         $data = array(
@@ -108,8 +108,8 @@ class WxtmplmsgController
                 'value' => $keyword3,
                 'color' => '#000000'
             ),
-            'remark' => array(
-                'value' => $remark,
+            'Remark' => array(
+                'value' => $Remark,
                 'color' => '#000000'
             )
         );
@@ -125,7 +125,7 @@ class WxtmplmsgController
      * @param $keyword4 商品数量
      * @param $remark 备注
      */
-    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
+    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$Remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
         $pagepath = "special99.html";
         $data = array(
@@ -149,8 +149,8 @@ class WxtmplmsgController
                 'value' => $keyword4,
                 'color' => '#000000'
             ),
-            'remark' => array(
-                'value' => $remark,
+            'Remark' => array(
+                'value' => $Remark,
                 'color' => '#000000'
             )
         );
@@ -164,7 +164,7 @@ class WxtmplmsgController
      * @param $refund 退款金额
      * @param $remark 备注
      */
-    public function refund($openid,$reason,$refund,$remark='查看更多的好商品，选择高品质的商品就在趣多严选'){
+    public function refund($openid,$reason,$refund,$Remark='查看更多的好商品，选择高品质的商品就在趣多严选'){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
         $pagepath = "strict_selection.html";
         $data = array(
@@ -180,8 +180,8 @@ class WxtmplmsgController
                 'value' => $refund,
                 'color' => '#000000'
             ),
-            'remark' => array(
-                'value' => $remark,
+            'Remark' => array(
+                'value' => $Remark,
                 'color' => '#000000'
             )
         );
@@ -204,11 +204,7 @@ class WxtmplmsgController
         $push_data = array(
             'touser' => $openid,
             'template_id' => $template_id,
-            'url' => C("SHARE_URL"),
-            'miniprogram' => array(
-                'appid' => \WxPayConfig::$appid,
-                'pagepath' => $pagepath
-            ),
+            'url' => C("SHARE_URL").'/'.$pagepath,
             'data' => $data
         );
         $result = http_request($url,urldecode(json_encode($push_data)));
