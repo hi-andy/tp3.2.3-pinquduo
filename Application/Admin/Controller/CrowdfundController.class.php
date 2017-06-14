@@ -302,7 +302,6 @@ class CrowdfundController extends BaseController {
             $grandson_ids = getCatGrandson(I('cat_id'));
             $where = " $where  and cat_id in(" . implode(',', $grandson_ids) . ") "; // 初始化搜索条件
         }
-
         if (!empty($_REQUEST['keywords'])) {
             $this->assign('keywords', I('keywords'));
             $where = "$where and (goods_name like '%" . I('keywords')."%')";
@@ -311,6 +310,10 @@ class CrowdfundController extends BaseController {
         {
             $this->assign('store_name', I('store_name'));
             $where = $this->getStoreWhere($where,I('store_name'));
+        }
+        if(I('store_id')){
+            $store_id = I('store_id');
+            $where = "$where and store_id IN $store_id";
         }
         $count = M('goods')->where($where)->count();
         $Page = new \Think\Page($count, 10);

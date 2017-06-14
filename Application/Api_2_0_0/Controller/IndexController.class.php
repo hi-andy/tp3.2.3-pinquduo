@@ -608,7 +608,7 @@ class IndexController extends BaseController {
         $version = I('version');
         $rdsname = "getThe_raise".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 and goods_id != 17267 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
