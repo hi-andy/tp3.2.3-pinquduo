@@ -188,7 +188,15 @@ class Wxtmplmsg
         $this->push($template_id,$pagepath,$data,$openid);
     }
 
-    public function push($template_id,$pagepath,$data,$openid){
+    /**
+     * 推送
+     * @param $template_id 模板ID
+     * @param $pagepath 跳转链接(不需要域名，例如 index.php?m=1)
+     * @param array $data 推送内容
+     * @param $openid
+     * @return array
+     */
+    public function push($template_id,$pagepath,$data=array(),$openid){
         require_once("plugins/payment/weixin/lib/WxPay.Api.php");
         $client_credential = (array) json_decode(file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".\WxPayConfig::$appid."&secret=".\WxPayConfig::$appsecret));
         $access_token = $client_credential['access_token'];
