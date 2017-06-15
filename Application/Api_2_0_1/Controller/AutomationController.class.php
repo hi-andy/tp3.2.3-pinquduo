@@ -13,6 +13,7 @@ class AutomationController extends BaseController
 {
     public $userLogic;
     public function _initialize(){
+        exit;
         parent::_initialize();
         $this->userLogic = new \Home\Logic\UsersLogic();
     }
