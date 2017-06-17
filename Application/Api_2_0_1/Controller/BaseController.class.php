@@ -870,7 +870,7 @@ class BaseController extends Controller {
      */
     public function get_robot($not_in_user_id='') {
         if (!empty($not_in_user_id)) {
-            $user = M('','','DB_CONFIG2')->query("select user_id from tp_users order by rand() LIMIT 1");
+            $user = M('','','DB_CONFIG2')->query("select user_id,nickname from tp_users order by rand() LIMIT 1");
             return $user[0];
         }
     }
