@@ -503,7 +503,7 @@ class OrderLogic extends RelationModel
 		$base = new \Api_2_0_0\Controller\BaseController();
 		$base->order_redis_status_ref($order['user_id']);
 		$s = $this->orderActionLog($order['order_id'],'delivery',$data['note']);//操作日志
-		return $s && $r;
+		return $s;
 	}
     /**
      * 获取地区名字
