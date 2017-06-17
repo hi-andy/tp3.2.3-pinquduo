@@ -738,7 +738,7 @@ class BaseController extends Controller {
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
         if (!empty($user_ids)){
-            $user = M('users','','DB_CONFIG2')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
+            $user = M('users','','DB_CONFIG2')->where("user_id in('{$user_ids}')")->field('openid,nickname')->select();
             if ($user) {
                 $nicknames = "";
                 $wxtmplmsg = new WxtmplmsgController();
