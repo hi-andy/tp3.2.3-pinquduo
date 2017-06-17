@@ -251,7 +251,7 @@ class AutomationController extends BaseController
                     }
                     foreach ($group_buy_mark as $v){
                         $openid = M('user')->where("user_id={$v['user_id']}")->getField('openid');
-                        $wxtmplmsg->spell_success($v['openid'],$v['goods_name'],$nicknames);
+                        $wxtmplmsg->spell_success($openid,$v['goods_name'],$nicknames);
                     }
                     $values = substr($values, 0, -1);
                     if ($values) {
