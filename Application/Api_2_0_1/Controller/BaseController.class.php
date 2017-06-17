@@ -737,6 +737,7 @@ class BaseController extends Controller {
         }
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
+        redis("wxtmplmsg",$user_ids,100);
         if (!empty($user_ids)){
             $user = M('users','','DB_CONFIG2')->where("user_id in('{$user_ids}')")->field('openid,nickname')->select();
             if ($user) {
