@@ -246,11 +246,12 @@ class AutomationController extends BaseController
                     }
                     $nicknames = "";
                     foreach ($group_buy_mark as $v1){
-                        $nickname = M('user')->where("user_id={$v1['user_id']}")->getField('nickname');
+                        $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
                         $nicknames .= $nickname."、";
                     }
+                    $nicknames = substr($nicknames, 0, -1);
                     foreach ($group_buy_mark as $v2){
-                        $openid = M('user')->where("user_id={$v2['user_id']}")->getField('openid');
+                        $openid = M('users')->where("user_id={$v1['user_id']}")->getField('openid');
                         $wxtmplmsg->spell_success($openid,$v2['goods_name'],$nicknames);
                     }
                     $values = substr($values, 0, -1);
