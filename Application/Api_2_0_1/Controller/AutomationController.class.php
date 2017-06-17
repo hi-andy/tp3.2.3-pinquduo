@@ -231,6 +231,7 @@ class AutomationController extends BaseController
             $order_ids = "";
             $num = 0;
             $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution, auto) VALUES";
+            $wxtmplmsg = new WxtmplmsgController();
             foreach ($prom_order as $v){
                 if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
@@ -242,6 +243,15 @@ class AutomationController extends BaseController
                         $num += 1;
                         $user = $this->get_robot($v['user_id']);
                         $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},0,{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
+                    }
+                    $nicknames = "";
+                    foreach ($group_buy_mark as $v){
+                        $nickname = M('user')->where("user_id={$v['user_id']}")->getField('nickname');
+                        $nicknames .= $nickname."、";
+                    }
+                    foreach ($group_buy_mark as $v){
+                        $openid = M('user')->where("user_id={$v['user_id']}")->getField('openid');
+                        $wxtmplmsg->spell_success($v['openid'],$v['goods_name'],$nicknames);
                     }
                     $values = substr($values, 0, -1);
                     if ($values) {
