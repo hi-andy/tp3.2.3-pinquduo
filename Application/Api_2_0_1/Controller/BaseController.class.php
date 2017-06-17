@@ -700,11 +700,6 @@ class BaseController extends Controller {
     public function getFree($prom_id,$type='')
     {
         $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
-        $nicknames = "";
-        foreach ($join_num as $v){
-            $nickname = M('users')->where("user_id={$v['user_id']}")->getField('nickname');
-            $nicknames .= $nickname . '、';
-        }
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         M()->startTrans();
@@ -741,12 +736,13 @@ class BaseController extends Controller {
         }
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
-        $nicknames = substr($nicknames, 0, -1);
         if (!empty($user_ids)){
-            $user = M('users','','DB_CONFIG2')->where("user_id in({$user_ids})")->field('openid')->select();
+            $user = M('users','','DB_CONFIG2')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
             if ($user) {
+                $nicknames = "";
+                $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
-                    $wxtmplmsg = new WxtmplmsgController();
+                    $nicknames .= $v['nickname'] . '、';
                     $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
                 }
             }
@@ -895,6 +891,7 @@ class BaseController extends Controller {
         $goods_name = M('goods')->where("goods_id={$order['goods_id']}")->getField('goods_name');
         $wxtmplmsg = new WxtmplmsgController();
         $wxtmplmsg->order_payment_success($openid,$order['order_amount'],$goods_name);
+        redis("wxtmplmsg","123",100);
 
         //销量、库存
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
