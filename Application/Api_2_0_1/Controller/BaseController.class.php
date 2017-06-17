@@ -709,13 +709,12 @@ class BaseController extends Controller {
         $free_num = $join_num[0]['free'];
         M()->startTrans();
         //把所有人的状态改成发货
+        $user_ids = "";
         for($i=0;$i<count($join_num);$i++){
             if($join_num[$i]['auto']==0){
                 $this->order_redis_status_ref($join_num[$i]['user_id']);
-                //微信推送消息
-                $openid = M('users')->where("user_id={$join_num[$i]['user_id']}")->getField('openid');
-                $wxtmplmsg = new WxtmplmsgController();
-                $wxtmplmsg->spell_success($openid,$join_num[$i]['goods_name'],$nicknames);
+                $user_ids .= $join_num[$i]['user_id'].",";
+                $goodsname = $join_num[$i]['goods_name'];
                 if(!empty($join_num[0]['is_raise'])){
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
@@ -740,6 +739,20 @@ class BaseController extends Controller {
                 M()->rollback();
             }
         }
+        //微信推送消息
+        $user_ids = substr($user_ids, 0, -1);
+        $nicknames = substr($nicknames, 0, -1);
+        if (!empty($user_ids)){
+            $user = M('users')->where("user_id in({$user_ids})")->field('openid')->select();
+            if ($user) {
+                foreach ($user as $v){
+                    $wxtmplmsg = new WxtmplmsgController();
+                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
+                }
+            }
+
+        }
+
 
         if($free_num>0){//如果有免单，才执行getRand操作
             redis("get_Free_Order_status","1");
