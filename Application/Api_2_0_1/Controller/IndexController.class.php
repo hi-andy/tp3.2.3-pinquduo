@@ -9,8 +9,9 @@ class IndexController extends BaseController {
     }
 
     public function index(){
-        $wxtmplmsg = new WxtmplmsgController();
-        print_r($wxtmplmsg->spell_success('oHSHkvhi3tEOtGXciKfhNOZHKt_Y','测试商品','张三、里斯'));
+//        $wxtmplmsg = new WxtmplmsgController();
+//        print_r($wxtmplmsg->order_payment_success('oHSHkvhi3tEOtGXciKfhNOZHKt_Y','0.01','测试商品'));
+        print_r(redis("wxtmplmsg"));
     }
 
     /*
@@ -748,101 +749,4 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test(){//为我点赞
-        $res = M('group_buy')->alias('g')
-            ->join('INNER JOIN tp_order o on g.order_id = o.order_id ')
-            ->where('g.is_raise = 1 and g.mark = 0 and g.is_dissolution = 0 and g.is_cancel = 0')->limit(0,100)->field('g.*,o.order_status,o.order_type')->select();
-        var_dump(M()->getLastSql());
-        var_dump($res);die;
-        for($i=0;$i<count($res);$i++){
-            $res1 = M('group_buy')->where('id='.$res[$i]['id'].' or mark='.$res[$i]['id'].' and is_pay = 1')->select();
-            $count = count($res1);
-            for($j=0;$j<$count;$j++){
-                if($res[$i]['goods_num']==$count){
-                    //判断是否发货了
-                    if($j==0){
-                        $order = M('order')->where('prom_id = '.$res1[0]['id'])->field('shipping_order,shipping_code,confirm_time')->find();
-                        if(!empty($order['shipping_code']) && !empty($order['shipping_order']) && !empty($order['confirm_time'])){
-                            $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'pay_status'=>1,'order_type'=>4))->save();
-                        }elseif(!empty($order['shipping_code']) && !empty($order['shipping_order'])){
-                            $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>11,'shipping_status'=>1,'pay_status'=>1,'order_type'=>15))->save();
-                        }else{
-                            $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>11,'shipping_status'=>0,'pay_status'=>1,'order_type'=>14))->save();
-                        }
-                    }else{
-                        $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'pay_status'=>1,'order_type'=>4))->save();
-                    }
-                }else{
-                    if($res1[$j]['end_time']>time()){//未取消的  1483432711
-                        $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>8,'shipping_status'=>0,'pay_status'=>1,'order_type'=>11))->save();
-                        $res2 = M('group_buy')->where('`id`='.$res1[$j]['id'])->data(array('is_successful'=>0))->save();
-                    }else{
-                        $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>10,'shipping_status'=>0,'pay_status'=>1,'order_type'=>13))->save();
-                        $res2 = M('group_buy')->where('`id`='.$res1[$j]['id'])->data(array('is_successful'=>0))->save();
-                    }
-                }
-            }
-        }
-
-    }
-
-    function  test1(){
-        $res = M('group_buy')->where(' end_time<'.time() .' and is_cancel = 0 and is_dissolution= 0 and mark =0 and is_raise= 0 and is_return_or_exchange = 0')->limit(0,20)->select();
-        for($i=0;$i<count($res);$i++){
-            if($res[$i]['mark']==0){
-                $res1 = M('group_buy')->where('id='.$res[$i]['id'].' or mark='.$res[$i]['id'].' and is_pay = 1')->select();
-            }else{
-                $res1 = M('group_buy')->where('id='.$res[$i]['mark'].' or mark='.$res[$i]['mark'].' and is_pay = 1')->select();
-            }
-
-            $count = count($res1);
-            if($res[$i]['goods_num']==$count){
-                for($j=0;$j<$count;$j++){
-                    //判断是否发货了
-                    $order = M('order')->where('prom_id = '.$res1[$j]['id'])->field('shipping_order,shipping_code,confirm_time')->find();
-                    if(!empty($order['shipping_code']) || !empty($order['shipping_order']) && !empty($order['confirm_time'])){
-                        $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'pay_status'=>1,'order_type'=>4))->save();
-                    }elseif(!empty($order['shipping_code']) && !empty($order['shipping_order'])){
-                        $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>11,'shipping_status'=>1,'pay_status'=>1,'order_type'=>15))->save();
-                    }else{
-                        $res2 = M('order')->where('`prom_id`='.$res1[$j]['id'])->data(array('order_status'=>11,'shipping_status'=>0,'pay_status'=>1,'order_type'=>14))->save();
-                    }
-                }
-            }else{
-                for($j=0;$j<$count;$j++) {
-                    $re1 = M('group_buy')->where('id = '.$res[$j]['id'])->data(array('is_successful'=>0))->save();
-                    $re2 = M('order')->where('prom_id = '.$res[$j]['id'])->data(array('order_status'=>13,'shipping_status'=>0,'pay_status'=>1,'order_type'=>13))->save();
-                }
-            }
-        }
-    }
-
-    function  test2(){
-        $res = M('group_buy')->alias('g')
-            ->join('INNER JOIN tp_order o on g.order_id = o.order_id ')
-            ->where('o.is_cancel = 1 and o.order_status!=3')->page(1,100)->field('g.id,o.is_cancel,o.order_status,o.order_type')->select();
-        for($i=0;$i<count($res);$i++){
-                $re2 = M('order')->where('prom_id = '.$res[$i]['id'])->data(array('order_status'=>3,'shipping_status'=>0,'pay_status'=>0,'order_type'=>5))->save();
-        }
-    }
-
-    function  test3()
-    {
-        $res = M('group_buy')->alias('g')
-            ->join('INNER JOIN tp_order o on g.order_id = o.order_id ')
-            ->where('g.is_return_or_exchange = 1')->limit(0, 2)->field('g.id,o.is_cancel,o.order_status,o.order_type')->select();
-        for ($i = 0; $i < count($res); $i++) {
-
-        }
-    }
-
-    function  test4()
-    {
-        $res = M('group_buy')->alias('g')
-            ->join('INNER JOIN tp_order o on g.order_id = o.order_id ')
-            ->where('g.is_return_or_exchange = 1')->limit(0, 2)->field('g.id,o.is_cancel,o.order_status,o.order_type')->select();
-        for ($i = 0; $i < count($res); $i++) {
-
-        }
-    }
 }

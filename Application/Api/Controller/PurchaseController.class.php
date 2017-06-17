@@ -26,6 +26,12 @@ class PurchaseController
     function getBuy()
     {
         header("Access-Control-Allow-Origin:*");
+
+//        $json = array('status' => -1, 'msg' => '服务器升级中……');
+//        if (!empty($ajax_get))
+//            $this->getJsonp($json);
+//        exit(json_encode($json));
+
         $user_id = I('user_id');
         $prom_id =I('prom_id');
         $address_id = I('address_id');
