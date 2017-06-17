@@ -9,9 +9,7 @@ class IndexController extends BaseController {
     }
 
     public function index(){
-//        $wxtmplmsg = new WxtmplmsgController();
-//        print_r($wxtmplmsg->spell_success('oHSHkvhi3tEOtGXciKfhNOZHKt_Y','测试商品','wangzi'));
-        print_r(redis("wxtmplmsg"));
+
     }
 
     /*

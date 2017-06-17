@@ -747,9 +747,8 @@ class BaseController extends Controller {
                 $nicknames = substr($nicknames, 0, -1);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
-                    $a .= $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
+                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
                 }
-                redis("wxtmplmsg",$a,100);
             }
 
         }
