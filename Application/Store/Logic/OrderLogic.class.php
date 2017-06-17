@@ -486,7 +486,7 @@ class OrderLogic extends RelationModel
 		$action['pay_status'] = 1;
 		$action['action_note'] = $data['note'];
 		$action['log_time'] = time();
-		M('order_action')->add($action);
+		M('order_action')->where("order_id=".$data['order_id'])->save($action);
 
 		$updata['shipping_status'] = 1;
 		$updata['shipping_code'] = $data['shipping_code'];
@@ -503,7 +503,7 @@ class OrderLogic extends RelationModel
 		$base = new \Api_2_0_0\Controller\BaseController();
 		$base->order_redis_status_ref($order['user_id']);
 		$s = $this->orderActionLog($order['order_id'],'delivery',$data['note']);//操作日志
-		return $s;
+		return $s ;
 	}
     /**
      * 获取地区名字
