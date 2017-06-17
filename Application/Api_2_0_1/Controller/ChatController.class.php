@@ -81,7 +81,7 @@ class ChatController extends BaseController
      */
     public function get_chat($to='', $from='', $chat_type='', $page=0, $pagesize=20){
         if ($to && $from && $chat_type) {
-            $page *= 10;
+            $page *= $pagesize;
             $in_msg_id = "0,";
             $where = "((tos = '{$to}' and froms = '{$from}') or (tos = '{$from}' and froms = '{$to}')) and chat_type = '{$chat_type}' and status <> 2";
             $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp asc')->limit($page,$pagesize)->select();
