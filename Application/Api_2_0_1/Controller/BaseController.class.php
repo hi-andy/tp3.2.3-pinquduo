@@ -709,7 +709,7 @@ class BaseController extends Controller {
             if($join_num[$i]['auto']==0){
                 $this->order_redis_status_ref($join_num[$i]['user_id']);
                 $user_ids .= $join_num[$i]['user_id'].",";
-                $goodsname = $join_num[$i]['goods_name'];
+                if (empty($goodsname)) $goodsname = $join_num[$i]['goods_name'];
                 if(!empty($join_num[0]['is_raise'])){
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
@@ -747,8 +747,9 @@ class BaseController extends Controller {
                 $nicknames = substr($nicknames, 0, -1);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
-                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
+                    $a .= $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
                 }
+                redis("wxtmplmsg",$a,100);
             }
 
         }
