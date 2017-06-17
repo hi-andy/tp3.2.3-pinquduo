@@ -396,12 +396,17 @@ class OrderController extends BaseController {
 		    exit();
 	    }
 	    $res = M('delivery_doc')->where('`order_id`='.$data['order_id'])->find();
-	    if(!empty($res))
+	    $res1 = M('order')->where('order_id='.$data['order_id'])->find();
+	    if(!empty($res) && !empty($res1['shipping_code']) && !empty($res1['shipping_order']) && !empty($res1['shipping_name']))
 	    {
 		    $this->success('已经发货了',U('Store/Order/delivery_list',array('order_id'=>$data['order_id'])));
 		    exit();
+	    }elseif(!empty($res1['shipping_code']) && !empty($res1['shipping_order']) && !empty($res1['shipping_name'])){
+		    $res = $orderLogic->buchongfahuoxinxi($data);
+	    }else{
+		    $res = $orderLogic->deliveryHandle($data);
 	    }
-		$res = $orderLogic->deliveryHandle($data);
+
 		if($res){
 			reserve_logistics($data['order_id']);
 			$custom = array('type' => '3','id'=>$data['order_id']);
