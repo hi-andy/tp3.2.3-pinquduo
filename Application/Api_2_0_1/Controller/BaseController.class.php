@@ -891,7 +891,6 @@ class BaseController extends Controller {
         $goods_name = M('goods')->where("goods_id={$order['goods_id']}")->getField('goods_name');
         $wxtmplmsg = new WxtmplmsgController();
         $wxtmplmsg->order_payment_success($openid,$order['order_amount'],$goods_name);
-        redis("wxtmplmsg","123",100);
 
         //销量、库存
         M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
