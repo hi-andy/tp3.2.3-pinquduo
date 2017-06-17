@@ -155,23 +155,7 @@ class AlipayWapController extends BaseController
         }
         echo "success";        //请不要修改或删除
     }
-
-    public function changeOrderStatus($order)
-    {
-        $data['pay_status'] = 1;
-        if(!empty($order['prom_id']))
-        {
-            $data['order_type'] = 11;
-        }else{
-            $data['order_type'] = 2;
-        }
-        $this->order_redis_status_ref($order['user_id']);
-        //销量、库存
-        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
-        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
-        $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
-        return $res;
-    }
+    
     //开团 参团的时候在支付完成时将is_pay字段改变，标示加入团成功
     public function Join_Prom($order_id)
     {

@@ -169,12 +169,16 @@ class OrderLogic extends RelationModel
         $data['log_time'] = time();
         $data['status_desc'] = $action;
 	    $data['store_id'] = $_SESSION['merchant_id'];
-
+	    if(!empty($res)){
+		    $r = M('order_action')->where("order_id=".$data['order_id'])->save($data);
+	    }else{
+		    $r = M('order_action')->add($data);
+	    }
 //        if($action == 'delivery_confirm'){
 //        	order_give($order);//确认收货
 //        }
 
-        return M('order_action')->add($data); //订单操作记录
+	    return  $r;//订单操作记录
     }
 
     /*
@@ -404,10 +408,8 @@ class OrderLogic extends RelationModel
 		$orderGoods = $this->getOrderGoods($data['order_id']);
 //		$selectgoods = $data['goods'];
 		$data['order_sn'] = $order['order_sn'];
-//		$data['delivery_sn'] = $this->get_delivery_sn();
 		$data['zipcode'] = $order['zipcode'];
 		$data['user_id'] = $order['user_id'];
-//		$data['admin_id'] = session('admin_id');商户里面的操作，没有用户
 	    $data['store_id'] = session('merchant_id');
 		$data['consignee'] = $order['consignee'];
 		$data['mobile'] = $order['mobile'];
@@ -452,6 +454,57 @@ class OrderLogic extends RelationModel
 		return $s && $r;
     }
 
+	function buchongfahuoxinxi($data){
+		$order = M('order')->where('`order_id`='.$data['order_id'])->find();;
+		$orderGoods = $this->getOrderGoods($data['order_id']);
+//		$selectgoods = $data['goods'];
+		$data['order_sn'] = $order['order_sn'];
+		$data['zipcode'] = $order['zipcode'];
+		$data['user_id'] = $order['user_id'];
+		$data['store_id'] = session('merchant_id');
+		$data['consignee'] = $order['consignee'];
+		$data['mobile'] = $order['mobile'];
+		$data['address_base'] = $order['address_base'];
+		$data['district'] = $order['order_sn'];
+		$data['address'] = $order['address'];
+		$data['shipping_name']= M('logistics')->where(array('logistics_code'=>$data['shipping_code']))->getField('logistics_name');
+		$data['invoice_no'] = $data['shipping_order'];
+		$data['shipping_price'] = $order['shipping_price'];
+		$data['create_time'] = time();
+		$did = M('delivery_doc')->where("order_id=".$data['order_id'])->save($data);
+
+		$res['is_send'] = 1;
+		$res['delivery_id'] = $did;
+		$r = M('order_goods')->where("rec_id=".$orderGoods[0]['rec_id'])->save($res);//改变订单商品发货状态
+
+		$goods = M('goods')->where('`goods_id`='.$orderGoods[0]['goods_id'])->find();
+		$updata['order_type'] = $action['order_type'] = 3;
+		$action['order_status'] = 1;
+		$action['store_id'] = session('merchant_id');
+		$action['shipping_status'] = 1;
+		$action['order_id'] = $data['order_id'];
+		$action['pay_status'] = 1;
+		$action['action_note'] = $data['note'];
+		$action['log_time'] = time();
+		M('order_action')->where("order_id=".$data['order_id'])->save($action);
+
+		$updata['shipping_status'] = 1;
+		$updata['shipping_code'] = $data['shipping_code'];
+		$updata['shipping_name'] = $data['shipping_name'];
+		$updata['shipping_order'] = $data['shipping_order'];
+		$updata['shipping_price'] = $order['shipping_price'];
+		if($goods['is_special']==1)
+		{
+			$updata['automatic_time'] = time()+30*24*60*60;
+		}else{
+			$updata['automatic_time'] = time()+15*24*60*60;
+		}
+		M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
+		$base = new \Api_2_0_0\Controller\BaseController();
+		$base->order_redis_status_ref($order['user_id']);
+		$s = $this->orderActionLog($order['order_id'],'delivery',$data['note']);//操作日志
+		return $s ;
+	}
     /**
      * 获取地区名字
      * @param int $p
