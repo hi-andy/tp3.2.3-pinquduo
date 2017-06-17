@@ -84,7 +84,7 @@ class ChatController extends BaseController
             $page *= $pagesize;
             $in_msg_id = "0,";
             $where = "((tos = '{$to}' and froms = '{$from}') or (tos = '{$from}' and froms = '{$to}')) and chat_type = '{$chat_type}' and status <> 2";
-            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp asc')->limit($page,$pagesize)->select();
+            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp desc')->limit($page,$pagesize)->select();
             foreach ($result as $key => $value){
                 $data[$key]['msg_id'] = $value['msg_id'];
                 $data[$key]['timestamp'] = $value['timestamp'];
