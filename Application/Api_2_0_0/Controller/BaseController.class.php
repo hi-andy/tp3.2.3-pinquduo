@@ -834,4 +834,26 @@ class BaseController extends Controller {
             }
         }
     }
+
+    /**
+     * 修改订单状态
+     * @param  [type] $order [description]
+     * @return [type]        [description]
+     */
+    public function changeOrderStatus($order)
+    {
+        $data['pay_status'] = 1;
+        if(!empty($order['prom_id']))
+        {
+            $data['order_type'] = 11;
+        }else{
+            $data['order_type'] = 2;
+        }
+        $this->order_redis_status_ref($order['user_id']);
+        //销量、库存
+        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
+        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
+        $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
+        return $res;
+    }
 }
