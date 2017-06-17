@@ -243,7 +243,7 @@ class PromLogic extends RelationModel
 		$data['shipping_name'] = M('logistics')->where(array('logistics_code'=>$data['shipping_code']))->getField('logistics_name');
 		$data['shipping_price'] = $order['shipping_price'];
 		$data['create_time'] = time();
-		$did = M('delivery_doc')->where("order_id=".$data['order_id'])->save($data);
+		$did = M('delivery_doc')->add($data);
 	    $res['is_send'] = 1;
 	    $res['delivery_id'] = $did;
 	    $r = M('order_goods')->where("rec_id=".$orderGoods[0]['rec_id'])->save($res);//改变订单商品发货状态
@@ -257,7 +257,7 @@ class PromLogic extends RelationModel
 	    $action['pay_status'] = 1;
 	    $action['action_note'] = $data['note'];
 	    $action['log_time'] = time();
-	    M('order_action')->where("order_id=".$data['order_id'])->save($action);
+	    M('order_action')->add($action);
 
 	    $updata['shipping_status'] = 1;
 	    $updata['shipping_code'] = $data['shipping_code'];
