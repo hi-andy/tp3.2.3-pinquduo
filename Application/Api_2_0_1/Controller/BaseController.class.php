@@ -741,9 +741,12 @@ class BaseController extends Controller {
             $user = M('users','','DB_CONFIG2')->where("user_id in('{$user_ids}')")->field('openid,nickname')->select();
             if ($user) {
                 $nicknames = "";
-                $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
                     $nicknames .= $v['nickname'] . '、';
+                }
+                $nicknames = substr($nicknames, 0, -1);
+                $wxtmplmsg = new WxtmplmsgController();
+                foreach ($user as $v){
                     $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
                 }
             }
