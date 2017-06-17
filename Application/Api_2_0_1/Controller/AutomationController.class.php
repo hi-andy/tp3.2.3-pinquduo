@@ -245,13 +245,13 @@ class AutomationController extends BaseController
                         $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},0,{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
                     }
                     $nicknames = "";
-                    foreach ($group_buy_mark as $v){
-                        $nickname = M('user')->where("user_id={$v['user_id']}")->getField('nickname');
+                    foreach ($group_buy_mark as $v1){
+                        $nickname = M('user')->where("user_id={$v1['user_id']}")->getField('nickname');
                         $nicknames .= $nickname."、";
                     }
-                    foreach ($group_buy_mark as $v){
-                        $openid = M('user')->where("user_id={$v['user_id']}")->getField('openid');
-                        $wxtmplmsg->spell_success($openid,$v['goods_name'],$nicknames);
+                    foreach ($group_buy_mark as $v2){
+                        $openid = M('user')->where("user_id={$v2['user_id']}")->getField('openid');
+                        $wxtmplmsg->spell_success($openid,$v2['goods_name'],$nicknames);
                     }
                     $values = substr($values, 0, -1);
                     if ($values) {
