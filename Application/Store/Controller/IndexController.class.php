@@ -356,4 +356,6 @@ class IndexController extends BaseController {
 		$store_id=M('merchant')->where('store_name ='."'".$parameter['subject']."'")->getField('id');
 		M('store_detail')->where('storeid='.$store_id)->data($data)->save();
 	}
+
+	
 }

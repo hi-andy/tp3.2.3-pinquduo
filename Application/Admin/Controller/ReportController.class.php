@@ -60,7 +60,7 @@ class ReportController extends BaseController{
 		$data['keti'] = $keti-$data['ti'];
 		$data['keti'] = $this->operationPrice($data['keti']);
 		$data['tuikuan'] = M('order')->where("order_type IN ('8','9','12','13')")->sum('order_amount');
-//		var_dump(M()->getLastSql());die;
+
 		$this->assign('data',$data);
 
 		$sql = "SELECT COUNT(*) as tnum,sum(order_amount) as amount, FROM_UNIXTIME(add_time,'%Y-%m-%d') as gap from  __PREFIX__order ";
@@ -329,7 +329,7 @@ class ReportController extends BaseController{
 			$data['reflect'] = 0;
         $data['reflect'] = sprintf('%.2f', $data['reflect']);
 		$data['keti']>0&& $data['keti']=$this->operationPrice($data['keti']);
-		$data['tuikuan'] = M('return_goods')->where('store_id='.$store_id['id'].' and status=3')->sum('gold');
+		$data['tuikuan'] = M('order')->where('store_id='.$store_id['id'].' and order_type in (12,13,8,9)')->sum('order_amount');
 
 		$this->assign('data',$data);
 

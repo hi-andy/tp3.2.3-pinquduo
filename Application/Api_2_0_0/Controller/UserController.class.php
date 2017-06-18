@@ -1656,6 +1656,7 @@ class UserController extends BaseController {
         for($i=0;$i<$num;$i++) {
             $custom = array('type' => '2','id'=>$order[$i]['order_id']);
             $user_id = $order[$i]['user_id'];
+            $this->order_redis_status_ref($order[$i]['user_id']);
             SendXinge('抱歉您的拼团未成功，请重新开团',"$user_id",$custom);
             if ($order[$i]['pay_code'] == 'weixin') {
                 if ($order[$i]['is_jsapi']==1){
@@ -1688,7 +1689,12 @@ class UserController extends BaseController {
                     $this->fallback($order[$i]);
                 }
             }
-            M('return_goods')->add(array('order_id'=>$order[$i]['order_id'],'order_sn'=>$order[$i]['order_sn'],'goods_id'=>$order[$i]['goods_id'],'store_id'=>$order[$i]['store_id'],'gold'=>$order[$i]['order_amount'],'status'=>3,'is_prom'=>1,'reason'=>'未成团退款','is_return'=>1,'pay_code'=>$order[$i]['pay_code'],'addtime'=>time(),'user_id'=>$order[$i]['user_id'],'one_time'=>time(),'two_time'=>time(),'ok_time'=>time(),'is_return'=>1));
+            $res = M('return_goods')->where('order_id='.$order[$i]['order_id'])->find();
+            if(empty($res)){
+                $e =  M('return_goods')->add(array('order_id'=>$order[$i]['order_id'],'order_sn'=>$order[$i]['order_sn'],'goods_id'=>$order[$i]['goods_id'],'store_id'=>$order[$i]['store_id'],'gold'=>$order[$i]['order_amount'],'status'=>3,'is_prom'=>1,'reason'=>'未成团退款','is_return'=>1,'pay_code'=>$order[$i]['pay_code'],'addtime'=>time(),'user_id'=>$order[$i]['user_id'],'one_time'=>time(),'two_time'=>time(),'ok_time'=>time(),'is_return'=>1));
+            }else{
+                $e = M('return_goods')->where('order_id='.$order[$i]['order_id'])->save(array('order_id'=>$order[$i]['order_id'],'order_sn'=>$order[$i]['order_sn'],'goods_id'=>$order[$i]['goods_id'],'store_id'=>$order[$i]['store_id'],'gold'=>$order[$i]['order_amount'],'status'=>3,'is_prom'=>1,'reason'=>'未成团退款','is_return'=>1,'pay_code'=>$order[$i]['pay_code'],'addtime'=>time(),'user_id'=>$order[$i]['user_id'],'one_time'=>time(),'two_time'=>time(),'ok_time'=>time(),'is_return'=>1));
+            }
         }
     }
 
