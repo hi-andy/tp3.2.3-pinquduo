@@ -27,7 +27,8 @@ class ChatController extends BaseController
      * @param string $payload 内容
      * @param string $status 状态 0未查看 1查看 2删除
      */
-    public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status=''){
+    public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status='')
+    {
         if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload != '' && $status != '') {
             $chatcount = M('chat','','DB_CONFIG2')->where(array('msg_id'=>array('eq',$msg_id)))->count();
             if ($chatcount < 1) {
@@ -41,7 +42,8 @@ class ChatController extends BaseController
                     'payload' => $payload,
                     'status' => $status
                 );
-                redislist("chatlist", json_encode($msgdata));//写入redis队列
+                // 暂不使用缓存
+                //redislist("chatlist", json_encode($msgdata));//写入redis队列
                 json('保存成功',$msgdata);
             } else {
                 errjson('msg_id已存在');
@@ -107,10 +109,11 @@ class ChatController extends BaseController
      * 获取未读列表
      * @param string $user_id //接收方ID
      */
-    public function get_unread($user_id=''){
+    public function get_unread($user_id='', $page=0, $pageSize=20){
         if ($user_id){
             if (empty(redis('get_unread'))) {
-                $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC");
+                $page *= $pageSize;
+                $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC LIMIT $page, $pageSize");
                 $froms='';
                 foreach ($data1 as $k1 => $v1) {
                     $data[$k1] = $v1;
@@ -124,7 +127,8 @@ class ChatController extends BaseController
                     $data[count($data1)+$k2] = $v2;
                     $data[count($data1)+$k2]['payload'] = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
                 }
-                redis('get_unread', serialize($data), 8);
+                // 暂不使用缓存
+                //redis('get_unread', serialize($data), 8);
             } else {
                 $data = unserialize(redis('get_unread'));
             }
