@@ -215,7 +215,7 @@ class AutomationController extends BaseController
     }
 
     //八小时自动成团
-//    public function auto_group_buy(){
+//    public function auto_group_buy (){
 //        $where = null;
 //        $conditon = null;
 //        $time = time() + 16 * 60 * 60;
@@ -231,6 +231,7 @@ class AutomationController extends BaseController
 //            $order_ids = "";
 //            $num = 0;
 //            $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution, auto) VALUES";
+//            $wxtmplmsg = new WxtmplmsgController();
 //            foreach ($prom_order as $v){
 //                if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
 //                    redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
@@ -238,10 +239,21 @@ class AutomationController extends BaseController
 //                        ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and auto=0")
 //                        ->select();
 //                    $values = "";
+//                    $nicknames = "";
 //                    for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
 //                        $num += 1;
 //                        $user = $this->get_robot($v['user_id']);
+//                        $nicknames .= $user['nickname']."、";
 //                        $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},0,{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
+//                    }
+//                    foreach ($group_buy_mark as $v1){
+//                        $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
+//                        $nicknames .= $nickname."、";
+//                    }
+//                    $nicknames = substr($nicknames, 0, -1);
+//                    foreach ($group_buy_mark as $v2){
+//                        $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
+//                        $wxtmplmsg->spell_success($openid,$v2['goods_name'],$nicknames);
 //                    }
 //                    $values = substr($values, 0, -1);
 //                    if ($values) {

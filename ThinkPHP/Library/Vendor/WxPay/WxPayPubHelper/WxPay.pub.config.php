@@ -22,8 +22,8 @@ class WxPayConf_pub
 	
 	//=======【证书路径设置】=========	============================
 	//证书路径,注意应该填写绝对路径
-	const SSLCERT_PATH = '/sites/pqd/ThinkPHP/Library/Vendor/WxPay/Cacert/apiclient_cert.pem';
-	const SSLKEY_PATH = '/sites/pqd/ThinkPHP/Library/Vendor/WxPay/Cacert/apiclient_key.pem';
+	const SSLCERT_PATH = '/data/wwwroot/default/ThinkPHP/Library/Vendor/WxPay/Cacert/apiclient_cert.pem';
+	const SSLKEY_PATH = '/data/wwwroot/default/ThinkPHP/Library/Vendor/WxPay/Cacert/apiclient_key.pem';
 	
 	//=======【异步通知url设置】===================================
 	//异步通知url，商户根据实际开发过程设定

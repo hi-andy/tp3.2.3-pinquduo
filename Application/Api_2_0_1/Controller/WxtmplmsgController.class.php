@@ -25,19 +25,19 @@ class WxtmplmsgController
         $pagepath = "save_money.html";
         $data = array(
             'first' => array(
-                'value' => '商品购买成功，商家已经为您准备货物中，请耐心等待',
+                'value' => urlencode('商品购买成功，商家已经为您准备货物中，请耐心等待'),
                 'color' => '#FF0000'
             ),
             'orderMoneySum' => array(
-                'value' => $orderMoneySum,
+                'value' => urlencode($orderMoneySum),
                 'color' => '#000000'
             ),
             'orderProductName' => array(
-                'value' => $orderProductName,
+                'value' => urlencode($orderProductName),
                 'color' => '#000000'
             ),
             'Remark' => array(
-                'value' => $Remark,
+                'value' => urlencode($Remark),
                 'color' => '#436EEE'
             )
         );
@@ -57,23 +57,23 @@ class WxtmplmsgController
         $pagepath = "special99.html";
         $data = array(
             'first' => array(
-                'value' => '您购买的商品已拼团成功',
+                'value' => urlencode('您购买的商品已拼团成功'),
                 'color' => '#FF0000'
             ),
             'keyword1' => array(
-                'value' => $keyword1,
+                'value' => urlencode($keyword1),
                 'color' => '#000000'
             ),
             'keyword2' => array(
-                'value' => $keyword2,
+                'value' => urlencode($keyword2),
                 'color' => '#000000'
             ),
             'keyword3' => array(
-                'value' => $keyword3,
+                'value' => urlencode($keyword3),
                 'color' => '#000000'
             ),
-            'Remark' => array(
-                'value' => $Remark,
+            'remark' => array(
+                'value' => urlencode($Remark),
                 'color' => '#436EEE'
             )
         );
@@ -93,23 +93,23 @@ class WxtmplmsgController
         $pagepath = "goods_order.html?id=2";
         $data = array(
             'first' => array(
-                'value' => '您购买的商品已拼团失败',
+                'value' => urlencode('您购买的商品已拼团失败'),
                 'color' => '#FF0000'
             ),
             'keyword1' => array(
-                'value' => $keyword1,
+                'value' => urlencode($keyword1),
                 'color' => '#000000'
             ),
             'keyword2' => array(
-                'value' => $keyword2,
+                'value' => urlencode($keyword2),
                 'color' => '#000000'
             ),
             'keyword3' => array(
-                'value' => $keyword3,
+                'value' => urlencode($keyword3),
                 'color' => '#000000'
             ),
-            'Remark' => array(
-                'value' => $Remark,
+            'remark' => array(
+                'value' => urlencode($Remark),
                 'color' => '#436EEE'
             )
         );
@@ -130,27 +130,27 @@ class WxtmplmsgController
         $pagepath = "special99.html";
         $data = array(
             'first' => array(
-                'value' => '您购买的商品已拼团失败',
+                'value' => urlencode('您购买的商品已拼团失败'),
                 'color' => '#FF0000'
             ),
             'keyword1' => array(
-                'value' => $keyword1,
+                'value' => urlencode($keyword1),
                 'color' => '#000000'
             ),
             'keyword2' => array(
-                'value' => $keyword2,
+                'value' => urlencode($keyword2),
                 'color' => '#000000'
             ),
             'keyword3' => array(
-                'value' => $keyword3,
+                'value' => urlencode($keyword3),
                 'color' => '#000000'
             ),
             'keyword4' => array(
-                'value' => $keyword4,
+                'value' => urlencode($keyword4),
                 'color' => '#000000'
             ),
-            'Remark' => array(
-                'value' => $Remark,
+            'remark' => array(
+                'value' => urlencode($Remark),
                 'color' => '#436EEE'
             )
         );
@@ -169,19 +169,19 @@ class WxtmplmsgController
         $pagepath = "strict_selection.html";
         $data = array(
             'first' => array(
-                'value' => '您购买的商品已退款',
+                'value' => urlencode('您购买的商品已退款'),
                 'color' => '#FF0000'
             ),
             'reason' => array(
-                'value' => $reason,
+                'value' => urlencode($reason),
                 'color' => '#000000'
             ),
             'refund' => array(
-                'value' => $refund,
+                'value' => urlencode($refund),
                 'color' => '#000000'
             ),
-            'Remark' => array(
-                'value' => $Remark,
+            'remark' => array(
+                'value' => urlencode($Remark),
                 'color' => '#436EEE'
             )
         );

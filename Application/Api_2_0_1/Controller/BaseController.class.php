@@ -709,7 +709,7 @@ class BaseController extends Controller {
             if($join_num[$i]['auto']==0){
                 $this->order_redis_status_ref($join_num[$i]['user_id']);
                 $user_ids .= $join_num[$i]['user_id'].",";
-                $goodsname = $join_num[$i]['goods_name'];
+                if (empty($goodsname)) $goodsname = $join_num[$i]['goods_name'];
                 if(!empty($join_num[0]['is_raise'])){
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
@@ -738,7 +738,7 @@ class BaseController extends Controller {
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
         if (!empty($user_ids)){
-            $user = M('users','','DB_CONFIG2')->where("user_id in('{$user_ids}')")->field('openid,nickname')->select();
+            $user = M('users','','DB_CONFIG2')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
             if ($user) {
                 $nicknames = "";
                 foreach ($user as $v){
@@ -870,7 +870,7 @@ class BaseController extends Controller {
      */
     public function get_robot($not_in_user_id='') {
         if (!empty($not_in_user_id)) {
-            $user = M('','','DB_CONFIG2')->query("select user_id from tp_users order by rand() LIMIT 1");
+            $user = M('','','DB_CONFIG2')->query("select user_id,nickname from tp_users order by rand() LIMIT 1");
             return $user[0];
         }
     }
