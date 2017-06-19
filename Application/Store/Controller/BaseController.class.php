@@ -19,9 +19,9 @@ class BaseController extends Controller {
         $upgradeMsg = $upgradeLogic->checkVersion(); //升级包消息
         $this->assign('upgradeMsg',$upgradeMsg);
         //用户中心面包屑导航
-//        $navigate_admin = navigate_admin();
-//        $this->assign('navigate_admin',$navigate_admin);
-//        tpversion();
+        $navigate_admin = navigate_admin();
+        $this->assign('navigate_admin',$navigate_admin);
+        tpversion();
    }    
     
     /*

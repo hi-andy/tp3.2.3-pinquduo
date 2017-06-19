@@ -215,70 +215,70 @@ class AutomationController extends BaseController
     }
 
     //八小时自动成团
-//    public function auto_group_buy (){
-//        $where = null;
-//        $conditon = null;
-//        $time = time() + 16 * 60 * 60;
-//        $end_time = time() + 24 * 60 * 60;
-//        $prom_order = M('group_buy')
-//            ->where('`auto`=0 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
-//            ->limit(0,50)
-//            ->select();
-//        if (count($prom_order) > 0) {
-//            redis("get_Free_Order_status", "1");
-//            $message = "您拼的团已满，等待商家发货中";
-//            $ids = "";
-//            $order_ids = "";
-//            $num = 0;
-//            $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution, auto) VALUES";
-//            $wxtmplmsg = new WxtmplmsgController();
-//            foreach ($prom_order as $v){
-//                if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
-//                    redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
-//                    $group_buy_mark = M('group_buy')
-//                        ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and auto=0")
-//                        ->select();
-//                    $values = "";
-//                    $nicknames = "";
-//                    for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
-//                        $num += 1;
-//                        $user = $this->get_robot($v['user_id']);
-//                        $nicknames .= $user['nickname']."、";
-//                        $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},0,{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
-//                    }
-//                    foreach ($group_buy_mark as $v1){
-//                        $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
-//                        $nicknames .= $nickname."、";
-//                    }
-//                    $nicknames = substr($nicknames, 0, -1);
-//                    foreach ($group_buy_mark as $v2){
-//                        $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
-//                        $wxtmplmsg->spell_success($openid,$v2['goods_name'],$nicknames);
-//                    }
-//                    $values = substr($values, 0, -1);
-//                    if ($values) {
-//                        $sql .= $values;
-//                        M()->query($sql);
-//                    }
-//                    foreach ($group_buy_mark as $value) {
-//                        $ids .= $value['id'] . ",";
-//                        $order_ids .= $value['order_id'] . ",";
-//                        $this->order_redis_status_ref($value['user_id']);
-//                        $custom = array('type' => '2','id'=>$v['id']);
-//                        $user_id = $value['user_id'];
-//                        SendXinge($message,"$user_id",$custom);
-//                    }
-//                    redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
-//                }
-//            }
-//            $ids = substr($ids, 0, -1);
-//            $order_ids = substr($order_ids, 0, -1);
-//            if (!empty($ids) && !empty($order_ids)) {
-//                M("group_buy")->where("id in({$ids}) and is_pay=1")->save(array("is_successful" => 1));
-//                M("order")->where("order_id in({$order_ids})")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
-//            }
-//        }
-//    }
+    public function auto_group_buy(){
+        $where = null;
+        $conditon = null;
+        $time = time() + 16 * 60 * 60;
+        $end_time = time() + 24 * 60 * 60;
+        $prom_order = M('group_buy')
+            ->where('`auto`=0 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+            ->limit(0,50)
+            ->select();
+        if (count($prom_order) > 0) {
+            redis("get_Free_Order_status", "1");
+            $message = "您拼的团已满，等待商家发货中";
+            $ids = "";
+            $order_ids = "";
+            $num = 0;
+            $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution, auto) VALUES";
+            $wxtmplmsg = new WxtmplmsgController();
+            foreach ($prom_order as $v){
+                if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
+                    redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
+                    $group_buy_mark = M('group_buy')
+                        ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and auto=0")
+                        ->select();
+                    $values = "";
+                    $nicknames = "";
+                    for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
+                        $num += 1;
+                        $user = $this->get_robot($v['user_id']);
+                        $nicknames .= $user['nickname']."、";
+                        $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},0,{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
+                    }
+                    foreach ($group_buy_mark as $v1){
+                        $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
+                        $nicknames .= $nickname."、";
+                    }
+                    $nicknames = substr($nicknames, 0, -1);
+                    foreach ($group_buy_mark as $v2){
+                        $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
+                        $wxtmplmsg->spell_success($openid,$v2['goods_name'],$nicknames);
+                    }
+                    $values = substr($values, 0, -1);
+                    if ($values) {
+                        $sql .= $values;
+                        M()->query($sql);
+                    }
+                    foreach ($group_buy_mark as $value) {
+                        $ids .= $value['id'] . ",";
+                        $order_ids .= $value['order_id'] . ",";
+                        $this->order_redis_status_ref($value['user_id']);
+                        $custom = array('type' => '2','id'=>$v['id']);
+                        $user_id = $value['user_id'];
+                        SendXinge($message,"$user_id",$custom);
+                    }
+                    redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
+                }
+            }
+            $ids = substr($ids, 0, -1);
+            $order_ids = substr($order_ids, 0, -1);
+            if (!empty($ids) && !empty($order_ids)) {
+                M("group_buy")->where("id in({$ids}) and is_pay=1")->save(array("is_successful" => 1));
+                M("order")->where("order_id in({$order_ids})")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
+            }
+        }
+    }
 
     //机器人自动开团
 //    public function auto_add_group_buy() {

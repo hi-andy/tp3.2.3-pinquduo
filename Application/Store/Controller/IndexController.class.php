@@ -357,5 +357,11 @@ class IndexController extends BaseController {
 		M('store_detail')->where('storeid='.$store_id)->data($data)->save();
 	}
 
-	
+	function  test(){
+		$stores = M('store_dateil')->where('is_pay = 1')->field('storeid')->limit(0,1000)->select();
+		for($i=0;$i<count($stores);$i++){
+//			$res = $s
+		}
+
+	}
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Api_2_0_1\Controller;
 
-use Store\Controller\BaseController;
+
 
 class IndexController extends BaseController {
     public $version = null;
@@ -920,56 +920,5 @@ class IndexController extends BaseController {
                 $e = M('return_goods')->where('order_id='.$order[$i]['order_id'])->save(array('order_id'=>$order[$i]['order_id'],'order_sn'=>$order[$i]['order_sn'],'goods_id'=>$order[$i]['goods_id'],'store_id'=>$order[$i]['store_id'],'gold'=>$order[$i]['order_amount'],'status'=>3,'is_prom'=>1,'reason'=>'未成团退款_m','is_return'=>1,'pay_code'=>$order[$i]['pay_code'],'addtime'=>time(),'user_id'=>$order[$i]['user_id'],'one_time'=>time(),'two_time'=>time(),'ok_time'=>time(),'is_return'=>1));
             }
         }
-    }
-
-    function  qwe(){
-        $stores = M('store_detail')->where('is_pay <> 0 ')->limit(0,100)->select();
-        $cha = array();
-        for ($i=0;$i<count($stores);$i++){
-//            $res = $this->cash_available($stores[$i]['storeid']);
-            $res = -1;
-            (float)$c = 0.00;
-            if($res<$c){
-                $cha[]['id'] = $stores[$i]['storeid'];
-            }
-            die;
-        }
-    }
-
-
-    public function cash_available($store_id){
-        //拿到总共能体现的资金
-//		$_SESSION['merchant_id'] = $store_id = 5006;
-        $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$store_id)->field('order_id,confirm_time,order_amount')->select();
-        $reflect = null;$c = '';
-        foreach($one as $v){
-            $temp = 2*3600*24;
-            $cha = time()-$v['confirm_time'];
-            if($cha>=$temp){
-                $reflect = $reflect+$v['order_amount'];
-            }
-        }
-        //获取以前的提取记录
-        $total = 0;
-        $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id.' and (status=1 or status=0 )')->field('withdrawal_money')->select();
-
-        $suoding = M('store_withdrawal')->where('store_id='.$store_id.' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
-        if(!empty($suoding))
-        {
-            $this->assign('suoding',$suoding);
-        }
-        foreach($withdrawal_total as $v)
-        {
-            $total = $total+$v['withdrawal_money'];
-        }
-        $reflects = $reflect;
-        $reflect = $reflect-$total;
-        if(empty($reflect)||((string)$reflects==(string)$total))
-            $reflect = 0;
-        $c = getFloatLength($reflect);
-        if($c>=3){
-            $reflect = operationPrice($reflect);
-        }
-        return $reflect;
     }
 }
