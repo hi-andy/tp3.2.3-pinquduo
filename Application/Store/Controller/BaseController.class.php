@@ -139,7 +139,7 @@ class BaseController extends Controller {
             $total = $total+$v['withdrawal_money'];
         }
 		$reflects = $reflect;
-        $reflect = $reflect-$total;var_dump($total);die;
+        $reflect = $reflect-$total;
         if(empty($reflect)||((string)$reflects==(string)$total))
             $reflect = 0;
         $c = getFloatLength($reflect);
