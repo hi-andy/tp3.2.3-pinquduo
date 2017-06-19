@@ -44,6 +44,11 @@ class ChatController extends BaseController
                 );
                 // 暂不使用缓存
                 //redislist("chatlist", json_encode($msgdata));//写入redis队列
+
+                $sql = "INSERT INTO tp_chat(msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
+                $sql .= "('{$msg_id}',{$timestamp},'{$direction}','{$to}','{$from}','{$chat_type}','{$payload}',{$status})";
+                M()->query($sql);
+
                 json('保存成功',$msgdata);
             } else {
                 errjson('msg_id已存在');
