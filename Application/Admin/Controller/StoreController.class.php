@@ -53,9 +53,10 @@ class StoreController extends BaseController{
 			->alias('s')
 			->where($where)
 			->join(' LEFT JOIN tp_store_detail sd on s.id=sd.storeid ')
-			->field('s.*,sd.is_haitao')
+			->field('s.id,s.store_name,s.email,s.mobile,s.store_from,s.store_type,s.state,s.store_logo,sd.is_haitao,sd.margin')
 			->order($order_str)
 			->limit($Page->firstRow . ',' . $Page->listRows)->select();
+//		var_dump($storesList);die;
 //		var_dump(M()->getLastSql());die;
 		$this->assign('page',$show);
 		$this->assign('storesList',$storesList);

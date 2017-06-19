@@ -357,11 +357,16 @@ class IndexController extends BaseController {
 		M('store_detail')->where('storeid='.$store_id)->data($data)->save();
 	}
 
-	function  test(){
-		$stores = M('store_dateil')->where('is_pay = 1')->field('storeid')->limit(0,1000)->select();
-		for($i=0;$i<count($stores);$i++){
-//			$res = $s
-		}
-
-	}
+//	function  test(){
+//		$stores = M('store_detail')->field('storeid')->limit(5500,500)->select();
+//		$arr = array();
+//		for($i=0;$i<count($stores);$i++){
+//			$res = $this->cash_available($stores[$i]['storeid']);
+//			$c = 0.00;
+//			if($res < $c){
+//				$arr[]['id'] =  $stores[$i]['storeid'];
+//			}
+//		}
+//		var_dump($arr);
+//	}
 }
