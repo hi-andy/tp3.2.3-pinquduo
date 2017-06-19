@@ -318,7 +318,7 @@ class ReportController extends BaseController{
 		}
 		//获取以前的提取记录
 		$total = 0;
-		$withdrawal_total = M('store_withdrawal')->where(array('store_id'=>$store_id['id'],'status'=>1))->field('withdrawal_money')->select();
+		$withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id['id'].' and status in (1,0)')->field('withdrawal_money')->select();
 
 		foreach($withdrawal_total as $v)
 		{

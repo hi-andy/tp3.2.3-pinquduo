@@ -43,7 +43,7 @@ class ChatController extends BaseController
                     'status' => $status
                 );
                 // 暂不使用缓存
-                //redislist("chatlist", json_encode($msgdata));//写入redis队列
+//                redislist("chatlist", json_encode($msgdata));//写入redis队列
                 json('保存成功',$msgdata);
             } else {
                 errjson('msg_id已存在');
