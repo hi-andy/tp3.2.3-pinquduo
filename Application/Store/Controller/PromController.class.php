@@ -152,9 +152,9 @@ class PromController extends BaseController {
 		$order_sn && $where = $where." and order_sn like '%$order_sn%' ";
 		if(I('shipping_status')==0||I('shipping_status')==1)
 		{
-			$where = $where." and order_type = 14";
+			$where = $where." and order_type = 14 ";
 		}elseif(I('shipping_status')==2){
-			$where = $where." and order_type = 15 ";
+			$where = $where." and shipping_status = 1 ";
 		}
 		$where = $where." and store_id = ".$_SESSION['merchant_id']." ";
 		$count = M('order')->where($where)->count();

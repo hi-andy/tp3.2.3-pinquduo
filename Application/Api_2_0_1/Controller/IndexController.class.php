@@ -748,4 +748,11 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
+    function  test(){
+        $people = array('1','0');
+        if( !in_array(2,$people)){
+                var_dump(111);
+        }
+    }
 }

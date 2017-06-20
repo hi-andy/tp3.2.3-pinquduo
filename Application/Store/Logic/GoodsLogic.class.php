@@ -327,7 +327,7 @@ class GoodsLogic extends RelationModel
          $spec = M('Spec')->getField('id,name'); // 规格表
          $specItem = M('SpecItem')->where('is_show = 1')->getField('id,item,spec_id');//规格项
          $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code,prom_price');//规格项
-                          
+          $goods_type = M('goods')->where('goods_id = '.$goods_id)->field('is_special,is_recommend')->find();
        $str = "<table class='table table-bordered' id='spec_input_tab'>";
        $str .="<tr ><td colspan='4'><a style='color: red;font-size: 15px'>单列价格一致的，可以填入第一行的数值之后勾选中批量填写后点击保存即可</a></td>";$str .="<tr>";
        // 显示第一行的数据
@@ -356,11 +356,18 @@ class GoodsLogic extends RelationModel
 			$keySpecGoodsPrice[$item_key][price] ? false : $keySpecGoodsPrice[$item_key][price] = 0; // 价格默认为0
            $keySpecGoodsPrice[$item_key][prom_price] ? false : $keySpecGoodsPrice[$item_key][prom_price] = 0; // 团购价格默认为0
 			$keySpecGoodsPrice[$item_key][store_count] ? false : $keySpecGoodsPrice[$item_key][store_count] = 0; //库存默认为0
-            $str .="<td><input name='item[$item_key][price]' value='{$keySpecGoodsPrice[$item_key][price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
-           $str .="<td><input name='item[$item_key][prom_price]' value='{$keySpecGoodsPrice[$item_key][prom_price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
-            $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";            
-//            $str .="<td><input name='item[$item_key][bar_code]' value='{$keySpecGoodsPrice[$item_key][bar_code]}' />
-//                <input type='hidden' name='item[$item_key][key_name]' value='$item_name' /></td>";
+
+           $people = array('1','0');
+            if($goods_type['is_recommend'] == 1 || !(in_array($goods_type['is_special'],$people))){
+                $str .="<td><input name='item[$item_key][price]' value='{$keySpecGoodsPrice[$item_key][price]}' disabled='disabled' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
+                $str .="<td><input name='item[$item_key][prom_price]' value='{$keySpecGoodsPrice[$item_key][prom_price]}' disabled='disabled' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
+                $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' disabled='disabled' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";
+            }else{
+                $str .="<td><input name='item[$item_key][price]' value='{$keySpecGoodsPrice[$item_key][price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
+                $str .="<td><input name='item[$item_key][prom_price]' value='{$keySpecGoodsPrice[$item_key][prom_price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
+                $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";
+            }
+
             $str .="</tr>";           
        }
         $str .= "</table>";

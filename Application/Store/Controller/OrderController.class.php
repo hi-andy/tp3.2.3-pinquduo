@@ -111,7 +111,7 @@ class OrderController extends BaseController {
 		{
 			$condition['order_type'] = array('eq',2);
 		}else{
-			$condition['order_type'] = array('eq',3);
+			$condition['shipping_status'] = array('eq',1);
 		}
 		$count = M('order')->where($condition)->count();
 		$Page  = new AjaxPage($count,10);
