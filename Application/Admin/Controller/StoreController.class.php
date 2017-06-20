@@ -434,7 +434,7 @@ class StoreController extends BaseController{
 
 		$store_info = M('merchant')->where(array('id'=>$storeid))->field('mobile,store_name')->find();
 		if($is_check == 1){
-			sendMessage($store_info['mobile'],array($store_info['store_name']),'170507');
+			sendMessage($store_info['mobile'],array($store_info['store_name']),'184203');
 		}else{
 			sendMessage($store_info['mobile'],array($store_info['store_name']),'138884');
 		}
