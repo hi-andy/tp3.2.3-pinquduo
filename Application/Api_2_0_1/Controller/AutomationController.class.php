@@ -7,19 +7,23 @@
  */
 
 namespace Api_2_0_1\Controller;
+
 use Admin\Logic\OrderLogic;
 
 class AutomationController extends BaseController
 {
     public $userLogic;
-    public function _initialize(){
+
+    public function _initialize()
+    {
         parent::_initialize();
         $this->userLogic = new \Home\Logic\UsersLogic();
     }
 
     //把所有免单自动退款
-    public function free_single(){
-        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->limit(0,10)->select();
+    public function free_single()
+    {
+        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->limit(0, 10)->select();
         $orderLogic = new OrderLogic();
         $ids = "";
         for ($i = 0; $i < count($free_order); $i++) {
@@ -32,21 +36,21 @@ class AutomationController extends BaseController
                 }
                 if ($result['status'] == 1) {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                    $ids .= $order['user_id'].",";
+                    $ids .= $order['user_id'] . ",";
                 }
             } elseif ($free_order[$i]['code'] == 'alipay') {
                 $result = $orderLogic->alipayBackPay($order['order_sn'], $free_order[$i]['price']);
                 if ($result['status'] == 1) {
                     $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                    $ids .= $order['user_id'].",";
+                    $ids .= $order['user_id'] . ",";
                 }
             } elseif ($free_order[$i]['code'] == 'qpay') {
                 $qqPay = new QQPayController();
                 $qqPay->doRefund($free_order[$i]['order_sn'], $free_order[$i]['order_amount']);
                 $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                $ids .= $order['user_id'].",";
+                $ids .= $order['user_id'] . ",";
             }
-            redis("getOrderList_status_".$order['user_id'], "1");
+            redis("getOrderList_status_" . $order['user_id'], "1");
             redisdelall("TuiSong*");//删除推送缓存
         }
         if ($ids) {
@@ -56,7 +60,8 @@ class AutomationController extends BaseController
     }
 
     //将单买超时支付的订单设置成取消
-    public function single_buy_overtime() {
+    public function single_buy_overtime()
+    {
         $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
         if (count($self_cancel_order) > 0) {
             $goods_ids = "";
@@ -65,9 +70,9 @@ class AutomationController extends BaseController
                 if ($data_time <= time()) {
                     $ids[]['id'] = $self_cancel_order[$j]['order_id'];
                     $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
-                    M('goods')->where('`goods_id` = '.$self_cancel_order[$j]['goods_id'])->setInc('store_count',$self_cancel_order[$j]['num']);
-                    $spec_name = M('order_goods')->where('`order_id`='.$self_cancel_order[$j]['order_id'])->field('spec_key,store_id')->find();
-                    M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count',$self_cancel_order[$j]['num']);
+                    M('goods')->where('`goods_id` = ' . $self_cancel_order[$j]['goods_id'])->setInc('store_count', $self_cancel_order[$j]['num']);
+                    $spec_name = M('order_goods')->where('`order_id`=' . $self_cancel_order[$j]['order_id'])->field('spec_key,store_id')->find();
+                    M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count', $self_cancel_order[$j]['num']);
                 }
                 //优惠卷回到原来的数量
                 if ($self_cancel_order[$j]['coupon_id'] != 0) {
@@ -86,7 +91,8 @@ class AutomationController extends BaseController
     }
 
     //将团购里超时支付的订单设置成取消
-    public function group_purchase_overtime() {
+    public function group_purchase_overtime()
+    {
         $where = null;
         $join_prom_order = M('group_buy')->alias('gb')
             ->join(" LEFT JOIN tp_order AS o ON o.order_id = gb.order_id ")
@@ -101,9 +107,9 @@ class AutomationController extends BaseController
                     $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
                     $id[]['id'] = $join_prom_order[$z]['id'];
                     $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
-                    M('goods')->where('`goods_id` = '.$join_prom_order[$z]['goods_id'])->setInc('store_count',$join_prom_order[$z]['num']);
-                    $spec_name = M('order_goods')->where('`order_id`='.$join_prom_order[$z]['order_id'])->field('spec_key,store_id')->find();
-                    M('spec_goods_price')->where("`goods_id`=$join_prom_order[$z]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count',$join_prom_order[$z]['num']);
+                    M('goods')->where('`goods_id` = ' . $join_prom_order[$z]['goods_id'])->setInc('store_count', $join_prom_order[$z]['num']);
+                    $spec_name = M('order_goods')->where('`order_id`=' . $join_prom_order[$z]['order_id'])->field('spec_key,store_id')->find();
+                    M('spec_goods_price')->where("`goods_id`=$join_prom_order[$z]['goods_id'] and `key`='$spec_name[spec_key]'")->setInc('store_count', $join_prom_order[$z]['num']);
                 }
                 if ($join_prom_order[$z]['free'] > 0) redis("get_Free_Order_status", "1");
             }
@@ -123,17 +129,18 @@ class AutomationController extends BaseController
                     M('coupon_list')->where('`id`=' . $r[$t]['coupon_list_id'])->data($data)->save();
                 }
             }
-            if ($free_status) redis("get_Seconds_Kill_status","1");
+            if ($free_status) redis("get_Seconds_Kill_status", "1");
         }
     }
 
     //将时间到了团又没有成团的团解散
-    public function incomplete_mass_overtime() {
+    public function incomplete_mass_overtime()
+    {
         $user = new UserController();
         $where = null;
         $conditon = null;
-        $time = time()-30;
-        $prom_order = M('group_buy')->where('(`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0,50)->select();
+        $time = time() - 30;
+        $prom_order = M('group_buy')->where('(`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 50)->select();
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -170,7 +177,8 @@ class AutomationController extends BaseController
 
     //将自动确认收货的订单的状态进行修改
     //单买的订单拿出来
-    public function get_single_buy_order() {
+    public function get_single_buy_order()
+    {
         $one_buy = M('order')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
         $one_buy_number = count($one_buy);
         if ($one_buy_number > 0) {
@@ -180,14 +188,15 @@ class AutomationController extends BaseController
             $data['order_status'] = 2;
             $data['order_type'] = 4;
             M('order')->where($ids)->data($data)->save();
-            for ($oi=0; $oi<$one_buy_number; $oi++){
+            for ($oi = 0; $oi < $one_buy_number; $oi++) {
                 $this->order_redis_status_ref($one_buy[$oi]['user_id']);
             }
         }
     }
 
     //拿出团购的订单
-    public function group_purchase_order() {
+    public function group_purchase_order()
+    {
         $group_nuy = M('order')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
         $group_nuy_number = count($group_nuy);
         if ($group_nuy_number > 0) {
@@ -197,32 +206,53 @@ class AutomationController extends BaseController
             $data['order_status'] = 2;
             $data['order_type'] = 4;
             M('order')->where($order_id_array)->data($data)->save();
-            for ($gi=0; $gi<$group_nuy_number; $gi++){
+            for ($gi = 0; $gi < $group_nuy_number; $gi++) {
                 $this->order_redis_status_ref($group_nuy[$gi]['user_id']);
             }
         }
     }
 
     //更新限时秒杀列表
-    public function seconds_kill_list() {
+    public function seconds_kill_list()
+    {
         $is_special = M('goods')
             ->where(array(
-                'is_special'=>array('EQ',1),
-                'on_time'=>array('ELT',time()),
-                'store_count'=>array('GT',0)))
+                'is_special' => array('EQ', 1),
+                'on_time' => array('ELT', time()),
+                'store_count' => array('GT', 0)))
             ->count();
         if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
     }
 
-    //八小时自动成团
-    public function auto_group_buy(){
+    /**
+     * 八小时自动成团
+     *
+     * 查询条件解释
+     * auto=0               非机器人团
+     * is_raise<>1　        非众筹团购订单
+     * is_free`<>1          非免单订单
+     * is_dissolution`=0    团未解散
+     * is_pay`=1            已支付
+     * mark=0               开团人，团长
+     * is_successful`=0     未成团
+     * end_time　<=　$time
+     */
+    public function auto_group_buy()
+    {
         $where = null;
         $conditon = null;
         $time = time() + 16 * 60 * 60;
         $end_time = time() + 24 * 60 * 60;
+
         $prom_order = M('group_buy')
-            ->where('`auto`=0 and `is_raise`<>1 and `is_free`<>1 and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
-            ->limit(0,50)
+            ->where('`auto`=0 and 
+                        `is_raise`<>1 and 
+                        `is_free`<>1 and 
+                        `is_dissolution`=0 and 
+                        `is_pay`=1 and mark=0 and 
+                        `is_successful`=0 and 
+                        `end_time`<=' . $time)
+            ->limit(0, 50)
             ->select();
         if (count($prom_order) > 0) {
             redis("get_Free_Order_status", "1");
@@ -230,31 +260,81 @@ class AutomationController extends BaseController
             $ids = "";
             $order_ids = "";
             $num = 0;
-            $sql = "INSERT INTO tp_group_buy(start_time, end_time, goods_id, price, goods_num, order_num, virtual_num, intro, goods_price, goods_name, photo, mark, user_id, store_id, address_id, free, is_raise, is_pay, is_free, is_successful, is_cancel, is_return_or_exchange, is_dissolution, auto) VALUES";
+            $sql = 'INSERT INTO tp_group_buy(
+                                            start_time,
+                                            end_time,
+                                            goods_id,
+                                            price,
+                                            goods_num,
+                                            order_num,
+                                            virtual_num,
+                                            intro,
+                                            goods_price,
+                                            goods_name,
+                                            photo,
+                                            mark,
+                                            user_id,
+                                            store_id,
+                                            address_id,
+                                            free,
+                                            is_raise,
+                                            is_pay,
+                                            is_free,
+                                            is_successful,
+                                            is_cancel,
+                                            is_return_or_exchange,
+                                            is_dissolution,
+                                            auto) VALUES';
             $wxtmplmsg = new WxtmplmsgController();
-            foreach ($prom_order as $v){
-                if (empty(redis("getBuy_lock_".$v['goods_id']))) {//如果无锁
+            foreach ($prom_order as $v) {
+                if (empty(redis("getBuy_lock_" . $v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
                     $group_buy_mark = M('group_buy')
                         ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and auto=0")
                         ->select();
+                    //　生成参团用户信息
                     $values = "";
                     $nicknames = "";
                     for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                         $num += 1;
                         $user = $this->get_robot($v['user_id']);
-                        $nicknames .= $user['nickname']."、";
-                        $values .= "(".time().",{$end_time},{$v['goods_id']},{$v['price']},{$v['goods_num']},{$v['order_num']},{$v['virtual_num']},'{$v['intro']}',{$v['goods_price']},'{$v['goods_name']}','{$v['photo']}',{$v['id']},{$user['user_id']},{$v['store_id']},0,{$v['free']},{$v['is_raise']},{$v['is_pay']},{$v['is_free']},1,{$v['is_cancel']},{$v['is_return_or_exchange']},{$v['is_dissolution']},1),";
+                        $nicknames .= $user['nickname'] . "、";
+                        $values .= "(" . time() . ",
+                                        {$end_time},
+                                        {$v['goods_id']},
+                                        {$v['price']},
+                                        {$v['goods_num']},
+                                        {$v['order_num']},
+                                        {$v['virtual_num']},
+                                        '{$v['intro']}',
+                                        {$v['goods_price']},
+                                        '{$v['goods_name']}',
+                                        '{$v['photo']}',
+                                        {$v['id']},
+                                        {$user['user_id']},
+                                        {$v['store_id']},
+                                        0,
+                                        {$v['free']},
+                                        {$v['is_raise']},
+                                        {$v['is_pay']},
+                                        {$v['is_free']},
+                                        1,
+                                        {$v['is_cancel']},
+                                        {$v['is_return_or_exchange']},
+                                        {$v['is_dissolution']},
+                                        1),";
                     }
-                    foreach ($group_buy_mark as $v1){
+                    foreach ($group_buy_mark as $v1) {
                         $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
-                        $nicknames .= $nickname."、";
+                        $nicknames .= $nickname . "、";
                     }
                     $nicknames = substr($nicknames, 0, -1);
-                    foreach ($group_buy_mark as $v2){
+                    // 获取拼团成功用户微信 openid ，推送拼团成功消息
+                    foreach ($group_buy_mark as $v2) {
                         $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
-                        $wxtmplmsg->spell_success($openid,$v2['goods_name'],$nicknames);
+                        $wxtmplmsg->spell_success($openid, $v2['goods_name'], $nicknames);
                     }
+                    //　插入伪拼团用户信息，以成团
                     $values = substr($values, 0, -1);
                     if ($values) {
                         $sql .= $values;
@@ -264,9 +344,9 @@ class AutomationController extends BaseController
                         $ids .= $value['id'] . ",";
                         $order_ids .= $value['order_id'] . ",";
                         $this->order_redis_status_ref($value['user_id']);
-                        $custom = array('type' => '2','id'=>$v['id']);
+                        $custom = array('type' => '2', 'id' => $v['id']);
                         $user_id = $value['user_id'];
-                        SendXinge($message,"$user_id",$custom);
+                        SendXinge($message, "$user_id", $custom);
                     }
                     redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
                 }
