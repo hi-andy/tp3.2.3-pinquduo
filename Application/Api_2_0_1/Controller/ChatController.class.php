@@ -132,6 +132,7 @@ class ChatController extends BaseController
                     $data[count($data1)+$k2] = $v2;
                     $data[count($data1)+$k2]['payload'] = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
                 }
+                $data['page'] = $page;
                 // 暂不使用缓存
                 //redis('get_unread', serialize($data), 8);
             } else {

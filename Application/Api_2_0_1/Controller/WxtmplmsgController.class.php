@@ -52,7 +52,7 @@ class WxtmplmsgController
      * @param $keyword3 发货时间
      * @param $remark 备注
      */
-    public function spell_success($openid,$keyword1,$keyword2,$keyword3='//n商家将于2天内发货，如果未按承诺时间发货，系统将按照规则进行赔偿。',$Remark='//n【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
+    public function spell_success($openid,$keyword1,$keyword2,$keyword3='//n商家将于2天内发货，如果未按承诺时间发货，平台将对商家进行处罚。',$Remark='//nVIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
         $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";
         $pagepath = "special99.html";
         $data = array(
