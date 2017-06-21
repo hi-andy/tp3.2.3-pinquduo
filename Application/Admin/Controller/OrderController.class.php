@@ -87,7 +87,7 @@ class OrderController extends BaseController {
 	    $condition['o.is_show'] = 1;
 
 	    $sort_order = I('order_by','DESC').' '.I('sort');
-	    $count = M('order')->where($condition)->where('`prom_id` is null')->count();
+	    $count = M('order')->alias('o')->where($condition)->where('`prom_id` is null')->count();
 	    $Page  = new AjaxPage($count,20);
 	    //  搜索条件下 分页赋值
 	    foreach($condition as $key=>$val) {
