@@ -749,10 +749,8 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test(){
-        $people = array('1','0');
-        if( !in_array(2,$people)){
-                var_dump(111);
-        }
+    function  test($user_id){
+        $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
+        var_dump($raise);
     }
 }
