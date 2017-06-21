@@ -246,10 +246,11 @@ class AutomationController extends BaseController
 
         $prom_order = M('group_buy')
             ->where('`auto`=0 and 
-                        `is_raise`<>1 and 
-                        `free`<>1 and 
+                        `is_raise`=0 and 
+                        `free`=0 and 
                         `is_dissolution`=0 and 
-                        `is_pay`=1 and mark=0 and 
+                        `is_pay`=1 and 
+                        `mark`=0 and 
                         `is_successful`=0 and 
                         `end_time`<=' . $time)
             ->limit(0, 50)
