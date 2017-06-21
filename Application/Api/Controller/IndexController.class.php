@@ -462,7 +462,7 @@ class IndexController extends BaseController {
                 }
             }
             $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
-            $haitao['cat2'] = M('haitao')->where('`parent_id` = 0')->field('id,name,img')->select();
+            $haitao['cat2'] = M('haitao')->where('`parent_id` = 0 and `parent_id` != 64 ')->field('id,name,img')->select();
             foreach ($haitao['cat2'] as &$v) {
                 $v['img'] = TransformationImgurl($v['img']);
             }
