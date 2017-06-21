@@ -13,14 +13,14 @@ namespace Api_2_0_1\Controller;
 class WxtmplmsgController
 {
 
-    /**
+    /*
      * 订单支付成功
      * @param $openid
      * @param $orderMoneySum 支付金额
      * @param $orderProductName 商品信息
      * @param $remark 备注
      */
-    public function order_payment_success($openid,$orderMoneySum,$orderProductName,$Remark='还有更省钱的办法？请点击此了解省钱大法'){
+    public function order_payment_success($openid,$orderMoneySum,$orderProductName,$Remark='//n还有更省钱的办法？请点击此了解省钱大法'){
         $template_id = "YRyhnjefOtwOxIPtz34WuRhBkM4PfO-SXIv1NxgqDJE";
         $pagepath = "save_money.html";
         $data = array(
@@ -38,13 +38,13 @@ class WxtmplmsgController
             ),
             'Remark' => array(
                 'value' => urlencode($Remark),
-                'color' => '#436EEE'
+                'color' => '#E20025'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
     }
 
-    /**
+    /*
      * 拼团成功通知
      * @param $openid
      * @param $keyword1 商品
@@ -52,7 +52,7 @@ class WxtmplmsgController
      * @param $keyword3 发货时间
      * @param $remark 备注
      */
-    public function spell_success($openid,$keyword1,$keyword2,$keyword3='商家将于2天内发货，如果未按承诺时间发货，系统将按照规则进行赔偿。',$Remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
+    public function spell_success($openid,$keyword1,$keyword2,$keyword3='//n商家将于2天内发货，如果未按承诺时间发货，系统将按照规则进行赔偿。',$Remark='//n【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
         $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";
         $pagepath = "special99.html";
         $data = array(
@@ -74,13 +74,13 @@ class WxtmplmsgController
             ),
             'remark' => array(
                 'value' => urlencode($Remark),
-                'color' => '#436EEE'
+                'color' => '#E20025'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
     }
 
-    /**
+    /*
      * 拼团失败通知
      * @param $openid
      * @param $keyword1 拼团商品
@@ -110,13 +110,13 @@ class WxtmplmsgController
             ),
             'remark' => array(
                 'value' => urlencode($Remark),
-                'color' => '#436EEE'
+                'color' => '#E20025'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
     }
 
-    /**
+    /*
      * 商品发货通知
      * @param $openid
      * @param $keyword1 快递公司
@@ -125,7 +125,7 @@ class WxtmplmsgController
      * @param $keyword4 商品数量
      * @param $remark 备注
      */
-    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$Remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
+    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$Remark='//n【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
         $pagepath = "special99.html";
         $data = array(
@@ -151,20 +151,20 @@ class WxtmplmsgController
             ),
             'remark' => array(
                 'value' => urlencode($Remark),
-                'color' => '#436EEE'
+                'color' => '#E20025'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
     }
 
-    /**
+    /*
      * 退款通知
      * @param $openid
      * @param $reason 退款原因
      * @param $refund 退款金额
      * @param $remark 备注
      */
-    public function refund($openid,$reason,$refund,$Remark='查看更多的好商品，选择高品质的商品就在趣多严选'){
+    public function refund($openid,$reason,$refund,$Remark='//n查看更多的好商品，选择高品质的商品就在趣多严选'){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
         $pagepath = "strict_selection.html";
         $data = array(
@@ -182,7 +182,7 @@ class WxtmplmsgController
             ),
             'remark' => array(
                 'value' => urlencode($Remark),
-                'color' => '#436EEE'
+                'color' => '#E20025'
             )
         );
         return $this->push($template_id,$pagepath,$data,$openid);
