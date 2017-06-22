@@ -366,7 +366,7 @@ class IndexController extends BaseController {
                 }
             }
             $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
-            $haitao['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0 and `parent_id` != 64 ')->field('id,name,img')->select();
+            $haitao['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0 and `id` != 64 ')->field('id,name,img')->select();
             foreach ($haitao['cat2'] as &$v) {
                 $v['img'] = TransformationImgurl($v['img']);
             }
@@ -749,10 +749,8 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test(){
-        $people = array('1','0');
-        if( !in_array(2,$people)){
-                var_dump(111);
-        }
+    function  test($user_id){
+        $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
+        var_dump($raise);
     }
 }

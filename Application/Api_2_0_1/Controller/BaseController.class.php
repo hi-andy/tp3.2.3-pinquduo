@@ -699,7 +699,9 @@ class BaseController extends Controller {
 
     public function getFree($prom_id,$type='')
     {
-        
+        if($prom_id==0){
+            exit();
+        }
         $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
@@ -710,7 +712,7 @@ class BaseController extends Controller {
             if($join_num[$i]['auto']==0){
                 $this->order_redis_status_ref($join_num[$i]['user_id']);
                 $user_ids .= $join_num[$i]['user_id'].",";
-                if (empty($goodsname)) $goodsname = $join_num[$i]['goods_name'];
+                if (empty($goodsname)) {$goodsname = $join_num[$i]['goods_name'];}
                 if(!empty($join_num[0]['is_raise'])){
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();

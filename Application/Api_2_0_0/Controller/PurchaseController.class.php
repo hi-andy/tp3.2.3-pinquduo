@@ -119,10 +119,9 @@ class PurchaseController extends  BaseController
                 }
                 //为我点赞只允许每个人参团一次
                 if ($result['is_raise'] == 1) {
-                    $raise = M('group_buy')->where('(end_time>' . time() . ' or is_successful=1) and mark!=0 and is_raise=1')->order('id desc')->select();
-                    $raise_id_array = array_column($raise, 'user_id');
-                    if (in_array("$user_id", $raise_id_array)) {
-                        $json = array('status' => -1, 'msg' => '您已参加过该拼团活动，不能再参团，只能继续开团');
+                    $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
+                    if(!empty($raise)){
+                        $json = array('status' => -1, 'msg' => '您已参加过这个活动，请选择开团邀请好友得奖品');
                         redisdelall("getBuy_lock_" . $goods_id);//删除锁
                         if (!empty($ajax_get)) {
                             echo "<script> alert('" . $json['msg'] . "') </script>";
