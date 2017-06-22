@@ -204,6 +204,24 @@
                                 <input type="hidden" name="store_id" value="<?php echo $_SESSION['merchant_id'];?>">
                                 </tbody>
                                 </table>
+
+                            <!-- 促销活动类型 start 暂时停止开发，2017-6-22　hua-->
+                            <!--<div class="tab-pane" id="">-->
+                                <!--<table class="table table-bordered" id="">-->
+                                    <!--<tr>-->
+                                        <!--<td>促销活动:</td>-->
+                                        <!--<td>-->
+                                            <!--<select name="type" id="activity_type" class="form-control" style="display:inline;width:250px;">-->
+                                                <!--<option value="0">选择促销活动类型</option>-->
+                                                <!--<option value="3">阶梯价促销活动</option>-->
+                                            <!--</select>-->
+                                            <!--&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 如果参与促销活动则选择此项</span>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                <!--</table>-->
+                            <!--</div>-->
+                            <!-- 促销活动类型 end -->
+
                             <!-- 商品规格-->
                             <div class="tab-pane" id="tab_goods_spec">
                                 <table class="table table-bordered" id="goods_spec_table">
@@ -223,6 +241,7 @@
                                 <div id="ajax_spec_data"><!-- ajax 返回规格--></div>
                             </div>
                             <!-- 商品规格-->
+
                         </div>
                          <!--其他信息-->
                          
@@ -375,12 +394,12 @@
     function ClearPicArr2(obj,path,goods_id)
     {
     	$.ajax({
-                    type:'GET',
-                    url:"{:U('Store/Uploadify/delupload')}",
-                    data:{action:"del", filename:path,goods_id:goods_id},
-                    success:function(){
-                                  $(obj).parent().remove(); // 删除完服务器的, 再删除 html上的图片				 
-                    }
+            type:'GET',
+            url:"{:U('Store/Uploadify/delupload')}",
+            data:{action:"del", filename:path,goods_id:goods_id},
+            success:function(){
+                $(obj).parent().remove(); // 删除完服务器的, 再删除 html上的图片
+            }
 		});
     }
 
@@ -405,22 +424,21 @@
 //	$("#goods_type").trigger('change');
 //});
 
-// 属性输入框的加减事件
-function addAttr(a)
-{
-	var attr = $(a).parent().parent().prop("outerHTML");	
-	attr = attr.replace('addAttr','delAttr').replace('+','-');	
-	$(a).parent().parent().after(attr);
-}
-// 属性输入框的加减事件
-function delAttr(a)
-{
-   $(a).parent().parent().remove();
-}
+//// 属性输入框的加减事件
+//function addAttr(a)
+//{
+//	var attr = $(a).parent().parent().prop("outerHTML");
+//	attr = attr.replace('addAttr','delAttr').replace('+','-');
+//	$(a).parent().parent().after(attr);
+//}
+//// 属性输入框的加减事件
+//function delAttr(a)
+//{
+//   $(a).parent().parent().remove();
+//}
 
 /** 以下 商品规格相关 js*/
 $(document).ready(function(){
-	
     // 商品类型切换时 ajax 调用  返回不同的属性输入框
     $("#spec_type").change(function(){        
         var goods_id = '{$goodsInfo.goods_id}';

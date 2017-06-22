@@ -86,12 +86,14 @@ class ChatController extends BaseController
      * @param int $page
      * @param int $pagesize
      */
-    public function get_chat($to='', $from='', $chat_type='', $page=0, $pagesize=20){
+    public function get_chat($to='', $from='', $chat_type='', $page=0, $pageSize=20){
         if ($to && $from && $chat_type) {
-            $page *= $pagesize;
+            $page = $page <= 0 ? 1 : $page;
+            $fromPage = $page > 1 ? $page * $pageSize : 1;
+
             $in_msg_id = "0,";
             $where = "((tos = '{$to}' and froms = '{$from}') or (tos = '{$from}' and froms = '{$to}')) and chat_type = '{$chat_type}' and status <> 2";
-            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp desc')->limit($page,$pagesize)->select();
+            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp desc')->limit($fromPage,$pageSize)->select();
             foreach ($result as $key => $value){
                 $data[$key]['msg_id'] = $value['msg_id'];
                 $data[$key]['timestamp'] = $value['timestamp'];
@@ -104,6 +106,7 @@ class ChatController extends BaseController
             }
             $in_msg_id = substr($in_msg_id, 0, -1);
             M('chat')->where("msg_id in({$in_msg_id})")->save(array('status'=>1));
+            $data['page'] = $page;
             json('读取成功',$data);
         } else {
             errjson('缺少参数');
@@ -114,11 +117,10 @@ class ChatController extends BaseController
      * 获取未读列表
      * @param string $user_id //接收方ID
      */
-    public function get_unread($user_id='', $page=0, $pageSize=20){
+    public function get_unread($user_id=''){
         if ($user_id){
             if (empty(redis('get_unread'))) {
-                $page *= $pageSize;
-                $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC LIMIT $page, $pageSize");
+                $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC ");
                 $froms='';
                 foreach ($data1 as $k1 => $v1) {
                     $data[$k1] = $v1;
@@ -128,11 +130,11 @@ class ChatController extends BaseController
                 $froms = substr($froms, 0, -1);
                 if (!empty($froms)) $andwhere = "and froms not in({$froms})";
                 $data2 = M('chat', '', 'DB_CONFIG2')->query("SELECT froms,0 as count FROM tp_chat where tos='{$user_id}' and status=1 {$andwhere} GROUP BY froms ORDER BY timestamp DESC");
+                $data = array();
                 foreach ($data2 as $k2 => $v2) {
                     $data[count($data1)+$k2] = $v2;
                     $data[count($data1)+$k2]['payload'] = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
                 }
-                //$data['page'] = $page;
                 // 暂不使用缓存
                 //redis('get_unread', serialize($data), 8);
             } else {
