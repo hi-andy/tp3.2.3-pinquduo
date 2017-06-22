@@ -2026,7 +2026,7 @@ class UserController extends BaseController {
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
-        $order_info = M('order', '', 'DB_CONFIG2')->alias('o')
+        $order_info = M('order')->alias('o')
             ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id ')
             ->where('o.order_id = '.$order_id.' and o.user_id = '.$user_id)
             ->field('o.goods_id,o.store_id,o.order_sn,o.pay_name,o.add_time,o.consignee,o.address_base,o.address,o.mobile,o.store_id,o.shipping_order,o.shipping_name,g.cat_id,o.order_amount,o.num,o.prom_id,o.order_type,o.order_status,o.pay_status,o.shipping_status,o.automatic_time,o.delivery_time')->find();
@@ -2034,14 +2034,14 @@ class UserController extends BaseController {
             $prom_info = M('group_buy')->where('order_id = '.$order_id)->find();
             //获取成团时间
             if ($prom_info['mark']==0){
-                $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['id'].' or mark ='.$prom_info['id'])->order('id desc')->find();
+                $res1 = M('group_buy')->where('id = '.$prom_info['id'].' or mark ='.$prom_info['id'])->order('id desc')->find();
             }else{
-                $res1 = M('group_buy', '', 'DB_CONFIG2')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
+                $res1 = M('group_buy')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
             }
         }
-        $goods_info= $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
-        $goods_info['store'] = M('merchant', '', 'DB_CONFIG2')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
-        $spec_info = M('order_goods', '', 'DB_CONFIG2')->alias('og')
+        $goods_info= $goods = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
+        $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
+        $spec_info = M('order_goods')->alias('og')
             ->join('INNER JOIN tp_spec_goods_price sgp on sgp.`key` = og.`spec_key` ')
             ->where('order_id = '.$order_id)
             ->field('sgp.key_name,sgp.price,sgp.prom_price')
@@ -2049,15 +2049,15 @@ class UserController extends BaseController {
 
         if(!empty($order_info['prom_id'])){
             if($prom_info['mark']==0){
-                $prom = M('group_buy', '', 'DB_CONFIG2')->where('mark = '.$order_info['prom_id'].' and is_pay = 1')->select();
+                $prom = M('group_buy')->where('mark = '.$order_info['prom_id'].' and is_pay = 1')->select();
                 $order_info['prom'] = $prom[0]['goods_num'];
-                $mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $order_info['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+                $mens = M('group_buy')->where('`mark` = ' . $order_info['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
                 $order_info['prom_mens'] = $prom_info['goods_num'] - $mens - 1;
                 $is_oneself = 1;
             }else{
-                $prom = M('group_buy', '', 'DB_CONFIG2')->where('mark = '.$prom_info['mark'].' and is_pay = 1')->select();
+                $prom = M('group_buy')->where('mark = '.$prom_info['mark'].' and is_pay = 1')->select();
                 $order_info['prom'] = $prom[0]['goods_num'];
-                $mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $prom_info['mark'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+                $mens = M('group_buy')->where('`mark` = ' . $prom_info['mark'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
                 $order_info['prom_mens'] = $prom_info['goods_num']-$mens-1;
                 $is_oneself = 2;
             }

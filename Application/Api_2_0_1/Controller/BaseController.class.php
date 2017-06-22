@@ -702,7 +702,7 @@ class BaseController extends Controller {
         if($prom_id==0){
             exit();
         }
-        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
+        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,store_id,auto')->order('mark asc')->select();
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         M()->startTrans();
@@ -717,11 +717,12 @@ class BaseController extends Controller {
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                         //销量、库存
-                        $goods_id = $join_num[$i]['goods_id'];
-                        $spec_name = M('order_goods')->where('`order_id`='.$join_num[$i]['order_id'])->field('spec_key')->find();
+                        $goods_id = $join_num[0]['goods_id'];
+                        $spec_name = M('order_goods')->where('`order_id`='.$join_num[0]['order_id'])->field('spec_key')->find();
                         M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
                         M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
-
+                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);
+                        M('merchant')->where('`id`='.$join_num[0]['store_id'])->setInc('sales',1);
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
                     }

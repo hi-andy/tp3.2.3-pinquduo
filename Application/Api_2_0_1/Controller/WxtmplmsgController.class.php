@@ -126,7 +126,7 @@ class WxtmplmsgController
      * @param $remark 备注
      */
     public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$Remark=' 【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
-        $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
+        $template_id = "AVh-lpwf1knKXHAzumLuaiMCCN9wsZcJs5Ad6zsy4CY";
         $pagepath = "special99.html";
         $data = array(
             'first' => array(

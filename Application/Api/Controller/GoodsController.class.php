@@ -609,6 +609,9 @@ class GoodsController extends BaseController {
 
 	public function getFree($prom_id)
 	{
+		if($prom_id==0){
+			exit();
+		}
 		$join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_num,free,is_raise,user_id')->order('mark asc')->select();
 
 		$prom_num = $join_num[0]['goods_num'];
