@@ -113,8 +113,9 @@ class ActivityiconController extends BaseController{
 
 	public function goods_save()
 	{
+		$src = C('activity_src');
 		for($i=0;$i<count($_POST['goods_id']);$i++){
-			$res = M('promote_icon')->data(array('goods_id'=>$_POST['goods_id'][$i],'type'=>$_POST['icon_id'],'src'=>$i,'create_time'=>time()))->add();
+			$res = M('promote_icon')->data(array('goods_id'=>$_POST['goods_id'][$i],'type'=>$_POST['icon_id'],'src'=>$src[$_POST['icon_id']],'create_time'=>time()))->add();
 			redislist("goods_refresh_id", $_POST['goods_id'][$i]);
 		}
 		if($res){
@@ -122,5 +123,23 @@ class ActivityiconController extends BaseController{
 		}else{
 			$this->success("添加失败",U('Activityicon/goods_info'));
 		}
+	}
+
+	public function delete_goods()
+	{
+		$id =I('id');
+		$is_show = M('promote_icon')->where('`goods_id`='.$id)->find();
+		if (empty($is_show)) {
+			$return_arr = array(
+				'status' => -1,
+				'msg' => '水印已移除',
+				'data' => array('url' => U('Admin/Activityicon/index')),
+			);
+			$this->ajaxReturn(json_encode($return_arr));
+		}
+		// 删除此商品
+		M("promote_icon")->where('goods_id =' . $id)->delete();
+		$return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);
+		$this->ajaxReturn(json_encode($return_arr));
 	}
 }
