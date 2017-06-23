@@ -8,6 +8,5 @@
 namespace Admin\Controller;
 
 class ActivityiconController extends BaseController{
-
 	
 }
