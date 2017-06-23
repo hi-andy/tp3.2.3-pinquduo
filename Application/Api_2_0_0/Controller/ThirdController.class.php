@@ -33,12 +33,12 @@ class ThirdController {
 	}
 
 	function Third_orderlist(){
-		$store_id = I('store_id',910);//商户ID
-		$page = I('page',1);//页码
-		$page_num = I('page_num',10);//分页变量
-		I('start_time') && $start_time = I('start_time');
-		I('end_time') && $end_time = I('end_time');
-		I('order_sn') && $order_sn = I('order_sn');
+		$store_id = I('post.store_id');//商户ID
+		$page = I('post.page',1);//页码
+		$page_num = I('post.page_num',10);//分页变量
+		I('post.start_time') && $start_time = I('post.start_time');
+		I('post.end_time') && $end_time = I('post.end_time');
+		I('post.order_sn') && $order_sn = I('post.order_sn');
 
 		$where = "o.store_id = $store_id and o.order_type in (2,14)";
 		if (!empty($start_time) && !empty($end_time)) {
@@ -46,6 +46,12 @@ class ThirdController {
 		}
 		if (!empty($order_sn)){
 			$where = "$where and o.order_sn = $order_sn";
+			$count = M('order')->alias('o')
+				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
+				->where($where)
+				->count();
+
 			$order_info = M('order')->alias('o')
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
@@ -53,6 +59,12 @@ class ThirdController {
 				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img,o.add_time')
 				->select();
 		}else{
+			$count = M('order')->alias('o')
+				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
+				->where($where)
+				->count();
+
 			$order_info = M('order')->alias('o')
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
@@ -88,7 +100,9 @@ class ThirdController {
 				unset($order_info[$i]['goods_id']);
 				unset($order_info[$i]['user_id']);
 			}
-			exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$order_info)));
+			$data = $this->listPageData($count,$order_info);
+
+			exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$data)));
 		}else{
 			exit(json_encode(array('code'=>0,'Msg'=>'您暂时还没有新的未发货订单哦！')));
 		}

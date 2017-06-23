@@ -6,7 +6,9 @@
  * Time: 17:51
  */
 namespace Api_2_0_1\Controller;
-class ThirdController {
+use Api_2_0_0\Controller\BaseController;
+
+class ThirdController  extends  BaseController{
 	/*
      * 第三方接口
      * */
@@ -46,6 +48,12 @@ class ThirdController {
 		}
 		if (!empty($order_sn)){
 			$where = "$where and o.order_sn = $order_sn";
+			$count = M('order')->alias('o')
+				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
+				->where($where)
+				->count();
+
 			$order_info = M('order')->alias('o')
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
@@ -53,6 +61,12 @@ class ThirdController {
 				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img,o.add_time')
 				->select();
 		}else{
+			$count = M('order')->alias('o')
+				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
+				->where($where)
+				->count();
+
 			$order_info = M('order')->alias('o')
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
@@ -88,7 +102,9 @@ class ThirdController {
 				unset($order_info[$i]['goods_id']);
 				unset($order_info[$i]['user_id']);
 			}
-			exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$order_info)));
+			$data = $this->listPageData($count,$order_info);
+			
+			exit(json_encode(array('code'=>1,'Msg'=>'获取成功！','data'=>$data)));
 		}else{
 			exit(json_encode(array('code'=>0,'Msg'=>'您暂时还没有新的未发货订单哦！')));
 		}

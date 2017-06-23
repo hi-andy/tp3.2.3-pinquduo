@@ -86,6 +86,7 @@ class PurchaseController extends  BaseController
                     $this->getJsonp($json);
                 exit(json_encode($json));
             }
+
             if ($spec_res['store_count'] < $num) {
                 $json = array('status' => -1, 'msg' => '该规格库存小于亲购买的数量');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁

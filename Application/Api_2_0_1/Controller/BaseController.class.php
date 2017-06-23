@@ -702,7 +702,7 @@ class BaseController extends Controller {
         if($prom_id==0){
             exit();
         }
-        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,store_id,auto')->order('mark asc')->select();
+        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         M()->startTrans();
@@ -721,8 +721,7 @@ class BaseController extends Controller {
                         $spec_name = M('order_goods')->where('`order_id`='.$join_num[0]['order_id'])->field('spec_key')->find();
                         M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
                         M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);
-                        M('merchant')->where('`id`='.$join_num[0]['store_id'])->setInc('sales',1);
+                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('ssles',1);
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
                     }
@@ -751,7 +750,7 @@ class BaseController extends Controller {
                 $nicknames = substr($nicknames, 0, -1);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
-                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
+                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                 }
             }
 
