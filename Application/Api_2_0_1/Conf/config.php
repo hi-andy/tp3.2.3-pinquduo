@@ -19,10 +19,10 @@ return array(
         ),
     'DB_CONFIG2' => array(
         'db_type'  => 'mysql',
-        'db_host'  => 'rm-wz91g3fsg23r1144bo.mysql.rds.aliyuncs.com',
+        'db_host'  => 'localhost',//rm-wz91g3fsg23r1144bo.mysql.rds.aliyuncs.com
         'db_name'  => 'pinquduo',
-        'db_user'  => 'rootmost',
-        'db_pwd'   => 'Zuoapp_la',
+        'db_user'  => 'root',//rootmost
+        'db_pwd'   => '',//Zuoapp_la
         'db_port'  => '3306',
         'DB_PREFIX' => 'tp_', //数据库前缀
     ),

@@ -86,6 +86,7 @@ class PurchaseController extends  BaseController
                     $this->getJsonp($json);
                 exit(json_encode($json));
             }
+
             if ($spec_res['store_count'] < $num) {
                 $json = array('status' => -1, 'msg' => '该规格库存小于亲购买的数量');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁
@@ -113,18 +114,18 @@ class PurchaseController extends  BaseController
                     exit(json_encode($json));
                 }
                 //为我点赞只允许每个人参团一次不论是否成团
-                if ($result['is_raise'] == 1) {
-                    $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
-                    if(!empty($raise)){
-                        $json = array('status' => -1, 'msg' => '您已参加过这个活动，请选择开团邀请好友得奖品');
-                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                        if (!empty($ajax_get)) {
-                            echo "<script> alert('" . $json['msg'] . "') </script>";
-                            exit;
-                        }
-                        exit(json_encode($json));
-                    }
-                }
+//                if ($result['is_raise'] == 1) {
+//                    $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
+//                    if(!empty($raise)){
+//                        $json = array('status' => -1, 'msg' => '您已参加过这个活动，请选择开团邀请好友得奖品');
+//                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
+//                        if (!empty($ajax_get)) {
+//                            echo "<script> alert('" . $json['msg'] . "') </script>";
+//                            exit;
+//                        }
+//                        exit(json_encode($json));
+//                    }
+//                }
                 //每个团的最后一个人直接将订单锁住防止出现错误
                 $num = M('group_buy')->where('`id`=' . $result['id'] . ' or `mark`=' . $result['id'] . ' and `is_pay`=1 and `is_cancel`=0')->count();
                 $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `is_pay`=0 and `is_cancel`=0')->find();
@@ -264,10 +265,14 @@ class PurchaseController extends  BaseController
         //如果是众筹订单
         if($result['is_raise']==1){
             $data['is_raise']=1;
+            $data['is_pay']=1;
             $order['the_raise']=1;
+            $order['pay_status'] = 1;
+            $order['order_type'] = 11;
         }else{
             $data['is_raise']=0;
             $order['the_raise']=0;
+            $order['order_type'] = 10;
         }
         if($result)
         {
@@ -304,7 +309,6 @@ class PurchaseController extends  BaseController
             $order['order_sn'] = C('order_sn');
             $order['invitation_num'] = $invitation_num['invitation_num'];
             $order['goods_id'] = $result['goods_id'];
-            $order['pay_status'] = 0;
             $order['order_status'] = 8;
             $order['order_type'] = 10;
             $order['consignee'] = $address['consignee'];
@@ -408,28 +412,33 @@ class PurchaseController extends  BaseController
                 }
                 $rdsname = "TuiSong*";
                 redisdelall($rdsname);//删除推送缓存
-                if($order['pay_code']=='weixin'){
-                    $weixinPay = new WeixinpayController();
-                    if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
-                        $order['order_id'] = $result['order_id'];
-                        $code_str = $weixinPay->getJSAPI($order);
-                        $pay_detail = $code_str;
-                    }else{
-                        $pay_detail = $weixinPay->addwxorder($order['order_sn']);
+                if($result['is_raise']!=1) {
+                    if ($order['pay_code'] == 'weixin') {
+                        $weixinPay = new WeixinpayController();
+                        if ($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] == 1) {
+                            $order['order_id'] = $result['order_id'];
+                            $code_str = $weixinPay->getJSAPI($order);
+                            $pay_detail = $code_str;
+                        } else {
+                            $pay_detail = $weixinPay->addwxorder($order['order_sn']);
+                        }
+                    } elseif ($order['pay_code'] == 'alipay') {//AlipayController
+                        $AliPay = new AlipayController();
+                        $pay_detail = $AliPay->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+                    } elseif ($order['pay_code'] == 'alipay_wap') { // 添加手机网页版支付 2017-5-25 hua
+                        $AlipayWap = new AlipayWapController();
+                        $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+                    } elseif ($order['pay_code'] == 'qpay') {
+                        $qqPay = new QQPayController();
+                        $pay_detail = $qqPay->getQQPay($order);
                     }
-                }elseif($order['pay_code'] == 'alipay'){//AlipayController
-                    $AliPay = new AlipayController();
-                    $pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+                    $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_detail' => $pay_detail, 'pay_status' => 1));
+                }else{
+                    if($result['goods_num']==count($user_id_arr)){
+                        $this->getFree($result['id'],1);
+                    }
+                    $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_status' => 0));
                 }
-                elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
-                    $AlipayWap = new AlipayWapController();
-                    $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
-                }
-                elseif($order['pay_code'] == 'qpay'){
-                    $qqPay = new QQPayController();
-                    $pay_detail = $qqPay->getQQPay($order);
-                }
-                $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
                 if($result['is_raise']!=1){
                     $this->aftermath($user_id,$goods,$num,$o_id);//修改库存
                 }
@@ -522,7 +531,23 @@ class PurchaseController extends  BaseController
                 }
             }
         }
-
+        //如果是众筹订单
+        if($goods['the_raise']==1)
+        {
+            $data['is_raise']=1;
+            $data['is_pay']=1;
+            $order['the_raise']=1;
+            $order['pay_status'] = 1;
+            $order['order_type'] = 11;
+        }else{
+            $data['is_raise']=0;
+            $order['the_raise']=0;
+            $order['pay_status'] = 0;
+            $order['order_type'] = 10;
+        }
+        if(!empty($ajax_get)){
+            $order['is_jsapi'] = 1;
+        }
         //在团购表加单
         $data['start_time'] = time();
         $data['end_time'] = time()+24*60*60;
@@ -548,11 +573,7 @@ class PurchaseController extends  BaseController
         $data['store_id'] = $goods['store_id'];
         $data['address_id'] = $address_id;
         $data['free'] = $free;
-        //如果是众筹订单
-        if($goods['the_raise']==1)
-        {
-            $data['is_raise']=1;
-        }
+
         $group_buy = M('group_buy')->data($data)->add();
 
         //在订单加一张单
@@ -561,9 +582,7 @@ class PurchaseController extends  BaseController
         $order['order_sn'] = C('order_sn');
         $order['invitation_num'] = $this->getInvitationNum();
         $order['goods_id'] = $goods_id;
-        $order['pay_status'] = 0;
         $order['order_status'] = 8;
-        $order['order_type'] = 10;
         $order['consignee'] = $address['consignee'];
         $order['country'] = 1;
         $order['address_base'] = $address['address_base'];
@@ -601,13 +620,7 @@ class PurchaseController extends  BaseController
         $order['prom_id'] = $group_buy;
         $order['free'] = $free;
         $order['num'] = $num;
-        //如果是众筹订单
-        if($goods['the_raise']==1){
-            $order['the_raise']=1;
-        }
-        if(!empty($ajax_get)){
-            $order['is_jsapi'] = 1;
-        }
+
         $o_id = M('order')->data($order)->add();
         $order['order_id'] = $o_id;
 
@@ -669,30 +682,33 @@ class PurchaseController extends  BaseController
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
 
-            if($order['pay_code']=='weixin'){
-                $weixinPay = new WeixinpayController();
-                //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
-                if($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] ==1){
-                    $code_str = $weixinPay->getJSAPI($order);
-                    $pay_detail = $code_str;
-                }else{
-                    $pay_detail = $weixinPay->addwxorder($order['order_sn']);
+            if($goods['the_raise']!=1) {
+                if ($order['pay_code'] == 'weixin') {
+                    $weixinPay = new WeixinpayController();
+                    //微信JS支付 && strstr($_SERVER['HTTP_USER_AGENT'],'MicroMessenger')
+                    if ($_REQUEST['openid'] || $_REQUEST['is_mobile_browser'] == 1) {
+                        $code_str = $weixinPay->getJSAPI($order);
+                        $pay_detail = $code_str;
+                    } else {
+                        $pay_detail = $weixinPay->addwxorder($order['order_sn']);
+                    }
+                } elseif ($order['pay_code'] == 'alipay') {
+                    $AliPay = new AlipayController();
+                    $pay_detail = $AliPay->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+                } elseif ($order['pay_code'] == 'alipay_wap') { // 添加手机网页版支付 2017-5-25 hua
+                    $AlipayWap = new AlipayWapController();
+                    $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+                } elseif ($order['pay_code'] == 'qpay') {
+                    // Begin code by lcy
+                    $qqPay = new QQPayController();
+                    $pay_detail = $qqPay->getQQPay($order);
+                    // End code by lcy
                 }
-            }elseif($order['pay_code'] == 'alipay'){
-                $AliPay = new AlipayController();
-                $pay_detail = $AliPay->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
+                $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_detail' => $pay_detail,'pay_status' => 1));
+            }else{
+                $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_status' => 0));
             }
-            elseif($order['pay_code'] == 'alipay_wap'){ // 添加手机网页版支付 2017-5-25 hua
-                $AlipayWap = new AlipayWapController();
-                $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'],$user_id,$goods_id);
-            }
-            elseif($order['pay_code'] == 'qpay'){
-                // Begin code by lcy
-                $qqPay = new QQPayController();
-                $pay_detail = $qqPay->getQQPay($order);
-                // End code by lcy
-            }
-            $json = array('status'=>1,'msg'=>'参团成功','result'=>array('order_id'=>$o_id,'group_id'=>$group_buy,'pay_detail'=>$pay_detail));
+
             if($goods['the_raise']!=1) {
                 $this->aftermath($user_id, $goods, $num, $o_id);
             }

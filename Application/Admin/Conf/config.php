@@ -15,4 +15,14 @@ return array(
     //默认成功跳转对应的模板文件
     'TMPL_ACTION_SUCCESS' => 'Public:dispatch_jump',
 
+
+	'activity_icon' => array('1'=>'618',
+		'2' => '双11',
+		'3' => '优惠券'
+		),
+	'activity_src' => array('1'=>'618',
+		'2' => '双11',
+		'3' => 'http://cdn.pinquduo.cn/activity_3.png'
+	)
+
 );

@@ -52,7 +52,7 @@ class WxtmplmsgController
      * @param $keyword3 发货时间
      * @param $remark 备注
      */
-    public function spell_success($openid,$keyword1,$keyword2,$keyword3='如果未按承诺时间发货，平台将对商家进行处罚。',$Remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
+    public function spell_success($openid,$keyword1,$keyword2,$keyword3,$Remark){
         $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";
         $pagepath = "special99.html";
         $data = array(
@@ -125,8 +125,8 @@ class WxtmplmsgController
      * @param $keyword4 商品数量
      * @param $remark 备注
      */
-    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$Remark=' 【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20软毛牙刷）'){
-        $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
+    public function commodity_delivery($openid,$keyword1,$keyword2,$keyword3,$keyword4,$remark='【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）'){
+        $template_id = "AVh-lpwf1knKXHAzumLuaiMCCN9wsZcJs5Ad6zsy4CY";
         $pagepath = "special99.html";
         $data = array(
             'first' => array(
@@ -150,7 +150,7 @@ class WxtmplmsgController
                 'color' => '#000000'
             ),
             'remark' => array(
-                'value' => urlencode($Remark),
+                'value' => urlencode($remark),
                 'color' => '#FF0000'
             )
         );
@@ -164,7 +164,7 @@ class WxtmplmsgController
      * @param $refund 退款金额
      * @param $remark 备注
      */
-    public function refund($openid,$reason,$refund,$Remark='查看更多的好商品，选择高品质的商品就在趣多严选'){
+    public function refund($openid,$reason,$refund,$remark='【查看更多的好商品，选择高品质的商品就在趣多严选】'){
         $template_id = "nmK37ic6m9mqUFIRZECAjR_26K3oUbhbNPL3KjZfAro";
         $pagepath = "strict_selection.html";
         $data = array(
@@ -181,7 +181,7 @@ class WxtmplmsgController
                 'color' => '#000000'
             ),
             'remark' => array(
-                'value' => urlencode($Remark),
+                'value' => urlencode($remark),
                 'color' => '#FF0000'
             )
         );

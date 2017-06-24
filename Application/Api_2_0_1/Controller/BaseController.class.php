@@ -717,13 +717,13 @@ class BaseController extends Controller {
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                         //销量、库存
-                        $goods_id = $join_num[$i]['goods_id'];
-                        $spec_name = M('order_goods')->where('`order_id`='.$join_num[$i]['order_id'])->field('spec_key')->find();
+                        $goods_id = $join_num[0]['goods_id'];
+                        $spec_name = M('order_goods')->where('`order_id`='.$join_num[0]['order_id'])->field('spec_key')->find();
                         M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
                         M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
-
+                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('ssles',1);
                     } else {
-                        $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>5))->save();
+                        $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>4))->save();
                     }
                 } else {
                     $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
@@ -750,7 +750,7 @@ class BaseController extends Controller {
                 $nicknames = substr($nicknames, 0, -1);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
-                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames);
+                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                 }
             }
 

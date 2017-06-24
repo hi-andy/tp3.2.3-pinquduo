@@ -749,8 +749,13 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test($user_id){
-        $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
-        var_dump($raise);
+    function  test1111(){
+//        $op = M('users')->where('user_id = 247')->find();
+//       $wx = new WxtmplmsgController();
+//        $res = $wx->spell_success($op['openid'],'拼趣多内部測試wupai勿拍-为我点赞','不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱',20000,'就是来测222222222222222222222222222222222222222试的');
+
+        $a = "./public/upload/comments_img/2017/06/20170622194747469.jpg";
+        $a = substr($a,1);
+        echo $a;
     }
 }
