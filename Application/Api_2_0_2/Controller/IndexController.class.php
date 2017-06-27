@@ -581,12 +581,7 @@ class IndexController extends BaseController {
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
-            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
-            $hot_goods = $this->getGoodsList($where,$page,$pagesize,'sales desc');
-            
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data,'hot_goods'=>$hot_goods));
-            
-
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -753,4 +748,24 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
+    function  hot_goods(){
+        $page = I('page',1);
+        $pagesize = I('pagesize',10);
+        $version = I('version');
+        $rdsname = "getHot_goods".$version.$page.$pagesize;
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('hot_goods'=>$data));
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
 }
