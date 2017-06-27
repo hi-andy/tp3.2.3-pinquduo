@@ -591,7 +591,13 @@ class UserController extends BaseController {
         $where = '`show_type`=0 and `cat_id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1';
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
         if(empty($count)){
-            $where = '`show_type`=0 and `id` = '.$cat_id.' and `is_on_sale`=1 and `is_show`=1';
+            $cat_arr = M('goods_category')->where('parent_id = '.M('goods_category')->where('id='.$cat_id)->getField('parent_id'))->field('id')->select();
+            $ids= null;
+            for($i=0;$i<count($cat_arr);$i++){
+                $ids = $ids.','.$cat_arr[$i]['id'];
+            }
+            $ids = substr($ids,1);
+            $where = '`show_type`=0 and `cat_id` in ('.$ids.') and `is_on_sale`=1 and `is_show`=1';
         }
         $data = $this->getGoodsList($where,$page,$pagesize);
         return $data;

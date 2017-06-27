@@ -581,7 +581,12 @@ class IndexController extends BaseController {
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
+            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $hot_goods = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+            
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data,'hot_goods'=>$hot_goods));
+            
+
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -748,14 +753,4 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-
-    function  test1111(){
-//        $op = M('users')->where('user_id = 247')->find();
-//       $wx = new WxtmplmsgController();
-//        $res = $wx->spell_success($op['openid'],'拼趣多内部測試wupai勿拍-为我点赞','不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱',20000,'就是来测222222222222222222222222222222222222222试的');
-
-        $a = "./public/upload/comments_img/2017/06/20170622194747469.jpg";
-        $a = substr($a,1);
-        echo $a;
-    }
 }
