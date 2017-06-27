@@ -30,6 +30,7 @@ class ChatController extends BaseController
     public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status='')
     {
         if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload != '' && $status != '') {
+            $payload = htmlspecialchars($payload);
             $chatcount = M('chat','','DB_CONFIG2')->where(array('msg_id'=>array('eq',$msg_id)))->count();
             if ($chatcount < 1) {
                 $msgdata = array(
@@ -86,27 +87,24 @@ class ChatController extends BaseController
      * @param int $page
      * @param int $pagesize
      */
-    public function get_chat($to='', $from='', $chat_type='', $page=0, $pageSize=20){
+    public function get_chat($to='', $from='', $chat_type='', $page=0, $pagesize=20){
         if ($to && $from && $chat_type) {
-            $page = $page <= 0 ? 1 : $page;
-            $fromPage = $page > 1 ? $page * $pageSize : 1;
-
+            $page *= $pagesize;
             $in_msg_id = "0,";
             $where = "((tos = '{$to}' and froms = '{$from}') or (tos = '{$from}' and froms = '{$to}')) and chat_type = '{$chat_type}' and status <> 2";
-            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp desc')->limit($fromPage,$pageSize)->select();
+            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp desc')->limit($page,$pagesize)->select();
             foreach ($result as $key => $value){
                 $data[$key]['msg_id'] = $value['msg_id'];
                 $data[$key]['timestamp'] = $value['timestamp'];
                 $data[$key]['to'] = $value['tos'];
                 $data[$key]['from'] = $value['froms'];
                 $data[$key]['chat_type'] = $value['chat_type'];
-                $data[$key]['payload'] = $value['payload'];
+                $data[$key]['payload'] = htmlspecialchars_decode($value['payload']);
                 $data[$key]['status'] = $value['status'];
                 $in_msg_id .= "'{$value['msg_id']}',";
             }
             $in_msg_id = substr($in_msg_id, 0, -1);
             M('chat')->where("msg_id in({$in_msg_id})")->save(array('status'=>1));
-            $data['page'] = $page;
             json('读取成功',$data);
         } else {
             errjson('缺少参数');
@@ -120,20 +118,21 @@ class ChatController extends BaseController
     public function get_unread($user_id=''){
         if ($user_id){
             if (empty(redis('get_unread'))) {
-                $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC ");
+                $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC");
                 $froms='';
                 foreach ($data1 as $k1 => $v1) {
                     $data[$k1] = $v1;
-                    $data[$k1]['payload'] = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v1['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
+                    $payload = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v1['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
+                    $data[$k1]['payload'] = htmlspecialchars_decode($payload);
                     $froms .= "'".$v1['froms']."',";
                 }
                 $froms = substr($froms, 0, -1);
                 if (!empty($froms)) $andwhere = "and froms not in({$froms})";
                 $data2 = M('chat', '', 'DB_CONFIG2')->query("SELECT froms,0 as count FROM tp_chat where tos='{$user_id}' and status=1 {$andwhere} GROUP BY froms ORDER BY timestamp DESC");
-                $data = array();
                 foreach ($data2 as $k2 => $v2) {
                     $data[count($data1)+$k2] = $v2;
-                    $data[count($data1)+$k2]['payload'] = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
+                    $payload = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
+                    $data[count($data1)+$k2]['payload'] = htmlspecialchars_decode($payload);
                 }
                 // 暂不使用缓存
                 //redis('get_unread', serialize($data), 8);

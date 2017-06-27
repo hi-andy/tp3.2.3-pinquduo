@@ -152,7 +152,7 @@ class GroupController extends BaseController {
                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
                 ->where('g.mark = '.$group_info['mark'])
-                ->field('g.id,g.start_time,g.end_time,g.goods_num,g.order_num,g.price,g.mark,g.is_pay,g.is_freeg.is_successful,u.nickname,o.order_sn,o.pay_time')
+                ->field('g.id,g.start_time,g.end_time,g.goods_num,g.order_num,g.price,g.mark,g.is_pay,g.is_free,g.is_successful,u.nickname,o.order_sn,o.pay_time')
                 ->order('g.id desc')
                 ->select();
         }else{
