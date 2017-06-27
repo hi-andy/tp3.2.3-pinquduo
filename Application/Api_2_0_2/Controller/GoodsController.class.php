@@ -443,21 +443,16 @@ class GoodsController extends BaseController {
 
 		//用来获取优惠券的价格
 		//0-》参团 1-》开团 2-》单买
-		if($type==0)
-		{
+		if($type==0){
 			$price = $goods['prom_price']*$num;
 			$order_info = M('group_buy')->where('order_id = '.$order_id)->find();
 			$goods['prom_num'] = $order_info['goods_num'];
 			$goods['free_num'] = $order_info['free'];
-		}
-		elseif($type==1){
+		}elseif($type==1){
 			$price = $goods_spec['prom_price']*$num;;
-		}
-		elseif($type==2) {
+		}elseif($type==2) {
 			$price = $goods_spec['price']*$num;
-		}
-		else
-		{
+		}else{
 			$json = array('status'=>-1,'msg'=>'参数错误');
 			if(!empty($ajax_get))
 				$this->getJsonp($json);
@@ -469,7 +464,7 @@ class GoodsController extends BaseController {
 		if(!empty($user_coupon)){
 			$id = array_column($user_coupon, 'cid');
 			//拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
-			$coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
+			$coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time().'and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
 			if(!empty($coupon)){
 				//根据获取的最佳优惠券在coupon_list里面的优惠券id
 				for ($i = 0; $i < count($user_coupon); $i++) {

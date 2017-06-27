@@ -553,7 +553,7 @@ class BaseController extends Controller {
                 $goods['img_arr'] = getImgSize($goods['img_arr']);
 
                 //获取店铺优惠卷store_logo_compression
-                $coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+                $coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum > send_num')->select();
                 if (empty($coupon)) {
                     $coupon = null;
                 }
@@ -573,6 +573,7 @@ class BaseController extends Controller {
     {
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
+        
         for($i=0;$i<count($goods);$i++){
             $type = M('promote_icon')->where('goods_id = '.$goods[$i]['goods_id'])->getField('src');
             if(!empty($type)){

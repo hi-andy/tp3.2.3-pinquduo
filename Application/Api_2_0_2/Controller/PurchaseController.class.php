@@ -310,7 +310,6 @@ class PurchaseController extends  BaseController
             $order['invitation_num'] = $invitation_num['invitation_num'];
             $order['goods_id'] = $result['goods_id'];
             $order['order_status'] = 8;
-            $order['order_type'] = 10;
             $order['consignee'] = $address['consignee'];
             $order['country'] = 1;
             $order['address_base'] = $address['address_base'];
