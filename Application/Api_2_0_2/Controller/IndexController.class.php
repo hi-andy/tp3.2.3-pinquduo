@@ -573,8 +573,10 @@ class IndexController extends BaseController {
     //为我点赞
     public function getThe_raise()
     {
+        $page = I('page',1);
+        $pagesize = I('pagesize',10);
         $version = I('version');
-        $rdsname = "getThe_raise".$version;
+        $rdsname = "getThe_raise".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $goods = M('goods', '', 'DB_CONFIG2')->where($where)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
@@ -583,8 +585,11 @@ class IndexController extends BaseController {
                 $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }
 
+            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$goods));
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'raisegoods'=>$goods,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -752,46 +757,7 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  hot_goods(){
-        $page = I('page',1);
-        $pagesize = I('pagesize',10);
-        $version = I('version');
-        $rdsname = "getHot_goods".$version.$page.$pagesize;
-        if(empty(redis($rdsname))) {//判断是否有缓存
-            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
-            $data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('hot_goods'=>$data));
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        } else {
-            $json = unserialize(redis($rdsname));//读取缓存
-        }
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
-        exit(json_encode($json));
-    }
-
     function test(){
-        $user_coupon = M('coupon_list')->where('`uid`='. 247 .' and `store_id`='. 910 .' and `is_use`=0')->field('id,cid')->select();
-        if(!empty($user_coupon)){
-            $id = array_column($user_coupon, 'cid');
-            //拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
-            $coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='. 10 .' and `use_end_time`>'.time().' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
-            if(!empty($coupon)){
-                //根据获取的最佳优惠券在coupon_list里面的优惠券id
-                for ($i = 0; $i < count($user_coupon); $i++) {
-                    $user_coupon_list_id = M('coupon_list')->where('`cid`='.$user_coupon[$i]['cid'].' and `uid`='. 247 .' and `is_use`=0')->find();
-                    if ($coupon['id'] == $user_coupon_list_id['cid']){
-                        $coupon['coupon_list_id'] = $user_coupon[$i]['id'];
-                        break;
-                    }
-                }
-            }else{
-                $coupon = null;
-            }
-        }else{
-            $coupon = null;
-        }
+
     }
 }
