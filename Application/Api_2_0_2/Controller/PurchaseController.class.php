@@ -894,7 +894,7 @@ class PurchaseController extends  BaseController
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
             }
-            $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
+            $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail,'pay_status' => 1));
             $this->aftermath($user_id,$goods,$num,$o_id);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";

@@ -756,7 +756,7 @@ class UserController extends BaseController {
         }
         $rdsname = "return_goods_list".$user_id.$page.$pagesize;
         if(empty(redis($rdsname))) {
-            $conditon = 'order_type in (6,7,8,9) and `user_id`=' . $user_id;
+            $conditon = 'order_type in (6,7,8,9,16) and `user_id`=' . $user_id;
             $data = $this->get_OrderList($conditon, $page, $pagesize);
             redis($rdsname, serialize($data));
         } else {

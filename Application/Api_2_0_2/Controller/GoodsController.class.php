@@ -326,7 +326,6 @@ class GoodsController extends BaseController {
 		    }
 		    $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $order_id, 'group_id' => $prom_id['id'], 'pay_status' => 0));
 	    }
-
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));

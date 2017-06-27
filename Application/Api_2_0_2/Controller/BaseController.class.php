@@ -573,7 +573,7 @@ class BaseController extends Controller {
     {
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
-        
+
         for($i=0;$i<count($goods);$i++){
             $type = M('promote_icon')->where('goods_id = '.$goods[$i]['goods_id'])->getField('src');
             if(!empty($type)){
@@ -748,9 +748,7 @@ class BaseController extends Controller {
                     $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                 }
             }
-
         }
-
 
         if($free_num>0){//如果有免单，才执行getRand操作
             redis("get_Free_Order_status","1");
