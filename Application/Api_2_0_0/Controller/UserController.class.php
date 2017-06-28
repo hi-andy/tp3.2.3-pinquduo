@@ -196,7 +196,7 @@ class UserController extends BaseController {
         $res = M('coupon_list')->where("`uid` = $user_id and `cid` = $coupon_id")->select();
         if($res)
         {
-            $json = array('status'=>-1,'msg'=>'已领取');
+            $json = array('status'=>-1,'msg'=>'已经领取过了，快去购买使用吧');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
             exit(json_encode($json));

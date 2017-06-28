@@ -576,7 +576,7 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         $version = I('version');
-        $rdsname = "getThe_raise".$version.$page.$pagesize;
+        $rdsname = "getThe_raise".$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $goods = M('goods', '', 'DB_CONFIG2')->where($where)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
@@ -585,11 +585,8 @@ class IndexController extends BaseController {
                 $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }
 
-            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
-            $data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
-
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'raisegoods'=>$goods,'goodsList'=>$data));
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$goods));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
@@ -599,6 +596,31 @@ class IndexController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
+    }
+
+    function hot_goods(){
+        $page = I('page',1);
+        $pagesize = I('pagesize',30);
+        $version = I('version');
+        $rdsname = "hot_goods".$version;
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('goodsList'=>$data));
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
+
+    function rolling(){
+        $version = I('version');
+        $rdsname = "rolling".$version;
     }
 
     /**
@@ -756,6 +778,8 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
+
 
     function test(){
 

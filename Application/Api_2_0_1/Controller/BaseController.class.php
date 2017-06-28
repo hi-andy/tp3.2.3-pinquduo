@@ -204,10 +204,10 @@ class BaseController extends Controller {
             //'已完成'
             $status['annotation'] = '已换货';
             $status['order_type'] = '7';
-        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==6) {
+        }elseif($order['pay_status']==1 && $order['order_status']==6) {
             $status['annotation'] = '待退货';
             $status['order_type'] = '8';
-        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==7) {
+        }elseif($order['pay_status']==1  && $order['order_status']==7) {
             $status['annotation'] = '已退货';
             $status['order_type'] = '9';
         }elseif($order['order_type']==16 && $order['order_status']==15){
