@@ -573,19 +573,68 @@ class IndexController extends BaseController {
     //为我点赞
     public function getThe_raise()
     {
-        $page = I('page',1);
-        $pagesize = I('pagesize',10);
         $version = I('version');
-        $rdsname = "getThe_raise".$version.$page.$pagesize;
+        $rdsname = "getThe_raise".$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
-            $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+            $goods = M('goods', '', 'DB_CONFIG2')->where($where)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
+
+            foreach ($goods as &$v) {
+                $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
+            }
+
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'raisegoods'=>$goods));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
+
+    function hot_goods(){
+        $page = I('page',1);
+        $pagesize = I('pagesize',30);
+        $version = I('version');
+        $rdsname = "hot_goods".$version.$page.$pagesize;
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
+
+    function rolling(){
+        $version = I('version');
+        $rdsname = "rolling".$version;
+        if(empty(redis($rdsname))){
+            $rolling_arr = M('group_buy')->alias('gb')
+                ->join('INNER JOIN tp_users u on u.user_id = gb.user_id ')
+                ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id')
+                ->where('gb.is_raise = 1 and gb.is_successful = 1 and gb.mark = 0 ')
+                ->field("u.nickname,g.goods_name,REPLACE(u.mobile, SUBSTR(u.mobile,4,4), '****') as mobile")
+                ->order('id desc')
+                ->limit('0,100')
+                ->select();
+
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>$rolling_arr);
+            redis($rdsname,serialize($json));
+        } else {
+            $json = unserialize(redis($rdsname));
+        }
+
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
         if(!empty($ajax_get))
@@ -749,13 +798,10 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test1111(){
-//        $op = M('users')->where('user_id = 247')->find();
-//       $wx = new WxtmplmsgController();
-//        $res = $wx->spell_success($op['openid'],'拼趣多内部測試wupai勿拍-为我点赞','不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱',20000,'就是来测222222222222222222222222222222222222222试的');
 
-        $a = "./public/upload/comments_img/2017/06/20170622194747469.jpg";
-        $a = substr($a,1);
-        echo $a;
+
+    function test(){
+        $r = getFloatLength(622.1);
+        var_dump($r==0);
     }
 }

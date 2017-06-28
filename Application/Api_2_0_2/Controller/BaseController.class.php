@@ -553,7 +553,7 @@ class BaseController extends Controller {
                 $goods['img_arr'] = getImgSize($goods['img_arr']);
 
                 //获取店铺优惠卷store_logo_compression
-                $coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+                $coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum > send_num')->select();
                 if (empty($coupon)) {
                     $coupon = null;
                 }
@@ -571,20 +571,9 @@ class BaseController extends Controller {
     //调度商品列表
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc')
     {
-//        if($page<=2){
-//            $order = 'sort asc';
-//            $id_arr = '1=1';
-//        }else{
-//            $id = M('goods')->where('`show_type`=0 and is_show=1 and is_on_sale=1 and is_audit=1')->where($where)->order('sort asc')->limit('0,40')->field('goods_id')->select();
-//            $id_arr = ' goods_id not in (';
-//            foreach ($id as $v) {
-//                $id_arr .= $v['goods_id'] . ",";
-//            }
-//            $id_arr = substr($id_arr, 0, -1);
-//            $id_arr = $id_arr.")";
-//        }
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
+
         for($i=0;$i<count($goods);$i++){
             $type = M('promote_icon')->where('goods_id = '.$goods[$i]['goods_id'])->getField('src');
             if(!empty($type)){
@@ -759,9 +748,7 @@ class BaseController extends Controller {
                     $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                 }
             }
-
         }
-
 
         if($free_num>0){//如果有免单，才执行getRand操作
             redis("get_Free_Order_status","1");
@@ -911,4 +898,5 @@ class BaseController extends Controller {
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }
+
 }

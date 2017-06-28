@@ -72,7 +72,9 @@ class StoreController extends BaseController{
         if(empty(redis("post_withdrawal".$_SESSION['merchant_id']))) {//判断是否有锁
             redis("post_withdrawal".$_SESSION['merchant_id'], "1", 20);//写入锁
             $data = $_POST;
-            if ($data['withdrawal_money'] < 1 || $data['withdrawal_money'] % 500 != 0) {
+            if(getFloatLength($data['withdrawal_money'])!=0) {
+                $result = json_encode(array('status' => 0, 'msg' => '输入金额应为整数'));
+            }elseif ($data['withdrawal_money'] < 1 || $data['withdrawal_money'] % 500 != 0){
                 $result = json_encode(array('status' => 0, 'msg' => '请输入500的倍数的提现金额'));
             } elseif ($data['withdrawal_money'] > $this->cash_available($_SESSION['merchant_id'])) {
                 $result = json_encode(array('status' => 0, 'msg' => '提现余额不足'));

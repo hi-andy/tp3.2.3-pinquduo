@@ -310,7 +310,6 @@ class PurchaseController extends  BaseController
             $order['invitation_num'] = $invitation_num['invitation_num'];
             $order['goods_id'] = $result['goods_id'];
             $order['order_status'] = 8;
-            $order['order_type'] = 10;
             $order['consignee'] = $address['consignee'];
             $order['country'] = 1;
             $order['address_base'] = $address['address_base'];
@@ -443,7 +442,7 @@ class PurchaseController extends  BaseController
                     $this->aftermath($user_id,$goods,$num,$o_id);//修改库存
                 }
                 if(!empty($ajax_get)){
-                    //echo "<script> alert('".$json['msg']."') </script>";
+                    echo "<script> location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
                     exit;
                 }
                 exit(json_encode($json));
@@ -713,7 +712,7 @@ class PurchaseController extends  BaseController
                 $this->aftermath($user_id, $goods, $num, $o_id);
             }
             if(!empty($ajax_get)){
-                //echo "<script> alert('".$json['msg']."') </script>";
+                echo "<script>location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
                 exit;
             }
             exit(json_encode($json));
@@ -895,7 +894,7 @@ class PurchaseController extends  BaseController
                 $qqPay = new QQPayController();
                 $pay_detail = $qqPay->getQQPay($order);
             }
-            $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail));
+            $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail,'pay_status' => 1));
             $this->aftermath($user_id,$goods,$num,$o_id);
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
@@ -907,7 +906,7 @@ class PurchaseController extends  BaseController
             $json = array('status'=>-1,'msg'=>'购买失败');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
-                //echo "<script> alert('".$json['msg']."') </script>";
+                echo "<script> alert('".$json['msg']."') </script>";
                 exit;
             }
         }

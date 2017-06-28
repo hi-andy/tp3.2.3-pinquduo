@@ -72,8 +72,13 @@ class CouponController extends BaseController {
 			}else{
 				$row =  M('coupon')->where(array('id'=>$data['id']))->save($data);
 			}
-			if(!$row)
+			if(!$row){
 				$this->error('编辑优惠券失败');
+			}
+			$goods_ids = M('goods')->where('store_id = '.$data['store_id'])->field('goods_id')->select();
+			for ($i=0;$i<count($goods_ids);$i++){
+				redisdelall('getDetaile_'.$goods_ids);
+			}
 			$this->success('编辑优惠券成功',U('Store/Coupon/index'));
 			exit;
 		}
@@ -222,11 +227,15 @@ class CouponController extends BaseController {
 		//获取优惠券ID
 		$cid = I('get.id');
 		//查询是否存在优惠券
-		$result = M('coupon_list')->where('`cid`='.$cid.' `is_use`!=0')->count();
+		$result = M('coupon_list')->where('`cid`='.$cid.' `is_use`!=0')->find();
 		if($result){
 			$this->error("还有用户持有优惠券");
 		}
 		$row = M('coupon')->where(array('id'=>$cid))->delete();
+		$goods_ids = M('goods')->where('store_id = '.$result['store_id'])->field('goods_id')->select();
+		for ($i=0;$i<count($goods_ids);$i++){
+			redisdelall('getDetaile_'.$goods_ids);
+		}
 		if($row){
 			//删除此类型下的优惠券
 			M('coupon_list')->where(array('cid'=>$cid))->delete();

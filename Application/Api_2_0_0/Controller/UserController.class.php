@@ -196,7 +196,7 @@ class UserController extends BaseController {
         $res = M('coupon_list')->where("`uid` = $user_id and `cid` = $coupon_id")->select();
         if($res)
         {
-            $json = array('status'=>-1,'msg'=>'已领取');
+            $json = array('status'=>-1,'msg'=>'已经领取过了，快去购买使用吧');
             if(!empty($ajax_get))
                 $this->getJsonp($json);
             exit(json_encode($json));
@@ -775,7 +775,7 @@ class UserController extends BaseController {
         }
         $rdsname = "return_goods_list".$user_id.$page.$pagesize;
         if(empty(redis($rdsname))) {
-            $conditon = 'order_type in (6,7,8,9) and `user_id`=' . $user_id;
+            $conditon = 'order_type in (6,7,8,9,16) and `user_id`=' . $user_id;
             if ($version == '2.0.0') {
                 $data = $this->get_OrderList($conditon, $page, $pagesize);
             } else {

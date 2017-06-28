@@ -749,13 +749,14 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function  test1111(){
+    function  test1111($r){
 //        $op = M('users')->where('user_id = 247')->find();
 //       $wx = new WxtmplmsgController();
 //        $res = $wx->spell_success($op['openid'],'拼趣多内部測試wupai勿拍-为我点赞','不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱不靠谱，十分靠谱，靠不靠谱',20000,'就是来测222222222222222222222222222222222222222试的');
-
-        $a = "./public/upload/comments_img/2017/06/20170622194747469.jpg";
-        $a = substr($a,1);
-        echo $a;
+$res = M('merchant')->where(array('mobile'=>$r))->count();
+        if($res){
+            echo json_encode(array('status'=>0,'msg'=>'此手机号已注册商铺'));
+            die;
+        }
     }
 }
