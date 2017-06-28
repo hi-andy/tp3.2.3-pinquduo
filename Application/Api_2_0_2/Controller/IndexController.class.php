@@ -801,6 +801,7 @@ class IndexController extends BaseController {
 
 
     function test(){
-
+        $r = getFloatLength(622.1);
+        var_dump($r==0);
     }
 }
