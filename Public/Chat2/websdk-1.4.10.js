@@ -57,8 +57,7 @@
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	;
-	(function () {
+        (function () {
 
 	    var EMPTYFN = function EMPTYFN() {};
 	    var _code = __webpack_require__(218).code;
@@ -1058,8 +1057,7 @@
 
 	"use strict";
 
-	;
-	(function () {
+        (function () {
 
 	    exports.code = {
 	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
@@ -2220,7 +2218,7 @@
 	        });
 	    };
 	    this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
-	    return;
+
 	};
 
 	// handle all types of presence message
@@ -2639,8 +2637,7 @@
 	                    this.onCmdMessage(msg);
 	                    break;
 	            }
-	            ;
-	        } catch (e) {
+            } catch (e) {
 	            this.onError({
 	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
 	                data: e
@@ -3120,7 +3117,7 @@
 	            type: _code.WEBIM_CONNCTION_DISCONNECTED
 	        });
 	    }
-	    return;
+
 	};
 
 	connection.prototype.isOpened = function () {
@@ -3431,9 +3428,8 @@
 	        }
 	    }
 	    return list;
-	};
-
-	// used for blacklist
+    }
+        // used for blacklist
 	connection.prototype.getBlacklist = function (options) {
 	    options = options || {};
 	    var iq = $iq({ type: 'get' });
@@ -3999,8 +3995,8 @@
 
 	'use strict';
 
-	;(function () {
-	    'use strict';
+(function () {
+            'use strict';
 
 	    var _utils = __webpack_require__(217).utils;
 	    var Message = function Message(type, id) {
@@ -4308,8 +4304,8 @@
 
 	"use strict";
 
-	;(function () {
-	    function Array_h(length) {
+(function () {
+            function Array_h(length) {
 	        this.array = length === undefined ? [] : new Array(length);
 	    }
 
