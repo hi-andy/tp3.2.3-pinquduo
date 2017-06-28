@@ -198,7 +198,8 @@ class WxtmplmsgController
      * 订单编号：{{keyword3.DATA}}
      * {{remark.DATA}}
      */
-    public function award_notify($openid, $title, $order_amount, $goods_name, $order_sn, $Remark=''){
+    public function award_notify($openid, $title, $order_amount, $goods_name, $order_sn, $Remark='查看中奖名单>>')
+    {
         $template_id = "JrCc8gw4UR0sJ89EjAxkq9THIbow4A7zxq1WhWIczSQ"; // 微信模板 id, 在微信公众号后台设置添加
         $pagepath = "special99.html";
         $data = array(
@@ -223,7 +224,7 @@ class WxtmplmsgController
                 'color' => '#FF0000'
             )
         );
-        return $this->push($template_id,$pagepath,$data,$openid);
+        return $this->push($template_id, $pagepath, $data, $openid);
     }
 
     /**
@@ -234,7 +235,7 @@ class WxtmplmsgController
      * @param $openid
      * @return array
      */
-    public function push($template_id,$pagepath,$data=array(),$openid){
+    public function push($template_id, $pagepath, $data=array(), $openid){
         require_once("plugins/payment/weixin/lib/WxPay.Api.php");
         $client_credential = (array) json_decode(file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".\WxPayConfig::$appid."&secret=".\WxPayConfig::$appsecret));
         $access_token = $client_credential['access_token'];

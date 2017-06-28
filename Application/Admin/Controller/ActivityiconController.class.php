@@ -64,51 +64,42 @@ class ActivityiconController extends BaseController{
 	}
 
 	public function search_goods(){
-		$condition['is_on_sale'] = 1;
-		$condition['is_special'] = 0;
-		$condition['the_raise'] = 0;
-		$condition['is_show'] = 1;
-		$condition['is_audit'] = 1;
-		$condition['show_type'] =0;
-		if(I('goods_id')){
-			$goods_id = I('goods_id');
-			$this->assign('goods_id', $goods_id);
-			$condition['goods_id'] = $goods_id;
-		}
-		if (!empty($_REQUEST['keywords'])) {
-			$this->assign('keywords', I('keywords'));
-			$condition['the_raise'] = array('like',I('keywords'));
-		}
-		if(!empty(I('store_name'))){
-			$store_name = I('store_name');
-			$this->assign('store_name', I('store_name'));
-			$store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->getField('id');
-			$condition['store_id'] = $store_id;
-		}
+        $where = ' store_count>0 and is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0';//搜索条件
+        if(!empty(I('store_name')))
+        {
+            $this->assign('store_name', I('store_name'));
+            $where = $this->getStoreWhere($where,I('store_name'));
+        }
+        $goods_id = I('goods_id');
+        if (!empty($goods_id)) {
+            $where .= " and goods_id not in ($goods_id) ";
+        }
+        I('intro') && $where = "$where and " . I('intro') . " = 1";
+        if (I('cat_id')) {
+            $this->assign('cat_id', I('cat_id'));
+            $grandson_ids = getCatGrandson(I('cat_id'));
+            $where = " $where  and cat_id in(" . implode(',', $grandson_ids) . ") "; // 初始化搜索条件
+        }
+        if (!empty($_REQUEST['keywords'])) {
+            $this->assign('keywords', I('keywords'));
+            $where = "$where and (goods_name like '%" . I('keywords') . "%' or keywords like '%" . I('keywords') . "%')";
+        }
+        I('store_id') && $where = "$where and `store_id`=".I('store_id');
+        $count = M('goods')->where($where)->count();
+        $Page = new \Think\Page($count, 10);
+        $goodsList = M('goods')->where($where)->order('addtime DESC')->limit($Page->firstRow . ',' . $Page->listRows)->select();
 
-		$promote_icon_goods_id = M('promote_icon')->field('goods_id')->select();
-		if(!empty($promote_icon_goods_id)){
-			$condition['goods_id'] =array('not in',array_column($promote_icon_goods_id,'goods_id'));
-		}
+        for($i=0;$i<count($goodsList);$i++)
+        {
+            $store_name = M('merchant')->where('`id`='.$goodsList[$i]['store_id'])->field('store_name')->find();
+            $goodsList[$i]['store_name'] = $store_name['store_name'];
+        }
 
-		$count = M('goods')->where($condition)->count();
-		$Page = new \Think\Page($count, 10);
-		$goodsList = M('goods')
-			->where($condition)
-			->order('addtime DESC')
-			->limit($Page->firstRow . ',' . $Page->listRows)
-			->select();
-
-		for($i=0;$i<count($goodsList);$i++)		{
-			$store_name = M('merchant')->where('`id`='.$goodsList[$i]['store_id'])->field('store_name')->find();
-			$goodsList[$i]['store_name'] = $store_name['store_name'];
-		}
-
-		$show = $Page->show();//分页显示输出
-		$this->assign('page', $show);//赋值分页输出
-		$this->assign('goodsList', $goodsList);
-		$tpl = I('get.tpl', 'search_goods');
-		$this->display($tpl);
+        $show = $Page->show();//分页显示输出
+        $this->assign('page', $show);//赋值分页输出
+        $this->assign('goodsList', $goodsList);
+        $tpl = I('get.tpl', 'search_goods');
+        $this->display($tpl);
 	}
 
 	public function goods_save()

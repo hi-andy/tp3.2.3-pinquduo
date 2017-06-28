@@ -362,24 +362,24 @@ class AutomationController extends BaseController
     }
 
     //机器人自动开团
-//    public function auto_add_group_buy() {
-//        $ids = "";
-//        $group_buy_values = "";
-//        $time = time()-3*60*60;
-//        $end_time = time()+24*60*60;
-//        $goods = M('goods')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
-//        foreach ($goods as $k => $v){
-//            $ids .= $v['goods_id'] . ",";
-//            $user = $this->get_robot(1);
-//            $group_buy_values .= "(".time().",{$end_time},{$v['goods_id']},{$v['prom']},1,{$v['prom_price']},'{$v['goods_name']}',{$v['market_price']},'{$v['goods_name']}','".CDN."/Public/upload/logo/logo.jpg',{$user['user_id']},{$v['store_id']},1,1),";
-//        }
-//        if (!empty($group_buy_values)) {
-//            $ids = substr($ids, 0, -1);
-//            $group_buy_values = substr($group_buy_values, 0, -1);
-//            $sql_group_buy = "INSERT INTO tp_group_buy(start_time,end_time,goods_id,goods_num,order_num,price,intro,goods_price,goods_name,photo,user_id,store_id,is_pay,auto) VALUES";
-//            $sql_group_buy .= $group_buy_values;
-//            M('goods')->where("goods_id in({$ids})")->save(array("auto_time" => time()));
-//            M()->query($sql_group_buy);
-//        }
-//    }
+    public function auto_add_group_buy() {
+        $ids = "";
+        $group_buy_values = "";
+        $time = time()-3*60*60;
+        $end_time = time()+24*60*60;
+        $goods = M('goods')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
+        foreach ($goods as $k => $v){
+            $ids .= $v['goods_id'] . ",";
+            $user = $this->get_robot(1);
+            $group_buy_values .= "(".time().",{$end_time},{$v['goods_id']},{$v['prom']},1,{$v['prom_price']},'{$v['goods_name']}',{$v['market_price']},'{$v['goods_name']}','".CDN."/Public/upload/logo/logo.jpg',{$user['user_id']},{$v['store_id']},1,1),";
+        }
+        if (!empty($group_buy_values)) {
+            $ids = substr($ids, 0, -1);
+            $group_buy_values = substr($group_buy_values, 0, -1);
+            $sql_group_buy = "INSERT INTO tp_group_buy(start_time,end_time,goods_id,goods_num,order_num,price,intro,goods_price,goods_name,photo,user_id,store_id,is_pay,auto) VALUES";
+            $sql_group_buy .= $group_buy_values;
+            M('goods')->where("goods_id in({$ids})")->save(array("auto_time" => time()));
+            M()->query($sql_group_buy);
+        }
+    }
 }

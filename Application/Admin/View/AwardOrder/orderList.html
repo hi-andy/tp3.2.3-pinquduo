@@ -18,13 +18,13 @@
                             <div class="form-group">
                                 <label class="control-label" for="input-order-id">订单编号</label>
                                 <div class="input-group">
-                                    <input type="text" name="order_sn" placeholder="订单编号" id="input-order-id" class="input-sm" style="width:100px;">
+                                    <input type="text" name="order_sn" placeholder="订单编号" value="{$order_sn}" id="input-order-id" class="input-sm" style="width:100px;">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label" for="input-date-added">下单日期</label>
                                 <div class="input-group">
-                                    <input type="text" name="timegap" value="{$timegap}" placeholder="下单日期"  id="add_time" class="input-sm">
+                                    <input type="text" name="timeRange" value="{$timeRange}" placeholder="下单日期"  id="add_time" class="input-sm">
                                 </div>
                             </div>
                             <!--<div class="form-group">-->
@@ -43,14 +43,14 @@
                                 </select>
                                 <input type="hidden" name="order_by" value="order_id">
                                 <input type="hidden" name="sort" value="desc">
-                                <input type="hidden" value="{$goods_id}" id="goods_id" >
+                                <input type="hidden" value="{$goods_id}" name="goods_id" id="goods_id" >
                             </div>
-                            <div class="form-group">
-                                <label class="control-label" for="input-order-id">商户名</label>
-                                <div class="input-group">
-                                    <input type="text" name="store_name" id="store_name" value="{$store_name}" placeholder="商户名"  class="form-control">
-                                </div>
-                            </div>
+                            <!--<div class="form-group">-->
+                                <!--<label class="control-label" for="input-order-id">商户名</label>-->
+                                <!--<div class="input-group">-->
+                                    <!--<input type="text" name="store_name" id="store_name" value="{$store_name}" placeholder="商户名"  class="form-control">-->
+                                <!--</div>-->
+                            <!--</div>-->
                             <div class="form-group">
                                 <input type="submit" id="button-filter search-order" class="btn btn-primary" value="筛选" >
                             </div>
@@ -108,9 +108,11 @@
                                                     <a href="javascript:void(0)" data-toggle="tooltip" title="" class="btn btn-default disabled" data-original-title="查看"><i class="fa fa-trash-o"></i></a>
                                                 </if>
                                                 <!-- 抽奖按钮 -->
-                                                <if condition="($list['is_award'] eq 1)">
-                                                    <input type="button" title="已中奖订单" class="btn btn-danger" value="中奖">
-                                                    <else/>
+                                                <if condition="$list['is_award'] eq 1">
+                                                    <input type="button" title="已中奖订单" class="btn btn-danger" value="已中奖">
+                                                <elseif  condition="$list['is_award'] eq -1" />
+                                                    <input type="button" title="未中奖订单" class="btn btn-default" value="未中奖">
+                                                <else/>
                                                     <a href="###" onclick="awardSet({$list.order_id})" data-toggle="tooltip" title="" class="btn btn-default"><i class="fa">中奖</i></a>
                                                 </if>
                                             </td>
@@ -143,7 +145,6 @@
             showDropdowns: true,
             minDate:'2016/01/01',
             maxDate:'2030/01/01',
-            startDate:'2016/01/01',
             locale : {
                 applyLabel : '确定',
                 cancelLabel : '取消',
@@ -180,13 +181,17 @@
     {
         if(!confirm('确定要执行操作吗?'))
             return false;
-        var dateRage = $('#add_time').val();
+        var dateRange = $('#add_time').val();
         var goods_id = $('#goods_id').val();
+        if (dateRange.length <=0) {
+            alert('请选取一个时间范围');
+            return false;
+        }
         $.ajax({
-            url:"/Admin/AwardOrder/orderAllPush",
+            url:"/Admin/AwardOrder/noAwardOrderPush",
             type: 'POST',
             data: {
-                dateRage: dateRage,
+                dateRange: dateRange,
                 goods_id: goods_id
             },
             success: function(v){
