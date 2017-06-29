@@ -697,7 +697,13 @@ class BaseController extends Controller {
         if($prom_id==0){
             exit();
         }
-        $join_num = M('group_buy')->where('(`id`='.$prom_id.' or `mark`='.$prom_id.') and `is_pay`=1')->field('id,goods_id,order_id,goods_name,goods_num,free,is_raise,user_id,auto')->order('mark asc')->select();
+        $wxtmplmsg = new WxtmplmsgController();
+        $join_num = M('group_buy')->alias('gb')
+            ->join('INNER JOIN tp_users u on u.user_id = gb.user_id')
+            ->where('(gb.id='.$prom_id.' or gb.mark='.$prom_id.' ) and gb.is_pay=1')
+            ->field("gb.id,gb.goods_id,gb.order_id,gb.goods_name,gb.goods_num,gb.free,gb.is_raise,gb.user_id,gb.auto,u.openid,u.nickname,REPLACE(u.mobile, SUBSTR(u.mobile,4,4), '****') as mobile")
+            ->order('mark asc')
+            ->select();
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         M()->startTrans();
@@ -717,10 +723,23 @@ class BaseController extends Controller {
                         M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
                         M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
                         M('goods')->where('`goods_id` = '.$goods_id)->setInc('ssles',1);
+
+                        if(($join_num[0]['mobile'])!=null){
+                                $name = $join_num[0]['mobile'];
+                        }else{
+                            $name = $join_num[0]['nicknames'];
+                        }
+                        $wxtmplmsg->spell_success($join_num[0]['openid'],$goodsname,$name,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>4))->save();
                     }
                 } else {
+                    if(($join_num[$i]['mobile'])!=null){
+                        $name = $join_num[$i]['mobile'];
+                    }else{
+                        $name = $join_num[$i]['nicknames'];
+                    }
+                    $wxtmplmsg->spell_success($join_num[$i]['openid'],$goodsname,$name,'','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                     $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                 }
             }else{

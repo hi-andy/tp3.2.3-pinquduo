@@ -287,7 +287,7 @@ class IndexController extends BaseController {
     function get_Seconds_Kill_time()
     {
         $today_zero = strtotime(date('Y-m-d', time()));
-        $today_zero2 = strtotime(date('Y-m-d', (time() + 2 * 24 * 3600)));
+        $today_zero2 = strtotime(date('Y-m-d', (time() + 1 * 24 * 3600)));
         $sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
         $time = M('', '', 'DB_CONFIG2')->query($sql);
         if (empty($time)) {
@@ -800,8 +800,14 @@ class IndexController extends BaseController {
 
 
 
-    function test(){
-        $r = getFloatLength(622.1);
-        var_dump($r==0);
+    function test($prom_id){
+        $join_num = M('group_buy')->alias('gb')
+            ->join('INNER JOIN tp_users u on u.user_id = gb.user_id')
+            ->where('(gb.id='.$prom_id.' or gb.mark='.$prom_id.' ) and gb.is_pay=1')
+            ->field("gb.id,gb.goods_id,gb.order_id,gb.goods_name,gb.goods_num,gb.free,gb.is_raise,gb.user_id,gb.auto,u.openid,u.nickname,REPLACE(u.mobile, SUBSTR(u.mobile,4,4), '****') as mobile")
+            ->order('mark asc')
+            ->select();
+        var_dump(M()->getLastsql());
+        var_dump($join_num);
     }
 }

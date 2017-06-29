@@ -4,6 +4,7 @@
  * 省钱大法活动控制器
  */
 namespace Admin\Controller;
+use Admin\Logic\GoodsLogic;
 use Think\Controller;
 use Think\AjaxPage;
 class EconomizeController extends Controller {
@@ -56,7 +57,7 @@ class EconomizeController extends Controller {
         $Page = new AjaxPage($count, 20);
         $show = $Page->show();
 
-        $sql = 'SELECT ga.id,ga.start_date,ga.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name FROM tp_goods_activity ga 
+        $sql = 'SELECT ga.id,ga.start_date,ga.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name,g.goods_id FROM tp_goods_activity ga 
                 LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category gc ON g.cat_id=gc.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id '.$where.' LIMIT ' .$Page->firstRow.','.$Page->listRows;
@@ -145,15 +146,15 @@ class EconomizeController extends Controller {
     }
 
     /**
-     * 添加修改秒杀商品
+     * 添加修改商品
      */
     public function addEditGoods()
     {
         $GoodsLogic = new GoodsLogic();
         $Goods = D('Goods'); //
+        session('goodstype',$_POST['goods_type']);
         $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
         //ajax提交验证
-        $_POST['refresh'] = 0;
         if(($_GET['is_ajax'] == 1) && IS_POST)
         {
             C('TOKEN_ON',false);
@@ -178,6 +179,7 @@ class EconomizeController extends Controller {
                 if ($type == 2)
                 {
                     $goods_id = $_POST['goods_id'];
+                    redislist("goods_refresh_id", $goods_id);
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
                     if($_POST['original_img']!=$goods['original_img'])
                     {
@@ -188,67 +190,51 @@ class EconomizeController extends Controller {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    $this->prom_goods_save($_POST['date'],$_POST['time'],$goods_id);
-                    $rdsname = "getDetaile_".$goods_id;
-                    redisdelall($rdsname);//删除商品详情缓存
+                    redislist("goods_refresh_id", $goods_id);
                 }
                 else
                 {
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
+                    M('goods')->where('goods_id='.$goods_id)->save(array('goods_type'=>$_SESSION['goodstype']));
                     $Goods->afterSave($goods_id);
-                    $this->prom_goods_save($_POST['date'],$_POST['time'],$goods_id);
                 }
 
                 $GoodsLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
+                if($_POST['the_raise'] ==1){
+                    $return_arr = array(
+                        'status' => 1,
+                        'msg'   => '操作成功',
+                        'data'  => array('url'=>U('Admin/Economize/goods_list')),
+                    );
+                }else
+                {
+                    $return_arr = array(
+                        'status' => 1,
+                        'msg'   => '操作成功',
+                        'data'  => array('url'=>U('Admin/Economize/goodsList')),
+                    );
+                }
 
-                $return_arr = array(
-                    'status' => 1,
-                    'msg'   => '操作成功',
-                    'data'  => array('url'=>U('Admin/Secondskill/Seconds_kill_goods')),
-                );
                 $this->ajaxReturn(json_encode($return_arr));
             }
         }
 
-
-        for ($i = 0; $i < 5; $i++) {
-            $date[$i]['id'] = $i + 1;$date1 = time();
-            if($i==0)  {
-                $day = $date1 - (24 * 60 * 60 * 2);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            } elseif($i==1) {
-                $day = $date1 - (24 * 60 * 60);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            } elseif($i == 2) {
-                $date[$i]['date'] = date("Y-m-d", time());
-            }elseif($i==3){
-                $day = $date1 + (24 * 60 * 60);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            }else{
-                $day = $date1 + (24 * 60 * 60 * 2);
-                $date[$i]['date'] = date("Y-m-d", $day);
-            }
-        }
-        $time = M('seconds_kill_time')->where('`is_show`=1')->order('time asc')->select();
-        for ($i = 0; $i < count($time); $i++) {
-            $time[$i]['time'] = $time[$i]['time'] . ':00:00';
-        }
-
-        $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
-        $this->assign('store', $store);
-        $this->assign('time', $time);
-        $this->assign('date', $date);
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+        $cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
-        $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
-        $brandList = $GoodsLogic->getSortBrands();
+
+//        $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
+
         $merchantList = $GoodsLogic->getSortMerchant();
         $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
         if(empty($goodsType))
             $goodsType = M("GoodsType")->select();
+
+        $level_cat = array_merge($level_cat);
+        $level_cat = array_reverse($level_cat, TRUE);
+        array_unshift($level_cat,array('id'=>'0','name'=>'null'));
         $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
-        $this->assign('brandList',$brandList);
         $this->assign('merchantList',$merchantList);
         $this->assign('goodsType',$goodsType);
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情

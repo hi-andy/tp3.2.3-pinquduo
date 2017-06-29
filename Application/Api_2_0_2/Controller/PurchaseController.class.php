@@ -114,18 +114,18 @@ class PurchaseController extends  BaseController
                     exit(json_encode($json));
                 }
                 //为我点赞只允许每个人参团一次不论是否成团
-//                if ($result['is_raise'] == 1) {
-//                    $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
-//                    if(!empty($raise)){
-//                        $json = array('status' => -1, 'msg' => '您已参加过这个活动，请选择开团邀请好友得奖品');
-//                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
-//                        if (!empty($ajax_get)) {
-//                            echo "<script> alert('" . $json['msg'] . "') </script>";
-//                            exit;
-//                        }
-//                        exit(json_encode($json));
-//                    }
-//                }
+                if ($result['is_raise'] == 1) {
+                    $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
+                    if(!empty($raise)){
+                        $json = array('status' => -1, 'msg' => '您已参加过这个活动，请选择开团邀请好友得奖品');
+                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                        if (!empty($ajax_get)) {
+                            echo "<script> alert('" . $json['msg'] . "') </script>";
+                            exit;
+                        }
+                        exit(json_encode($json));
+                    }
+                }
                 //每个团的最后一个人直接将订单锁住防止出现错误
                 $num = M('group_buy')->where('`id`=' . $result['id'] . ' or `mark`=' . $result['id'] . ' and `is_pay`=1 and `is_cancel`=0')->count();
                 $on_buy = M('group_buy')->where('`mark`=' . $result['id'] . ' and `is_pay`=0 and `is_cancel`=0')->find();
@@ -404,7 +404,7 @@ class PurchaseController extends  BaseController
                 M()->commit();//都操作成功的时候才真的把数据放入数据库
 
                 redisdelall("getBuy_lock_".$goods_id);//删除锁
-                $user_id_arr = M('group_buy')->where('id = '.$result['id'].' or mark ='.$result['id'])->field('user_id')->select();
+                $user_id_arr = M('group_buy')->where('(id = '.$result['id'].' or mark ='.$result['id'].' ) and is_pay = 1')->field('user_id')->select();
                 redis("group_buy", serialize($user_id_arr), 300);
                 for($i=0;$i<count($user_id_arr);$i++){
                     redis("getOrderList_status_".$user_id_arr[$i]['user_id'], "1");

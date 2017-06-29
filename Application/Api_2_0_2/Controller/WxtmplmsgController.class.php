@@ -52,9 +52,8 @@ class WxtmplmsgController
      * @param $keyword3 发货时间
      * @param $remark 备注
      */
-    public function spell_success($openid,$keyword1,$keyword2,$keyword3,$Remark){
+    public function spell_success($openid,$keyword1,$keyword2,$keyword3,$Remark,$pagepath= "special99.html"){
         $template_id = "L22LKQdaEErpxPaXHIn1U0sGc9yJ-q1jKWeF4kgU70E";
-        $pagepath = "special99.html";
         $data = array(
             'first' => array(
                 'value' => urlencode('您购买的商品已拼团成功'),
