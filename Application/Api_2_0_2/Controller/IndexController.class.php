@@ -712,36 +712,40 @@ class IndexController extends BaseController {
                 ->field('gb.id as prom_id,gb.goods_id,gb.price,gb.goods_num as prom,gb.free,gb.start_time,gb.end_time,gb.order_id,og.spec_key')
                 ->page($page, $pagesize)
                 ->select();
-
-            //将免单价格重新计算
-            $goods_id = "";
-            foreach ($prom as $value) {
-                $goods_id .= $value['goods_id'] . ",";
-            }
-            $goods_id = substr($goods_id, 0, -1);
-            $spec_goods_price = M('spec_goods_price')->where(array("goods_id" => array("in", $goods_id)))->field('key,prom_price')->select();
-            $arr = array();
-            foreach ($prom as $v) {
-                foreach ($spec_goods_price as $value) {
-                    if ($v['spec_key'] == $value['key']) {
-                        $arr[]['prom_price'] = $value['prom_price'];
+            if(!empty($prom)){
+                //将免单价格重新计算
+                $goods_id = "";
+                foreach ($prom as $value) {
+                    $goods_id .= $value['goods_id'] . ",";
+                }
+                $goods_id = substr($goods_id, 0, -1);
+                $spec_goods_price = M('spec_goods_price')->where(array("goods_id" => array("in", $goods_id)))->field('key,prom_price')->select();
+                $arr = array();
+                foreach ($prom as $v) {
+                    foreach ($spec_goods_price as $value) {
+                        if ($v['spec_key'] == $value['key']) {
+                            $arr[]['prom_price'] = $value['prom_price'];
+                        }
                     }
                 }
-            }
-            //将免单价格重新计算
-            for ($i = 0; $i < count($arr); $i++) {
-                $price = ($arr[$i]['prom_price'] * $prom[$i]['prom']) / ($prom[$i]['prom'] - $prom[$i]['free']);
-                $c = $this->getFloatLength($price);
-                if ($c >= 3) {
-                    $price = $this->operationPrice($price);
+                //将免单价格重新计算
+                for ($i = 0; $i < count($arr); $i++) {
+                    $price = ($arr[$i]['prom_price'] * $prom[$i]['prom']) / ($prom[$i]['prom'] - $prom[$i]['free']);
+                    $c = $this->getFloatLength($price);
+                    if ($c >= 3) {
+                        $price = $this->operationPrice($price);
+                    }
+                    $prom[$i]['price'] = sprintf("%.2f", $price);
+                    $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
                 }
-                $prom[$i]['price'] = sprintf("%.2f", $price);
-                $prom[$i]['goods'] = $this->getGoodsInfo($prom[$i]['goods_id']);
+
+                $data = $this->listPageData($count, $prom);
+
+                $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
+            }else{
+                $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('items'=>null));
             }
 
-            $data = $this->listPageData($count, $prom);
-
-            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json));//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
