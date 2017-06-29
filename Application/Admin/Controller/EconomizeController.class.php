@@ -57,7 +57,7 @@ class EconomizeController extends Controller {
         $Page = new AjaxPage($count, 20);
         $show = $Page->show();
 
-        $sql = 'SELECT ga.id,ga.start_date,ga.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name,g.goods_id FROM tp_goods_activity ga 
+        $sql = 'SELECT ga.id,ga.start_date,ga.start_time,g.goods_name,g.shop_price,g.prom_price,gc.name cat_name,m.store_name,g.goods_id,g.sort FROM tp_goods_activity ga 
                 LEFT JOIN tp_goods g ON g.goods_id=ga.goods_id
                 LEFT JOIN tp_goods_category gc ON g.cat_id=gc.id
                 LEFT JOIN tp_merchant m ON g.store_id=m.id '.$where.' LIMIT ' .$Page->firstRow.','.$Page->listRows;
