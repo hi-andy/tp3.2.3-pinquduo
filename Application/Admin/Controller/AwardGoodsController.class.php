@@ -1,16 +1,9 @@
 <?php
 /**
- * tpshop
- * ============================================================================
- * * 版权所有 2015-2027 深圳搜豹网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.tp-shop.cn
- * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和使用 .
- * 不允许对程序代码以任何形式任何目的的再发布。
- * ============================================================================
- * $Author: IT宇宙人 2015-08-10 $
+ * 抽奖商品管理控制器
  */
 namespace Admin\Controller;
+
 use Think\Controller;
 use Think\AjaxPage;
 class AwardGoodsController extends Controller {
@@ -19,28 +12,6 @@ class AwardGoodsController extends Controller {
     public function index()
     {
         $this->display();
-    }
-
-    // 选择商品页
-    public function selectGoods()
-    {
-        $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
-        $this->assign('store', $store);
-        $this->display();
-    }
-
-    // 保存商品
-    public function save()
-    {
-        $data['type'] = 3; // 抽奖商品
-        $goods = I('post.goods')['goods'];
-        //print_r($goods);exit;
-        foreach ($goods as $value) {
-            // 添加到商品活动表
-            $data = array_merge($data, $value);
-            $res = M('goods_activity')->data($data)->add();
-        }
-        $this->success("添加成功",U('AwardGoods/goodsList'));
     }
 
     // ajax 返回商品列表数据
@@ -78,10 +49,12 @@ class AwardGoodsController extends Controller {
     public function search_goods()
     {
         $where = ' store_count>0 and is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0';//搜索条件
-        if(!empty(I('store_name')))
-        {
-            $this->assign('store_name', I('store_name'));
-            $where = $this->getStoreWhere($where,I('store_name'));
+        if($store_name = (I('store_name'))) {
+            $this->assign('store_name', $store_name);
+            $ids = $this->getStoreIds($store_name);
+            if (!empty($ids)) {
+                $where .= " and store_id in ($ids) ";
+            }
         }
         $goods_id = I('goods_id');
         if (!empty($goods_id)) {
@@ -115,6 +88,27 @@ class AwardGoodsController extends Controller {
         $this->display($tpl);
     }
 
+    // 选择商品页
+    public function selectGoods()
+    {
+        $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
+        $this->assign('store', $store);
+        $this->display();
+    }
+
+    // 保存商品
+    public function save()
+    {
+        $data['type'] = 3; // 抽奖商品
+        $goods = I('post.goods')['goods'];
+        foreach ($goods as $value) {
+            // 添加到商品活动表
+            $data = array_merge($data, $value);
+            $res = M('goods_activity')->data($data)->add();
+        }
+        $this->success("添加成功",U('AwardGoods/goodsList'));
+    }
+
     // 删除单个商品
     public function delete()
     {
@@ -138,11 +132,23 @@ class AwardGoodsController extends Controller {
         foreach ($data['id'] as $value) {
             $res = M('goods_activity')->where('id='.$value)->delete();
         }
-        if($res)
-        {
+        if($res) {
             $this->success("删除成功",U('AwardGoods/goodsList'));
         }else{
             $this->success("删除失败",U('AwardGoods/goodsList'));
         }
+    }
+
+    /*
+     * 根据搜索店铺名称，返回店铺id
+     * */
+    public function getStoreIds($storeName)
+    {
+        $ids = '';
+        $storeIds = M('merchant')->field('id')->where("`store_name` like '%".$storeName."%'")->select();
+        foreach ($storeIds as $value) {
+            $ids .= $value['id'] . ',';
+        }
+        return rtrim($ids, ',');
     }
 }

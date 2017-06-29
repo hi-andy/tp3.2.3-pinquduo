@@ -27,67 +27,69 @@ class AwardOrderController extends Controller {
      */
     public function orderList()
     {
-        $begin = date('Y/m/d',(time()-30*60*60*24));//30天前
-        $end = date('Y/m/d',strtotime('+1 days'));
-        $this->assign('timegap',$begin.'-'.$end);
-
-        $timegap = I('timegap');
-        if($timegap){
-            list($begin, $end) = explode('-', $timegap);
-        }
-        $begin = strtotime($begin);
-        $end = strtotime($end);
-
         // 搜索条件
         $condition = array();
         $goods_id = I('goods_id');
-        $condition['g.goods_id'] = array('eq', $goods_id);
-        if($begin && $end){
-            $condition['g.start_time'] = array('GT',$begin);
-            $condition['g.end_time'] = array('LT',$end);
-        }
-        // 成团/未成团
-        if(I('Open_group')){
-            if(I('Open_group')==1){
-                $condition['_string'] = " g.goods_num = g.order_num ";
-            }elseif(I('Open_group')==2){
-                $condition['_string'] = " g.goods_num != g.order_num ";
+        $order_sn = I('order_sn');
+        $where = ' o.goods_id=' . $goods_id;
+
+        if($timeRange = I('timeRange')){
+            list($begin, $end) = explode('-', $timeRange);
+            $begin = strtotime($begin);
+            $end = strtotime($end);
+
+            //　时间范围
+            if($begin && $end){
+                //$condition['o.add_time'] = array('GT', $begin);
+                //$condition['o.add_time'] = array('LT', $end);
+                $where .= ' and o.add_time>' . $begin . ' and o.add_time<' . $end;
             }
         }
 
-        //　以商户名称为条件搜索
-        if(!empty(I('store_name')))
-        {
-            $this->assign('store_name', I('store_name'));
-            $store_id = M('merchant')->where("store_name like '%".I('store_name')."%' and state=1")->getField('id');
-            $condition['g.store_id'] = array('eq',$store_id);
+        //$condition['g.goods_id'] = array('eq', $goods_id);
+        //订单号搜索
+        if($order_sn) {
+            $where .= ' and o.order_sn=' . $order_sn;
         }
-        if(I('consignee')){
-            $condition['u.nickname'] =array('LIKE',"%".I('consignee')."%");
+
+
+        // 成团/未成团
+        if(I('Open_group')){
+            if(I('Open_group')==1){
+                //$condition['_string'] = " g.goods_num = g.order_num ";
+                $where .= ' and g.goods_num = g.order_num';
+            }elseif(I('Open_group')==2){
+                //$condition['_string'] = " g.goods_num != g.order_num ";
+                $where .= ' and g.goods_num != g.order_num';
+            }
         }
+
         $count = M('group_buy')->alias('g')
             ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-            ->where($condition)
+            ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+            ->where($where)
             ->count();
         $Page  = new Page($count,15);
-        $show = bootstrap_page_style($Page->show());
+
 
         //  搜索条件下 分页赋值
-        foreach($condition as $key=>$val) {
-            $Page->parameter[$key]   =  urlencode($val);
-        }
-
+//        foreach($condition as $key=>$val) {
+//            $Page->parameter[$key]   =  urlencode($val);
+//        }
+        $show = bootstrap_page_style($Page->show());
         //echo M('group_buy')->fetchSql('true')->alias('g')
         $orderList = M('group_buy')->alias('g')
             ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
             ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-            ->where($condition)
+            ->where($where)
             ->field('g.*,u.nickname,o.order_sn,o.order_id,o.is_award,o.pay_time')
             ->limit($Page->firstRow,$Page->listRows)
             ->select();
         $this->assign('orderList',$orderList);
         $this->assign('page',$show);// 赋值分页输出
         $this->assign('goods_id', $goods_id);
+        $this->assign('order_sn', $order_sn);
+        $this->assign('timeRange', $timeRange);
         $this->display();
     }
 
@@ -143,39 +145,43 @@ class AwardOrderController extends Controller {
     {
         $condition['order_id']  = I('order_id');
         //订单信息
-        $orderInfo = M('order')->field('order_sn,total_amount,goods_id,')->where($condition)->find();
+        $orderInfo = M('order')->field('user_id,order_sn,total_amount,goods_id')->where($condition)->find();
         // 商品名称
         $goods_name = M('goods')->where('goods_id='.$orderInfo['goods_id'])->getField('goods_name');
         // 订单设为中奖
         M('order')->where($condition)->setField('is_award', 1);
         // 微信推送中奖消息
-        $openid = M('users')->where("user_id={$orderInfo['user_id']}")->getField('openid');
+        $openid = M('users')->where('user_id='.$orderInfo['user_id'])->getField('openid');
         $wxPush = new WxtmplmsgController();
-        $wxPush->award_notify($openid,'恭喜！您参与的活动已中奖！！！',$orderInfo['total_amount'],$goods_name,$orderInfo['order_sn']);
+        $result = $wxPush->award_notify($openid,'恭喜！您参与的活动已中奖！！！',$orderInfo['total_amount'],$goods_name,$orderInfo['order_sn']);
         $this->ajaxReturn('操作成功！');
     }
 
     /**
      * 未中奖的订单，批量推送消息
      */
-    public function orderAllPush()
+    public function noAwardOrderPush()
     {
-        list($begin, $end) = explode('-', I('dateRage'));
-        $goods_id = I('goods_id');
-        $begin = strtotime($begin);
-        $end = strtotime($end);
+        if ($dataRange = I('dateRange')) {
+            list($begin, $end) = explode('-', $dataRange);
+            $goods_id = I('goods_id');
+            $begin = strtotime($begin);
+            $end = strtotime($end);
+        } else {
+            $this->ajaxReturn('请选取时间范围！');
+        }
 
         // 商品名称
         $goods_name = M('goods')->where('goods_id='.$goods_id)->getField('goods_name');
         // 所有未中奖的订单信息
-        $orderInfo = M('order')->field('order_id,user_id,total_amount,order_sn')->where('goods_id='.$goods_id.' and start_time>'.$begin.' and end_time<'.$end)->select();
+        $orderInfo = M('order')->field('order_id,user_id,total_amount,order_sn')->where('goods_id='.$goods_id.' and add_time>'.$begin.' and add_time<'.$end.' and is_award=0')->select();
         foreach($orderInfo as $value) {
             // 订单设为未中奖
             M('order')->where('order_id='.$value['order_id'])->setField('is_award', -1);
             // 微信推送消息
-            $openid = M('users')->where("user_id={$value['user_id']}")->getField('openid');
+            $openid = M('users')->where('user_id='.$value['user_id'])->getField('openid');
             $wxPush = new WxtmplmsgController();
-            $wxPush->award_notify($openid,'很遗憾！您参与的活动未中奖！！！',$value['total_amount'],$goods_name,$value['order_sn']);
+            $wxPush->award_notify($openid,'很遗憾！您参与的活动未中奖！！！', $value['total_amount'], $goods_name, $value['order_sn']);
         }
         $this->ajaxReturn('操作成功！');
     }
