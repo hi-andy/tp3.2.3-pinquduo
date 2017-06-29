@@ -85,7 +85,6 @@ class StoreController extends BaseController{
                 if ($datetime == $new) {
                     $result = json_encode(array('status' => 0, 'msg' => '一天只能提现一次'));
                 } else {
-
                     $store_info = M('merchant')->where(array('id' => $_SESSION['merchant_id']))->field('id,store_name')->find();
                     $data['store_id'] = $store_info['id'];
                     $data['store_name'] = $store_info['store_name'];

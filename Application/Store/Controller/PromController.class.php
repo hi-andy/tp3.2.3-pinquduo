@@ -147,7 +147,7 @@ class PromController extends BaseController {
 		//	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
 		$condition = array();
 		$order_sn = I('order_sn');
-		$where = '1=1 ';
+		$where = '1=1 and consignee is not null ';
 		I('consignee') && $where = $where." and consignee like '%".I('consignee')."%'";
 		$order_sn && $where = $where." and order_sn like '%$order_sn%' ";
 		if(I('shipping_status')==0||I('shipping_status')==1)

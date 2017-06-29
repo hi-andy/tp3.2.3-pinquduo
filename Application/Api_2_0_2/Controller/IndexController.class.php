@@ -22,7 +22,7 @@ class IndexController extends BaseController {
         $page = I('page', 1);
         $pagesize = I('pagesize', 8);
         $version = I('version');
-        $rdsname = "home".$page.$pagesize.$version;
+        $rdsname = "home".$version.$page.$pagesize;
         if (empty(redis($rdsname))) { //判断缓存是否存在
             //获取轮播图
             $data = M('ad', '', 'DB_CONFIG2')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
@@ -39,7 +39,7 @@ class IndexController extends BaseController {
             $category[4]['cat_name'] = '为我拼';
             $category[4]['cat_img'] = CDN .'/Public/upload/index/5-weiwo.jpg';
             $category[7]['cat_name'] = '省钱大法';
-            $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
+            $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.gif';
             //中间活动模块
             $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
             $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
