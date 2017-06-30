@@ -20,6 +20,15 @@ class GoodsController extends BaseController {
 	{
 		$user_id = I('user_id');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+		/*
+		 * user_address 用户收货地址表
+		 * address_id 地址id
+		 * consignee 收货人
+		 * address_base 基础住址
+		 * address 详细住址
+		 * mobile 电话号码
+		 * is_default 是否默认地址
+		 * */
 		$a = M('user_address', '', 'DB_CONFIG2')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
 		$b = M('user_address', '', 'DB_CONFIG2')->where('`user_id` = '.$user_id.' and `is_default` != 1')->field('address_id,consignee,address_base,address,mobile,is_default')->select();
 
@@ -68,9 +77,18 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
+
+	/*              $condition2['is_on_sale']=1;//是否上架
+					$condition2['is_show'] = 1;//是否显示
+					$condition2['is_audit'] =1;//是否审核
+					$condition2['show_type'] =0;//是否被删除
+					$condition2['the_raise'] =0;//为我点赞标识*/
 	function getOtheyMore($id,$type,$page,$pagesize,$ajax_get)
 	{
 		if($type==0){
+			/* goods_category 商品分类表
+			 * parent_id 父id
+			 * */
 			$parent_id = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`=0 and id != 10044 ')->field('id')->select();
 			$ids =array(array_column($parent_id,'id'));
 			if(in_array("$id", $ids[0])){
@@ -84,11 +102,11 @@ class GoodsController extends BaseController {
 					//找到一级菜单的下级id
 					$parent_cat = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`='.$id)->field('id')->select();
 					$condition2['cat_id'] =array('in',array_column($parent_cat,'id'));
-					$condition2['is_on_sale']=1;
-					$condition2['is_show'] = 1;
-					$condition2['is_audit'] =1;
-					$condition2['show_type'] =0;
-					$condition2['the_raise'] =0;
+					$condition2['is_on_sale']=1;//是否上架
+					$condition2['is_show'] = 1;//是否显示
+					$condition2['is_audit'] =1;//是否审核
+					$condition2['show_type'] =0;//是否被删除
+					$condition2['the_raise'] =0;//为我点赞标识
 					$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
 					return $data;
 				}else{
@@ -125,6 +143,11 @@ class GoodsController extends BaseController {
 		return $data;
 	}
 
+	/*              $condition2['is_on_sale']=1;//是否上架
+					$condition2['is_show'] = 1;//是否显示
+					$condition2['is_audit'] =1;//是否审核
+					$condition2['show_type'] =0;//是否被删除
+					$condition2['the_raise'] =0;//为我点赞标识*/
 	function getNextCat($id)
 	{
 		$page = I('page',1);
@@ -237,15 +260,16 @@ class GoodsController extends BaseController {
 		return $res['result']['addressComponent']['city'];
 	}
 
+	//免单订单会在 getwhere 订单add一张表
 	public function getWhere($order_id)
 	{
 		$result = M('order')->where('`order_id`='.$order_id)->find();
 		if($result['is_jsapi']==1)
-			$data['is_jsapi'] = 1;
-		$data['order_id']=$order_id;
-		$data['price'] = $result['order_amount'];
-		$data['code'] = $result['pay_code'];
-		$data['add_time'] = time();
+			$data['is_jsapi'] = 1;//标识是否为微信商城添加的点单免单
+		$data['order_id']=$order_id;// 订单id
+		$data['price'] = $result['order_amount'];//点单实付价格
+		$data['code'] = $result['pay_code'];//支付方式
+		$data['add_time'] = time();//添加时间
 		M('getwhere')->data($data)->add();
 	}
 
@@ -253,15 +277,15 @@ class GoodsController extends BaseController {
 	{
 		$rand_array=range(0,$max);
 		shuffle($rand_array);//调用现成的数组随机排列函数
-//		var_dump(array_slice($rand_array,0,$num));
 		return array_slice($rand_array,0,$num);//截取前$num个
 	}
 
+	//继续支付
     public function getCompleteBuy()
     {
-        $order_id = I('order_id');
-        $pay_code = I('code');
-        $ajax_get = I('ajax_get');
+        $order_id = I('order_id');//订单id
+        $pay_code = I('code');//支付方式
+        $ajax_get = I('ajax_get');//微信端标识
 
         $order = M('order')->where(array('order_id'=>array('eq',$order_id)))->find();
         //当订单已经是取消状态是不能继续支付
@@ -321,7 +345,7 @@ class GoodsController extends BaseController {
 		    }else{
 			    $result = M('group_buy')->where('id = '.$order['mark'].' or mark = '.$order['mark'])->find();
 		    }
-		    if($result['goods_num']==count($result)){
+		    if($result['goods_num']==count($result)){//判断是成团
 			    $this->getFree($result['id'],1);
 		    }
 		    $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $order_id, 'group_id' => $prom_id['id'], 'pay_status' => 0));
@@ -350,17 +374,25 @@ class GoodsController extends BaseController {
 	/*
 	 * type:  0、参团、1、开团、2、单买
 	 */
-    function getOrder()
+    function getOrder()//生成未支付订单页面
         {
         header("Access-Control-Allow-Origin:*");
-            $user_id = I('user_id');
-            $goods_id = I('goods_id');
-            $store_id = I('store_id');
-            $num = I('num',1);
-            $type = I('type');
-            $spec_key = I('spec_key');
-            $order_id = I('order_id');
-
+            $user_id = I('user_id');//用户id
+            $goods_id = I('goods_id');//商品id
+            $store_id = I('store_id');//商户id
+            $num = I('num',1);//购买数量
+            $type = I('type');//购买类型
+            $spec_key = I('spec_key');//购买规格
+            $order_id = I('order_id');//订单id
+	        /*
+		 * user_address 用户收货地址表
+		 * address_id 地址id
+		 * consignee 收货人
+		 * address_base 基础住址
+		 * address 详细住址
+		 * mobile 电话号码
+		 * is_default 是否默认地址
+		 * */
             $user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
             if(empty($user_address)){
             $user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
@@ -404,10 +436,30 @@ class GoodsController extends BaseController {
 		}
 		//获取合适的店铺优惠卷
 		//找到该店铺里用户的全部优惠券
+	        /*
+	         * coupon_list 用户领取优惠券表
+	         * uid 用户id
+	         * store_id 商户id
+	         * is_use 是否使用过
+	         * */
 		$user_coupon = M('coupon_list')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
 		if(!empty($user_coupon)){
 			$id = array_column($user_coupon, 'cid');
 			//拿到所有优惠券，并根据condition倒叙输出,获取最佳优惠卷
+			/*
+			 * coupon 优惠券类型表
+			 * id 优惠券id
+			 * condition 满减条件
+			 * user_end_time 最后使用时间
+			 * send_start_time 开始发放时间
+			 * send_end_time 最后发放时间
+			 * id  优惠券id
+			 * name 优惠券名字
+			 * money 优惠券满减金额
+			 * condition 满减条件
+			 * use_start_time 开始使用时间
+			 * use_end_time 最后使用时间
+			 * */
 			$coupon = M('coupon')->where('`id` in ('.join(',',$id).') and `condition`<='.$price.' and `use_end_time`>'.time().'and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time())->order('`money` desc')->field('id,name,money,condition,use_start_time,use_end_time')->find();
 			if(!empty($coupon)){
 				//根据获取的最佳优惠券在coupon_list里面的优惠券id
@@ -440,8 +492,16 @@ class GoodsController extends BaseController {
 		$type = I('type');
 		$num = I('num',1);
 		$goods_id = I('goods_id');
-
+		/*
+		 * temporary_key 临时存储表
+		 * */
 		$key = M('temporary_key', '', 'DB_CONFIG2')->where('goods_id='.$goods_id.' and user_id='.$user_id)->order('add_time desc')->find();
+
+		/*
+		 * spec_goods_price 商品规格价格表
+		 * goods_id 商品id
+		 * key 规格key
+		 * */
 		$spec_price = M('spec_goods_price', '', 'DB_CONFIG2')->where('goods_id='.$goods_id. " and `key`='".$key['goods_spec_key']."'")->find();
 		if($type==1||$type==0) {
 			$price = $spec_price['prom_price']*$num;
@@ -450,11 +510,29 @@ class GoodsController extends BaseController {
 		} else {
 			exit(json_encode(array('status'=>-1,'msg'=>'参数错误')));
 		}
-
+		/*
+	         * coupon_list 用户领取优惠券表
+	         * uid 用户id
+	         * cid 关联coupon表id
+	         * */
 		$user_coupon = M('coupon_list', '', 'DB_CONFIG2')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
         if(!empty($user_coupon)){
 	        $id =array_column($user_coupon,'cid');
 	        //拿到所有优惠券，并根据condition倒叙输出
+	        /*
+			 * coupon 优惠券类型表
+			 * id 优惠券id
+			 * condition 满减条件
+			 * user_end_time 最后使用时间
+			 * send_start_time 开始发放时间
+			 * send_end_time 最后发放时间
+			 * id  优惠券id
+			 * name 优惠券名字
+			 * money 优惠券满减金额
+			 * condition 满减条件
+			 * use_start_time 开始使用时间
+			 * use_end_time 最后使用时间
+			 * */
 	        $coupon = M('coupon', '', 'DB_CONFIG2')->alias('c')
 		        ->join('INNER JOIN tp_merchant m on m.id = c.store_id')
 		        ->where('c.`id` in ('.join(',',$id).') and c.`condition`<='.$price.' and c.`use_end_time`>'.time())->order('c.`money` desc')
@@ -489,9 +567,19 @@ class GoodsController extends BaseController {
 		$page = I('page',1);
 		$pagesize = I('pagesize',20);
 		$version = I('version');
+		/*
+		 * haitao_style 海淘风格馆
+		 * */
 		$countries = M('haitao_style', '', 'DB_CONFIG2')->where('`id` = '.$id)->find();
 		$countries['img'] = TransformationImgurl($countries['img']);
-
+		/*
+		 * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+		 * is_special 商品type
+		 * is_on_sale 是否上架 1 上架 0下架
+		 * is_audit 是否审核 1已审核 0未审核
+		 * is_show 是否显示 1 显示 0不显示  用于暂时下架
+		 * countries_type 海淘馆分类
+		 * */
 		$where ='`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id;
 		$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
 
@@ -506,8 +594,12 @@ class GoodsController extends BaseController {
 	function getCategory()
 	{
 		$id = I('id');
+		/*
+		 * haitao 海淘分类表
+		 * id 表id
+		 * name 分类id
+		 * */
 		$category = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$id)->field('id,name')->select();
-
 		array_unshift($category,array('id'=>'0','name'=>'全部'));
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('category'=>$category));
@@ -515,6 +607,7 @@ class GoodsController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
 
 	//海淘获取中间分类信息
 	function getCategoryData()
@@ -525,8 +618,16 @@ class GoodsController extends BaseController {
 		$pagesize = I('pagesize',20);
 		if($p_id && $id == 0)
 		{
+			/*
+		 * haitao 海淘分类表
+		 * id 表id
+		 * */
 			$cat = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$p_id)->field('id')->select();
-
+			/*          $condition2['is_on_sale']=1;//是否上架
+						$condition2['is_show'] = 1;//是否显示
+						$condition2['is_audit'] =1;//是否审核
+						$condition2['show_type'] =0;//是否被删除
+						$condition2['the_raise'] =0;//为我点赞标识*/
 			$condition['is_on_sale']=1;
 			$condition['is_show'] = 1;
 			$condition['is_audit'] = 1;
@@ -535,10 +636,28 @@ class GoodsController extends BaseController {
 			$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 
 			$count = M('goods', '', 'DB_CONFIG2')->where($condition)->count();
+			/*
+			 * goods 商品表
+			 * goods_id 商品id
+			 * goods_name 商品名
+			 * market_price 超市价
+			 * shop_price 商城价
+			 * original_img 类目图
+			 * prom 团人数
+			 * prom_price 团价格
+			 * free 免单人数
+			 * */
 			$goods = M('goods', '', 'DB_CONFIG2')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
 		}
 		else
-		{
+		{/*
+		 * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+		 * is_special 商品type
+		 * is_on_sale 是否上架 1 上架 0下架
+		 * is_audit 是否审核 1已审核 0未审核
+		 * is_show 是否显示 1 显示 0不显示  用于暂时下架
+         *  haitao_cat 海淘分类
+		 * */
 			$count = M('goods', '', 'DB_CONFIG2')->where('`is_special`=1 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `haitao_cat` = '.$id)->count();
 			$goods = M('goods', '', 'DB_CONFIG2')->where('`is_special`=1 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `haitao_cat` = '.$id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
 		}

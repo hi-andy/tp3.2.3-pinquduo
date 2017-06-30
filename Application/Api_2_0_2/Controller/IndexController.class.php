@@ -15,7 +15,7 @@ class IndexController extends BaseController {
     }
 
     /*
-     * 获取首页数据
+     * 获取APP首页数据
      */
     public function home(){
 //        var_dump($version);die;
@@ -24,14 +24,21 @@ class IndexController extends BaseController {
         $version = I('version');
         $rdsname = "home".$version.$page.$pagesize;
         if (empty(redis($rdsname))) { //判断缓存是否存在
-            //获取轮播图
+            //获取轮播图 ab轮播表 pid = 1 是首页轮播id enabled = 1 是显示的
+            /*
+             * ad_link=>banner跳转链接
+             * ad_name=>banner名字
+             * ad_code=>图片地址
+             * type=>跳转类型
+             */
             $data = M('ad', '', 'DB_CONFIG2')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
             foreach ($data as & $v) {
                 $v['ad_code'] = TransformationImgurl($v['ad_code']);
             }
-            //中间图标
+            //中间图标 group_category APP首页展示的icon图标 不显示 8,9
             $category = M('group_category', '', 'DB_CONFIG2')->where('`id` != 9 and `id` != 8')->select();
             foreach ($category as &$v) {
+                //TransformationImgurl 进行图片地址转换
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
 	        $category[3]['cat_name'] = '趣多严选';
@@ -46,6 +53,7 @@ class IndexController extends BaseController {
             $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
 
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
+            //getGoodsList  获取商品列表
             $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -111,10 +119,18 @@ class IndexController extends BaseController {
             //头部分类
             $directory = M('haitao_style', '', 'DB_CONFIG2')->select();
             foreach ($directory as &$v) {
+                //转换图片地址
                 $v['logo'] = TransformationImgurl($v['logo']);
             }
                 //中间分类
                 $directory2 = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
+            //haitao 海淘分类表
+            /*
+             * id 分类id
+             * name 分类名
+             * img 分类icon地址
+             * logo 菜单图标
+             * */
                 $directory2['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0')->field('id,name,img,logo')->limit('4')->select();
                 foreach ($directory2['cat2'] as &$v) {
                     $v['img'] = TransformationImgurl($v['img']);
@@ -123,6 +139,13 @@ class IndexController extends BaseController {
                     $directory2 ['cat2'][$i]['cat3'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = ' . $directory2['cat2'][$i]['id'])->field('id,name')->select();
                     array_unshift($directory2['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
+            /*
+             * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+             * is_special 商品type
+             * is_on_sale 是否上架 1 上架 0下架
+             * is_audit 是否审核 1已审核 0未审核
+             * is_show 是否显示 1 显示 0不显示  用于暂时下架
+             * */
                 $where = '`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 and haitao_cat != 65 ';
                 $order = 'is_recommend desc,sort asc';
                 $data = $this->getGoodsList($where,$page,$pagesize,$order);
@@ -147,6 +170,12 @@ class IndexController extends BaseController {
         $version = I('version');
         $rdsname = "getJiuJiu".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
+            //获取轮播图 ab轮播表 pid = 2 是99专场轮播id enabled = 1 是显示的
+            /*
+             * ad_name=>banner名字
+             * ad_code=>图片地址
+             * type=>跳转类型
+             */
             $banner = M('ad', '', 'DB_CONFIG2')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
             $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
             //中间四个小块
@@ -155,6 +184,13 @@ class IndexController extends BaseController {
             foreach ($banner2 as &$v) {
                 $v['img'] = TransformationImgurl($v['img']);
             }
+            /*
+             * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+             * is_special 商品type
+             * is_on_sale 是否上架 1 上架 0下架
+             * is_audit 是否审核 1已审核 0未审核
+             * is_show 是否显示 1 显示 0不显示  用于暂时下架
+             * */
             $where = '`show_type`=0 and is_special = 4 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'banner2' => $banner2, 'goods' => $data));
@@ -176,8 +212,19 @@ class IndexController extends BaseController {
         $version= I('version');
         $rdsname = "getJIuJIuCategory".$id.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存 //获取轮播图
+            /*
+             * exclusive 99专场专场表
+             * */
             $banner = M('exclusive', '', 'DB_CONFIG2')->where('id =' . $id)->field(array('banner'))->find();
             $banner['banner'] = TransformationImgurl($banner['banner']);
+            /*
+             * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+             * is_special 商品type
+             * is_on_sale 是否上架 1 上架 0下架
+             * is_audit 是否审核 1已审核 0未审核
+             * is_show 是否显示 1 显示 0不显示  用于暂时下架
+             * exclusive_cat 专场id
+             * */
             $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods' => $data));
@@ -191,105 +238,17 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
     /*
-	 *  免单拼
-	 */
-    function getMany_people_spell_group()
-    {
-        $price_min = I('price_min',0.01);
-        $price_max = I('price_max');
-        $free_min = I('free_min',1);
-        $free_max = I('free_max');
-        $pagesize = I('pagesize',20);
-        $page = I('page',1);
-
-        $condition['price'] = array('between',"$price_min,$price_max");
-        $condition['free'] = array('between',"$free_min,$free_max");
-        $condition['is_successful'] = array('eq',0);
-        $condition['end_time'] = array('gt',time());
-        $condition['mark'] = array('eq',0);
-        $condition['is_pay'] = array('eq',1);
-        $condition['is_audit'] = array('eq',1);
-        $condition['is_on_sale'] = array('eq',1);
-        $condition['show_type'] = array('eq',0);
-
-        $count = M('group_buy', '', 'DB_CONFIG2')->where($condition)->count();
-        $prom = M('group_buy', '', 'DB_CONFIG2')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
-        foreach($prom as &$v){
-            $goods_info = M('goods', '', 'DB_CONFIG2')->where('`goods_id`='.$v['goods_id'])->field('original_img,goods_name')->find();
-            $v['goods_name'] = $goods_info['goods_name'];
-            $v['original'] = TransformationImgurl($goods_info['original_img']);
-            $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
-        }
-        $data=$this->listPageData($count,$prom);
-
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
-        exit(json_encode($json));
-    }
-
-    //签到
-    public function getSignIn()
-    {
-        $data['user_id'] = I('user_id');
-        $data['datetime'] = date("Y-m-d",time());
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $signin = M('signin')->where($data)->find();
-        if($signin)
-        {
-            $json = array('status'=>-1,'msg'=>'签到失败','result'=>'你已经签到了');
-            if(!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
-
-        $res = M('signin')->data($data)->add();
-        if($res)
-        {
-            $json = array('status'=>1,'msg'=>'获取成功','result'=>'签到成功');
-            M('users')->where('user_id='.$data['user_id'])->setInc('integral',10);
-        }else{
-            $json = array('status'=>-1,'msg'=>'获取失败','result'=>'签到失败');
-        }
-
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
-        exit(json_encode($json));
-    }
-
-    /*
-	 *  排行榜
-	 */
-    function getRankingList()
-    {
-        $page = I('page',1);
-        $pagesize = I('pagesize',10);
-        $rdsname = "getRankingList".$page.$pagesize;
-        if(empty(redis($rdsname))) {//判断是否有缓存
-            $where = '`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ';
-            $data = $this->getGoodsList($where,$page,$pagesize,' sales desc ');
-            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
-            redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        } else {
-            $json = unserialize(redis($rdsname));//读取缓存
-        }
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
-        exit(json_encode($json));
-    }
-
-    /*
      *  限时秒杀
      *
      * */
     function get_Seconds_Kill_time()
     {
-        $today_zero = strtotime(date('Y-m-d', time()));
-        $today_zero2 = strtotime(date('Y-m-d', (time() + 1 * 24 * 3600)));
+        $today_zero = strtotime(date('Y-m-d', time()));//将当天凌晨
+        $today_zero2 = strtotime(date('Y-m-d', (time() + 1 * 24 * 3600)));//隔天凌晨
+        //取出时间段
         $sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
         $time = M('', '', 'DB_CONFIG2')->query($sql);
+        //如果当天没发布商品，就把之前的商品找出来 往前找三天
         if (empty($time)) {
             for ($j = 1;$j<4; $j++) {
                 $today_zero = $today_zero - $j * 24 * 3600;
@@ -300,6 +259,7 @@ class IndexController extends BaseController {
                     break;
             }
         }
+        //给时间段增加文字
         for ($i = 0; $i < count($time); $i++) {
             if ($time[$i]['datetime'] == date('Y-m-d H')) {
                 $time[$i]['title'] = '抢购中';
@@ -319,8 +279,8 @@ class IndexController extends BaseController {
 
     function get_Seconds_Kill()
     {
-        $starttime =I('starttime');
-        $version= I('version');
+        $starttime =I('starttime');//起始时间
+        $version= I('version');//版本号
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $rdsname = "get_Seconds_Kill".$version.$starttime.$page;
@@ -329,6 +289,14 @@ class IndexController extends BaseController {
             redisdelall("get_Seconds_Kill_status");
         }
         if(empty(redis($rdsname))) {//判断是否有缓存
+            /*
+             * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+             * is_special 商品type
+             * is_on_sale 是否上架 1 上架 0下架
+             * is_audit 是否审核 1已审核 0未审核
+             * is_show 是否显示 1 显示 0不显示  用于暂时下架
+             * on_time 秒杀时间
+             * */
             $count = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
             $goods = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,store_count,sales')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
             $data = $this->listPageData($count, $goods);
@@ -354,6 +322,9 @@ class IndexController extends BaseController {
     {
         $rdsname = "getexplore";
         if(empty(redis($rdsname))) {//判断是否有缓存
+            /*
+             * goods_category 商品分类表 10044是邮费补拍不显示
+             * */
             $category = M('goods_category', '', 'DB_CONFIG2');
             $cat1 = $category->where('`parent_id` = 0 and id != 10044')->order('sort_order asc')->field('id,name,logo')->select();
             for ($i = 0; $i < count($cat1); $i++) {
@@ -365,6 +336,9 @@ class IndexController extends BaseController {
                     array_unshift($cat1[$i]['cat2'][$j]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
             }
+            /*
+             * haitao 海淘商品分类表 64是邮费补拍不显示
+             * */
             $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
             $haitao['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0 and `id` != 64 ')->field('id,name,img')->select();
             foreach ($haitao['cat2'] as &$v) {
@@ -556,8 +530,22 @@ class IndexController extends BaseController {
         $version = I('version','');
         $rdsname = "getFreeProm".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
+            /*
+             * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+             * is_special 商品type
+             * is_on_sale 是否上架 1 上架 0下架
+             * is_audit 是否审核 1已审核 0未审核
+             * is_show 是否显示 1 显示 0不显示  用于暂时下架
+             * */
             $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+            /*
+             * ad_id 轮播id
+             * ad_link=>banner跳转链接
+             * ad_name=>banner名字
+             * ad_code=>图片地址
+             * type=>跳转类型
+             */
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 6')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -576,6 +564,14 @@ class IndexController extends BaseController {
         $version = I('version');
         $rdsname = "getThe_raise".$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
+            /*
+             * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+             * is_special 商品type
+             * is_on_sale 是否上架 1 上架 0下架
+             * is_audit 是否审核 1已审核 0未审核
+             * is_show 是否显示 1 显示 0不显示  用于暂时下架
+             * the_raise 为我点赞标识
+             * */
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $goods = M('goods', '', 'DB_CONFIG2')->where($where)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
@@ -595,13 +591,20 @@ class IndexController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-
+    //热门商品
     function hot_goods(){
         $page = I('page',1);
         $pagesize = I('pagesize',30);
         $version = I('version');
         $rdsname = "hot_goods".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
+            /*
+             * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+             * is_special 商品type
+             * is_on_sale 是否上架 1 上架 0下架
+             * is_audit 是否审核 1已审核 0未审核
+             * is_show 是否显示 1 显示 0不显示  用于暂时下架
+             * */
             $where = '`show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
             $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
@@ -615,11 +618,22 @@ class IndexController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-
+    //为我点赞顶部滚动内容
     function rolling(){
         $version = I('version');
         $rdsname = "rolling".$version;
         if(empty(redis($rdsname))){
+            /*
+             * group_buy 团购订单表
+             * tp_users 用户表
+             * tp_goods 商品表
+             * is_raise 团购订单表的为我点赞标识
+             * is_successful 成团标识
+             * mark 团长为0  团员为团长团购订单id
+             * nickname 用户昵称
+             * goods_name 商品名
+             * mobile 用户手机号码
+             * */
             $rolling_arr = M('group_buy')->alias('gb')
                 ->join('INNER JOIN tp_users u on u.user_id = gb.user_id ')
                 ->join('INNER JOIN tp_goods g on g.goods_id = gb.goods_id')
@@ -682,7 +696,7 @@ class IndexController extends BaseController {
     //中间展示免单的拼团
     function get_Free_Order()
     {
-        $free_num = I('free_num');
+        $free_num = I('free_num');//免单人数
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -692,15 +706,28 @@ class IndexController extends BaseController {
             redisdelall("get_Free_Order_status");
         }
         if (empty(redis($rdsname))) {//是否有缓存
-            $condition['gb.free'] = array('eq', $free_num);
-            $condition['gb.is_successful'] = array('eq', 0);
-            $condition['gb.end_time'] = array('gt', time());
-            $condition['gb.mark'] = array('eq', 0);
-            $condition['gb.is_pay'] = array('eq', 1);
-            $condition['g.is_on_sale'] = array('eq', 1);
-            $condition['g.show_type'] = array('eq', 0);
-            $condition['g.is_audit'] = array('eq', 1);
-
+            $condition['gb.free'] = array('eq', $free_num);//免单人数
+            $condition['gb.is_successful'] = array('eq', 0);//是否成团
+            $condition['gb.end_time'] = array('gt', time());//结束时间
+            $condition['gb.mark'] = array('eq', 0);//mark 团长为0  团员为团长团购订单id
+            $condition['gb.is_pay'] = array('eq', 1);//是否支付
+            $condition['g.is_on_sale'] = array('eq', 1);//是否上架
+            $condition['g.show_type'] = array('eq', 0);//是否被删除
+            $condition['g.is_audit'] = array('eq', 1);//是否审核
+            /*
+             * group_buy 团购订单表
+             * tp_goods 商品表
+             * tp_order_goods  订单详情记录表
+             * gb.id 团订单id
+             * gb.goods_id 商品id
+             * gb.price 订单支付价格
+             * gb.goods_num 团满人数
+             * gb.free 免单人数
+             * gb.start_time 开团时间
+             * gb.end_time 团结束时间
+             * gb.order_id 团订单关联的订单id
+             * og.spec_key 规格key
+             * */
             $count = M('group_buy', '', 'DB_CONFIG2')->alias('gb')
                 ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
                 ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
@@ -719,6 +746,11 @@ class IndexController extends BaseController {
                     $goods_id .= $value['goods_id'] . ",";
                 }
                 $goods_id = substr($goods_id, 0, -1);
+                /*
+                 * spec_goods_price 商品规格价格
+                 * key 上品牌规格
+                 * prom_price 团购价格
+                 * */
                 $spec_goods_price = M('spec_goods_price')->where(array("goods_id" => array("in", $goods_id)))->field('key,prom_price')->select();
                 $arr = array();
                 foreach ($prom as $v) {
@@ -788,8 +820,23 @@ class IndexController extends BaseController {
         $version = I('version','');
 		$rdsname = "getStrict_selection".$version.$page.$pagesize;
 		if(empty(redis($rdsname))) {//判断是否有缓存
+            /*
+            * show_type 是否展示 1不显示 0显示 1（为1时为逻辑删除状态）
+            * is_special 商品type
+            * is_on_sale 是否上架 1 上架 0下架
+            * is_audit 是否审核 1已审核 0未审核
+            * is_show 是否显示 1 显示 0不显示  用于暂时下架
+            * */
 			$where = '`is_special`=9 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
 			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+            //获取轮播图 ab轮播表 pid = 1 是首页轮播id enabled = 1 是显示的
+            /*
+			 * ad_link=>banner跳转链接
+			 * ad_name=>banner名字
+			 * ad_code=>图片地址
+			 * type=>跳转类型
+			 */
+
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 5')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -801,17 +848,4 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-
-
-
-    function test($prom_id){
-        $join_num = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_users u on u.user_id = gb.user_id')
-            ->where('(gb.id='.$prom_id.' or gb.mark='.$prom_id.' ) and gb.is_pay=1')
-            ->field("gb.id,gb.goods_id,gb.order_id,gb.goods_name,gb.goods_num,gb.free,gb.is_raise,gb.user_id,gb.auto,u.openid,u.nickname,REPLACE(u.mobile, SUBSTR(u.mobile,4,4), '****') as mobile")
-            ->order('mark asc')
-            ->select();
-        var_dump(M()->getLastsql());
-        var_dump($join_num);
-    }
 }
