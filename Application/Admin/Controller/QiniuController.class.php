@@ -61,4 +61,30 @@ class QiniuController {
         return $bucketMgr->delete($bucket, $key);
     }
 
+    /**
+     * @param string $file
+     * @return mixed
+     *
+     * 多张图片上传方法，支持移动端
+     */
+    public function upload($file='')
+    {
+        if(!$file) $file = $_FILES;
+        foreach ($file['picture']['name'] as $key => $value) {
+            $suffix = substr(strrchr($value, '.'), 1);
+            $files = array(
+                "key" => time() . rand(0, 9) . "." . $suffix,
+                "filePath" => $file['picture']['tmp_name'][$key],
+                "mime" => $file['picture']['type'][$key]
+            );
+            $info = $this->uploadfile("imgbucket", $files);
+            $return_data[$key]['origin'] = CDN . "/" . $info[0]["key"];
+            $return_data[$key]['width'] = '100';
+            $return_data[$key]['height'] = '100';
+            $return_data[$key]['small'] = CDN . "/" . $info[0]["key"];
+        }
+        redis("mobile_uploadimage", serialize($return_data),REDISTIME);
+        return $return_data;
+    }
+
 }

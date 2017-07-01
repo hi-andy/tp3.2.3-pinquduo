@@ -1,0 +1,54 @@
+
+                    <form method="post" id="form" action="{:U('Admin/Compensate/deleteBatch')}" >
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" style="font-size:12px;">
+                                <thead>
+                                <tr>
+                                    <td class="text-left" style="width:6%;"><input type="checkbox" onclick="$('input[name*=\'id\']').prop('checked', this.checked);"> 全选</td>
+                                    <td class="text-center">订单号</td>
+                                    <td class="text-center">商品价格</td>
+                                    <td class="text-center">购买日期</td>
+                                    <td class="text-center">申请日期</td>
+                                    <td class="text-center">对比平台</td>
+                                    <td class="text-center">状态</td>
+                                    <td class="text-center">操作</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <volist name="data" id="list">
+                                    <tr>
+                                        <td class="text-left">
+                                            <input type="checkbox" name="id[]" value="{$list.id}"/> {$list.id}
+                                        </td>
+                                        <td class="text-lifter">{$list.order_sn}</td>
+                                        <td class="text-center">{$list.goods_price}</td>
+                                        <td class="text-center">{$list.bought_date}</td>
+                                        <td class="text-center">{$list.create_time}</td>
+                                        <td class="text-center">{$list.other_name}</td>
+                                        <td class="text-center">{$list.transformed_status}</td>
+                                        <td class="text-center">
+                                            <a href="{:U('Admin/Compensate/detail',array('id'=>$list['id']))}"  data-toggle="tooltip" title="" class="btn btn-default"><i class="fa">查看</i></a>
+                                        </td>
+                                    </tr>
+                                </volist>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td class="text-right" colspan="10">
+                                        <input class="btn btn-primary" type="button" onclick="delsubmit()" value="批量删除">
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-sm-6 text-left"></div>
+                        <div class="col-sm-6 text-right">{$page}</div>
+                    </div>
+<script>
+    $(".pagination  a").click(function(){
+        var page = $(this).data('p');
+        ajax_get_table('search-form2',page);
+    });
+</script>
