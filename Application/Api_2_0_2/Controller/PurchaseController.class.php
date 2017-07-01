@@ -475,6 +475,14 @@ class PurchaseController extends  BaseController
         $ajax_get =  $parameter['ajax_get'];
         $coupon_list_id = $parameter['coupon_list_id'];
         $prom = $parameter['prom'];
+        if(empty($address_id)){
+            $json = array('status' => -1, 'msg' => '请输入地址');
+            redisdelall("getBuy_lock_" . $goods_id);//删除锁
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+
         M()->startTrans();
         //是否使用优惠卷
         if(!empty($coupon_id))
