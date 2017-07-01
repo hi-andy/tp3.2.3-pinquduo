@@ -53,8 +53,9 @@ class CompensateController extends Controller
         $id = I('id');
         $result = M('compensate')->where('id='.$id)->find();
         $result['bought_date'] = date('Y-m-d H:i:s', $result['bought_date']);
+        $result['other_date']  = date('Y-m-d H:i:s', $result['other_date']);
         $result['create_time'] = date('Y-m-d H:i:s', $result['create_time']);
-        $result['update_time'] = date('Y-m-d H:i:s', $result['update_time']);
+        $result['update_time'] = $result['update_time'] > 0 ? date('Y-m-d H:i:s', $result['update_time']) : 0;
         $result['prove_pic']   = json_decode($result['prove_pic']);
         $prove_pics = array();
         foreach ($result['prove_pic'] as $value) {
@@ -86,9 +87,11 @@ class CompensateController extends Controller
     // 申请状态操作
     public function setStatus()
     {
-        $id = I('id');
-        $status = I('status');
-        M('compensate')->where('id='.$id)->setField('status', $status);
+        $id                     = I('id');
+        $status                 = I('status');
+        $data['status']         = $status;
+        $data['update_time']    = time();
+        M('compensate')->where('id='.$id)->save($data);
         $this->ajaxReturn('操作成功！');
     }
 
