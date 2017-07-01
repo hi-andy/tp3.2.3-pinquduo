@@ -55,7 +55,7 @@ class GoodsController extends BaseController {
 		}
 	}
 
-	//查看全部
+	//获取不同商品分类的商品列表
 	function getMore(){
 		$id = I('id');
 		$type = I('type');
@@ -83,6 +83,7 @@ class GoodsController extends BaseController {
 					$condition2['is_audit'] =1;//是否审核
 					$condition2['show_type'] =0;//是否被删除
 					$condition2['the_raise'] =0;//为我点赞标识*/
+	//获取不同商品分类的商品列表
 	function getOtheyMore($id,$type,$page,$pagesize,$ajax_get)
 	{
 		if($type==0){
@@ -148,6 +149,7 @@ class GoodsController extends BaseController {
 					$condition2['is_audit'] =1;//是否审核
 					$condition2['show_type'] =0;//是否被删除
 					$condition2['the_raise'] =0;//为我点赞标识*/
+	//获取下级分类
 	function getNextCat($id)
 	{
 		$page = I('page',1);
@@ -176,15 +178,6 @@ class GoodsController extends BaseController {
         exit($json_str);
     }
 
-	/*
-	 * H5显示
-	 */
-	public function H5_goodsInfo(){
-		$id = $_GET['id'];
-
-		echo "此处显示商品H5界面";
-	}
-
     /**
      *  获取商品的缩略图
      */
@@ -199,7 +192,7 @@ class GoodsController extends BaseController {
         exit($image);
     }
     /**
-     * 收藏商品
+     * 用户点击收藏商品
      */
     function collectGoods(){
         $user_id = I('user_id');
@@ -236,31 +229,7 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
     }
 
-
-	function getShare()
-	{
-		$id=$_GET['id'];
-		$this->show();
-	}
-	/*
-	 *   $latitude纬度
-	 *   $longitude经度
-	 *
-	 *   获取地区
-	 */
-	public function getAddress($latitude,$longitude){
-		//
-		$res = file_get_contents("http://api.map.baidu.com/geocoder/v2/?ak=H0ipCgj55P9C0KgHb3ZqGl12xtRR69DK&callback=renderReverse&location=$latitude,$longitude&output=json&pois=1");
-
-		$res = str_replace('renderReverse&&renderReverse(','',$res);
-		$res = substr($res,0,strlen($res)-1);
-
-		$res = json_decode($res,true);
-
-		return $res['result']['addressComponent']['city'];
-	}
-
-	//免单订单会在 getwhere 订单add一张表
+	//免单订单会在 getwhere 订单add一张表 然后脚本会进行退款处理
 	public function getWhere($order_id)
 	{
 		$result = M('order')->where('`order_id`='.$order_id)->find();
@@ -272,7 +241,7 @@ class GoodsController extends BaseController {
 		$data['add_time'] = time();//添加时间
 		M('getwhere')->data($data)->add();
 	}
-
+	//生成随机数
 	public function getRand($num,$max)//需要生成的个数，最大值
 	{
 		$rand_array=range(0,$max);
@@ -280,7 +249,7 @@ class GoodsController extends BaseController {
 		return array_slice($rand_array,0,$num);//截取前$num个
 	}
 
-	//继续支付
+	//在支付的时候中间取消支付后再执行支付操作的方法
     public function getCompleteBuy()
     {
         $order_id = I('order_id');//订单id
@@ -929,7 +898,7 @@ class GoodsController extends BaseController {
 		$this->show();
 	}
 
-	//新版本详情 2.0.0
+	//新版本商品详情 2.0.0
 	function getDetaile($refresh="")
 	{
         $goods_id = I('goods_id');

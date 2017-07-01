@@ -170,7 +170,7 @@ class UserController extends BaseController {
     }
 
     /*
-     * 领取优惠券
+     * 用户点击领取优惠券
      * */
     function getReceiveCoupon()
     {
@@ -571,7 +571,7 @@ class UserController extends BaseController {
     }
 
     /*
-     * 猜你喜欢
+     * 猜你喜欢 在订单详情或者团详情下面出现的猜你喜欢商品列表
      * */
     public function if_you_like($cat_id,$page,$pagesize)
     {
@@ -595,7 +595,7 @@ class UserController extends BaseController {
     }
 
     /**
-     * 取消订单
+     * 用户点击取消订单的操作
      */
     public function cancelOrder(){
         $id = I('order_id');
@@ -634,7 +634,7 @@ class UserController extends BaseController {
     }
 
     /**
-     *  收货确认
+     *  用户点击收货确认的操作
      */
     public function orderConfirm(){
         $id = I('order_id',0);
@@ -722,7 +722,7 @@ class UserController extends BaseController {
     }
 
     /**
-     * 退款/售后列表
+     * 获取用户的退款/售后列表数据
      */
     public function return_goods_list()
     {
@@ -772,7 +772,7 @@ class UserController extends BaseController {
 
 
     /**
-     * 申请退货
+     * 用户申请退换货的操作
      */
     public function return_goods()
     {
@@ -862,7 +862,7 @@ class UserController extends BaseController {
 
 
     /**
-     * 验证验证码
+     * 验证短信验证码
      */
     public function checkcaptcha($mobile=0,$captcha=0,$unique_id=0){
         if(I('mobile') || I('code') || I('unique_id')){
@@ -888,7 +888,7 @@ class UserController extends BaseController {
     }
 
     /*
-     *   获取验证码
+     *   获取短信验证码
      */
     public function getCode()
     {
@@ -896,7 +896,7 @@ class UserController extends BaseController {
     }
 
     /**
-     * 测试短信接口
+     * 发送短信接口
      */
     public function sendSMS(){
         if (intval(time()) - intval(session("code")) > 60) {
@@ -935,7 +935,7 @@ class UserController extends BaseController {
     }
 
     /*
-     * 登录测试验证正确后
+     * 登录测试验证正确后获取用户信息，点单列表的信息的操作
      */
     public function confirm()
     {
@@ -1005,7 +1005,7 @@ class UserController extends BaseController {
                 exit(json_encode(array('status' => -1, 'msg' => '缺少必要数据')));
         }
     }
-    //刷新用户的个人中心
+    //刷新用户的个人中心的数据的接口
     public function getRefresh()
     {
         $user_id = I('user_id');
@@ -1127,7 +1127,7 @@ class UserController extends BaseController {
     }
 
     /*
-     * 获取用户收藏列表
+     * 获取用户收藏的商品列表
      */
 
     function getUserCollection()
@@ -1214,7 +1214,7 @@ class UserController extends BaseController {
         $User->return_Duiba_loginurl();
     }
 
-    //我的拼团
+    //获取用户的我的拼团的订单列表
     public function getUserPromList()
     {
         $user_id = I('user_id');
@@ -1250,8 +1250,8 @@ class UserController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-
-    public function getIncreaseGoodsTime()//订单延长收货时间
+    //用户点击延长收货时间的接口
+    public function getIncreaseGoodsTime()
     {
         $order_id = I('order_id');
         $user_id = I('user_id');
@@ -1291,7 +1291,7 @@ class UserController extends BaseController {
         }
     }
 
-    //钱款去向
+    //获取退款订单钱款去向的数据接口
     public function getWhere_Is_The_Money()
     {
         //0申请中1等待批准2等待到账3完成
@@ -1352,8 +1352,8 @@ class UserController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-
-    public function getUserFreeOrder() //获取用户免单的订单
+        //获取用户被免单的订单列表
+    public function getUserFreeOrder()
     {
         $conditions['user_id'] = I('user_id');
         $conditions['is_free'] = 1;
@@ -1367,8 +1367,8 @@ class UserController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-
-    public function TuiSong()//获取首页开团推送
+        //将最新的开团在首页左上角推送的接口
+    public function TuiSong()
     {
         I('user_id') && $user_id = I('user_id');
         $version = I('version');
@@ -1405,7 +1405,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
-    //为我点赞点单
+    //获取用户的为我点赞订单列表
     public function getRaise()
     {
         $user_id = I('user_id');
@@ -1426,7 +1426,7 @@ class UserController extends BaseController {
         $this->show();
     }
 
-    public function getUserMoney()//钱款去向
+    public function getUserMoney()//获取用户免单的钱款去向
     {
         $order_id = I('order_id');
 
@@ -1475,7 +1475,7 @@ class UserController extends BaseController {
     }
 
 
-    public function getPromid($prom)
+    public function getPromid($prom)//处理团id的操作
     {
         $id = "";
         foreach ($prom as $v) {
@@ -1486,7 +1486,7 @@ class UserController extends BaseController {
         return $result;
     }
 
-    public function ReturnSQL($array)
+    public function ReturnSQL($array)//处理数组数据，分类拼接后返回
     {
         $id = null;
         $order = null;
@@ -1541,7 +1541,7 @@ class UserController extends BaseController {
         for ($x=0;$x<$n;$x++){$str = $str.$char;}
         return $str;
     }
-
+    //执行退款操作的方法
     public function BackPay($order)
     {
         $orderLogic = new OrderLogic();
@@ -1592,7 +1592,7 @@ class UserController extends BaseController {
             }
         }
     }
-
+    //将商品相关的库存，销量，使用的优惠券还原成原来的样子
     public function fallback($orders)
     {
         $group_buy = M('group_buy')->where("order_id={$orders['order_id']}")->field('is_raise')->find();
@@ -1615,7 +1615,7 @@ class UserController extends BaseController {
             }
         }
     }
-
+    //获取订单支付状态
     function getPayState()
     {
         $order = I('order_id');
@@ -1680,7 +1680,7 @@ class UserController extends BaseController {
 
     /*
      * 版本：2.0.0
-     * 获取订单列表
+     * 获取用户的订单列表
      * */
     function getOrderList(){
         I('user_id') && $user_id = I('user_id');
@@ -1718,7 +1718,7 @@ class UserController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
-    //团详情
+    //获取团的团详情
     function get_Detaile_for_Prom()
     {
         $prom_id = I('prom_id');
@@ -1823,14 +1823,14 @@ class UserController extends BaseController {
 
         return $info;
     }
-    //订单详情
+    //获取用户的订单详情
     function get_Detaile_for_Order(){
         $order_id = I('order_id');
         $user_id = I('user_id');
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-
+        //查询订单
         $order_info = M('order')->alias('o')
             ->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id ')
             ->where('o.order_id = '.$order_id.' and o.user_id = '.$user_id)
@@ -1844,15 +1844,18 @@ class UserController extends BaseController {
                 $res1 = M('group_buy')->where('id = '.$prom_info['mark'].' or mark ='.$prom_info['mark'])->order('id desc')->find();
             }
         }
+        //获取商品详情
         $goods_info= $goods = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
         $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
+        //获取规格详情
         $spec_info = M('order_goods')->alias('og')
             ->join('INNER JOIN tp_spec_goods_price sgp on sgp.`key` = og.`spec_key` ')
             ->where('order_id = '.$order_id)
             ->field('sgp.key_name,sgp.price,sgp.prom_price')
             ->find();
-
+        //判断订单是否为团购或者代买订单
         if(!empty($order_info['prom_id'])){
+            //判断是用户在团里面的身份
             if($prom_info['mark']==0){
                 $prom = M('group_buy')->where('mark = '.$order_info['prom_id'].' and is_pay = 1')->select();
                 $order_info['prom'] = $prom[0]['goods_num'];
@@ -1869,12 +1872,12 @@ class UserController extends BaseController {
             if($order_info['prom_mens']!=0){
                 $res1['start_time'] = null;
             }
-            $res = $this->getPromStatus($order_info,$prom_info,count($prom));
+            $res = $this->getPromStatus($order_info,$prom_info,count($prom));//给对应的order_type 的值
             $order_info['annotation'] = $res['annotation'];
             $order_info['key_name'] = $spec_info['key_name'];
             $order_info['price'] = $spec_info['prom_price'];
         }else{
-            $res = $this->getStatus($order_info);
+            $res = $this->getStatus($order_info);//给对应的order_type的值
             $order_info['annotation'] = $res['annotation'];
             $order_info['key_name'] = $spec_info['key_name'];
             $is_oneself = 0;
@@ -1883,7 +1886,7 @@ class UserController extends BaseController {
         unset($order_info['order_status']);
         unset($order_info['pay_status']);
         unset($order_info['shipping_status']);
-        $goods = $this->if_you_like($order_info['cat_id'],$page,$pagesize);
+        $goods = $this->if_you_like($order_info['cat_id'],$page,$pagesize);//猜你喜欢商品列表
 
         $user['consignee'] = $order_info['consignee'];
         $user['address_base'] = $order_info['address_base'];
@@ -1904,7 +1907,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
-    //团详情增加入口
+    //团详情页面怎么增加首页入口
     function  getentrance(){
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $category[0]['id'] = '1';
