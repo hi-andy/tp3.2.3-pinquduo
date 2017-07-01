@@ -31,11 +31,21 @@ class StoreController extends BaseController{
 		$pagesize = I('pagesize',10);
 		$rdsname = "getStoreList".$store_id.$stor.$page.$pagesize.$version;
 		if(empty(redis($rdsname))) {//判断是否有缓存
-			$store = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
-			$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
-			$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim/dissolve/100/gravity/South/dx/0/dy/0";
+			/*
+			 * merchant 商户表
+			 * store_name 商户名
+			 * mobile 电话
+			 * store_logo 商户logo
+			 * sales 销量
+			 * introduce 简介
+			 * */
+
+			$store = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce')->find();
+			$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;//商户分享URL
+			$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim/dissolve/100/gravity/South/dx/0/dy/0";//分享logo
 			$store['store_logo'] = TransformationImgurl($store['store_logo']);
 			//获取店铺优惠卷store_logo_compression
+			//获取商户有的优惠券
 			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
 			if (empty($coupon)) {
 				$coupon = null;
@@ -55,85 +65,6 @@ class StoreController extends BaseController{
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-
-
-	function storeLOGO($path,$store_id)
-	{
-		$bigImgPath = $this->store_thum_images($path,$store_id,80,80);
-		//'Public/images/goods_thumb_1055_400_400_58a8643127a2c.jpeg'
-		$qCodePath = 'Public/images/stroe_logo.jpg';
-
-		$bigImg = imagecreatefromstring(file_get_contents($bigImgPath));
-		$qCodeImg = imagecreatefromstring(file_get_contents($qCodePath));
-
-		list($qCodeWidth, $qCodeHight, $qCodeType) = getimagesize($qCodePath);
-		// imagecopymerge使用注解
-		imagecopymerge($bigImg, $qCodeImg, 0, 50, 0, 0, $qCodeWidth, $qCodeHight, 100);
-
-		list($bigWidth, $bigHight, $bigType) = getimagesize($bigImgPath);
-
-		switch ($bigType) {
-			case 1: //gif
-//                header('Content-Type:image/gif');
-				$pic = '/sites/pqd/Public/upload/store_fenxiang/'.$store_id.'.gif';
-				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.gif';
-				imagejpeg($bigImg, $pic);
-				break;
-			case 2: //jpg
-//                header('Content-Type:image/jpg');
-				$pic = '/sites/pqd/Public/upload/store_fenxiang/'.$store_id.'.jpg';
-				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.jpg';
-				imagejpeg($bigImg, $pic);
-				break;
-			case 3: //png
-//                header('Content-Type:image/png');
-				$pic = '/sites/pqd/Public/upload/store_fenxiang/'.$store_id.'.png';
-				$pin = '/Public/upload/store_fenxiang/'.$store_id.'.png';
-				imagejpeg($bigImg,$pic);
-				break;
-			default:
-				# code...
-				break;
-		}
-		return $pin;
-	}
-
-	function store_thum_images($logo,$store_id,$width,$height){
-
-		if(empty($store_id))
-			return '';
-
-		$img = explode('/',$logo);
-		$img1 = explode('.',$img[6]);
-
-		//判断缩略图是否存在
-		$path = "Public/upload/store_logo_compression/";
-		$goods_thumb_name =$store_id.$img1[0];
-
-		// 这个商品 已经生成过这个比例的图片就直接返回了
-		if(file_exists($path.$goods_thumb_name.'.jpg'))  return $path.$goods_thumb_name.'.jpg';
-		if(file_exists($path.$goods_thumb_name.'.jpeg')) return $path.$goods_thumb_name.'.jpeg';
-		if(file_exists($path.$goods_thumb_name.'.gif'))  return $path.$goods_thumb_name.'.gif';
-		if(file_exists($path.$goods_thumb_name.'.png'))  return $path.$goods_thumb_name.'.png';
-
-		if(empty($logo)) return '';
-
-		$logo = '.'.$logo; // 相对路径
-		if(!file_exists($logo)) return '';
-
-		$image = new \Think\Image();
-		$image->open($logo);
-
-		$goods_thumb_name = $goods_thumb_name. '.'.$image->type();
-		// 生成缩略图
-		if(!is_dir($path))
-			mkdir($path,0777,true);
-
-		// 参考文章 http://www.mb5u.com/biancheng/php/php_84533.html  改动参考 http://www.thinkphp.cn/topic/13542.html
-		$image->thumb($width, $height,2)->save($path.$goods_thumb_name,NULL,100); //按照原图的比例生成一个最大为$width*$height的缩略图并保存
-		return $path.$goods_thumb_name;
-	}
-
 	/*
      * 易掌柜接口
      * */

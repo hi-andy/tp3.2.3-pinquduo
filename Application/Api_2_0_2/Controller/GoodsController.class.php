@@ -752,7 +752,7 @@ class GoodsController extends BaseController {
 		{
 			$address_list = M('user_address')->where("`user_id` = $user_id && `address_id` != $address_id")->field('address_id')->select();
 			if(count($address_list)>=1)
-			{
+			{//有别的地址就将其他的第一个地址改成默认
 				$new = M('user_address')->where('`address_id` = '.$address_list[0]['address_id'])->data(array('is_default'=>1))->save();
 			}else{
 				$new = 1;
@@ -1026,16 +1026,28 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
-	//获取当前商品的拓展数据
+	//获取当前商品的拓展数据 显示用户的收藏状态，销量，支持的购买类型
 	function getDetaile_expand(){//加商户销量，
 		$goods_id = I('goods_id');
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
-		if(!empty($user_id)){
+		if(!empty($user_id)){ // 用户是否收藏
 			$collect = M('goods_collect', '', 'DB_CONFIG2')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
 		}else{
 			$collect = 0;
 		}
+
+		/*
+		 * goods 商品表
+		 * tp_merchant 商户表
+		 * g.store_count 库存
+		 * g.sales 销量
+		 * g.is_special 商品类型
+		 * g.on_time 秒杀时间
+		 * g.is_support_buy 是否支持单买
+ 		 * m.sales 商户销量
+		 * g.is_prom_buy 是否支持团购
+		 * */
         $goods = M('goods', '', 'DB_CONFIG2')->alias('g')
 	        ->join('INNER JOIN tp_merchant m on m.id = g.store_id')
 	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
@@ -1092,6 +1104,17 @@ class GoodsController extends BaseController {
 	//获取已经开好的团
 	function  getAvailableGroup(){
 		$goods_id = I('goods_id');
+		/*
+		 * group_buy 团购表
+		 * id 团id
+		 * end_time  结束时间
+		 * goods_id 商品id
+		 * photo 团长头像
+		 * goods_num 团人数
+		 * user_id 用户id
+		 * free 免单人数
+		 * auto 机器人标识
+		 * */
 		$group_buy = M('group_buy')->where(" `goods_id` = $goods_id and `is_pay`=1 and `is_successful`=0 and `mark` =0 and `end_time`>=" . time())->field('id,end_time,goods_id,photo,goods_num,user_id,free,auto')->order('id asc')->limit(3)->select();
 		if (!empty($group_buy)) {
 			for ($i = 0; $i < count($group_buy); $i++) {
@@ -1136,7 +1159,15 @@ class GoodsController extends BaseController {
 		$type = I('type');
 		$spec_key = I('spec_key');
 		$prom_id = I('prom_id');
-
+		/*
+				 * user_address 用户收货地址表
+				 * address_id 地址id
+				 * consignee 收货人
+				 * address_base 基础住址
+				 * address 详细住址
+				 * mobile 电话号码
+				 * is_default 是否默认地址
+				 * */
 		$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
 		if(empty($user_address))
 		{

@@ -116,8 +116,8 @@ class BaseController extends Controller {
 
 	public function cash_available($store_id){
         //拿到总共能体现的资金
-//		$store_id  = 5;
-//		$_SESSION['merchant_id'] = 547;
+//		$store_id  = 3439;
+//		$_SESSION['merchant_id'] = 3439;
         $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$store_id)->field('order_id,confirm_time,order_amount')->select();
         $reflect = null;
         foreach($one as $v){

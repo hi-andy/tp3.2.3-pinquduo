@@ -12,19 +12,6 @@ class UserController extends BaseController {
 //        $this->encryption();
     }
 
-    /**
-     *  登录
-     */
-    public function login(){
-        $username = I('username','');
-        $unique_id = I("unique_id"); // 唯一id  类似于 pc 端的session id
-        $data = $this->userLogic->login($username);
-
-        $cartLogic = new \Home\Logic\CartLogic();
-        $cartLogic->login_cart_handle($unique_id,$data['result']['user_id']); // 用户登录后 需要对购物车 一些操作
-        exit(json_encode($data));
-    }
-
     /*
      * 第三方登录
      */
@@ -131,11 +118,11 @@ class UserController extends BaseController {
         }
         $coupons_list = M('coupon_list', '', 'DB_CONFIG2')->where('`uid` = '.$user_id)->field('cid,is_use')->page($page,$pagesize)->select();
 
-        if($state == 0)
+        if($state == 0)//未使用的优惠券
         {
             $j=0;
             for($i=0;$i<count($coupons_list);$i++)
-            {
+            {//获取领取的优惠券的详细参数
                 $coupons_details[$i] = M('coupon', '', 'DB_CONFIG2')->alias('c')
                     ->where('c.id = '.$coupons_list[$i]['cid'])
                     ->join('INNER JOIN tp_merchant m on c.store_id = m.id ')
@@ -152,7 +139,7 @@ class UserController extends BaseController {
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-        elseif($state==1)
+        elseif($state==1)//使用的优惠券
         {
             $j=0;
             for($i=0;$i<count($coupons_list);$i++)
@@ -584,7 +571,7 @@ class UserController extends BaseController {
     }
 
     /*
-     * 你可能喜欢
+     * 猜你喜欢
      * */
     public function if_you_like($cat_id,$page,$pagesize)
     {
@@ -1264,7 +1251,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
-    public function getIncreaseGoodsTime()
+    public function getIncreaseGoodsTime()//订单延长收货时间
     {
         $order_id = I('order_id');
         $user_id = I('user_id');
@@ -1303,6 +1290,7 @@ class UserController extends BaseController {
             exit(json_encode($json));
         }
     }
+
     //钱款去向
     public function getWhere_Is_The_Money()
     {
@@ -1365,7 +1353,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
-    public function getUserFreeOrder()
+    public function getUserFreeOrder() //获取用户免单的订单
     {
         $conditions['user_id'] = I('user_id');
         $conditions['is_free'] = 1;
@@ -1380,13 +1368,14 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
-    public function TuiSong()
+    public function TuiSong()//获取首页开团推送
     {
         I('user_id') && $user_id = I('user_id');
         $version = I('version');
         $rdsname = "TuiSong".$user_id.$version;
         if(empty(redis($rdsname))) {//
             if (empty($user_id)) {
+                //开团十分钟以内的团
                 $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('auto=0 and `mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,20')->select();
             } else {
                 $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,10')->select();
@@ -1416,7 +1405,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
-    //为我点赞
+    //为我点赞点单
     public function getRaise()
     {
         $user_id = I('user_id');
@@ -1437,7 +1426,7 @@ class UserController extends BaseController {
         $this->show();
     }
 
-    public function getUserMoney()
+    public function getUserMoney()//钱款去向
     {
         $order_id = I('order_id');
 
@@ -1483,195 +1472,6 @@ class UserController extends BaseController {
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
-    }
-
-    /*
-     *  自动执行脚本（免单退款和订单到时间就取消和改变未成团的订单）
-     */
-    public function automation($action="")
-    {
-        if ($action=="restart") {
-            //把所有免单自动退款
-            $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->select();
-            $orderLogic = new OrderLogic();
-            for ($i = 0; $i < count($free_order); $i++) {
-                $order = M('order')->where('`order_id`=' . $free_order[$i]['order_id'])->field('order_sn,user_id,goods_id')->find();
-                if ($free_order[$i]['code'] == 'weixin') {
-                    if ($free_order[$i]['is_jsapi'] == 1) {
-                        $result = $orderLogic->weixinJsBackPay($order['order_sn'], $free_order[$i]['price']);
-                    } else {
-                        $result = $orderLogic->weixinBackPay($order['order_sn'], $free_order[$i]['price']);
-                    }
-                    if ($result['status'] == 1) {
-                        $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                        M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
-                    }
-                } elseif ($free_order[$i]['code'] == 'alipay') {
-                    $result = $orderLogic->alipayBackPay($order['order_sn'], $free_order[$i]['price']);
-                    if ($result['status'] == 1) {
-                        $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                        M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
-                    }
-                } elseif ($free_order[$i]['code'] == 'qpay') {
-                    $qqPay = new QQPayController();
-                    $qqPay->doRefund($free_order[$i]['order_sn'], $free_order[$i]['order_amount']);
-                    $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
-                    M('getwhere')->where('`id`=' . $free_order[$i]['id'])->data($data)->save();
-                }
-                redis("getOrderList_status_".$order['user_id'], "1");
-                redisdelall("TuiSong*");//删除推送缓存
-            }
-
-            //将单买超时支付的订单设置成取消
-            $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
-            if (count($self_cancel_order) > 0) {
-                for ($j = 0; $j < count($self_cancel_order); $j++) {
-                    $data_time = $self_cancel_order[$j]['add_time'] + ORDER_END_TIME;
-                    if ($data_time <= time()) {
-                        $ids[]['id'] = $self_cancel_order[$j]['order_id'];
-                        $this->order_redis_status_ref($self_cancel_order[$j]['user_id']);
-                        M('goods')->where('`goods_id` = '.$self_cancel_order[$j]['goods_id'])->setDec('store_count',$self_cancel_order[$j]['num']);
-                        $spec_name = M('order_goods')->where('`order_id`='.$self_cancel_order[$j]['order_id'])->field('spec_key,store_id')->find();
-                        M('spec_goods_price')->where("`goods_id`=$self_cancel_order[$j]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',$self_cancel_order[$j]['num']);
-                    }
-                    {
-                        //优惠卷回到原来的数量
-                        if ($self_cancel_order[$j]['coupon_id'] != 0) {
-                            M('coupon')->where('`id`=' . $self_cancel_order[$j]['coupon_id'])->setDec('use_num');
-                            //把优惠卷还给用户
-                            $data['use_time'] = 0;
-                            $data['is_use'] = 0;
-                            $data['order_id'] = 0;
-                            $data['order_id'] = 0;
-                            M('coupon_list')->where('`id`=' . $self_cancel_order[$j]['coupon_list_id'])->data($data)->save();
-                        }
-                    }
-                }
-                $where['order_id'] = array('IN', array_column($ids, 'id'));
-                $res = M('order')->where($where)->data(array('order_status' => 3, 'order_type' => 5, 'is_cancel' => 1))->save();
-            }
-
-            //将团购里超时支付的订单设置成取消
-            $where = null;
-            $join_prom_order = M('group_buy')->alias('gb')
-                ->join(" LEFT JOIN tp_order AS o ON o.order_id = gb.order_id ")
-                ->where('gb.`is_pay`=0 and gb.is_cancel=0 and o.pay_status=0')
-                ->field('gb.id,gb.order_id,gb.start_time,gb.user_id,gb.goods_id,gb.free,gb.goods_id,o.num')
-                ->select();
-            if (count($join_prom_order) > 0) {
-                for ($z = 0; $z < count($join_prom_order); $z++) {
-                    $data_time = $join_prom_order[$z]['start_time'] + ORDER_END_TIME;
-                    if ($data_time <= time()) {
-                        if ($join_prom_order[$z]['free'] > 0) $free_status = true;
-                        $order_id[]['order_id'] = $join_prom_order[$z]['order_id'];
-                        $id[]['id'] = $join_prom_order[$z]['id'];
-                        $this->order_redis_status_ref($join_prom_order[$z]['user_id']);
-                        M('goods')->where('`goods_id` = '.$join_prom_order[$z]['goods_id'])->setDec('store_count',$join_prom_order[$z]['num']);
-                        $spec_name = M('order_goods')->where('`order_id`='.$join_prom_order[$z]['order_id'])->field('spec_key,store_id')->find();
-                        M('spec_goods_price')->where("`goods_id`=$join_prom_order[$z]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',$join_prom_order[$z]['num']);
-                    }
-                    if ($join_prom_order[$z]['free'] > 0) redis("get_Free_Order_status", "1");
-                }
-                $where['id'] = array('IN', array_column($id, 'id'));
-                $conditon['order_id'] = array('IN', array_column($order_id, 'order_id'));
-                $res = M('group_buy')->where($where)->data(array('is_cancel' => 1))->save();
-                $res1 = M('order')->where($conditon)->data(array('order_status' => 3, 'order_type' => 5, 'is_cancel' => 1))->save();
-                $r = M('order')->where($conditon)->select();
-                for ($t = 0; $t < count($res1); $t++) {
-                    //优惠卷回到原来的数量
-                    if ($r[$t]['coupon_id'] != 0) {
-                        M('coupon')->where('`id`=' . $r[$t]['coupon_id'])->setDec('use_num');
-                        //把优惠卷还给用户
-                        $data['use_time'] = 0;
-                        $data['is_use'] = 0;
-                        $data['order_id'] = 0;
-                        M('coupon_list')->where('`id`=' . $r[$t]['coupon_list_id'])->data($data)->save();
-                    }
-                }
-                if ($free_status) redis("get_Seconds_Kill_status","1");
-            }
-
-            //将时间到了团又没有成团的团解散
-            $where = null;
-            $conditon = null;
-            $time = time()-30;
-            $prom_order = M('group_buy')->where('`is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->select();
-            if (count($prom_order) > 0) {
-                //将团ＩＤ一次性拿出来
-                $where = $this->getPromid($prom_order);
-                //找出这个团的团长和团员
-                $join_proms = M('group_buy')->where($where)->select();
-                redis("get_Free_Order_status", "1");
-                //统计每个团的人数
-                $prom_man = array();
-                foreach ($join_proms as $k => $v) {
-                    $n = array();
-                    foreach ($join_proms as $k1 => $v1) {
-                        if ($v['id'] == $v1['mark']) {
-                            $n['id'][] = "'" . $v1['id'] . "',";
-                            $n['order_id'][] = "'" . $v1['order_id'] . "',";
-                        } elseif ($v['id'] == $v1['id']) {
-                            $n['id'][] = "'" . $v['id'] . "',";
-                            $n['order_id'][] = "'" . $v['order_id'] . "',";
-                        }
-                        $this->order_redis_status_ref($v1['user_id']);
-                    }
-                    $prom_man[$k] = $n;
-                }
-
-                $wheres = $this->ReturnSQL($prom_man);
-                $i_d = $wheres['id'];
-                $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
-                $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
-
-                if ($res && $result1) {//给未成团订单退款
-                    $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
-                    $this->BackPay($pay_cod);
-                }
-            }
-
-            //将自动确认收货的订单的状态进行修改
-            //单买的订单拿出来
-            $one_buy = M('order')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
-            $one_buy_number = count($one_buy);
-            if ($one_buy_number > 0) {
-                $data = null;
-                $ids['order_id'] = array('IN', array_column($one_buy, 'order_id'));
-                $data['confirm_time'] = time();
-                $data['order_status'] = 2;
-                $data['order_type'] = 4;
-                M('order')->where($ids)->data($data)->save();
-                for ($oi=0; $oi<$one_buy_number; $oi++){
-                    $this->order_redis_status_ref($one_buy[$oi]['user_id']);
-                }
-            }
-
-            //拿出团购的订单
-            $group_nuy = M('order')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
-            $group_nuy_number = count($group_nuy);
-            if ($group_nuy_number > 0) {
-                $data = null;
-                $order_id_array['order_id'] = array('IN', array_column($group_nuy, 'order_id'));
-                $data['confirm_time'] = time();
-                $data['order_status'] = 2;
-                $data['order_type'] = 4;
-                M('order')->where($order_id_array)->data($data)->save();
-                for ($gi=0; $gi<$group_nuy_number; $gi++){
-                    $this->order_redis_status_ref($group_nuy[$gi]['user_id']);
-                }
-            }
-
-            //更新限时秒杀列表
-            $is_special = M('goods','','DB_CONFIG2')
-                ->where(array(
-                    'is_special'=>array('EQ',1),
-                    'on_time'=>array('ELT',time()),
-                    'store_count'=>array('GT',0)))
-                ->count();
-            if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
-
-            echo 'successful';
-        }
     }
 
 
@@ -2009,6 +1809,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
 
+    //获取用户详情
     function getUserInfo($user_id,$prom_order){
         $user = M('users')->where('user_id = '.$user_id)->find();
         if(!empty($user['oauth'])){

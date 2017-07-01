@@ -533,6 +533,24 @@ class BaseController extends Controller {
     //调度商品详情
     function  getGoodsInfo($goods_id,$type='')
     {
+        /*
+         * goods 商品表
+         * goods_id 商品id
+         * cat_id 分类id
+         * goods_name 商品名
+         * prom_price 团购价
+         * market_price 市场价
+         * shop_price 商城价
+         * prom 团购人数
+         * goods_remark  商品简介
+         * sales 销量
+         * goods_content  商品详情
+         * store_id 商户id
+         * is_support_buy 是否支持单买
+         * is_special 商品type
+         * original_img 内页展示图
+         * list_img 列表图
+         * */
         $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
         if(!empty($goods)){
             //商品详情
@@ -553,6 +571,20 @@ class BaseController extends Controller {
                 $goods['img_arr'] = getImgSize($goods['img_arr']);
 
                 //获取店铺优惠卷store_logo_compression
+                /*
+			 * coupon 优惠券类型表
+			 * id 优惠券id
+			 * condition 满减条件
+			 * user_end_time 最后使用时间
+			 * send_start_time 开始发放时间
+			 * send_end_time 最后发放时间
+			 * id  优惠券id
+			 * name 优惠券名字
+			 * money 优惠券满减金额
+			 * condition 满减条件
+			 * use_start_time 开始使用时间
+			 * use_end_time 最后使用时间
+			 * */
                 $coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum > send_num')->select();
                 if (empty($coupon)) {
                     $coupon = null;
@@ -571,6 +603,24 @@ class BaseController extends Controller {
     //调度商品列表
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc')
     {
+        /*
+         * goods 商品表
+         * goods_id 商品id
+         * cat_id 分类id
+         * goods_name 商品名
+         * prom_price 团购价
+         * market_price 市场价
+         * shop_price 商城价
+         * prom 团购人数
+         * goods_remark  商品简介
+         * sales 销量
+         * goods_content  商品详情
+         * store_id 商户id
+         * is_support_buy 是否支持单买
+         * is_special 商品type
+         * original_img 内页展示图
+         * list_img 列表图
+         * */
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
@@ -589,6 +639,19 @@ class BaseController extends Controller {
 
     function get_OrderList($where,$page,$pagesize)
     {
+        /*
+         * order 订单表
+         * order_id 订单id
+         * goods_id 商品id
+         *order_status order状态
+         *shipping_status 发货状态
+         *pay_status 支付状态
+         * prom_id 团点单id
+         * order_amount 实付金额
+         * store_id 商户id
+         * num 购买数量
+         *order_type 订单type
+         * */
         $count = M('order', '', 'DB_CONFIG2')->where($where)->count();
         $all = M('order', '', 'DB_CONFIG2')
             ->where($where)
@@ -602,6 +665,19 @@ class BaseController extends Controller {
 
     function getPromList($where,$page,$pagesize)
     {
+        /*
+         * group_buy 团购表
+         * tp_order 订单表
+         * tp_goods 商品表
+         * b.id 团订单id
+         * b.order_id 点单id
+         * b.start_time 开团时间
+         * b.end_time 结束时间
+         * b.goods_id 商品id
+         * o.num 购买数量
+         * o.prom 团人数
+         * o.free 免单人数
+         * */
         $count = M('group_buy', '', 'DB_CONFIG2')->where($where)->count();
         $all = M('group_buy', '', 'DB_CONFIG2')->alias('b')
             ->join('INNER JOIN tp_order o on b.order_id = o.order_id ')
@@ -622,12 +698,27 @@ class BaseController extends Controller {
     private function operationOrder($count,$all,$nums)
     {
         for ($i=0;$i<$nums;$i++){
+            /*
+             * order_goods 商品详细信息表
+             * spec_key_name 規格名
+             * */
             $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
             //判断是不是团购订单
             if (!empty($all[$i]['prom_id'])) {
-                $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,end_time,end_time,goods_num,order_id,goods_id,mark,goods_num')->find();
+                /*
+                 * group_buy 团购表
+                 *id 团id
+                 * goods_name 商品名
+                 * end_time 结束时间
+                 *start_time 开团时间
+                 * goods_num 参团人数
+                 * order_id 订单id
+                 * goods_id 商品id
+                 * mark 标识
+                 * */
+                $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,start_time,end_time,goods_num,order_id,goods_id,mark')->find();
                 $all[$i]['goods_num'] = $mark['goods_num'];
-                if ($mark['mark'] == 0) {
+                if ($mark['mark'] == 0) {//是否是团长
                     $num = M('group_buy', '', 'DB_CONFIG2')->where('`is_pay`=1 and `mark` = ' . $mark['id'])->count();
                     $all[$i]['type'] = 1;
                     $order_status = $this->getPromStatus($all[$i], $mark, $num);
@@ -692,12 +783,31 @@ class BaseController extends Controller {
         return $return;
     }
 
+    //图满执行的操作
     public function getFree($prom_id,$type='')
     {
         if($prom_id==0){
             exit();
         }
         $wxtmplmsg = new WxtmplmsgController();
+        /*
+         * group_buy 团购表
+         * tp_users 用户表
+         * gb.id 团id
+         * gb.mark 团标识
+         * gb.is_pay 是否支付
+         * gb.goods_id 商品id
+         * gb.order_id 订单id
+         * gb.goods_name 商品名
+         * gb.goods_num 团人数
+         * gb.free 免单恩叔
+         * gb.is_raise 为我点赞显示
+         * gb.user_id 用户id
+         * gb.auto 机器人标识
+         * u.openid 微信openid
+         * u.nickname 用户昵称
+         * u.mobile 电话号码
+         * */
         $join_num = M('group_buy')->alias('gb')
             ->join('INNER JOIN tp_users u on u.user_id = gb.user_id')
             ->where('(gb.id='.$prom_id.' or gb.mark='.$prom_id.' ) and gb.is_pay=1')
@@ -721,8 +831,8 @@ class BaseController extends Controller {
                         $goods_id = $join_num[0]['goods_id'];
                         $spec_name = M('order_goods')->where('`order_id`='.$join_num[0]['order_id'])->field('spec_key')->find();
                         M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('ssles',1);
+                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);//库存自减
+                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);//销量自加
 
                         if(($join_num[0]['mobile'])!=null){
                                 $name = $join_num[0]['mobile'];
@@ -811,15 +921,16 @@ class BaseController extends Controller {
 
     }
 
+    //免单订单会在 getwhere 订单add一张表
     public function getWhere($order_id)
     {
         $result = M('order')->where('`order_id`='.$order_id)->find();
         if($result['is_jsapi']==1)
-            $data['is_jsapi'] = 1;
-        $data['order_id']=$order_id;
-        $data['price'] = $result['order_amount'];
-        $data['code'] = $result['pay_code'];
-        $data['add_time'] = time();
+            $data['is_jsapi'] = 1;//标识是否为微信商城添加的点单免单
+        $data['order_id']=$order_id;// 订单id
+        $data['price'] = $result['order_amount'];//点单实付价格
+        $data['code'] = $result['pay_code'];//支付方式
+        $data['add_time'] = time();//添加时间
         M('getwhere')->data($data)->add();
     }
 
