@@ -41,6 +41,7 @@ class IndexController extends BaseController {
                 //TransformationImgurl 进行图片地址转换
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
+            $category[0]['cat_img'] = CDN .'/Public/upload/index/freewangzhe.gif';
 	        $category[3]['cat_name'] = '趣多严选';
 	        $category[3]['cat_img'] = CDN .'/Public/upload/index/quduoyanxuan.jpg';
             $category[4]['cat_name'] = '为我拼';
@@ -548,6 +549,29 @@ class IndexController extends BaseController {
              */
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 6')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
+
+
+    /*
+	*  排行榜
+	*/
+    function getRankingList()
+    {
+        $page = I('page',1);
+        $pagesize = I('pagesize',10);
+        $rdsname = "getRankingList".$page.$pagesize;
+        if(empty(redis($rdsname))) {//判断是否有缓存
+            $where = '`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ';
+            $data = $this->getGoodsList($where,$page,$pagesize,' sales desc ');
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
