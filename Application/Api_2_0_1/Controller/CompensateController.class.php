@@ -37,14 +37,15 @@ class CompensateController extends Controller
         $data['qq']             = I('qq');
         $data['alipay']         = I('alipay');
 
-        // 订单是否存在, 订单状态检查，必须为已完成订单(4＝已完成状态）。
-        //$existOrder = M('order')->where('order_sn='.$data['order_sn'].' and order_type=4')->find();
-        $existOrder = M('order')->where('order_sn='.$data['order_sn'])->find();
+        // 订单是否存在,　并且为已确认收货状态。
+        $existOrder = M('order')->where('order_sn='.$data['order_sn'].' and (confirm_time>0 or automatic_time>0)')->find();
+        if (!$existOrder) {
+            exit(json_encode(array('code'=>0, 'msg'=>'此订单不存在或暂不能提交补差价申请！')));
+        }
         //　同一订单号的申请记录是否已存在
         $record = $this->model->where('order_sn='.$data['order_sn'])->find();
-        //　符合条件的订单记录必须存在，并且未提交过补差价申请记录
-        if (!$existOrder || $record) {
-            exit(json_encode(array('code'=>0, 'msg'=>'此订单不存在，或已提交过申请！')));
+        if ($record) {
+            exit(json_encode(array('code'=>0, 'msg'=>'此订单已提交过申请，请不要重复提交！')));
         }
         //　是否已超过可提交申请时间限制
         $sevenDay = 7 * 24 * 3600;
