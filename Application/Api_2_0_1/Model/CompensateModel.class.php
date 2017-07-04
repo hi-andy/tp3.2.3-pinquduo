@@ -21,7 +21,7 @@ class CompensateModel extends Model {
             array("mobile",         'require', "请输入您的联系电话", self::MUST_VALIDATE),
             array("qq",             'require', "请输入您的联系QQ", self::MUST_VALIDATE),
             array("alipay",         'require', "请输入您的支付宝账户，若审核成功以接收退款", self::MUST_VALIDATE),
-            array("picture",        'require', "请上传凭证图片", self::MUST_VALIDATE),
+            //array("picture",        'require', "请上传凭证图片", self::MUST_VALIDATE),
 	);
 	//　自动完成
 	protected $_auto = array(
