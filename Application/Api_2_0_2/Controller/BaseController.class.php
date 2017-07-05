@@ -741,10 +741,12 @@ class BaseController extends Controller {
         //把所有人的状态改成发货
         $user_ids = "";
         for($i=0;$i<count($join_num);$i++){
+            //　不是机器开团
             if($join_num[$i]['auto']==0){
                 $this->order_redis_status_ref($join_num[$i]['user_id']);
                 $user_ids .= $join_num[$i]['user_id'].",";
                 if (empty($goodsname)) {$goodsname = $join_num[$i]['goods_name'];}
+                // 如果团长发起的不是为我点赞团
                 if(!empty($join_num[0]['is_raise'])){
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
@@ -761,6 +763,7 @@ class BaseController extends Controller {
                         }else{
                             $name = $join_num[0]['nicknames'];
                         }
+                        //　微信推送拼团成功消息
                         $wxtmplmsg->spell_success($join_num[0]['openid'],$goodsname,$name,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>4))->save();
@@ -802,21 +805,22 @@ class BaseController extends Controller {
             }
         }
 
-        if($free_num>0){//如果有免单，才执行getRand操作
+        //给参团人和开团人推送信息
+        //如果有免单的处理
+        if($free_num>0){
             redis("get_Free_Order_status","1");
             $order_ids =array_column($join_num,'order_id');//拿到全部参团和开团的订单id
-            //给参团人和开团人推送信息
-            $num = $this->getRand($free_num,($prom_num-1));//随机出谁免单
+            //随机出谁免单
+            $num = getRand($free_num,($prom_num-1));
             for ($j=0;$j<count($join_num);$j++){
                 for($i=0;$i<count($num);$i++){
                     if($j == $num[$i]){
-                        $order_id = $order_ids[$j];
-                        $res = M('order')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
-                        $res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
+                        $res = M('order')->where('`order_id`='.$order_ids[$j])->data(array('is_free'=>1))->save();
+                        $res2 = M('group_buy')->where('`order_id`='.$order_ids[$j])->data(array('is_free'=>1))->save();
                         if($res && $res2){
                             $custom = array('type' => '6','id'=>$join_num[$j]['id']);
                             SendXinge('恭喜！您参与的免单拼团获得了免单',$join_num[$j]['user_id'],$custom);
-                            $this->getWhere($order_id);
+                            $this->getWhere($order_ids[$j]);
                             M()->commit();
                         }else{
                             M()->rollback();
@@ -844,25 +848,19 @@ class BaseController extends Controller {
 
     }
 
-    //免单订单会在 getwhere 订单add一张表
+    //　记录免单订单信息，以备后面退款脚本执行退款
     public function getWhere($order_id)
     {
         $result = M('order')->where('`order_id`='.$order_id)->find();
+        //标识是否为微信商城添加的免单订单
         if($result['is_jsapi']==1)
-            $data['is_jsapi'] = 1;//标识是否为微信商城添加的点单免单
+            $data['is_jsapi'] = 1;
+
         $data['order_id']=$order_id;// 订单id
-        $data['price'] = $result['order_amount'];//点单实付价格
+        $data['price'] = $result['order_amount'];//免单实付价格
         $data['code'] = $result['pay_code'];//支付方式
         $data['add_time'] = time();//添加时间
         M('getwhere')->data($data)->add();
-    }
-
-    public function getRand($num,$max)//需要生成的个数，最大值
-    {
-        $rand_array=range(0,$max);
-        shuffle($rand_array);//调用现成的数组随机排列函数
-//		var_dump(array_slice($rand_array,0,$num));
-        return array_slice($rand_array,0,$num);//截取前$num个
     }
 
     //验签

@@ -84,7 +84,7 @@ class weixin extends RelationModel
         $input->SetOut_trade_no($order['order_sn'].time());
         $input->SetTotal_fee($order['order_amount']*100);
         $input->SetTime_start(date("YmdHis"));
-        $input->SetTime_expire(date("YmdHis", time() + 1800));
+        $input->SetTime_expire(date("YmdHis", time() + 600));
         $input->SetGoods_tag("tp_wx_pay");
         $input->SetNotify_url(SITE_URL.'/index.php/Home/Payment/notifyUrl/pay_code/weixin');
         $input->SetTrade_type("JSAPI");
