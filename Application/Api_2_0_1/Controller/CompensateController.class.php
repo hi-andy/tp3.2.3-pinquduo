@@ -24,17 +24,9 @@ class CompensateController extends Controller
      */
     public function apply()
     {
+        C('TOKEN_ON', false);
         header("Access-Control-Allow-Origin:*");
-        $data['order_sn'] = I('order_sn');
-
-        // 订单是否存在
-        $existOrder = M('order')->where('order_sn='.$data['order_sn'])->find();
-        //　同一订单号的申请记录是否已存在
-        $record = $this->model->where('order_sn='.$data['order_sn'])->find();
-        if (!$existOrder || $record) {
-            exit(json_encode(array('code'=>0, 'msg'=>'此订单不存在，或已提交过申请！')));
-        }
-
+        $data['order_sn']       = I('order_sn');
         $data['user_id']        = I('user_id');
         $data['goods_price']    = I('goods_price', 0.00);
         $data['bought_date']    = strtotime(I('bought_date'));
@@ -44,6 +36,26 @@ class CompensateController extends Controller
         $data['mobile']         = I('mobile');
         $data['qq']             = I('qq');
         $data['alipay']         = I('alipay');
+
+        // 订单是否存在,　并且为已确认收货状态。
+        $existOrder = M('order')->where('order_sn='.$data['order_sn'].' and (confirm_time>0 or automatic_time>0)')->find();
+        if (!$existOrder) {
+            exit(json_encode(array('code'=>0, 'msg'=>'此订单不存在或暂不能提交补差价申请！')));
+        }
+        //　同一订单号的申请记录是否已存在
+        $record = $this->model->where('order_sn='.$data['order_sn'])->find();
+        if ($record) {
+            exit(json_encode(array('code'=>0, 'msg'=>'此订单已提交过申请，请不要重复提交！')));
+        }
+        //　是否已超过可提交申请时间限制
+        $sevenDay = 7 * 24 * 3600;
+        if ((time()-$sevenDay) > $existOrder['confirm_time']) {
+            exit(json_encode(array('code'=>0, 'msg'=>'您的订单已超过7日可申请日期')));
+        }
+        //　本平台价格是否大于其它平台价
+        if ($data['other_price'] > $data['goods_price']) {
+            exit(json_encode(array('code'=>0, 'msg'=>'其它平台购买价格必须要低于本平台价格')));
+        }
 
         // 处理图片上传
         $image_arr = array();
@@ -61,9 +73,6 @@ class CompensateController extends Controller
             $json = array('code'=>0, 'msg'=>$this->model->getError());
         }
 
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
         exit(json_encode($json));
     }
 

@@ -1322,7 +1322,7 @@ class UserController extends BaseController {
                 $data['one']['title'] = '等待平台同意退款';
             }
             $data['one']['text'] = null;
-            $data['one']['time'] = $return_order['add_time'];
+            $data['one']['time'] = $return_order['addtime'];
         } elseif($return_order['status']>=1) {
             if($return_order['is_return']==1){
                 $data['one']['title'] = '平台准备退款';

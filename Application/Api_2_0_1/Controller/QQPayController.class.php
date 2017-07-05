@@ -10,7 +10,7 @@ class QQPayController extends BaseController
     private $md5Key     = "u6rAIksPMZVm4V6wc5Xh8STxvxJ3Vym1";
     private $logPath    ="./";
 
-    const CERT_DIR = '/sites/pqd/Application/Common/QQpay/Cacert/';
+    const CERT_DIR = '/data/wwwroot/default/Application/Common/QQpay/Cacert/';
     private $certFile   = 'apiclient_cert.pem';
     private $keyFile    = 'apiclient_key.pem';
     private $cacertFile = 'rootca.pem';
@@ -327,7 +327,7 @@ class QQPayController extends BaseController
         $postStr = $this->arrayToXml($arr);
 
         //echo $postStr;exit();
-        $this->log($postStr, "refund-request");
+        //$this->log($postStr, "refund-request");
 
         $header = array('Content-Type: application/xml');
         // 下面这三个变量没有用到了。
@@ -493,9 +493,9 @@ class QQPayController extends BaseController
     private static function curlHttps($url, $data, $certPemFile, $keyPemFile, $cacertPemFile, $header = array(), $timeout=30)
     {
         //未用到传入参数，发现会找不到文件。在此重新定义。
-        $certPemFile = '/sites/pqd/Application/Common/QQpay/Cacert/apiclient_cert.pem';
-        $keyPemFile = '/sites/pqd/Application/Common/QQpay/Cacert/apiclient_key.pem';
-        $cacertPemFile = '/sites/pqd/Application/Common/QQpay/Cacert/rootca.pem';
+        $certPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/apiclient_cert.pem';
+        $keyPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/apiclient_key.pem';
+        $cacertPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/rootca.pem';
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

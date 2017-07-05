@@ -52,7 +52,7 @@ class ReportController extends BaseController{
 		$today['cancel_order'] = M('order')->where($where."add_time>$now and add_time<$tomorrow AND is_cancel=1")->count();//今日取消订单
 
         //待发货订单数     order_type=2 OR order_type=14 //待发货；已成团待发货
-        $today['undelivered_order'] = M('order')->where($where."(order_type=2 OR order_type=14)")->count();
+        $today['undelivered_order'] = M('order')->where($where."(order_type=2 OR order_type=14) and consignee is not null")->count();
 
         //售后订单数      0 待处理
         $today['service_order'] = M('return_goods')->where($where."(status=0)")->count();

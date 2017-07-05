@@ -344,15 +344,15 @@ class GoodsController extends BaseController {
 	 * type:  0、参团、1、开团、2、单买
 	 */
     function getOrder()//生成未支付订单页面
-        {
+    {
         header("Access-Control-Allow-Origin:*");
-            $user_id = I('user_id');//用户id
-            $goods_id = I('goods_id');//商品id
-            $store_id = I('store_id');//商户id
-            $num = I('num',1);//购买数量
-            $type = I('type');//购买类型
-            $spec_key = I('spec_key');//购买规格
-            $order_id = I('order_id');//订单id
+        $user_id = I('user_id');//用户id
+        $goods_id = I('goods_id');//商品id
+        $store_id = I('store_id');//商户id
+        $num = I('num',1);//购买数量
+        $type = I('type');//购买类型
+        $spec_key = I('spec_key');//购买规格
+        $order_id = I('order_id');//订单id
 	        /*
 		 * user_address 用户收货地址表
 		 * address_id 地址id
@@ -362,8 +362,8 @@ class GoodsController extends BaseController {
 		 * mobile 电话号码
 		 * is_default 是否默认地址
 		 * */
-            $user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
-            if(empty($user_address)){
+        $user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
+        if(empty($user_address)){
             $user_address = M('user_address')->where("`user_id` = $user_id")->field('address_id,consignee,address_base,address,mobile')->find();
         }
         //库存
@@ -657,6 +657,32 @@ class GoodsController extends BaseController {
 		$data['address'] = I('address');//地址
 		$data['mobile'] = I('mobile');
 		$data['consignee'] = I('consignee');
+
+        /**
+         * 今天运营兼测试的小妹提了一个（需求？问题？bug?) 不知道怎么描述了？！
+         * 有一个商家的订单用户已付款，但是没有出现在发货单列表里。导致发不了货。
+         * 她说：　"能不能把这个订单的状态改成已发货，快递：申通 物流单号：3333136729661　帮商家加上去"
+         * 我：" ……＃$@＃@％＃％＃$…… "
+         * 我说这个不能这么干，需要找到这个问题的原因，以避免下次再出现这样的问题。
+         * 首先，我看了订单为什么没有按照预期的出现在发货单列表里
+         * 原因是发货单列表在提取数据的时候有一个条件是，收货人信息字段　not is null
+         * 再看订单的收货人信息字段，果然是　null 而且　mobile 字段也是 null .
+         * 哦！这么重要的信息没有填写完整怎么居然就可以提交订单了呢？？？
+         * 其次，再去看提交订单的接口
+         * 看到提交订单的时候，是根据用户选取的收货地址 id 获取已添加的收货人信息，没有验证信息是否完整，
+         * 其实也没必要在这里验证啦！
+         * 那么接下来的问题就很明显了，基本确定是用户添加收货地址的时候信息填写不完整
+         * 就提交到数据库了。而这是不应该的，如果信息不完整应该提示用户填写完整的信息再提交，
+         * 前后端都应该做好验证，给出友好提示！
+         * 至此问题基本确定排除，写下以下验证代码！
+         */
+		if (empty($data['consignee']) || empty($data['mobile']) || empty($data['address'])) {
+            $json = array('status'=>-1,'msg'=>'请填写完整的收货人信息');
+            if(!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+
 		$type = I('type');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 

@@ -72,7 +72,6 @@ class SpecialController extends BaseController
     public function specList(){
         $condition['store_id'] = $_SESSION['merchant_id'];
         $goodsTypeList = M("GoodsType")->where($condition)->select();
-
         $this->assign('goodsTypeList',$goodsTypeList);
         $this->display();
     }
@@ -82,11 +81,13 @@ class SpecialController extends BaseController
     public function ajaxSpecList(){
         //ob_start('ob_gzhandler'); // 页面压缩输出
         $where = ' is_show=1 '; // 搜索条件
-        I('type_id')   && $where .= " and type_id = ".I('type_id') ;
+        $tid = I('type_id');
+
+        $tid && $where .= " and type_id = ".$tid;
         // 关键词搜索
         $model = D('spec');
 
-        $where .= 'and store_id='.$_SESSION['merchant_id'];
+        $where .= ' and store_id= '.$_SESSION['merchant_id'];
         $count = $model->where($where)->count();
         $Page = new AjaxPage($count,100);
         $show = $Page->show();

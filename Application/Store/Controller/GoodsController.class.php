@@ -265,6 +265,7 @@ class GoodsController extends BaseController {
 
     /**
      * 添加修改商品
+     * 修改：单买价格不得低于团购价格  2017/07/05 刘亚豪
      */
     public function addEditGoods(){
         if(empty($_SESSION['merchant_id']))
@@ -279,6 +280,7 @@ class GoodsController extends BaseController {
         {
             $min_num = key($_POST['item']);
             $price = $_POST['item'][$min_num]['price'];
+            $prom_price = $_POST['item'][$min_num]['prom_price'];
             if($price==0||empty($price))
             {
                 $return_arr = array(
@@ -288,6 +290,16 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
+
+            if($prom_price > $price){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '单买价格不得低于团购价格',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+
             if($_POST['cat_id']==0 || $_POST['cat_id_2']==0 || $_POST['cat_id_3']==0){
                 $return_arr = array(
                     'status' => -1,
@@ -717,10 +729,10 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
-            if(empty($_POST['goods_images'][0])){
+            if(empty($_POST['goods_images'])){
                 $return_arr = array(
                     'status' => -1,
-                    'msg'   => $_POST['goods_images'][0].'请上传商品轮播图！',
+                    'msg'   => '请上传商品轮播图！',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
