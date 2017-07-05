@@ -698,7 +698,13 @@ class BaseController extends Controller {
         return $return;
     }
 
-    //图满执行的操作
+    /**
+     * 圆满执行的操作
+     * 修改：17/07/05 刘亚豪 修改内容：微信消息推送 手机号中间几位用*号代替
+     * @param $prom_id
+     * @param string $type
+     * @return int
+     */
     public function getFree($prom_id,$type='')
     {
         if($prom_id==0){
@@ -750,7 +756,8 @@ class BaseController extends Controller {
                         M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);//销量自加
 
                         if(($join_num[0]['mobile'])!=null){
-                                $name = $join_num[0]['mobile'];
+                            $name = substr_replace($join_num[0]['mobile'],'*****',3,5);
+// 原有代码：                           $name = $join_num[0]['mobile'];
                         }else{
                             $name = $join_num[0]['nicknames'];
                         }
@@ -760,7 +767,8 @@ class BaseController extends Controller {
                     }
                 } else {
                     if(($join_num[$i]['mobile'])!=null){
-                        $name = $join_num[$i]['mobile'];
+                        $name = substr_replace($join_num[$i]['mobile'],'*****',3,5);
+//原有代码：                        $name = $join_num[$i]['mobile'];
                     }else{
                         $name = $join_num[$i]['nicknames'];
                     }
