@@ -290,10 +290,10 @@ class GoodsController extends BaseController {
                 $this->ajaxReturn(json_encode($return_arr));
             }
 
-            if($prom_price < $price){
+            if($prom_price > $price){
                 $return_arr = array(
                     'status' => -1,
-                    'msg'   => '单买价格不得高于团购价格',
+                    'msg'   => '单买价格不得低于团购价格',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
