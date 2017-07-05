@@ -82,6 +82,15 @@
     </div>
   </section>
   <script>
+	 $(".num").click(function () {
+		 var url = $(this).attr('href');
+		 var name = $("#store_name").val();
+		 var kw = $("#input-order-id").val();
+		 var t = url + '&store_name=' + name + '&keywords='+kw;
+		 $(this).attr('href',t);
+     });
+
+
   function select_goods()
   {	  
 	   if($("input[type='checkbox']:checked").length == 0)
