@@ -49,7 +49,7 @@ class CompensateController extends Controller
         }
         //　是否已超过可提交申请时间限制
         $sevenDay = 7 * 24 * 3600;
-        if ((time()-$sevenDay) > $existOrder['add_time']) {
+        if ((time()-$sevenDay) > $existOrder['confirm_time']) {
             exit(json_encode(array('code'=>0, 'msg'=>'您的订单已超过7日可申请日期')));
         }
         //　本平台价格是否大于其它平台价
@@ -73,9 +73,6 @@ class CompensateController extends Controller
             $json = array('code'=>0, 'msg'=>$this->model->getError());
         }
 
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
         exit(json_encode($json));
     }
 

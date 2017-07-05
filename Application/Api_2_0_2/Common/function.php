@@ -125,3 +125,16 @@ function json($msg="", $result=""){
 function errjson($msg=""){
     echo json_encode(array('status' => -1, 'msg' => $msg, 'result' => ''));
 }
+
+/**
+ * 生成指定个数的随机数
+ * @param $num　需要生成的个数
+ * @param $max　最大值
+ * @return array
+ */
+function getRand($num,$max)
+{
+    $rand_array=range(0,$max);
+    shuffle($rand_array);//调用现成的数组随机排列函数
+    return array_slice($rand_array,0,$num);//截取前$num个
+}

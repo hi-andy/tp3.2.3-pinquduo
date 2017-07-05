@@ -717,10 +717,10 @@ class GoodsController extends BaseController {
                 );
                 $this->ajaxReturn(json_encode($return_arr));
             }
-            if(empty($_POST['goods_images'][0])){
+            if(empty($_POST['goods_images'])){
                 $return_arr = array(
                     'status' => -1,
-                    'msg'   => $_POST['goods_images'][0].'请上传商品轮播图！',
+                    'msg'   => '请上传商品轮播图！',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
