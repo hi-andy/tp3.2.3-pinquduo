@@ -82,7 +82,7 @@ class WeixinpayController extends BaseController {
         }
     }
 
-    function getJSAPI($order, $time_expire=30){
+    function getJSAPI($order, $time_expire=1800){
         header("Access-Control-Allow-Origin:*");
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();

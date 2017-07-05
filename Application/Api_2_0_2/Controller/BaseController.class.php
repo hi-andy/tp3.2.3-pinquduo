@@ -226,49 +226,9 @@ class BaseController extends Controller {
      */
     public function mobile_uploadimage($file='')
     {
-        $upload = new \Think\Upload();
-//        //设置上传文件大小
-//        $upload->maxSize=30120000;
-//
-//        $upload->rootPath = './'.C("UPLOADPATH") ; // 设置附件上传目录
-//
-//        //设置上传文件规则
-//        $upload->saveRule='uniqid';
-//        //设置需要生成缩略图，仅对图像文件有效
-//        $upload->thumb = true;
-//        // 设置引用图片类库包路径
-//        $upload->imageClassPath ='@.ORG.Image';
-//
-        if(!$file){
-            $file=$_FILES;
-        }
-//
-        //$result=$upload->upload($file);
-//
-//        if(!$result )
-//        {
-//            return array();      //不存在图片则返回空
-//        }else{
-//            $endreturn=array();
-            foreach ($result as $file) {
-                $src=$file['savepath'].$file['savename'];
-                $imageinfo=getimagesize(C("UPLOADPATH").$src);  //获取原图宽高
-                /*生成缩略图*/
-                $image = new \Think\Image();
-                $image->open(C("UPLOADPATH") . $src);
-                $namearr=explode('.',$file['savename']);
-                $thumb_url=C("UPLOADPATH").$file['savepath'].$namearr[0].'200_200.'.$namearr[1];
-                // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
-                $image->thumb(200, 200,\Think\Image::IMAGE_THUMB_CENTER)->save($thumb_url);
-                $src=$file['savepath'].$file['savename'];
-                $returnData=array('origin'=>'/'.C("UPLOADPATH") . $src,'width'=>$imageinfo[0],'height'=>$imageinfo[1],'small'=>'/'.$thumb_url);
-                $endreturn[]=$returnData;
-            }
-//            return $endreturn;
-//        }
+        if(!$file) $file=$_FILES;
 
         //调用七牛云上传
-        //redis("mobile_uploadimage", serialize($file),REDISTIME);
         $qiniu = new \Admin\Controller\QiniuController();
             foreach ($file['picture']['name'] as $key => $value) {
                 $suffix = substr(strrchr($value, '.'), 1);
@@ -411,59 +371,6 @@ class BaseController extends Controller {
         }
     }
 
-//    /**
-//     *快递单打印信息
-//     */
-//    public function print_kuaidi(){
-//        $url = 'http://api.kuaidi100.com/eorderapi.do?method=getElecOrder';
-//
-//        $data='{"partnerId":"15269563802","partnerKey":"15269563802","net":"","kuaidicom":"yuantong","kuaidinum":"883470537892631971","orderId":"278","recMan":{"name":"冯鸿飞","mobile":"13543390771","tel":"","zipCode":"","province":"","city":"","district":"","addr":"","printAddr":"广东省深圳市宝安区西乡街道圣淘沙骏园5B1603","company":""},"sendMan":{"name":"苗先生","mobile":"18002540807","tel":"","zipcode":"","province":"","city":"","district":"","addr":"","printAddr":"广东省深圳市龙岗区龙珠花园C区9栋","company":""},"cargo":"","count":"1","weight":"0.5","volumn":"","payType":"MONTHLY","expType":"标准快递","remark":"","valinsPay":"","collection":"","needChild":"0","needBack":"0","needTemplate":"1"}';
-//
-//        //加密sign   parma.key.cunstomer
-//        $sign_data = $data.'ewAfmDpi4749'.'CDAC209E6F84C0834E546E86C23C6621';
-//
-//        $time = time();
-//        $param= '&p='.$data;
-//        $param.= '&sign='.md5($sign_data);
-//        $param.= '&customer=CDAC209E6F84C0834E546E86C23C6621';
-//        $param.= '&t='.$time;
-//        echo $url.$param;
-//        die;
-//
-//        /*
-//        http://api.kuaidi100.com/eorderapi.do?method=getElecOrder&param={"recMan":{"name":"向刚","mobile":"13590479355","tel":"","zipCode":"","province":"广东省","city":"深圳市","district":"南山区","addr":"高新南一道2号","company":""},"sendMan":{"name":"向刚","mobile":"13590479355","tel":"","zipCode":"","province":"广东省","city":"深圳市","district":"南山区","addr":"高新南一道2号","company":""},"kuaidicom":"shunfeng","partnerId":"7554070512","partnerKey":"","net":"","kuaidinum":"","orderId":"A2147","payType":"SHIPPER","expType":"标准快递","weight":"1","volumn":"0","count":1,"remark":"备注","valinsPay":"0","collection":"0","needChild":"0","needBack":"0","cargo":"书","needTemplate":"1"}&sign=0df88f6aca30b81130c82420c4c2aafb&t=1480337087&key=ewAfmDpi4749
-//        */
-//
-//        $post_data['partnerId'] = 'DLTlUmMA8292';
-//        $post_data['kuaidicom'] = 'shunfeng';
-//        $post_data['kuaidinum'] = '928378873999';
-//        $post_data['recMan']['name'] = '冯鸿飞';  //收件人名称
-//        $post_data['recMan']['mobile'] = '13543390771'; //收件人手机
-//        $post_data['recMan']['tel'] = '';
-//        $post_data['recMan']['zipCode']  = '';
-//        $post_data['recMan']['province'] = '广东省';
-//        $post_data['recMan']['city'] = '深圳市';
-//        $post_data['recMan']['district'] = '宝安区';
-//        $post_data['recMan']['addr'] = '众里创业社区410';
-//        $post_data['sendMan']['name'] = '苗先生';
-//        $post_data['sendMan']['mobile'] = '18002540807';
-//        $post_data['sendMan']['province'] = '广东省';
-//        $post_data['sendMan']['city'] = '深圳市';
-//        $post_data['sendMan']['district'] = '龙岗区';
-//        $post_data['sendMan']['addr'] = '龙珠花园C区9栋';
-//        $post_data['cargo'] = '手表';
-//        $post_data['count'] = 1;
-//        $post_data['needBack'] = 1;
-//        $post_data['needTemplate'] = 1;
-//
-//        $ch = curl_init();
-//        curl_setopt($ch, CURLOPT_POST, 1);
-//        curl_setopt($ch, CURLOPT_HEADER, 0);
-//        curl_setopt($ch, CURLOPT_URL,$url);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-//        $result = curl_exec($ch);		//返回提交结果，格式与指定的格式一致（result=true代表成功）
-//    }
-
     /*
      * 用商户名关键字做检索
      * */
@@ -529,28 +436,29 @@ class BaseController extends Controller {
         return $pin;
     }
 
-    //版本2.0.0
-    //调度商品详情
+    /**
+     * 调度商品详情
+     *
+     * goods 商品表
+     * goods_id 商品id
+     * cat_id 分类id
+     * goods_name 商品名
+     * prom_price 团购价
+     * market_price 市场价
+     * shop_price 商城价
+     * prom 团购人数
+     * goods_remark  商品简介
+     * sales 销量
+     * goods_content  商品详情
+     * store_id 商户id
+     * is_support_buy 是否支持单买
+     * is_special 商品type
+     * original_img 内页展示图
+     * list_img 列表图
+     *
+     */
     function  getGoodsInfo($goods_id,$type='')
     {
-        /*
-         * goods 商品表
-         * goods_id 商品id
-         * cat_id 分类id
-         * goods_name 商品名
-         * prom_price 团购价
-         * market_price 市场价
-         * shop_price 商城价
-         * prom 团购人数
-         * goods_remark  商品简介
-         * sales 销量
-         * goods_content  商品详情
-         * store_id 商户id
-         * is_support_buy 是否支持单买
-         * is_special 商品type
-         * original_img 内页展示图
-         * list_img 列表图
-         * */
         $goods = M('goods', '', 'DB_CONFIG2')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
         if(!empty($goods)){
             //商品详情
@@ -565,7 +473,13 @@ class BaseController extends Controller {
                 $goods['original_img'] =TransformationImgurl($goods['original_img']);
             }
             $goods['original'] =TransformationImgurl($goods['original']);
-            $goods['fenxiang_url'] = $goods['original']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
+            /**
+             * 此生成水印图片的链接对比下面的，多出了两个方法，导致安卓分享出去的链接看不到图片，
+             * 目前还不知道会不会有其它问题，如没问题后续删除。
+             *$goods['fenxiang_url'] = $goods['original']."?imageView2/1/w/400/h/400/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim";
+             *
+             */
+            $goods['fenxiang_url'] = $goods['original'].'?watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0';
             if($type!=1){
                 $goods['img_arr'] = getImgs($goods['goods_content']);
                 $goods['img_arr'] = getImgSize($goods['img_arr']);
@@ -599,28 +513,30 @@ class BaseController extends Controller {
         return $goods;
     }
 
-    //版本2.0.0
-    //调度商品列表
+
+    /*
+     * 调度商品列表
+     *
+     * goods 商品表
+     * goods_id 商品id
+     * cat_id 分类id
+     * goods_name 商品名
+     * prom_price 团购价
+     * market_price 市场价
+     * shop_price 商城价
+     * prom 团购人数
+     * goods_remark  商品简介
+     * sales 销量
+     * goods_content  商品详情
+     * store_id 商户id
+     * is_support_buy 是否支持单买
+     * is_special 商品type
+     * original_img 内页展示图
+     * list_img 列表图
+     *
+     */
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc')
     {
-        /*
-         * goods 商品表
-         * goods_id 商品id
-         * cat_id 分类id
-         * goods_name 商品名
-         * prom_price 团购价
-         * market_price 市场价
-         * shop_price 商城价
-         * prom 团购人数
-         * goods_remark  商品简介
-         * sales 销量
-         * goods_content  商品详情
-         * store_id 商户id
-         * is_support_buy 是否支持单买
-         * is_special 商品type
-         * original_img 内页展示图
-         * list_img 列表图
-         * */
         $count = M('goods', '', 'DB_CONFIG2')->where($where)->count();
         $goods = M('goods', '', 'DB_CONFIG2')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
@@ -694,28 +610,27 @@ class BaseController extends Controller {
         return $all;
     }
 
-    //团购订单处理
+    /*
+     * 团购订单处理
+     * group_buy 团购表
+     * id 团id
+     * goods_name 商品名
+     * end_time 结束时间
+     * start_time 开团时间
+     * goods_num 参团人数
+     * order_id 订单id
+     * goods_id 商品id
+     * mark 标识
+     * order_goods 商品详细信息表
+     * spec_key_name 規格名
+     * */
     private function operationOrder($count,$all,$nums)
     {
         for ($i=0;$i<$nums;$i++){
-            /*
-             * order_goods 商品详细信息表
-             * spec_key_name 規格名
-             * */
             $all[$i]['key_name'] = M('order_goods')->where('`order_id`=' . $all[$i]['order_id'])->getField('spec_key_name');
             //判断是不是团购订单
             if (!empty($all[$i]['prom_id'])) {
-                /*
-                 * group_buy 团购表
-                 *id 团id
-                 * goods_name 商品名
-                 * end_time 结束时间
-                 *start_time 开团时间
-                 * goods_num 参团人数
-                 * order_id 订单id
-                 * goods_id 商品id
-                 * mark 标识
-                 * */
+
                 $mark = M('group_buy', '', 'DB_CONFIG2')->where('`id` = ' . $all[$i]['prom_id'])->field('id,goods_name,start_time,end_time,goods_num,order_id,goods_id,mark')->find();
                 $all[$i]['goods_num'] = $mark['goods_num'];
                 if ($mark['mark'] == 0) {//是否是团长

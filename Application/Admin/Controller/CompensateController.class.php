@@ -59,7 +59,7 @@ class CompensateController extends Controller
         $result['prove_pic']   = json_decode($result['prove_pic']);
         $prove_pics = array();
         foreach ($result['prove_pic'] as $value) {
-            $prove_pics[] = $value->origin;
+            $prove_pics[] = $value->small;
         }
         $result['transformed_status'] = $this->statusTransform($result['status']);
         $result['order_id']    = M('order')->where('order_sn='.$result['order_sn'])->getField('order_id');

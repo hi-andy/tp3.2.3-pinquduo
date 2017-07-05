@@ -23,7 +23,7 @@ $input->SetAttach("test");
 $input->SetOut_trade_no(time().date("YmdHis"));
 $input->SetTotal_fee("1");
 $input->SetTime_start(date("YmdHis"));
-$input->SetTime_expire(date("YmdHis", time() + 600));
+$input->SetTime_expire(date("YmdHis", time() + 1800));
 $input->SetGoods_tag("test");
 $input->SetNotify_url("http://www.tp-shop.cn/plugins/payment/weixin/example/notify.php");
 $input->SetTrade_type("JSAPI");
