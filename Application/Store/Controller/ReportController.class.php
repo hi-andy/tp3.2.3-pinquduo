@@ -4,6 +4,8 @@
 
 namespace Store\Controller;
 
+use Api\Controller\HxcallController;
+
 class ReportController extends BaseController{
 	public $begin;
 	public $end;
@@ -110,6 +112,14 @@ class ReportController extends BaseController{
 		}
 		//倒叙
 		rsort($list);
+
+		$HXcall = new HxcallController();
+		$username = 'store'.$_SESSION['merchant_id'];
+		$password = md5($username.C('SIGN_KEY'));
+		$nickname = $_SESSION['merchant_name'];
+		$res = $HXcall->hx_register($username,$password,$nickname);
+		$this->assign('username',$username);
+		$this->assign('password',$password);
 
 		$this->assign('list',$list);
 		$result = array('order'=>$order_arr,'amount'=>$amount_arr,'sign'=>$sign_arr,'all'=>$all_arr,'time'=>$day);

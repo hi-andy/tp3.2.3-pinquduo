@@ -486,9 +486,7 @@ class UserController extends BaseController {
                 }elseif(empty($is_self)){
                     $promInfo['is_self'] = null;
                 }
-            }
-            else
-            {
+            } else {
                 $json = array('status'=>-1,'msg'=>'数据异常');
                 if(!empty($ajax_get))
                     $this->getJsonp($json);

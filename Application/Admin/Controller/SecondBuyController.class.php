@@ -16,7 +16,7 @@ use Think\AjaxPage;
 class SecondBuyController extends Controller {
 
     // 秒杀商品列表
-    public function goodsList()
+        public function goodsList()
     {
         $dateTime = C('SecondBuy');
         $this->assign('time', $dateTime['times']);
@@ -88,7 +88,6 @@ class SecondBuyController extends Controller {
         $where = 'WHERE ga.type=1';
         if($store_name = I('store_name')) {
             $this->assign('store_name', I('store_name'));
-            //$where = $this->getStoreWhere($where,I('store_name'));
             $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->getField('id');
             $where .= ' AND g.store_id='.$store_id;
         }

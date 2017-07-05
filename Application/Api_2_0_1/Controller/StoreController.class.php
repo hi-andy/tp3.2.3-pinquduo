@@ -342,7 +342,7 @@ class StoreController extends BaseController{
 			//按自治区切割
 			$cha = explode('自治区',$cha);
 			$province = $cha[0].'自治区';
-			if(strstr($cha[1],"盟") || strstr($cha[1],"市")){
+			if(strstr($cha[1],"盟")){
 				$cha = explode('盟',$cha[1]);
 				$city = $cha[0].'盟';
 				$area = $cha[1];
