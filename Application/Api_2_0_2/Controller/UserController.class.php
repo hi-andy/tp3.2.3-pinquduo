@@ -1551,7 +1551,6 @@ class UserController extends BaseController {
             $user_id = $order[$i]['user_id'];
             $this->order_redis_status_ref($order[$i]['user_id']);
             SendXinge('抱歉您的拼团未成功，请重新开团',"$user_id",$custom);
-            var_dump($order[$i]['pay_code']);
             if ($order[$i]['pay_code'] == 'weixin') {
                 if ($order[$i]['is_jsapi']==1){
                     $result = $orderLogic->weixinJsBackPay($order[$i]['order_sn'], $order[$i]['order_amount']);

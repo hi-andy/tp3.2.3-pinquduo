@@ -1,11 +1,10 @@
 <?php
-namespace Admin\Controller;
-use Admin\Logic\GoodsLogic;
-use Api\Controller\BaseController;
+namespace Store\Controller;
+
 use Api\Controller\QQPayController;
 use Store\Logic\PromLogic;
 use Think\AjaxPage;
-use Admin\Logic\OrderLogic;
+use Store\Logic\OrderLogic;
 /*
  * 团购订单管理
  */
@@ -45,17 +44,13 @@ class GroupController extends BaseController {
     public function ajax_group_list(){
 
         $timegap = I('timegap');
+        $condition['o.store_id'] = $_SESSION['merchant_id'];
         if($timegap){
             $gap = explode('-', $timegap);
             $begin = strtotime($gap[0]);
             $end = strtotime($gap[1]);
         }
         // 搜索条件
-        $condition = array();
-        if($_SESSION['m_id'])
-        {
-            $condition['o.store_id'] = array('eq',$_SESSION['m_id']);
-        }
 
         $condition['g.is_raise'] = 0 ;
         $condition['o.is_show'] = 1 ;
@@ -206,6 +201,8 @@ class GroupController extends BaseController {
                 $condition['order_type']=array('eq',15);
             }
         }
+
+        $condition['store_id'] = 910;
         $count = M('order')->where($condition)->count();
         $Page  = new AjaxPage($count,10);
         //搜索条件下 分页赋值
@@ -463,16 +460,16 @@ class GroupController extends BaseController {
         $res = M('delivery_doc')->where('`order_id`='.$data['order_id'])->find();
         if(!empty($res))
         {
-            $this->success('已经发货了',U('Admin/Group/delivery_list',array('order_id'=>$data['order_id'])));
+            $this->success('已经发货了',U('Store/Group/delivery_list',array('order_id'=>$data['order_id'])));
             exit();
         }
         $res = $promLogic->deliveryHandle($data);
         //
         if($res){
             reserve_logistics($data['order_id']);
-            $this->success('操作成功',U('Admin/Group/delivery_info',array('order_id'=>$data['order_id'])));
+            $this->success('操作成功',U('Store/Group/delivery_info',array('order_id'=>$data['order_id'])));
         }else{
-            $this->success('操作失败',U('Admin/Group/delivery_info',array('order_id'=>$data['order_id'])));
+            $this->success('操作失败',U('Store/Group/delivery_info',array('order_id'=>$data['order_id'])));
         }
     }
 }

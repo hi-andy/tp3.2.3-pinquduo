@@ -874,6 +874,7 @@ class GoodsController extends BaseController {
 		exit(json_encode($json));
 	}
 
+	//
 	public function zhuanpan()
 	{
 		$id= I('id');
