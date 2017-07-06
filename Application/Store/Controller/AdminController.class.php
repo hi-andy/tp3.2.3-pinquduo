@@ -118,6 +118,7 @@ class AdminController extends BaseController {
 
 				$res2 = M('merchant')->where('id = '.$_SESSION['merchant_id'])->save(array('store_name'=>$_POST['store_name'],'old_name'=>$res1['store_name'],'is_change'=>1));
 				if($res2){
+					M('goods')->where('store_id = '.$_SESSION['merchant_id'])->data(array('refresh'=>0))->save();
 					exit(json_encode(array('status'=>1,'msg'=>'操作成功')));
 				}else{
 					exit(json_encode(array('status'=>0,'msg'=>'操作失败')));

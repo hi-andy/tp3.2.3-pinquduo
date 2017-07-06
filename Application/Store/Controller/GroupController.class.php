@@ -201,8 +201,7 @@ class GroupController extends BaseController {
                 $condition['order_type']=array('eq',15);
             }
         }
-
-        $condition['store_id'] = 910;
+        $condition['store_id'] = $_SESSION['merchant_id'];
         $count = M('order')->where($condition)->count();
         $Page  = new AjaxPage($count,10);
         //搜索条件下 分页赋值

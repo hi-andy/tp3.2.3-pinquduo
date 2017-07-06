@@ -18,6 +18,12 @@ var store_username = '';
 //    数据结构
 var ext = {};
 var exts = [];
+//    点击图片放大
+function imgClick(e) {
+    //        console.log(e.src);
+    $('.imgShadow').html('<img src="' + e.src + '">');
+    $('.imgShadow').css('display', 'flex');
+}
 //    时间戳转换
 function formatDateTime(inputTime) {
     var date = new Date(inputTime);
@@ -721,12 +727,7 @@ $.ajax({
             conn.send(msg.body);
         };
 
-        //    点击图片放大
-        function imgClick(e) {
-            //        console.log(e.src);
-            $('.imgShadow').html('<img src="' + e.src + '">');
-            $('.imgShadow').css('display', 'flex');
-        }
+
         $('.imgShadow').on('click', function() {
             $(this).css('display', 'none')
         });

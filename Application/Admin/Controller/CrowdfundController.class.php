@@ -277,6 +277,7 @@ class CrowdfundController extends BaseController {
     public function goods_save()
     {   //狗哥说的不用改
         $data['is_support_buy']=0;
+        $data['is_prom_buy']=1;
         $data['is_special']=8;
         $data['the_raise']=1;
         for($i=0;$i<count($_POST['goods_id']);$i++){
