@@ -54,16 +54,6 @@ class PurchaseController extends  BaseController
         $parameter['ajax_get'] = $ajax_get;
         $parameter['coupon_list_id'] = $coupon_list_id;
 
-        //　非为我点赞商品，收货地址不能为空，为我点赞商品除外
-        $is_special = M('goods')->where('goods_id='.$goods_id)->getField('is_special');
-        $address = M('user_address')->where("`address_id` = $address_id")->find();//获取地址信息
-        if (empty($address) && $is_special != 8) {
-            $json = array('status' => -1, 'msg' => '请选择收货地址！^_^');
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
-
         if (empty(redis("getBuy_lock_".$goods_id))) {//如果无锁
             redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁
 
@@ -216,11 +206,8 @@ class PurchaseController extends  BaseController
         }
     }
 
-
-
     /**
      * 参加拼团
-     * 修改：17/07/05 刘亚豪 内容：使用优惠券操作前使用CouponEndCheck方法检测优惠券是否有效
      */
     public function joinGroupBuy($parameter){
         $prom_id = $parameter['prom_id'];
@@ -238,13 +225,11 @@ class PurchaseController extends  BaseController
         $result = M('group_buy')->where("`id` = $prom_id")->find();
 
         //是否使用优惠卷
-        $coupon['money'] = 0;
         if(!empty($coupon_id)){
-            if($this->CouponEndCheck($coupon_id) !== false){
-                $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
-            }
+            $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
+        }else{
+            $coupon['money'] = 0;
         }
-
         //找到开团的商品,并获取要用的数据
         $goods_id = $result['goods_id'];
         $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();
@@ -397,20 +382,18 @@ class PurchaseController extends  BaseController
             }
             //优惠卷(有就使用··不然就直接跳过)
             if(!empty(I('coupon_id'))) {
-                if($this->CouponEndCheck(I('coupon_id')) !== false){
-                    $coupon_Inc = M('coupon')->where('`id`=' . $coupon_id)->setInc('use_num');
-                    $this->changeCouponStatus($coupon_list_id, $o_id);
-                    if (empty($coupon_Inc)) {
-                        M()->rollback();//有数据库操作不成功时进行数据回滚
-                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                $coupon_Inc = M('coupon')->where('`id`=' . $coupon_id)->setInc('use_num');
+                $this->changeCouponStatus($coupon_list_id, $o_id);
+                if (empty($coupon_Inc)) {
+                    M()->rollback();//有数据库操作不成功时进行数据回滚
+                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                    $json = array('status' => -1, 'msg' => '参团失败');
+                    if($ajax_get){
                         $json = array('status' => -1, 'msg' => '参团失败');
-                        if($ajax_get){
-                            $json = array('status' => -1, 'msg' => '参团失败');
-                            echo "<script> alert('" . $json['msg'] . "') </script>";
-                            exit;
-                        }else{
-                            exit(json_encode($json));
-                        }
+                        echo "<script> alert('" . $json['msg'] . "') </script>";
+                        exit;
+                    }else{
+                        exit(json_encode($json));
                     }
                 }
             }
@@ -478,7 +461,6 @@ class PurchaseController extends  BaseController
 
     /**
      * 开团
-     * 修改：17/07/05 刘亚豪 内容：使用优惠券操作前使用CouponEndCheck方法检测优惠券是否有效
      */
     public function openGroup($parameter){
         $goods_id = $parameter['goods_id'];
@@ -503,12 +485,11 @@ class PurchaseController extends  BaseController
 
         M()->startTrans();
         //是否使用优惠卷
-        $coupon['money'] = 0;
         if(!empty($coupon_id))
         {
-            if($this->CouponEndCheck($coupon_id) !== false){
-                $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
-            }
+            $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
+        }else{
+            $coupon['money'] = 0;
         }
         //找到开团的商品,并获取要用的数据
         $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();
@@ -683,19 +664,18 @@ class PurchaseController extends  BaseController
 
         //优惠卷(有就使用··不然就直接跳过)
         if(!empty(I('coupon_id'))) {
-            if($this->CouponEndCheck(I('coupon_id')) !== false){
-                $coupon_Inc = $this->changeCouponStatus($coupon_list_id,$o_id);
-                if(empty($coupon_Inc))
-                {
-                    M()->rollback();//有数据库操作不成功时进行数据回滚
-                    $json = array('status'=>-1,'msg'=>'开团失败');
-                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
-                    exit(json_encode($json));
+
+            $coupon_Inc = $this->changeCouponStatus($coupon_list_id,$o_id);
+            if(empty($coupon_Inc))
+            {
+                M()->rollback();//有数据库操作不成功时进行数据回滚
+                $json = array('status'=>-1,'msg'=>'开团失败');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if(!empty($ajax_get)){
+                    echo "<script> alert('".$json['msg']."') </script>";
+                    exit;
                 }
+                exit(json_encode($json));
             }
         }
         $res = M('group_buy')->where("`id` = $group_buy")->data(array('order_id'=>$o_id))->save();
@@ -758,7 +738,6 @@ class PurchaseController extends  BaseController
 
     /**
      * 自己购买
-     * 修改：17/07/05 刘亚豪 内容：使用优惠券操作前使用CouponEndCheck方法检测优惠券是否有效
      */
     public function buyBymyself($parameter){
         $goods_id = $parameter['goods_id'];
@@ -771,14 +750,12 @@ class PurchaseController extends  BaseController
         $coupon_list_id = $parameter['coupon_list_id'];
         M()->startTrans();
         //是否使用优惠卷
-        $coupon['money'] = 0;
         if(!empty($coupon_id))
         {
-            if($this->CouponEndCheck($coupon_id) !== false){
-                $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
-            }
+            $coupon = M('coupon')->where('`id`='.$coupon_id)->field('money')->find();
+        }else{
+            $coupon['money'] = 0;
         }
-
         $goods = M('goods')->where('`goods_id` = '.$goods_id)->find();//找到商品信息
         //获取商品规格和相应的价格
         if(!empty($spec_key))
@@ -883,20 +860,18 @@ class PurchaseController extends  BaseController
         }
         //优惠卷(有就使用··不然就直接跳过)
         if(!empty(I('coupon_id'))) {
-            if($this->CouponEndCheck(I('coupon_id')) !== false){
-                $coupon_Inc = M('coupon')->where('`id`=' . $coupon_id)->setInc('use_num');
-                $this->changeCouponStatus($coupon_list_id,$o_id);
-                if(empty($coupon_Inc))
-                {
-                    M()->rollback();//有数据库操作不成功时进行数据回滚
-                    $json = array('status'=>-1,'msg'=>'购买失败');
-                    redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
-                    exit(json_encode($json));
+            $coupon_Inc = M('coupon')->where('`id`=' . $coupon_id)->setInc('use_num');
+            $this->changeCouponStatus($coupon_list_id,$o_id);
+            if(empty($coupon_Inc))
+            {
+                M()->rollback();//有数据库操作不成功时进行数据回滚
+                $json = array('status'=>-1,'msg'=>'购买失败');
+                redisdelall("getBuy_lock_" . $goods_id);//删除锁
+                if(!empty($ajax_get)){
+                    echo "<script> alert('".$json['msg']."') </script>";
+                    exit;
                 }
+                exit(json_encode($json));
             }
         }
         if(!empty($o_id))
@@ -981,27 +956,4 @@ class PurchaseController extends  BaseController
         $spec_name = M('order_goods')->where('`order_id`='.$o_id)->field('spec_key,store_id')->find();
         M('spec_goods_price')->where("`goods_id`=$goods[goods_id] and `key`='$spec_name[spec_key]'")->setDec('store_count',$num);
     }
-
-
-    /**
-     * nature：检测优惠券是否失效
-     * author：刘亚豪
-     * time：17/07/05
-     * @param $cid
-     * @return bool
-     */
-    public function CouponEndCheck($cid)
-    {
-        $current = time();
-        if(!$cid){
-            return false;
-        }
-
-        if(M('coupon')->where('`id`='.$cid)->getField('use_end_time') > $current){
-            return false;
-        }else{
-            return true;
-        }
-    }
-
 }
