@@ -121,9 +121,8 @@ class GroupController extends BaseController {
             ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
             ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
             ->join('INNER JOIN tp_order_goods d on d.order_id = g.order_id')
-            ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
             ->where($condition)
-            ->field('g.id,g.start_time,g.end_time,g.mark,g.free,g.is_successful,g.is_pay,g.goods_name,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,m.store_name,d.goods_price')
+            ->field('g.id,g.start_time,g.end_time,g.mark,g.free,g.is_successful,g.is_pay,g.goods_name,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,d.goods_price')
             ->order('o.add_time desc')
             ->limit($Page->firstRow,$Page->listRows)
             ->select();
@@ -201,8 +200,7 @@ class GroupController extends BaseController {
                 $condition['order_type']=array('eq',15);
             }
         }
-
-        $condition['store_id'] = 910;
+        $condition['store_id'] = $_SESSION['merchant_id'];
         $count = M('order')->where($condition)->count();
         $Page  = new AjaxPage($count,10);
         //搜索条件下 分页赋值

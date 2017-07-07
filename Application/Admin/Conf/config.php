@@ -18,11 +18,13 @@ return array(
 
     'activity_icon' => array('1'=>'618',
         '2' => '双11',
-        '3' => '优惠券'
+        '3' => '优惠券',
+	    '4' => '5折活动'
     ),
     'activity_src' => array('1'=>'618',
         '2' => '双11',
-        '3' => 'http://cdn.pinquduo.cn/activity_3.png'
+        '3' => 'http://cdn.pinquduo.cn/activity_3.png',
+	    '4' => 'http://cdn.pinquduo.cn/5zhe.png'
     )
 
 );

@@ -401,6 +401,7 @@ class GoodsController extends BaseController {
 
                 if ($type == 2)
                 {
+                    $Goods->refresh = 0 ;
                     $goods_id = $_POST['goods_id'];
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
                     // 如果上传新图，删除旧图
@@ -713,7 +714,7 @@ class GoodsController extends BaseController {
         if(!empty(I('parent_id'))){
             $parent_id = I('get.parent_id'); // 商品分类 父id
             $list = M('haitao')->where("parent_id = $parent_id")->select();
-
+            $html = '';
             foreach($list as $k => $v)
                 $html .= "<option value='{$v['id']}'>{$v['name']}</option>";
             exit($html);
@@ -729,8 +730,9 @@ class GoodsController extends BaseController {
         if(IS_POST)
         {
             $min_num = key($_POST['item']);
-            $price = $_POST['item'][$min_num]['prom_price'];
-            if($price==0||empty($price))
+            $price = $_POST['item'][$min_num]['price'];
+            $prom_price = $_POST['item'][$min_num]['prom_price'];
+            if($prom_price==0||empty($prom_price))
             {
                 $return_arr = array(
                     'status' => -1,
@@ -759,6 +761,14 @@ class GoodsController extends BaseController {
                 $return_arr = array(
                     'status' => -1,
                     'msg'   => '请上传商品轮播图！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+            if($prom_price > $price){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '单买价格不得低于团购价格',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
@@ -795,6 +805,7 @@ class GoodsController extends BaseController {
                 session('goods',$_POST);
 
                 if ($type == 2){
+                    $Goods->refresh = 0 ;
                     $goods_id = $_POST['goods_id'];
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
@@ -815,7 +826,8 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    redislist("goods_refresh_id", $goods_id);
+//                    redislist("goods_refresh_id", $goods_id);
+                    redisdelall("getDetaile_".$goods_id);
                 }else{
                     $Goods->is_on_sale = 0 ;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库

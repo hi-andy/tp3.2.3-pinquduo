@@ -1008,10 +1008,12 @@ class PurchaseController extends  BaseController
             return false;
         }
 
-        if(M('coupon')->where('`id`='.$cid)->getField('use_end_time') > $current){
-            return false;
-        }else{
+        $use_start_time = M('coupon')->where('`id`='.$cid)->getField('use_start_time');
+        $use_end_time = M('coupon')->where('`id`='.$cid)->getField('use_end_time');
+        if( $use_start_time < $current && $use_end_time > $current ){
             return true;
+        }else{
+            return false;
         }
     }
 

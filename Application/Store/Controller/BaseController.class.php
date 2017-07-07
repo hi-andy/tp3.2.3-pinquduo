@@ -119,16 +119,16 @@ class BaseController extends Controller {
 //		$store_id  = 3439;
 //		$_SESSION['merchant_id'] = 3439;
         $one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$store_id)->field('order_id,confirm_time,order_amount')->select();
-        $reflect = null;
+		(float)$reflect = null;
         foreach($one as $v){
             $temp = 2*3600*24;
             $cha = time()-$v['confirm_time'];
             if($cha>=$temp){
-                $reflect = $reflect+$v['order_amount'];
+	            (float)$reflect = (float)$reflect+$v['order_amount'];
             }
         }
         //获取以前的提取记录
-        $total = 0;
+		(float)$total = 0;
         $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id.' and (status=1 or status=0 )')->field('withdrawal_money')->select();
 
         $suoding = M('store_withdrawal')->where('store_id='.$store_id.' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
@@ -138,16 +138,16 @@ class BaseController extends Controller {
         }
         foreach($withdrawal_total as $v)
         {
-            $total = $total+$v['withdrawal_money'];
+	        (float)$total = (float)$total+$v['withdrawal_money'];
         }
-		$reflects = $reflect;
-        $reflect = $reflect-$total;
+		(float)$reflects = $reflect;
+		(float)$reflect = $reflect-$total;
         if(empty($reflect)||((string)$reflects==(string)$total))
             $reflect = 0;
         $c = getFloatLength($reflect);
         if($c>=3){
             $reflect = operationPrice($reflect);
         }
-        return $reflect;
+        return (float)$reflect;
     }
 }

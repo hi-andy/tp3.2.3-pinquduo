@@ -120,7 +120,7 @@ $.ajax({
                 //            判断聊天窗口是否打开
                 if ($('#draggable').css('display') == 'none') {
                     //声音提示
-                    $('#toneBox').html('<audio autoplay="autoplay" id="tone"><source src="Public/chat2/audio/4.mp3" type="audio/mpeg" /></audio>');
+                    $('#toneBox').html('<audio autoplay="autoplay" id="tone"><source src="Public/images/audio/4.mp3" type="audio/mpeg" /></audio>');
                     msgCount++;
                     if (msgCount > 99) {
                         msgCount == 99;
@@ -135,10 +135,10 @@ $.ajax({
                     //                正在聊天
                     console.log('正在聊天');
                     if (message.ext.goods) {
-                        var newMsg = '<div class="cahtWindowMsg"><div class="msgContainer"><div class="msgLeft"><img src="' + message.ext.senderUser.avatar + '" alt=""></div><div class="msgRight"><p class="msgInfo"><span>' + formatDateTime(new Date().valueOf()) + '</span></p><p class="msgText" style="position: relative;padding-bottom: 2px"><a href="' + message.ext.goods.goods_share_url + '" target="_blank" style="display: flex;flex-wrap:nowrap;text-decoration: none;color: #000;font-style: normal;box-sizing: border-box;"><i style="display:block;width: 35%;overflow: hidden;"><img src="' + message.ext.goods.original_img + '" alt="" style="width: 100%"></i><i style="margin-left:10px;width:75%"><i style="display: block;font-style: normal;width:100%;height: 40px;white-space: normal; overflow: hidden;text-overflow: ellipsis;font-size: 14px;margin-bottom: 10px;">' + message.ext.goods.goods_name + '</i><i style="display: block;font-style: normal;font-size: 12px"><span style="color: red">￥' + message.ext.goods.shop_price + '</span>&nbsp;&nbsp;<span style="color: red">' + message.ext.goods.prom + '</span>人团</i></i><img src="Public/chat2/images/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px"> </a></p></div></div></div>'
+                        var newMsg = '<div class="cahtWindowMsg"><div class="msgContainer"><div class="msgLeft"><img src="' + message.ext.senderUser.avatar + '" alt=""></div><div class="msgRight"><p class="msgInfo"><span>' + formatDateTime(new Date().valueOf()) + '</span></p><p class="msgText" style="position: relative;padding-bottom: 2px"><a href="' + message.ext.goods.goods_share_url + '" target="_blank" style="display: flex;flex-wrap:nowrap;text-decoration: none;color: #000;font-style: normal;box-sizing: border-box;"><i style="display:block;width: 35%;overflow: hidden;"><img src="' + message.ext.goods.original_img + '" alt="" style="width: 100%"></i><i style="margin-left:10px;width:75%"><i style="display: block;font-style: normal;width:100%;height: 40px;white-space: normal; overflow: hidden;text-overflow: ellipsis;font-size: 14px;margin-bottom: 10px;">' + message.ext.goods.goods_name + '</i><i style="display: block;font-style: normal;font-size: 12px"><span style="color: red">￥' + message.ext.goods.shop_price + '</span>&nbsp;&nbsp;<span style="color: red">' + message.ext.goods.prom + '</span>人团</i></i><img src="Public/images/chat/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px"> </a></p></div></div></div>'
                     } else {
                         //                    文字消息
-                        var newMsg = '<div class="cahtWindowMsg"> <div class="msgContainer"><div class="msgLeft"><img src="' + message.ext.senderUser.avatar + '" alt=""> </div><div class="msgRight"><p class="msgInfo"><span>' + formatDateTime(new Date().valueOf()) + '</span></p><p class="msgText" style="position: relative">' + message.data + '<img class="qipao" src="Public/chat2/images/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px"></p></div></div></div>'
+                        var newMsg = '<div class="cahtWindowMsg"> <div class="msgContainer"><div class="msgLeft"><img src="' + message.ext.senderUser.avatar + '" alt=""> </div><div class="msgRight"><p class="msgInfo"><span>' + formatDateTime(new Date().valueOf()) + '</span></p><p class="msgText" style="position: relative">' + message.data + '<img class="qipao" src="Public/images/chat/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px"></p></div></div></div>'
                     }
                     $('.msgBox').append(newMsg);
                     $(".scroll").scrollTop($('.msgBox').height());
@@ -260,7 +260,7 @@ $.ajax({
                 //            判断聊天窗口是否打开
                 if ($('#draggable').css('display') == 'none') {
                     //声音提示
-                    $('#toneBox').html('<audio autoplay="autoplay" id="tone"><source src="Public/chat2/audio/4.mp3" type="audio/mpeg" /></audio>');
+                    $('#toneBox').html('<audio autoplay="autoplay" id="tone"><source src="Public/images/audio/4.mp3" type="audio/mpeg" /></audio>');
                     msgCount++;
                     if (msgCount > 99) {
                         msgCount == 99;
@@ -282,7 +282,7 @@ $.ajax({
                 if (user_id == message.ext.senderUser.userid) {
                     //                正在聊天
                     console.log("图片正在聊天");
-                    var newMsg = '<div class="cahtWindowMsg"><div class="msgContainer"><div class="msgLeft"> <img src="' + message.ext.senderUser.avatar + '" alt=""></div> <div class="msgRight"> <p class="msgInfo" > <span>' + formatDateTime(new Date().valueOf()) + '</span></p> <div style="margin-top: 10px;padding: 6px 6px 2px 6px;background-color:#EEEEEE;display: inline-block;border-radius: 4px;position: relative"> <img onclick="imgClick(this)" src="' + message.url + '" alt="" style="height:' + message.height + ';width:' + message.width + ';border-radius: 4px;"> <img class="qipao" src="Public/chat2/images/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 10px"> </div> </div> </div> </div>';
+                    var newMsg = '<div class="cahtWindowMsg"><div class="msgContainer"><div class="msgLeft"> <img src="' + message.ext.senderUser.avatar + '" alt=""></div> <div class="msgRight"> <p class="msgInfo" > <span>' + formatDateTime(new Date().valueOf()) + '</span></p> <div style="margin-top: 10px;padding: 6px 6px 2px 6px;background-color:#EEEEEE;display: inline-block;border-radius: 4px;position: relative"> <img onclick="imgClick(this)" src="' + message.url + '" alt="" style="height:' + message.height + ';width:' + message.width + ';border-radius: 4px;"> <img class="qipao" src="Public/images/chat/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 10px"> </div> </div> </div> </div>';
                     $('.msgBox').append(newMsg);
                     $(".scroll").scrollTop($('.msgBox').height());
                     $.ajax({
@@ -521,7 +521,7 @@ $.ajax({
                     $(style).find('.msgText').css({
                         'background-color': '#D9EFFF'
                     });
-                    $(style).find('.qipao').attr('src', 'Public/chat2/images/chat2.png');
+                    $(style).find('.qipao').attr('src', 'Public/images/chat/chat2.png');
                     $(style).find('.qipao').css({
                         'right': '-7px',
                         'left': 'auto'
@@ -548,7 +548,7 @@ $.ajax({
             if (msgText && !/^\s+$/.test(msgText)) {
                 console.log(msgText);
                 //            var newMsg='<div class="cahtWindowMsg" style="display: flex;justify-content:flex-end;"><div class="msgContainer" style="display:flex;justify-content:flex-end;"><div class="msgLeft" style="right: -35px; top: 2px;"><img src="'+store_avatar+'" alt=""></div><div class="msgRight"><p class="msgInfo"><span>'+store_username+'</span><span>'+formatDateTime(new Date().valueOf())+'</span></p><p class="msgText">'+msgText+'</p></div></div></div>'
-                var newMsg = '<div class="cahtWindowMsg" style="display: flex;justify-content:flex-end;"> <div class="msgContainer" style="display:flex;justify-content:flex-end;"><div class="msgLeft" style="right: 4px;left: auto"><img src="' + store_avatar + '" alt=""> </div><div class="msgRight" style="margin-right: 42px; margin-left: 0px; display: flex; justify-content: flex-end; flex-wrap: wrap; text-align: end;"><p class="msgInfo"><span>' + formatDateTime(new Date().valueOf()) + '</span></p><p class="msgText" style="position: relative;background-color:#D9EFFF;">' + msgText + '<img class="qipao" src="Public/chat2/images/chat2.png" alt="" style="position: absolute;top:10px;right: -7px;width: 8px"></p></div></div></div>';
+                var newMsg = '<div class="cahtWindowMsg" style="display: flex;justify-content:flex-end;"> <div class="msgContainer" style="display:flex;justify-content:flex-end;"><div class="msgLeft" style="right: 4px;left: auto"><img src="' + store_avatar + '" alt=""> </div><div class="msgRight" style="margin-right: 42px; margin-left: 0px; display: flex; justify-content: flex-end; flex-wrap: wrap; text-align: end;"><p class="msgInfo"><span>' + formatDateTime(new Date().valueOf()) + '</span></p><p class="msgText" style="position: relative;background-color:#D9EFFF;">' + msgText + '<img class="qipao" src="Public/images/chat/chat2.png" alt="" style="position: absolute;top:10px;right: -7px;width: 8px"></p></div></div></div>';
                 $('.msgBox').append(newMsg);
                 $(".scroll").scrollTop($('.msgBox').height());
                 var sendPrivateText = function() {
@@ -675,7 +675,7 @@ $.ajax({
                         console.log(height);
                         console.log(width);
                         //                    var newMsg='<div class="cahtWindowMsg"><div class="msgContainer" style="float: right;margin-right: 40px"><div class="msgLeft" style="right: -35px; top: 2px;"><img src="'+store_avatar+'" alt=""></div><div class="msgRight"><p class="msgInfo"><span>'+store_username+'</span><span>'+formatDateTime(new Date().valueOf())+'</span></p><div style="margin-top: 20px"><img onclick="imgClick(this)" src="'+url+'" alt="" style="height:'+height+';width:'+width+';border-radius: 4px"></div></div></div></div>'
-                        var newMsg = '<div class="cahtWindowMsg" style="display: flex; justify-content: flex-end;"><div class="msgContainer" style="display: flex; justify-content: flex-end;"><div class="msgLeft" style="right: 4px; left: auto;"> <img src="' + store_avatar + '" alt=""></div> <div class="msgRight" style="margin-right: 42px; margin-left: 0px; display: flex; justify-content: flex-end; flex-wrap: wrap; text-align: end;"> <p class="msgInfo" > <span>' + formatDateTime(new Date().valueOf()) + '</span></p> <div style="margin-top: 10px; padding: 6px 6px 2px; background-color: rgb(217, 239, 255); display: inline-block; border-radius: 4px; position: relative;"> <img onclick="imgClick(this)" src="' + url + '" alt="" style="height:' + height + ';width:' + width + ';border-radius: 4px"> <img class="qipao" src="Public/chat2/images/chat2.png" alt="" style="position: absolute; top: 10px; left: auto; width: 10px; right: -7px;"> </div> </div> </div> </div>';
+                        var newMsg = '<div class="cahtWindowMsg" style="display: flex; justify-content: flex-end;"><div class="msgContainer" style="display: flex; justify-content: flex-end;"><div class="msgLeft" style="right: 4px; left: auto;"> <img src="' + store_avatar + '" alt=""></div> <div class="msgRight" style="margin-right: 42px; margin-left: 0px; display: flex; justify-content: flex-end; flex-wrap: wrap; text-align: end;"> <p class="msgInfo" > <span>' + formatDateTime(new Date().valueOf()) + '</span></p> <div style="margin-top: 10px; padding: 6px 6px 2px; background-color: rgb(217, 239, 255); display: inline-block; border-radius: 4px; position: relative;"> <img onclick="imgClick(this)" src="' + url + '" alt="" style="height:' + height + ';width:' + width + ';border-radius: 4px"> <img class="qipao" src="Public/images/chat/chat2.png" alt="" style="position: absolute; top: 10px; left: auto; width: 10px; right: -7px;"> </div> </div> </div> </div>';
                         $('.msgBox').append(newMsg);
                         $(".scroll").scrollTop($('.msgBox').height());
                         //                图片转base64
@@ -758,9 +758,9 @@ $.ajax({
         })
         //    发送图片悬停事件
         $('#myImg').hover(function() {
-            $('#myImg').attr('src', 'Public/chat2/images/photograph2@2x.png')
+            $('#myImg').attr('src', 'Public/images/chat/photograph2@2x.png')
         }, function() {
-            $('#myImg').attr('src', 'Public/chat2/images/photograph@2x.png')
+            $('#myImg').attr('src', 'Public/images/chat/photograph@2x.png')
         })
 
     },
