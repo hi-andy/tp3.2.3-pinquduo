@@ -25,11 +25,11 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> 添加抽奖商品  </h3>
+                    <h3 class="panel-title"><i class="fa fa-list"></i> 添加五折商品  </h3>
                 </div>
                 <div class="panel-body ">   
                     <!--表单数据-->
-                    <form method="post" id="Secondskill" action="">
+                    <form method="post" id="Secondskill" action="{:U('Admin/DiscountGoods/save')}">
                         <!--通用信息-->
                     <div class="tab-content col-md-10">                 	  
                         <div class="tab-pane active" id="tab_tongyong">                           
@@ -41,7 +41,7 @@
                                     <td>
                                         <div class="form-group">
                                             <div class="col-xs-2">                                        
-	                                            <a class="btn btn-primary" href="javascript:void(0);" onclick="selectGoods()" ><i class="fa fa-search"></i>添加商品</a>
+	                                            <a class="btn btn-primary" href="javascript:void(0);" onclick="selectGoodsList()" ><i class="fa fa-search"></i>添加商品</a>
                                             </div>                                                            
                                             <div class="col-xs-2">
                                                 <span id="err_goods" style="color:#F00; display:none;">请添加下单商品</span>
@@ -125,7 +125,7 @@ function adsubmit(){
     data = JSON.parse(data);
 
     $.ajax({
-        url:"{:U('Admin/AwardGoods/save')}",
+        url:"{:U('Admin/DiscountGoods/save')}",
         type:'POST',
         data:{
             goods : data
@@ -137,19 +137,19 @@ function adsubmit(){
         },
         error: function () {
             alert('添加失败！');
-            location.href="{:U('Admin/AwardGoods/index')}";
+            location.href="{:U('Admin/DiscountGoods/index')}";
         }
     });
 }
 
 
-function selectGoods(){
+function selectGoodsList(){
 	var goods_id = []; 
 	//过滤选择重复商品
 	$('input[name*="goods_id"]').each(function(i,o){
 		goods_id.push($(o).val());
 	});
-    var url = '/index.php?m=Admin&c=AwardGoods&a=search_goods&goods_id='+goods_id+'&t='+Math.random();
+    var url = '/index.php?m=Admin&c=DiscountGoods&a=selectGoodsList&goods_id='+goods_id+'&t='+Math.random();
     layer.open({
         type: 2,
         title: '选择商品',

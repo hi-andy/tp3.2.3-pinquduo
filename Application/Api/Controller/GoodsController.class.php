@@ -730,18 +730,27 @@ class GoodsController extends BaseController {
 		I('prom') && $prom = I('prom');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
-//		if(I('ajax_get')) {
-//			$get_new_order = M('order')->where(array('goods_id' => $goods_id, 'user_id' => $user_id))->order('add_time desc')->find();
-//
-//			$now_time = time();
-//            /*
-//			if (($now_time - $get_new_order['add_time']) < 120) {
-//				$go_url = "http://wx.pinquduo.cn/index.html";
-//				echo "<script> location.href='$go_url'; </script>";
-//				exit();
-//			}
-//            */
-//		}
+        //　非为我点赞商品，收货地址不能为空，为我点赞商品除外
+        $is_special = M('goods')->where('goods_id='.$goods_id)->getField('is_special');
+        $address = M('user_address')->where("`address_id` = $address_id")->find();//获取地址信息
+        if (empty($address) && $is_special != 8) {
+            $json = array('status' => -1, 'msg' => '请选择收货地址！^_^');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+
+        // 五折专享每个用户限购一件　9日24:00
+        $startTime = C('DiscountTime');
+        $startTime = strtotime($startTime);
+        $isExist = M('activity_goods')->where('goods_id='.$goods_id.' and type=4')->count();
+        $bought = M('order')->where('goods_id='.$goods_id.'add_time >= '.$startTime)->count();
+        if ($isExist && $bought) {
+            $json = array('status' => -1, 'msg' => '您已参加过专享活动了　^_^');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
 
         if (empty(redis("getBuy".$goods_id))) {//判断是否有锁
             redis("getBuy".$goods_id, "1", 5);//写入锁

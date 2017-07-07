@@ -63,6 +63,17 @@ class PurchaseController extends  BaseController
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
+        // 五折专享每个用户限购一件　9日24:00
+        $startTime = C('DiscountTime');
+        $startTime = strtotime($startTime);
+        $isExist = M('activity_goods')->where('goods_id='.$goods_id.' and type=4')->count();
+        $bought = M('order')->where('goods_id='.$goods_id.'add_time >= '.$startTime)->count();
+        if ($isExist && $bought) {
+            $json = array('status' => -1, 'msg' => '您已参加过专享活动了　^_^');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
 
         if (empty(redis("getBuy_lock_".$goods_id))) {//如果无锁
             redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁

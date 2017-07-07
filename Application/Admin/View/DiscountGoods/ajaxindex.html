@@ -1,5 +1,5 @@
 
-                    <form method="post" id="SecondBuy" action="{:U('Admin/AwardGoods/deleteBatch')}" >
+                    <form method="post" id="SecondBuy" action="{:U('Admin/DiscountGoods/deleteBatch')}" >
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover" style="font-size:12px;">
                                 <thead>
@@ -36,7 +36,6 @@
                                         <td class="text-center">{$list.prom_price}</td>
                                         <td class="text-center">
                                             <a href="javascript:void(0);" onclick="del('{$list.id}')" id="button-delete6" data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="删除"><i class="fa fa-trash-o"></i></a>
-                                            <a href="{:U('Admin/AwardOrder/orderList',array('goods_id'=>$list['goods_id']))}"  data-toggle="tooltip" title="" class="btn btn-default"><i class="fa">查看订单</i></a>
                                         </td>
                                     </tr>
                                 </volist>

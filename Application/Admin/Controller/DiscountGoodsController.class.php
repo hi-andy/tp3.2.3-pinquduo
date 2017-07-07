@@ -6,7 +6,7 @@ namespace Admin\Controller;
 
 use Think\Controller;
 use Think\AjaxPage;
-class AwardGoodsController extends Controller {
+class DiscountGoodsController extends Controller {
 
     // 商品列表
     public function index()
@@ -17,7 +17,7 @@ class AwardGoodsController extends Controller {
     // ajax 返回商品列表数据
     public function ajaxindex()
     {
-        $where = 'WHERE ga.type=3';
+        $where = 'WHERE ga.type=4';
         if($store_name = I('store_name')) {
             $this->assign('store_name', I('store_name'));
             $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->getField('id');
@@ -45,8 +45,15 @@ class AwardGoodsController extends Controller {
         $this->display();
     }
 
-    // 搜索商品，以添加
-    public function search_goods()
+    // 选择商品页
+    public function selectGoods()
+    {
+        $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
+        $this->assign('store', $store);
+        $this->display();
+    }
+    // 选择商品列表
+    public function selectGoodsList()
     {
         $where = ' store_count>0 and is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0';//搜索条件
         if($store_name = (I('store_name'))) {
@@ -84,22 +91,16 @@ class AwardGoodsController extends Controller {
         $show = $Page->show();//分页显示输出
         $this->assign('page', $show);//赋值分页输出
         $this->assign('goodsList', $goodsList);
-        $tpl = I('get.tpl', 'search_goods');
+        $tpl = I('get.tpl', 'selectGoodsList');
         $this->display($tpl);
     }
 
-    // 选择商品页
-    public function selectGoods()
-    {
-        $store = M('merchant')->where('`is_show`=1')->field('id,store_name')->select();
-        $this->assign('store', $store);
-        $this->display();
-    }
+
 
     // 保存商品
     public function save()
     {
-        $data['type'] = 3; // 抽奖商品
+        $data['type'] = 4; // 五折商品
         $goods = I('post.goods')['goods'];
         foreach ($goods as $value) {
             // 添加到商品活动表
@@ -107,10 +108,11 @@ class AwardGoodsController extends Controller {
             $res = M('goods_activity')->data($data)->add();
         }
         if ($res) {
-            $this->success("添加成功",U('AwardGoods/index'));
+            $this->success("添加成功",U('DiscountGoods/index'));
         } else {
-            $this->error("添加失败",U('AwardGoods/index'));
+            $this->error("添加失败",U('DiscountGoods/index'));
         }
+
     }
 
     // 删除单个商品
@@ -137,9 +139,9 @@ class AwardGoodsController extends Controller {
             $res = M('goods_activity')->where('id='.$value)->delete();
         }
         if($res) {
-            $this->success("删除成功",U('AwardGoods/index'));
+            $this->success("删除成功",U('DiscountGoods/index'));
         }else{
-            $this->success("删除失败",U('AwardGoods/index'));
+            $this->success("删除失败",U('DiscountGoods/index'));
         }
     }
 

@@ -1,7 +1,6 @@
 <?php
 //  加载常量配置文件
 header("Content-type:text/html;charset=utf-8");
-
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", true); //true、false
 define("REDISIP", "r-wz9266773b1c1894.redis.rds.aliyuncs.com");
@@ -11,7 +10,6 @@ define("REDISTIME", 120);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
 define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
-
 return array(
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
@@ -181,6 +179,24 @@ return array(
         'CANCEL'=>'已取消',
         'FINISH'=>'已完成', //
     ),
+    /**
+     *  订单用户端显示按钮
+        去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
+        取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0
+        确认收货  AND shipping_status=1 AND order_status=0
+        评价      AND order_status=1
+        查看物流  if(!empty(物流单号))
+=======
+    
+    /**
+     *  订单用户端显示按钮     
+        去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
+        取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0 
+        确认收货  AND shipping_status=1 AND order_status=0 
+        评价      AND order_status=1 
+        查看物流  if(!empty(物流单号))
+        退货按钮（联系客服）  所有退换货操作， 都需要人工介入   不支持在线退换货
+     */
     
     // 'site_url'=>'http://www.tp-shop.cn', // tpshop 网站域名 已经改写入数据库
     'MODULE_ALLOW_LIST' => array('Home','Admin','Store','Api','Chat','Api_2_0_0','Api_2_0_1','Api_2_0_2'),
@@ -269,9 +285,45 @@ return array(
 
 
     ),
+	//支付宝配置参数   2017-5-26 注释，后续删除。
+//	'alipay_config_face'=>array(
+//		'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接口后获取到的PID
+//		'sign_type'=>strtoupper('MD5'),
+//		'input_charset'=> strtolower('utf-8'),
+//		'transport'=> 'http',
+//		'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
+//		//这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
+//		'notify_url'=>'http://pinquduo.cn/Store/Index/notify_url',
+//		//这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
+//		'return_url'=>'http://pinquduo.cn/Store/Index/returnurl',
+//		//这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
+//		'seller_email'=>'2660357732@qq.com',
+//		//支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
+//		'successpage'=>'Index/index',
+//		//支付失败跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参unpay（未支付列表）
+//		'errorpage'=>'Admin/login',
+//	),
 
+//	'payment' => array(
+//		'tenpay' => array(
+//			// 加密key，开通财付通账户后给予
+//			'key' => 'e82573dc7e6136ba414f2e2affbe39fa',
+//			// 合作者ID，财付通有该配置，开通财付通账户后给予
+//			'partner' => '1900000113'
+//		),
+//		'alipay' => array(
+//			// 收款账号邮箱
+//			'email' => '2660357732@qq.com',
+//			// 加密key，开通支付宝账户后给予
+//			'key' => 'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
+//			// 合作者ID，支付宝有该配置，开通易宝账户后给予
+//			'partner' => '2088521292269473'
+//		),
+//	),
     'SHARE_URL' => 'http://wx.pinquduo.cn',
-    'DATA_URL' => '/data/wwwroot/default',
+    'DATA_URL' => '/sites/pqd',
+    'SHARE_URL' => 'http://wx.pinquduo.cn',
+    'DATA_URL' => '/sites/pqd',
 
     'UPLOAD_FILE_QINIU'     => array (
         'maxSize'           => 20*1024*1024,//文件大小
@@ -293,4 +345,7 @@ return array(
         'dates' => array('2017-5-13', '2017-5-14', '2017-5-15','2017-5-16', '2017-5-17', '2017-5-18','2017-5-19', '2017-5-20', '2017-5-22','2017-5-23', '2017-5-24', '2017-5-25','2017-5-26', '2017-5-27', '2017-5-28','2017-5-29', '2017-5-30', '2017-5-31'),
         'times' => array('10:00', '13:00', '16:00', '19:00')
     ),
+
+    //　五折专享开始时间
+    'DiscountTime' => '2017-07-09',
 );

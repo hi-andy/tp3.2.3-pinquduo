@@ -32,17 +32,16 @@ class WechatController extends Controller
      */
     public function getUserInfo()
     {
-        // 获取用户openid, 以下方法获取出错
-        // $tools = new \JsApiPay();
-        // $openId = $tools->GetOpenid();
-        //　微信前端传递
+        header("Access-Control-Allow-Origin:*");
+        //　微信前端传递 openid
         $openId = I('openId');
         $client_credential = (array) json_decode(file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".\WxPayConfig::$appid."&secret=".\WxPayConfig::$appsecret));
         $access_token = $client_credential['access_token'];
         // 发送获取用户信息请求
         $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openId.'&lang=zh_CN';
         $result = http_request($url);
-        exit(json_encode($result));
+        print_r($result);
+        exit;
     }
 
 }
