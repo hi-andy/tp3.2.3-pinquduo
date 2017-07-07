@@ -28,13 +28,13 @@
     <script src="__PUBLIC__/js/common.js"></script>
     <script src="__PUBLIC__/js/upgrade.js"></script>
 	<script src="__PUBLIC__/js/layer/layer.js"></script><!--弹窗js 参考文档 http://layer.layui.com/-->
-      <script type='text/javascript' src='__PUBLIC__/chat2/webim.config.js'></script>
-      <script type='text/javascript' src='__PUBLIC__/chat2/strophe-1.2.8.min.js'></script>
-      <script type='text/javascript' src='__PUBLIC__/chat2/websdk-1.4.10.js'></script>
-      <script type='text/javascript' src='__PUBLIC__/chat2/template-native.js'></script>
-      <link rel="stylesheet" href="__PUBLIC__/chat2/jquery-ui.css">
-      <script type="text/javascript" src="__PUBLIC__/chat2/jquery-ui.min.js"></script>
-      <link rel="stylesheet" href="__PUBLIC__/chat2/chat.css">
+      <script type='text/javascript' src='__PUBLIC__/js/chat/webim.config.js'></script>
+      <script type='text/javascript' src='__PUBLIC__/js/chat/strophe-1.2.8.min.js'></script>
+      <script type='text/javascript' src='__PUBLIC__/js/chat/websdk-1.4.10.js'></script>
+      <script  src='__PUBLIC__/js/chat/template-native.js'></script>
+      <link rel="stylesheet" href="__PUBLIC__/css/chat/jquery-ui.css">
+      <script type="text/javascript" src="__PUBLIC__/js/chat/jquery-ui.min.js"></script>
+      <link rel="stylesheet" href="__PUBLIC__/css/chat/chat.css">
       </script>
       <!--好友列表模板-->
       <script id="firendListItem" type="text/html">
@@ -69,7 +69,7 @@
                       </p>
                       <div style="margin-top: 10px;padding: 6px 6px 2px 6px;background-color:#EEEEEE;display: inline-block;border-radius: 4px;position: relative">
                       <img onclick="imgClick(this)" src="<%=list[i].payload.bodies[0].msg.url%>" alt="" style="height:<%=list[i].payload.bodies[0].msg.height%>;width:<%=list[i].payload.bodies[0].msg.width%>;border-radius: 4px;">
-                      <img class="qipao" src="__PUBLIC__/chat2/images/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 10px">
+                      <img class="qipao" src="__PUBLIC__/images/chat/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 10px">
                       </div>
                       </div>
                       </div>
@@ -95,7 +95,7 @@
                           <i style="display: block;font-style: normal;width:100%;height: 40px;white-space: normal; overflow: hidden;text-overflow: ellipsis;font-size: 14px;margin-bottom: 10px;"><%=list[i].payload.ext.goods.goods_name%></i>
                           <i style="display: block;font-style: normal;font-size: 12px"><span style="color: red">￥<%=list[i].payload.ext.goods.shop_price%></span>&nbsp;&nbsp;<span style="color: red"><%=list[i].payload.ext.goods.prom%></span>人团</i>
                           </i>
-                          <img src="__PUBLIC__/chat2/images/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px">
+                          <img src="__PUBLIC__/images/chat/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px">
                           </a>
                           </p>
                           </div>
@@ -114,7 +114,7 @@
                           </p>
                           <p class="msgText" style="position: relative">
                   <%=list[i].payload.bodies[0].msg%>
-                          <img class="qipao" src="__PUBLIC__/chat2/images/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px">
+                          <img class="qipao" src="__PUBLIC__/images/chat/chat.png" alt="" style="position: absolute;top:10px;left: -7px;width: 8px">
                           </p>
                           </div>
                           </div>

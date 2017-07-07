@@ -8,7 +8,7 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-    if (REDIS_SWITCH) {
+    /*if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -26,7 +26,7 @@ function redis($key, $value=null, $time="", $del=null){
         }
     } else {
         redisdelall("*");
-    }
+    }*/
 }
 
 /**
@@ -35,7 +35,7 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
-    if (REDIS_SWITCH) {
+    /*if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -46,7 +46,7 @@ function redislist($key, $value=null){
         }
     } else {
         redisdelall("*");
-    }
+    }*/
 }
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-    $redis = new Redis();
+    /*$redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
-    $redis->delete($redis->keys($key));
+    $redis->delete($redis->keys($key));*/
 }
 /**
  * @param $arr

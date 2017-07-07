@@ -873,83 +873,9 @@ class IndexController extends BaseController {
 	}
 
     //地址处理问题
-        function test($adress)
-    {
-        $cha = $adress;
-        //新疆维吾尔自治区伊犁哈萨克自治州霍城县
-        //判断字符串里面是否包含省
-        if(strstr($cha,"省")){
-            //按省市区切割
-            if(substr_count($cha,'省')>1){
-                $cha = explode('省',$cha);
-                $province = $cha[0].'省';
-                $cha[1] = '省'.$cha[2];
-            }else{
-                $cha = explode('省',$cha);
-                $province = $cha[0].'省';
-            }
-            if(strstr($cha[1],'自治州'))
-            {
-                $cha = explode('自治州',$cha[1]);
-                $city = $cha[0].'自治州';
-            }elseif(strstr($cha[1],'地区')){
-                $cha = explode('地区',$cha[1]);
-                $city = $cha[0].'地区';
-            }elseif(strstr($cha[1],'自治区')){
-                $cha = explode('自治区',$cha[1]);
-                $city = $cha[0].'自治区';
-            }elseif(strstr($cha[1],'行政单位')){
-                $cha = explode('行政单位',$cha[1]);
-                $city = $cha[0].'行政单位';
-            }else{
-                $cha = explode('市',$cha[1]);
-                $city = $cha[0].'市';
-            }
-            $area = $cha[1];
-        }elseif(strstr($cha,"北京市") || strstr($cha,"天津市") || strstr($cha,"上海市") ||strstr($cha,"重庆市")){//判断是否为直辖市
-            //按市区切割
-            $cha = explode('市',$cha);
-            $province = $cha[0].'市';
-            $city = $cha[0].'市';
-            $area = $cha[1];
-        }elseif(strstr($cha,"内蒙古自治区") || strstr($cha,"广西壮族自治区") || strstr($cha,"宁夏回族自治区") || strstr($cha,"西藏自治区") || strstr($cha,"新疆维吾尔自治区")){ //判断是否为自治区
-            //按自治区切割
-            if(substr_count($cha,'自治区')>1){
-                $cha = explode('自治区',$cha);
-                $province = $cha[0].'自治区';
-                $cha[1] = '自治区'.$cha[2];
-            }else{
-                $cha = explode('自治区',$cha);
-                $province = $cha[0].'自治区';
-            }
-
-            if(strstr($cha[1],"盟")){
-                $cha = explode('盟',$cha[1]);
-                $city = $cha[0].'盟';
-            }elseif(strstr($cha[1],"地区")){
-                $cha = explode('地区',$cha[1]);
-                $city = $cha[0].'地区';
-            }elseif(strstr($cha[1],"自治州")){
-                $cha = explode('自治州',$cha[1]);
-                $city = $cha[0].'自治州';
-            }elseif(strstr($cha[1],'行政单位')){
-                $cha = explode('行政单位',$cha[1]);
-                $city = $cha[0].'行政单位';
-            }elseif(strstr($cha[1],"市")){
-                $cha = explode('市',$cha[1]);
-                $city = $cha[0].'市';
-            }
-            $area = $cha[1];
-        }elseif(strstr($cha,"行政区"))
+        function test()
         {
-            $cha = explode('行政区',$cha);
-            $province = $cha[0].'行政区';
-            $city = $province;
-            $area = $province;
+            var_dump(500 > 500);
+
         }
-        $adress_arry['province'] =$province;
-        $adress_arry['city'] = $city;
-        $adress_arry['district'] = $area;
-        var_dump( $adress_arry);
-    }
 }

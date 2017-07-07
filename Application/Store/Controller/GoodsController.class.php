@@ -779,6 +779,7 @@ class GoodsController extends BaseController {
                 session('goods',$_POST);
 
                 if ($type == 2){
+                    $Goods->refresh = 0 ;
                     $goods_id = $_POST['goods_id'];
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
