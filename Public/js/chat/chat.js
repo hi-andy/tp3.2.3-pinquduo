@@ -40,6 +40,17 @@ function formatDateTime(inputTime) {
     second = second < 10 ? ('0' + second) : second;
     return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
 }
+//   截取字符串
+function reString(data) {
+    // 截取商品中有用的部分
+    for (var i = 0; i < data.result.length; i++) {
+        if (data.result[i].payload.indexOf("banner") != -1) {
+            data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.indexOf("banner") - 1) + data.result[i].payload.slice(data.result[i].payload.indexOf("goods_name") - 1, data.result[i].payload
+                .indexOf("goods_remark") - 1) + data.result[i].payload.slice(data.result[i].payload.indexOf("goods_share_url") - 1)
+            data.result[i].payload = data.result[i].payload.replace(/[\\]/g, '/')
+        }
+    }
+}
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -81,6 +92,7 @@ $.ajax({
                     jsonp: 'jsoncallback',
                     async: true,
                     success: function(data) {
+                        reString(data)
                         if (data.result) {
                             for (var i = 0; i < data.result.length; i++) {
                                 data.result[i].payload = JSON.parse(data.result[i].payload);
@@ -218,6 +230,7 @@ $.ajax({
                                     jsonp: 'jsoncallback',
                                     async: true,
                                     success: function(data) {
+                                        reString(data);
                                         exts = [];
                                         console.log(typeof(data.result));
                                         if (data.result) {
@@ -477,6 +490,7 @@ $.ajax({
                 jsonp: 'jsoncallback',
                 async: true,
                 success: function(data) {
+                    reString(data);
                     obj.page = obj.page + 1;
                     obj.finished = true;
                     //                console.log(obj);
