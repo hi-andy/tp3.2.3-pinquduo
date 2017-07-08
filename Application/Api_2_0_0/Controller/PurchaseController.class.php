@@ -72,6 +72,12 @@ class PurchaseController extends  BaseController
         $startTime = C('DiscountTime');
         $startTime = strtotime($startTime);
         $isExist = M('goods_activity')->where('goods_id='.$goods_id.' and type=4')->count();
+        if($isExist){
+            $json = array('status' => -1, 'msg' => '活动未开始哦 ^_^');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
         $bought = M('order')->where('user_id = '.$user_id.'goods_id='.$goods_id.' and add_time >= '.$startTime)->count();
         if ($isExist && $bought) {
             $json = array('status' => -1, 'msg' => '您已参加过专享活动了　^_^');
