@@ -19,7 +19,7 @@ return array(
         ),
     'DB_CONFIG2' => array(
         'db_type'  => 'mysql',
-        'db_host'  => 'rm-wz91g3fsg23r1144bo.mysql.rds.aliyuncs.com',
+        'db_host'  => 'rr-wz960l00qf74sp56s.mysql.rds.aliyuncs.com',//
         'db_name'  => 'pinquduo',
         'db_user'  => 'rootmost',
         'db_pwd'   => 'Zuoapp_la',
