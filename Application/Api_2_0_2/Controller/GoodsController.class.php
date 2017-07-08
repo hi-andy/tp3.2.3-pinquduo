@@ -461,6 +461,7 @@ class GoodsController extends BaseController {
 		$type = I('type');
 		$num = I('num',1);
 		$goods_id = I('goods_id');
+
 		/*
 		 * temporary_key 临时存储表
 		 * */
@@ -1100,6 +1101,13 @@ class GoodsController extends BaseController {
 	//获取已经开好的团
 	function  getAvailableGroup(){
 		$goods_id = I('goods_id');
+		if($goods_id == 27857){
+			I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
+			$json = array('status' => 1, 'msg' => '获取成功', 'result' => null);
+			if(!empty($ajax_get))
+				$this->getJsonp($json);
+			exit(json_encode($json));
+		}
 		/*
 		 * group_buy 团购表
 		 * id 团id

@@ -347,5 +347,5 @@ return array(
     ),
 
     //　五折专享开始时间
-    'DiscountTime' => '2017-07-09',
+    'DiscountTime' => '2017-07-08',
 );

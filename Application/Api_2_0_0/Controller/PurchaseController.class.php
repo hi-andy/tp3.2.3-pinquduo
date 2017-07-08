@@ -71,10 +71,16 @@ class PurchaseController extends  BaseController
         // 五折专享每个用户限购一件　9日24:00
         $startTime = C('DiscountTime');
         $startTime = strtotime($startTime);
-        $isExist = M('activity_goods')->where('goods_id='.$goods_id.' and type=4')->count();
-        $bought = M('order')->where('goods_id='.$goods_id.'add_time >= '.$startTime)->count();
+        $isExist = M('goods_activity')->where('goods_id='.$goods_id.' and type=4')->count();
+        $bought = M('order')->where('user_id = '.$user_id.'goods_id='.$goods_id.' and add_time >= '.$startTime)->count();
         if ($isExist && $bought) {
             $json = array('status' => -1, 'msg' => '您已参加过专享活动了　^_^');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+        if ($isExist && $num > 1) {
+            $json = array('status' => -1, 'msg' => '活动商品限购一件哦　^_^');
             if (!empty($ajax_get))
                 $this->getJsonp($json);
             exit(json_encode($json));

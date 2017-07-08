@@ -697,6 +697,12 @@ class IndexController extends BaseController {
                 ->page($page, $pagesize)
                 ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img as original,g.prom,g.prom_price,g.is_special,g.list_img as original_img')
                 ->select();
+            for($i=0;$i<count($goodsList);$i++){
+                $type = M('promote_icon')->where('goods_id = '.$goodsList[$i]['goods_id'])->getField('src');
+                if(!empty($type)){
+                    $goodsList[$i]['icon_src'] = $type;
+                }
+            }
             $data = $this->listPageData($count, $goodsList);
             foreach ($data['items'] as &$v) {
                 $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
@@ -872,10 +878,10 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    //地址处理问题
+
         function test()
         {
-            var_dump(500 > 500);
-
+            $num = 1;
+            var_dump( $num >1);
         }
 }

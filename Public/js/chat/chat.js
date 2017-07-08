@@ -43,13 +43,14 @@ function formatDateTime(inputTime) {
 //   截取字符串
 function reString(data) {
     // 截取商品中有用的部分
-    for (var i = 0; i < data.result.length; i++) {
-        if (data.result[i].payload.indexOf("banner") != -1) {
-            data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.indexOf("banner") - 1) + data.result[i].payload.slice(data.result[i].payload.indexOf("goods_name") - 1, data.result[i].payload
-                .indexOf("goods_remark") - 1) + data.result[i].payload.slice(data.result[i].payload.indexOf("goods_share_url") - 1)
-            data.result[i].payload = data.result[i].payload.replace(/[\\]/g, '/')
+        for (var i = 0; i < data.result.length; i++) {
+            if (data.result[i].payload.indexOf("banner") != -1) {
+                data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.indexOf("banner") - 1) + data.result[i].payload.slice(data.result[i].payload.indexOf("goods_name") - 1, data.result[i].payload
+                    .indexOf("goods_remark") - 1) + data.result[i].payload.slice(data.result[i].payload.indexOf("goods_share_url") - 1, data.result[i].payload
+                    .indexOf("img_arr") - 1) + data.result[i].payload.slice(data.result[i].payload.indexOf("is_special") - 1)
+                data.result[i].payload = data.result[i].payload.replace(/[\\]/g, '/')
+            }
         }
-    }
 }
 
 function getCookie(cname) {

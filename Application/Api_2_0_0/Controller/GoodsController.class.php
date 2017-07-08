@@ -1261,6 +1261,7 @@ class GoodsController extends BaseController {
 		$type = I('type');
 		$spec_key = I('spec_key');
 		$prom_id = I('prom_id');
+		
 
 		$user_address = M('user_address')->where("`user_id` = $user_id and `is_default` = 1")->field('address_id,consignee,address_base,address,mobile')->find();
 		if(empty($user_address))
