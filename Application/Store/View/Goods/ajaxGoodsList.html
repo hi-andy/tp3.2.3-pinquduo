@@ -65,6 +65,13 @@
                         <img width="20" height="20" src="__PUBLIC__/images/<if condition='$list[is_show] eq 1'>yes.png<else />cancel.png</if>" onclick="changeTableVal2('goods','goods_id','{$list.goods_id}','is_show',this)"/>
                     </td>
                     <td class="text-center">
+<<<<<<< HEAD
+                        <if condition="$list['activity_type'] neq 4 && ($list['is_special'] eq 0 || $list['is_special'] eq 4 || $list['is_special'] eq 1 )">
+                            <a href="{:U('Store/Goods/addEditGoods',array('id'=>$list['goods_id']))}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="编辑"><i class="fa fa-pencil"></i></a>
+                        </if>
+
+
+=======
                         <if condition="$list['is_recommend'] eq 0">
                             <if condition="$list['is_special'] eq 0">
                                 <a href="{:U('Store/Goods/addEditGoods',array('id'=>$list['goods_id']))}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="编辑"><i class="fa fa-pencil"></i></a>
@@ -73,6 +80,7 @@
                         <if condition="$list['is_special'] eq 1">
                         <a href="{:U('Store/Goods/addEditHaitaoGoods',array('id'=>$list['goods_id']))}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="编辑"><i class="fa fa-pencil"></i></a>
                         </if>
+>>>>>>> 4512f47e1fd96dc5c562184b7c71bb0bafb492fc
                         <a href="javascript:void(0);" onclick="del('{$list[goods_id]}')" id="button-delete6" data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="删除"><i class="fa fa-trash-o"></i></a>
                     </td>
                 </tr>
