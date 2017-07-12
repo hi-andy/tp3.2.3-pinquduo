@@ -928,7 +928,7 @@ class UserController extends BaseController {
                 exit(json_encode(array('status'=>1,'msg'=>'验证码已发送')));
         } else {
             if(!empty($ajax_get))
-                $this->getJsonp(array('status'=>1,'msg'=>'验证码发送失败'));
+                $this->getJsonp(array('status'=>-1,'msg'=>'验证码发送失败'));
             else
                 exit(json_encode(array('status'=>-1,'msg'=>'验证码发送失败')));
         }

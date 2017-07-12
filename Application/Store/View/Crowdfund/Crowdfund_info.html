@@ -29,7 +29,7 @@
                 </div>
                 <div class="panel-body ">   
                     <!--表单数据-->
-                    <form method="post" id="Jiujiu" action="{:U('Admin/Crowdfund/goods_save')}">
+                    <form method="post" id="Jiujiu" action="{:U('Store/Crowdfund/goods_save')}">
                         <!--通用信息-->
                     <div class="tab-content col-md-10">                 	  
                         <div class="tab-pane active" id="tab_tongyong">                           
@@ -89,7 +89,7 @@
                                 	<td><input class="btn btn-default" type="reset" value="重置">
                                 		<input type="hidden" name="id" value="{$info.id}">
                                 	</td>
-                                	<!--<td class="text-right"><input class="btn btn-primary" type="button"  onclick="ajax_submit_form('Secondskill','{:U('Admin/Secondskill/prom_goods_save2')}');" value="保存"></td></tr>-->
+                                	<!--<td class="text-right"><input class="btn btn-primary" type="button"  onclick="ajax_submit_form('Secondskill','{:U('Store/Secondskill/prom_goods_save2')}');" value="保存"></td></tr>-->
 	                                <td class="text-right"><input class="btn btn-primary" type="button" onclick="adsubmit()" value="保存"></td></tr>
                                 </tfoot>                               
                            </table>
@@ -165,7 +165,7 @@ function adsubmit(){
 	$('#Jiujiu').submit();
 
 	$.ajax({
-		url:"{:U('Admin/Crowdfund/goods_save')}",
+		url:"{:U('Store/Crowdfund/goods_save')}",
 		type:'POST',
 		data:{id:id,name:name},
 		dataType:"json",
@@ -186,7 +186,7 @@ function selectGoods(){
 	$('input[name*="goods_id"]').each(function(i,o){
 		goods_id.push($(o).val());
 	});
-    var url = '/index.php?m=Admin&c=Crowdfund&a=search_goods&goods_id='+goods_id+'&t='+Math.random();
+    var url = '/index.php?m=Store&c=Crowdfund&a=search_goods&goods_id='+goods_id+'&t='+Math.random();
     layer.open({
         type: 2,
         title: '选择商品',

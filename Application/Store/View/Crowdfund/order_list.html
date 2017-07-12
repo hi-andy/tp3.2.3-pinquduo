@@ -14,7 +14,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="navbar navbar-default">
-                        <form action="{:U('Admin/order/export_order')}" id="search-form2" class="navbar-form form-inline" method="post">
+                        <form action="{:U('Store/order/export_order')}" id="search-form2" class="navbar-form form-inline" method="post">
                             <div class="form-group">
                                 <label class="control-label" for="input-order-id">收货人</label>
                                 <div class="input-group">
@@ -70,7 +70,7 @@
                                 <a href="javascript:void(0)" onclick="ajax_get_table('search-form2',1)" id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i> 筛选</a>
                             </div>
                             <div class="form-group">
-                                <a href="/Admin/Order/add_order" class="btn btn-primary"><i class="fa fa-search"></i>添加订单</a>
+                                <a href="/Store/Order/add_order" class="btn btn-primary"><i class="fa fa-search"></i>添加订单</a>
                             </div>
                             <button type="submit" class="btn btn-default pull-right"><i class="fa fa-file-excel-o"></i>&nbsp;导出excel</button>
                         </form>
@@ -115,7 +115,7 @@
         cur_page = page; //当前页面 保存为全局变量
         $.ajax({
             type : "POST",
-            url:"/Admin/Crowdfund/ajax_order_list?p="+page,//+tab,
+            url:"/Store/Crowdfund/ajax_order_list?p="+page,//+tab,
             data : $('#'+tab).serialize(),// 你的formid
             success: function(data){
                 $("#ajax_return").html('');
