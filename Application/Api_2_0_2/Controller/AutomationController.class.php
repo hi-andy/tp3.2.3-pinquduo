@@ -20,10 +20,26 @@ class AutomationController extends BaseController
         $this->userLogic = new \Home\Logic\UsersLogic();
     }
 
-    //把所有免单自动退款
+    /*
+     * 自动退款方法
+     * sh 脚本定时任务执行方法，每一分钟执行一次
+     * 把 getwhere 表里记录的免单订单信息，需要退款的执行退款。
+     * 首先查询需要退款的记录，条件就是操作时间为空的，退款成功则写入操作时间为当前时间。
+     *
+     * 存在的问题：
+     * 如果首次查询到的操作时间为空的，而由于某种原因接下来的退款操作都没有执行成功，
+     * 可能是已退过款，也可能是其它未知原因
+     * 那么下面的更新记录，写入操作时间的动作就不会执行，
+     * 而接下来的查询结果还是前面操作失败的那几条记录，
+     * 这样就导致程序陷入了失败操作的循环。
+     *
+     * 事故后的改进：
+     * 通过获取最新的记录来避免上面出现的问题 order by id desc
+     * 这样可让出现的问题最小化，忽略掉操作失败的记录。
+     */
     public function free_single()
     {
-        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->limit(0, 10)->select();
+        $free_order = M('getwhere')->where('ok_time = 0 or ok_time is null ')->order('id desc')->limit(0, 10)->select();
         $orderLogic = new OrderLogic();
         $ids = "";
         for ($i = 0; $i < count($free_order); $i++) {
@@ -35,24 +51,22 @@ class AutomationController extends BaseController
                     $result = $orderLogic->weixinBackPay($order['order_sn'], $free_order[$i]['price']);
                 }
                 if ($result['status'] == 1) {
-                    $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     $ids .= $order['user_id'] . ",";
                 }
-            } elseif ($free_order[$i]['code'] == 'alipay') {
+            } elseif ($free_order[$i]['code'] == 'alipay' || $free_order[$i]['code'] == 'alipay_wap') {
                 $result = $orderLogic->alipayBackPay($order['order_sn'], $free_order[$i]['price']);
                 if ($result['status'] == 1) {
-                    $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
                     $ids .= $order['user_id'] . ",";
                 }
             } elseif ($free_order[$i]['code'] == 'qpay') {
                 $qqPay = new QQPayController();
-                $qqPay->doRefund($free_order[$i]['order_sn'], $free_order[$i]['order_amount']);
-                $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
+                $qqPay->doRefund($order['order_sn'], $free_order[$i]['order_amount']);
                 $ids .= $order['user_id'] . ",";
             }
             redis("getOrderList_status_" . $order['user_id'], "1");
             redisdelall("TuiSong*");//删除推送缓存
         }
+        $data['one_time'] = $data['two_time'] = $data['ok_time'] = time();
         if ($ids) {
             $ids = substr($ids, 0, -1);
             M('getwhere')->where("id in('{$ids}')")->data($data)->save();
