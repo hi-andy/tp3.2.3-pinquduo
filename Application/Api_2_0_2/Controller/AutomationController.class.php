@@ -330,6 +330,7 @@ class AutomationController extends BaseController
                         $nicknames .= $nickname . "、";
                     }
                     $nicknames = substr($nicknames, 0, -1);
+                    $nicknames = trim($nicknames);
                     // 获取拼团成功用户微信 openid ，推送拼团成功消息
                     foreach ($group_buy_mark as $v2) {
                         $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
