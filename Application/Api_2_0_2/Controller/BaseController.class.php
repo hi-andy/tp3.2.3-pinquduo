@@ -805,6 +805,7 @@ class BaseController extends Controller {
                         $nicknames .= $v['nickname'] . '、';
                     }
                 }
+
 //原有代码                $nicknames = substr($nicknames, 0, -1);
 //修改代码使用mb_substr 2017.7.13 wenlitao
                 $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3);
