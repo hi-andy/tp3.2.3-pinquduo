@@ -290,6 +290,7 @@ class GoodsController extends BaseController
 
                 if ($type == 2)
                 {
+                    $Goods->refresh = 0 ;
                     $goods_id = $_POST['goods_id'];
                     redislist("goods_refresh_id", $goods_id);
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
@@ -310,7 +311,8 @@ class GoodsController extends BaseController
                     M('goods')->where('goods_id='.$goods_id)->save(array('goods_type'=>$_SESSION['goodstype']));
                     $Goods->afterSave($goods_id);
                 }
-
+                redisdelall("getDetaile_".$goods_id);
+                
                 $GoodsLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
                 if($_POST['the_raise'] ==1){
                     $return_arr = array(

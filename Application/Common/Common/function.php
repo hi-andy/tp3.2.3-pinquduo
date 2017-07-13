@@ -8,25 +8,25 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-//    if (REDIS_SWITCH) {
-//        $redis = new Redis();
-//        $redis->connect(REDISIP, PORT);
-//        $redis->auth(REDISPASS);
-//        if ($del == true) {
-//            $redis->delete($key);
-//        }
-//        if ($value) {
-//            if ($time) {
-//                $redis->setex($key, $time, $value);
-//            } else {
-//                $redis->set($key, $value);
-//            }
-//        } else {
-//            return $redis->get($key);
-//        }
-//    } else {
-//        redisdelall("*");
-//    }
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($del == true) {
+            $redis->delete($key);
+        }
+        if ($value) {
+            if ($time) {
+                $redis->setex($key, $time, $value);
+            } else {
+                $redis->set($key, $value);
+            }
+        } else {
+            return $redis->get($key);
+        }
+    } else {
+        redisdelall("*");
+    }
 }
 
 /**
@@ -35,18 +35,18 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
-//    if (REDIS_SWITCH) {
-//        $redis = new Redis();
-//        $redis->connect(REDISIP, PORT);
-//        $redis->auth(REDISPASS);
-//        if ($key && $value) {
-//            $redis->rpush($key, $value);
-//        } else {
-//            return $redis->lpop($key);
-//        }
-//    } else {
-//        redisdelall("*");
-//    }
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($key && $value) {
+            $redis->rpush($key, $value);
+        } else {
+            return $redis->lpop($key);
+        }
+    } else {
+        redisdelall("*");
+    }
 }
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-//    $redis = new Redis();
-//    $redis->connect(REDISIP, PORT);
-//    $redis->auth(REDISPASS);
-//    $redis->delete($redis->keys($key));
+    $redis = new Redis();
+    $redis->connect(REDISIP, PORT);
+    $redis->auth(REDISPASS);
+    $redis->delete($redis->keys($key));
 }
 /**
  * @param $arr
@@ -905,7 +905,7 @@ function getAdress($adress)
 		$cha = explode('市',$cha);
 		$province = $cha[0].'市';
 		$city = $cha[0].'市';
-		$area = $cha[1];
+		$area = $cha[2];
 	}elseif(strstr($cha,"内蒙古自治区") || strstr($cha,"广西壮族自治区") || strstr($cha,"宁夏回族自治区") || strstr($cha,"西藏自治区") || strstr($cha,"新疆维吾尔自治区")){ //判断是否为自治区
 		//按自治区切割
 		if(substr_count($cha,'自治区')>1){

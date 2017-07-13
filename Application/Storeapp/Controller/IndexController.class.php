@@ -27,11 +27,15 @@ class IndexController {
 			exit(json_encode(array('status'=>-1,'msg'=>'商户账号或密码不能为空 ^_^')));
 		}
 
+		$merchant_name = M('merchant')->where("merchant_name = '$store_name'")->find();
+		if(empty($merchant_name)){
+			exit(json_encode(array('status'=>-1,'msg'=>'商户账号不存在 ^_^')));
+		}
 		$store_info = M('merchant')->where("merchant_name = '$store_name' and password = '$store_pass' ")->find();
 		if(!empty($store_info)){
 			exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('store_id'=>$store_info['id'],'store_logo'=>$store_info['store_logo'],'store_name'=>$store_info['store_name']))));
 		}else{
-			exit(json_encode(array('status'=>-1,'msg'=>'商户账号不存在 ^_^')));
+			exit(json_encode(array('status'=>-1,'msg'=>'商户密码不正确 ^_^')));
 		}
 	}
 
@@ -76,10 +80,22 @@ class IndexController {
 	 * author：吴银海
 	 * time：17/07/12
 	 * $store_name 用户账号
+	 * $time 时间戳
 	 * */
 	function sendSMS(){
-		$store_name = I('store_mobile');
+		$data = $_REQUEST;
+		$store_name = $data['store_mobile'];
+		$time = $data['time'];
+//		$code = rand(100000, 999999);
+//		session($store_name.'_name',$store_name);
+//		session($store_name.'_code',$code);
+//		session($store_name.'_time',$time);
 
+//		$session_store_name = $_SESSION[$store_name.'_name'];
+//		$session_store_code = $_SESSION[$store_name.'_code'];
+//		$session_store_time = $_SESSION[$store_name.'_time'];
+//
+//		var_dump($session_store_name.'_'.$session_store_code.'_'.$session_store_time);die;
 		if (!check_mobile($store_name)){
 			exit(json_encode(array('status' => -1, 'msg' => '手机号码格式有误')));
 		}
@@ -88,7 +104,7 @@ class IndexController {
 		if($store_info['state']==0){
 			exit(json_encode(array('status' => -1, 'msg' => '您输入的帐号不正确')));
 		}
-		
+
 		$code = rand(100000, 999999);
 		$alidayu = new AlidayuController();
 		$result = $alidayu->sms($store_name, "code", $code, "SMS_62265043", "normal", "拼趣多修改验证", "拼趣多");
@@ -96,8 +112,8 @@ class IndexController {
 		if(!empty($result)){
 			session($store_name.'_name',$store_name);
 			session($store_name.'_code',$code);
-			session($store_name.'_time',time());
-			exit(json_encode(array('status' => 1, 'msg' => '验证码发送成功')));
+			session($store_name.'_time',$time);
+			exit(json_encode(array('status' => 1, 'msg' => $_SESSION[$store_name.'_time'])));
 		}else{
 			exit(json_encode(array('status' => -1, 'msg' => '验证码发送失败')));
 		}
@@ -109,11 +125,14 @@ class IndexController {
 	 * time：17/07/12
 	 * $store_name 用户账号
 	 * $code 验证码
+	 * $time 时间戳
 	 */
 	function  confirm(){
-		$store_name = I('store_name');
-		$code = I('code');
-
+		$data = $_REQUEST;
+		$store_name = $data['store_mobile'];
+		$code = $data['code'];
+		$time = $data['time'];
+		session('time2',$time);
 		if(empty($store_name) || empty($code)){
 			exit(json_encode(array('status'=>-1,'msg'=>'商户账号或验证码不能为空 ^_^')));
 		}
@@ -122,19 +141,20 @@ class IndexController {
 		$session_store_code = $_SESSION[$store_name.'_code'];
 		$session_store_time = $_SESSION[$store_name.'_time'];
 
-		if((time() - $session_store_time) > 60){
-			session($store_name.'_name',null);
-			session($store_name.'_code',null);
-			session($store_name.'_time',null); //销毁session
-			exit(json_encode(array('status'=>-1,'msg'=>'验证码超时，请重新获取 ^_^')));
+		$q = $time - $session_store_time;
+		if($q > 60){
+//			session($store_name.'_name',null);
+//			session($store_name.'_code',null);
+//			session($store_name.'_time',null); //销毁session
+			exit(json_encode(array('status'=>-1,'msg'=>$session_store_time.'_'.$time.'_'.$q)));
 		}
 
 		if($code==$session_store_code && $store_name==$session_store_name){
 			$store_info = M('merchant')->where("merchant_name = '$store_name'")->field('id')->find();
 			if(!empty($store_info)){
-				session($store_name.'_name',null);
-				session($store_name.'_code',null);
-				session($store_name.'_time',null); //销毁session
+//				session($store_name.'_name',null);
+//				session($store_name.'_code',null);
+//				session($store_name.'_time',null); //销毁session
 				exit(json_encode(array('status'=>1,'msg'=>'获取成功','store_id'=>$store_info['id'])));
 			}else{
 				exit(json_encode(array('status'=>-1,'msg'=>'该商户不存在 ^_^')));
@@ -145,13 +165,20 @@ class IndexController {
 
 	}
 
-	function test(){
-		$username = 'store'. 2 ;
-		$password = md5($username);
-		var_dump($password);
+	function test($store_name){
+		$session_store_name = $_SESSION[$store_name.'_name'];
+		$session_store_code = $_SESSION[$store_name.'_code'];
+		$session_store_time = $_SESSION[$store_name.'_time'];
+		var_dump($session_store_name);var_dump($session_store_code);var_dump($session_store_time);
 	}
 
 	function test1(){
-		var_dump();
+		var_dump($_SESSION);
+	}
+	function test2($store_name){
+		session($store_name.'_name',null);
+		session($store_name.'_code',null);
+		session($store_name.'_time',null);
+		session('time',null);
 	}
 }

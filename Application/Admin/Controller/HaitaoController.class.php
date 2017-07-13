@@ -198,6 +198,7 @@ class HaitaoController extends BaseController{
 				session('goods',$_POST);
 
 				if ($type == 2){
+					$Goods->refresh = 0 ;
 					$goods_id = $_POST['goods_id'];
 					$goods = M('goods')->where("goods_id = $goods_id")->find();
 					if($_POST['original_img']!=$goods['original_img']){
@@ -208,7 +209,7 @@ class HaitaoController extends BaseController{
 					}
 					$Goods->save(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
-					redislist("goods_refresh_id", $goods_id);
+					redisdelall("getDetaile_".$goods_id);
 				}
 				else
 				{

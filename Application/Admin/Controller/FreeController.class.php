@@ -139,6 +139,7 @@ class FreeController extends BaseController
 				session('goods',$_POST);
 				if ($type == 2)
 				{
+					$Goods->refresh = 0 ;
 					$goods_id = $_POST['goods_id'];
 					$goods = M('goods')->where("goods_id = $goods_id")->find();
 					if($_POST['original_img']!=$goods['original_img'])
@@ -157,7 +158,8 @@ class FreeController extends BaseController
 					$goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
 					$Goods->afterSave($goods_id);
 				}
-
+				redisdelall("getDetaile_".$goods_id);
+				
 				$GoodsLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
 				if($_POST['the_raise'] ==1){
 					$return_arr = array(
