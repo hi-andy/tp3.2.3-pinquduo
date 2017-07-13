@@ -200,6 +200,7 @@ class BuyController extends  BaseController
                 } else {
                     $num2 = M('group_buy')->where('`id`=' . $prom_id . ' or `mark` = ' . $prom_id . ' and `is_pay`=1')->count();
                 }
+
                 $this->joinGroupBuy($parameter);
             } else if ($type == 1)    //开团
             {
@@ -743,6 +744,8 @@ class BuyController extends  BaseController
                 } elseif ($order['pay_code'] == 'alipay_wap') { // 添加手机网页版支付 2017-5-25 hua
                     $AlipayWap = new AlipayWapController();
                     $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+                    var_dump($pay_detail);
+                    exit();
                 } elseif ($order['pay_code'] == 'qpay') {
                     // Begin code by lcy
                     $qqPay = new QQPayController();
