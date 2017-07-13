@@ -123,7 +123,6 @@ function adsubmit(){
     data = data.substr(0,data.length-1)
     data += ']}'
     data = JSON.parse(data);
-    $('#Secondskill').submit();
 
     $.ajax({
         url:"{:U('Admin/AwardGoods/save')}",
@@ -133,11 +132,12 @@ function adsubmit(){
         },
         dataType:"json",
         success:function(data){
-            if(data.status=1){
-                var num = $(".sun").text();
-                num = (data.msg);
-                $(".sun").text(num);
-            }
+            alert(data.info);
+            location.href=data.url;
+        },
+        error: function () {
+            alert('添加失败！');
+            location.href="{:U('Admin/AwardGoods/index')}";
         }
     });
 }

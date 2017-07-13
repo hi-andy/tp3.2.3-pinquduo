@@ -1,13 +1,13 @@
-<div class="ui-draggable ui-resizable" id="draggable" style="box-sizing: border-box;position: fixed;bottom: 10px;right: 10px;display: block;z-index:9999;background-color: #fff;">
+<div class="ui-draggable ui-resizable" id="draggable" style="box-sizing: border-box;position: fixed;bottom: 10px;right: 10px;display: none;z-index:9999;">
 	<div class="imgShadow" style="position:fixed">
 	</div>
 	<div id="uploadImg" style="position: absolute;display: flex;justify-content: center;width: 100%;z-index: -9999"></div>
 	<div class="chatContent" style="width:100%;height: 100%">
 		<div class="chatHeader" style="height: 35px;width: 100%;background-color:#E20025;border-top-left-radius: 10px;border-top-right-radius: 10px;position: relative;cursor: default;">
 			<p class="chatwindowTitle" style="font-size: 18px;color:#FEFEFE;line-height:35px;height: 35px "></p>
-			<span id="hiddenBtn" style="position: absolute;top: 0px;right: 10px;height:40px;display: flex;align-items: center;padding: 0 10px"><img src="__PUBLIC__/chat2/images/suoxiao.png" style="width: 15px" alt=""></span>
+			<span id="hiddenBtn" style="position: absolute;top: 0px;right: 10px;height:40px;display: flex;align-items: center;padding: 0 10px"><img src="__PUBLIC__/images/chat/suoxiao.png" style="width: 15px" alt=""></span>
 		</div>
-		<div style="display: flex;flex-wrap: nowrap;height: calc(100% - 35px)">
+		<div style="display: flex;flex-wrap: nowrap;height: calc(100% - 35px);background-color: #fff;border-bottom-right-radius: 10px;border-bottom-left-radius: 10px;" >
 			<div class="firendList" style="width: 30%">
 				<ul class="firendListItems">
 					<div style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;margin-top: 20px;">暂无消息</div>
@@ -21,8 +21,8 @@
 				<div class="sendMsg" style="height: 28%">
 					<textarea style="width: 100%;height:65%;box-sizing: border-box"></textarea>
 					<div style="border-top:1px solid #EEEEEE;box-sizing: border-box;height: 32%;display: flex;justify-content: space-between">
-						<input type="file" style="display:none" id="hidden" accept="image/*" onchange="upImages(this)"/>
-						<span style="padding:1%;width: 6%;box-sizing: border-box"><img src="__PUBLIC__/chat2/images/photograph@2x.png" alt="" id="myImg" style="width: 100%;height: 100%"></span>
+						<input type="file" style="display:none" id="hidden" accept="image/png,image/jpg,image/jpeg " onchange="upImages(this)"/>
+						<span style="padding:1%;width: 6%;box-sizing: border-box"><img src="__PUBLIC__/images/chat/photograph@2x.png" alt="" id="myImg" style="width: 100%;height: 100%"></span>
 						<button>发&nbsp;送</button>
 					</div>
 				</div>

@@ -157,22 +157,4 @@ class AlipayWapController extends BaseController
         $res = M('group_buy')->where('`id`='.$order_id)->data($data)->save();
         return $res;
     }
-//    public function TuiSong($order_id)
-//    {
-//        $order = M('order')->where('`order_id`='.$order_id)->find();
-//        $prom = M('group_buy')->where('`id`='.$order['prom_id'])->find();
-//        if($prom['mark']!=0)
-//        {
-//            return null;
-//        }
-//        $user = M('users')->where('`user_id`='.$order['user_id'])->field('mobile,niclname,head_pic')->find();
-//        if($user['nickname']!=null)
-//        {
-//            $name = $user['nickname'].' 刚刚发布了一个新订单';
-//        }else{
-//            $name = substr_replace($user['mobile'], '****', 3, 4);
-//            $name = $name.' 刚刚发布了一个新订单';
-//        }
-//        SendAllXinge($name,array('order_id'=>$order_id,'user_logo'=>$user['head_pic']));
-//    }
 }

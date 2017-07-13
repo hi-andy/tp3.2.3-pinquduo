@@ -163,14 +163,14 @@ class StoreController extends BaseController{
 
 	function Y_orderlist()
 	{
-		$store_id = I('post.store_id');//商户ID
+		$store_id = I('store_id');//商户ID
 		$page = I('post.page',1);//页码
-		$page_num = I('post.page_num',10);//分页变量
+		$page_num = I('post.page_num',100);//分页变量
 		I('post.start_time') && $start_time = I('post.start_time');
 		I('post.end_time') && $end_time = I('post.end_time');
 		I('post.order_sn') && $order_sn = I('order_sn');
 
-		$where = "o.store_id = $store_id and o.order_type in (2,14)";
+		$where = "o.store_id = $store_id and o.order_type in (2,14) and o.consignee is not null";
 		if (!empty($start_time) && !empty($end_time)) {
 			$where = "$where and o.add_time between $start_time and $end_time ";
 		}
@@ -192,12 +192,13 @@ class StoreController extends BaseController{
 				->order('o.order_id asc')
 				->select();
 		}
+//		var_dump(M()->getLastsql());die;
 		/*处理订单数组的数据*/
 		if(!empty($order_info)){
 			//处理地址问题
 			$num = count($order_info);
 			for ($i=0;$i<$num;$i++){
-				$adress_info = $this->getAdress($order_info[$i]['address_base']);
+				$adress_info = getAdress($order_info[$i]['address_base']);
 				$order_info[$i]['province'] =$adress_info['province'];//省
 				$order_info[$i]['city'] = $adress_info['city'];//市
 				$order_info[$i]['district'] = $adress_info['district'];//区
@@ -315,75 +316,4 @@ class StoreController extends BaseController{
 		return $return;
 	}
 
-	//地址处理问题
-	function getAdress($adress)
-	{
-		$cha = $adress;
-		//新疆维吾尔自治区伊犁哈萨克自治州霍城县
-		//判断字符串里面是否包含省
-		if(strstr($cha,"省")){
-			//按省市区切割
-			$cha = explode('省',$cha);
-			$province = $cha[0].'省';
-			if(strstr($cha[1],'自治州'))
-			{
-				$cha = explode('自治州',$cha[1]);
-				$city = $cha[0].'自治州';
-			}elseif(strstr($cha[1],'地区')){
-				$cha = explode('地区',$cha[1]);
-				$city = $cha[0].'地区';
-			}elseif(strstr($cha[1],'自治区')) {
-				$cha = explode('自治区', $cha[1]);
-				$city = $cha[0] . '自治区';
-			}else{
-				$cunt = substr_count($cha[1],'市');
-				if($cunt>1){
-					$cha = explode('市',$cha[1]);
-					$cha[1] = '市'.$cha[2];
-					$city = $cha[0].'市';
-				}else{
-					$cha = explode('市',$cha[1]);
-					$city = $cha[0].'市';
-				}
-			}
-			$area = $cha[1];
-		}elseif(strstr($cha,"北京市") || strstr($cha,"天津市") || strstr($cha,"上海市") ||strstr($cha,"重庆市")){//判断是否为直辖市
-			//按市区切割
-			$cha = explode('市',$cha);
-			$province = $cha[0].'市';
-			$city = $cha[0].'市';
-			$area = $cha[2];
-		}elseif(strstr($cha,"内蒙古自治区") || strstr($cha,"广西壮族自治区") || strstr($cha,"宁夏回族自治区") || strstr($cha,"西藏自治区") || strstr($cha,"新疆维吾尔自治区")){ //判断是否为自治区
-			//按自治区切割
-			$cha = explode('自治区',$cha);
-			$province = $cha[0].'自治区';
-			if(strstr($cha[1],"盟")){
-				$cha = explode('盟',$cha[1]);
-				$city = $cha[0].'盟';
-				$area = $cha[1];
-			}elseif(strstr($cha[1],"地区")){
-				$cha = explode('地区',$cha[1]);
-				$city = $cha[0].'地区';
-				$area = $cha[1];
-			}elseif(strstr($cha[1],"自治州")){
-				$cha = explode('自治州',$cha[1]);
-				$city = $cha[0].'自治州';
-				$area = $cha[1];
-			}elseif(strstr($cha[1],"市")){
-				$cha = explode('市',$cha[1]);
-				$city = $cha[0].'市';
-				$area = $cha[1];
-			}
-		}elseif(strstr($cha,"行政区"))
-		{
-			$cha = explode('行政区',$cha);
-			$province = $cha[0].'行政区';
-			$city = $province;
-			$area = $province;
-		}
-		$adress_arry['province'] =$province;
-		$adress_arry['city'] = $city;
-		$adress_arry['district'] = $area;
-		return $adress_arry;
-	}
 }

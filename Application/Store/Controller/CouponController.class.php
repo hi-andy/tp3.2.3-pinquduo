@@ -67,9 +67,11 @@ class CouponController extends BaseController {
 				$this->error('面额过大');
 			}
 			if(empty($data['id'])){
+				M('goods')->where('store_id = '.$_SESSION['merchant_id'])->data(array('refresh'=>0))->save();
 				$data['add_time'] = time();
 				$row = M('coupon')->add($data);
 			}else{
+				M('goods')->where('store_id = '.$_SESSION['merchant_id'])->data(array('refresh'=>0))->save();
 				$row =  M('coupon')->where(array('id'=>$data['id']))->save($data);
 			}
 			if(!$row){

@@ -161,4 +161,21 @@ class ChatController extends BaseController
             errjson('缺少参数');
         }
     }
+
+    function hx_login(){
+        $store_id = I('merchant_id');
+
+        $HXcall = new HxcallController();
+        $username = 'store'.$store_id;
+        $store_name = M('store')->where('id = '.$store_id)->getField('merchant_name');
+        $password = md5($username);
+        $nickname = $store_name;
+        $res = $HXcall->hx_register($username,$password,$nickname);
+
+        $json = json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('username'=>$username,'password'=>$password)));
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
 }

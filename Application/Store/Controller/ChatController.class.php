@@ -14,7 +14,7 @@ class ChatController extends BaseController{
     {
         $HXcall = new HxcallController();
         $username = 'store'.$_SESSION['merchant_id'];
-        $password = md5($username.C('SIGN_KEY'));
+        $password = md5($username);
         $nickname = $_SESSION['merchant_name'];
         $res = $HXcall->hx_register($username,$password,$nickname);
         $store_logo = M('merchant')->where(array('id'=>$_SESSION['merchant_id']))->getField('store_logo');

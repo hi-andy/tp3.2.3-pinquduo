@@ -63,7 +63,23 @@ class PurchaseController extends  BaseController
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-
+        // 五折专享每个用户限购一件　9日24:00
+        $startTime = C('DiscountTime');
+        $startTime = strtotime($startTime);
+        $isExist = M('goods_activity')->where('goods_id='.$goods_id.' and type=4')->count();
+        $bought = M('order')->where('user_id = '.$user_id.' and goods_id='.$goods_id.' and add_time >= '.$startTime.' and pay_status = 1')->count();
+        if ($isExist && $bought) {
+            $json = array('status' => -1, 'msg' => '您已参加过专享活动了　^_^');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+        if ($isExist && $num > 1) {
+            $json = array('status' => -1, 'msg' => '活动商品限购一件哦　^_^');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
         if (empty(redis("getBuy_lock_".$goods_id))) {//如果无锁
             redis("getBuy_lock_" . $goods_id, "1", 5);//写入锁
 
@@ -672,7 +688,7 @@ class PurchaseController extends  BaseController
         if(empty($spec_res) || empty($group_buy) || empty($o_id))
         {
             M()->rollback();//有数据库操作不成功时进行数据回滚
-            $json = array('status'=>-1,'msg'=>'开团失败');
+            $json = array('status'=>-1,'msg'=>$spec_res.'-'.$group_buy.'-'.$o_id);
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
@@ -688,7 +704,7 @@ class PurchaseController extends  BaseController
                 if(empty($coupon_Inc))
                 {
                     M()->rollback();//有数据库操作不成功时进行数据回滚
-                    $json = array('status'=>-1,'msg'=>'开团失败');
+                    $json = array('status'=>-1,'msg'=>'开团失败2');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
                     if(!empty($ajax_get)){
                         echo "<script> alert('".$json['msg']."') </script>";
@@ -731,9 +747,9 @@ class PurchaseController extends  BaseController
                     $pay_detail = $qqPay->getQQPay($order);
                     // End code by lcy
                 }
-                $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_detail' => $pay_detail,'pay_status' => 1));
+                $json = array('status' => 1, 'msg' => '开团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_detail' => $pay_detail,'pay_status' => 1));
             }else{
-                $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_status' => 0));
+                $json = array('status' => 1, 'msg' => '开团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_status' => 0));
             }
 
             if($goods['the_raise']!=1) {
@@ -746,7 +762,7 @@ class PurchaseController extends  BaseController
             exit(json_encode($json));
         }else{
             M()->rollback();//有数据库操作不成功时进行数据回滚
-            $json = array('status'=>-1,'msg'=>'开团失败');
+            $json = array('status'=>-1,'msg'=>'开团失败3');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
             if(!empty($ajax_get)){
                 echo "<script> alert('".$json['msg']."') </script>";
@@ -997,10 +1013,12 @@ class PurchaseController extends  BaseController
             return false;
         }
 
-        if(M('coupon')->where('`id`='.$cid)->getField('use_end_time') > $current){
-            return false;
-        }else{
+        $use_start_time = M('coupon')->where('`id`='.$cid)->getField('use_start_time');
+        $use_end_time = M('coupon')->where('`id`='.$cid)->getField('use_end_time');
+        if( $use_start_time < $current && $use_end_time > $current ){
             return true;
+        }else{
+            return false;
         }
     }
 

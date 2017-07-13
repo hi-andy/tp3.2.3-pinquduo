@@ -51,7 +51,7 @@ class IndexController extends BaseController {
             //中间活动模块
             $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
             $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
-            $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
+//            $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
 
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             //getGoodsList  获取商品列表
@@ -559,7 +559,6 @@ class IndexController extends BaseController {
         exit(json_encode($json));
     }
 
-
     /*
 	*  排行榜
 	*/
@@ -698,6 +697,12 @@ class IndexController extends BaseController {
                 ->page($page, $pagesize)
                 ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img as original,g.prom,g.prom_price,g.is_special,g.list_img as original_img')
                 ->select();
+            for($i=0;$i<count($goodsList);$i++){
+                $type = M('promote_icon')->where('goods_id = '.$goodsList[$i]['goods_id'])->getField('src');
+                if(!empty($type)){
+                    $goodsList[$i]['icon_src'] = $type;
+                }
+            }
             $data = $this->listPageData($count, $goodsList);
             foreach ($data['items'] as &$v) {
                 $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
@@ -860,7 +865,6 @@ class IndexController extends BaseController {
 			 * ad_code=>图片地址
 			 * type=>跳转类型
 			 */
-
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 5')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存

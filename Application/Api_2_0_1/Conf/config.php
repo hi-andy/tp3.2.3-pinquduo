@@ -19,10 +19,11 @@ return array(
         ),
     'DB_CONFIG2' => array(
         'db_type'  => 'mysql',
-        'db_host'  => 'localhost',//rm-wz91g3fsg23r1144bo.mysql.rds.aliyuncs.com
+        'db_host' => 'rm-wz91g3fsg23r1144brw.mysql.rds.aliyuncs.com', //　读写分离数据库地址
+        //'db_host'  => 'rr-wz960l00qf74sp56s.mysql.rds.aliyuncs.com',// 只读数据库地址
         'db_name'  => 'pinquduo',
-        'db_user'  => 'root',//rootmost
-        'db_pwd'   => '',//Zuoapp_la
+        'db_user'  => 'rootmost',//rootmost
+        'db_pwd'   => 'Zuoapp_la',//Zuoapp_la
         'db_port'  => '3306',
         'DB_PREFIX' => 'tp_', //数据库前缀
     ),

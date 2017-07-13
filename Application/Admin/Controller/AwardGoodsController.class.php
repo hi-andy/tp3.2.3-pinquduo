@@ -106,7 +106,11 @@ class AwardGoodsController extends Controller {
             $data = array_merge($data, $value);
             $res = M('goods_activity')->data($data)->add();
         }
-        $this->success("添加成功",U('AwardGoods/goodsList'));
+        if ($res) {
+            $this->success("添加成功",U('AwardGoods/index'));
+        } else {
+            $this->error("添加失败",U('AwardGoods/index'));
+        }
     }
 
     // 删除单个商品
@@ -133,9 +137,9 @@ class AwardGoodsController extends Controller {
             $res = M('goods_activity')->where('id='.$value)->delete();
         }
         if($res) {
-            $this->success("删除成功",U('AwardGoods/goodsList'));
+            $this->success("删除成功",U('AwardGoods/index'));
         }else{
-            $this->success("删除失败",U('AwardGoods/goodsList'));
+            $this->success("删除失败",U('AwardGoods/index'));
         }
     }
 

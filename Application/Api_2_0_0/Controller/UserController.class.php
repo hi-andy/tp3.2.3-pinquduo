@@ -28,6 +28,7 @@ class UserController extends BaseController {
      * 第三方登录
      */
     public function thirdLogin(){
+
         $map['openid'] = I('openid','');
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');

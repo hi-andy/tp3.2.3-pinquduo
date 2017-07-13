@@ -70,8 +70,7 @@ class CrowdfundController extends BaseController {
             $this->ajaxReturn(json_encode($return_arr));
         }
         // 删除此商品
-        // 删除此商品
-        M("Goods")->where('goods_id =' . $_GET['id'])->save(array('is_special'=>0));
+        M("Goods")->where('goods_id =' . $_GET['id'])->save(array('is_special'=>0,'the_raise'=>0));
         $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
         $this->ajaxReturn(json_encode($return_arr));
     }
@@ -277,6 +276,7 @@ class CrowdfundController extends BaseController {
     public function goods_save()
     {   //狗哥说的不用改
         $data['is_support_buy']=0;
+        $data['is_prom_buy']=1;
         $data['is_special']=8;
         $data['the_raise']=1;
         for($i=0;$i<count($_POST['goods_id']);$i++){

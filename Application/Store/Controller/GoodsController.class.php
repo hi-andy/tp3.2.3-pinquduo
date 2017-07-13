@@ -162,14 +162,16 @@ class GoodsController extends BaseController {
      */
     public function ajaxGoodsList(){
 
-        $where = ' show_type = 0 '. ' and store_id = '.$_SESSION['merchant_id'] ; // 搜索条件
-        I('intro') && $where = "$where and ".I('intro')." = 1" ;
-        I('is_on_sale') != null && $where = "$where and `is_on_sale`= ".I('is_on_sale') ;
-        (I('merchant_id') !=0) && $where = "$where and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';
+        $where = ' g.show_type = 0 '. ' and g.store_id = '.$_SESSION['merchant_id'] ; // 搜索条件
+        if ($intro = I('intro')){
+            $where .= ' and g.intro like \'%' .$intro. '%\'';
+        }
+        I('is_on_sale') != null && $where .= " and `g.is_on_sale`= ".I('is_on_sale') ;
+        (I('merchant_id') !=0) && $where .= " and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';
 
         if($_REQUEST['is_audit']!=''){
 
-            $where = "$where and is_audit = ".$_REQUEST['is_audit'];
+            $where .= " and g.is_audit = ".$_REQUEST['is_audit'];
         }
         if(!empty(I('store_name')))
         {
@@ -180,7 +182,7 @@ class GoodsController extends BaseController {
         if($_SESSION['is_haitao']==1)
         {
             if(I('cat_id_2')){
-                $where = $where = "$where and haitao_cat =".I('cat_id_2');
+                $where .= " and haitao_cat =".I('cat_id_2');
             }elseif(I('cat_id_1')){
                 $cat = M('haitao')->where('`parent_id`='.I('cat_id_1'))->field('id')->select();
                 $cats =null;
@@ -194,7 +196,7 @@ class GoodsController extends BaseController {
                         $cats = $cats."'".$cat[$i]['id']."',";
                     }
                 }
-                $where = "$where and haitao_cat IN $cats";
+                $where .= " and g.haitao_cat IN $cats";
             }
         }else{
             if(I('cat_id_2')){
@@ -210,7 +212,7 @@ class GoodsController extends BaseController {
                         $cats = $cats."'".$cat_id[$i]['id']."',";
                     }
                 }
-                $where = "$where and cat_id IN $cats";
+                $where .= " and g.cat_id IN $cats";
             }elseif(I('cat_id_1')){
                 $cat1 = M('GoodsCategory')->where('`parent_id`='.I('cat_id_1'))->field('id')->select();
                 $cat2['parent_id'] = array('IN',array_column($cat1,'id'));
@@ -226,25 +228,42 @@ class GoodsController extends BaseController {
                         $cats = $cats."'".$cat[$i]['id']."',";
                     }
                 }
-                $where = "$where and cat_id IN $cats";
+                $where .= " and g.cat_id IN $cats";
             }
         }
 
         // 关键词搜索
         $key_word = I('key_word') ? trim(I('key_word')) : '';
         if($key_word){
-            $where = "$where and (goods_name like '%$key_word%')" ;
+            $where = "$where and (g.goods_name like '%$key_word%')" ;
         }
 
         $model = M('Goods');
-        $count = $model->where($where)->count();
+        $count = $model->alias('g')->join('left join tp_goods_activity ga on ga.goods_id = g.goods_id')->where($where)->count();
         $Page  = new AjaxPage($count,10);
         $show = $Page->show();
         $order_str = "`{$_POST['orderby1']}` {$_POST['orderby2']}";
+
+        /**
+         * 关联查询 goods_activity 表，取出参加活动商品的类型 type
+         * 如果 type=4 五折专享活动，限制编辑商品
+         */
         if(!empty($cats)){
-            $goodsList = $model->where($where)->order($order_str)->limit($Page->firstRow,$Page->listRows)->select();
+            $goodsList = $model->alias('g')
+                                ->field('g.goods_id,g.goods_name,g.is_special,g.cat_id,g.shop_price,g.store_count,g.is_on_sale,g.is_show,is_audit,ga.type activity_type')
+                                ->join('left join tp_goods_activity ga on ga.goods_id = g.goods_id')
+                                ->where($where)
+                                ->order($order_str)
+                                ->limit($Page->firstRow,$Page->listRows)
+                                ->select();
         }else{
-            $goodsList = $model->where($where)->order($order_str)->limit($Page->firstRow,$Page->listRows)->select();
+            $goodsList = $model->alias('g')
+                                ->field('g.goods_id,g.goods_name,g.is_special,g.cat_id,g.shop_price,g.store_count,g.is_on_sale,g.is_show,is_audit,ga.type activity_type')
+                                ->join('left join tp_goods_activity ga on ga.goods_id = g.goods_id')
+                                ->where($where)
+                                ->order($order_str)
+                                ->limit($Page->firstRow,$Page->listRows)
+                                ->select();
         }
         $haitao = $_SESSION['is_haitao'];
         if(!empty($haitao)){
@@ -265,7 +284,7 @@ class GoodsController extends BaseController {
 
     /**
      * 添加修改商品
-     * 修改：17/07/05 刘亚豪 内容：添加单买价格不得大于团购价格判断
+     * 修改：单买价格不得低于团购价格  2017/07/05 刘亚豪
      */
     public function addEditGoods(){
         if(empty($_SESSION['merchant_id']))
@@ -273,6 +292,13 @@ class GoodsController extends BaseController {
             session_unset();
             session_destroy();
             $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
+        }
+        // 五折专享活动商品，禁止编辑
+        if ($goods_id = I('id')) {
+            $isExist = M('goods_activity')->where('goods_id='.$goods_id.' and type=4')->count();
+            if ($isExist) {
+                $this->error("商品处于活动状态，禁止编辑！",U('Store/Goods/goodsList'));
+            }
         }
         $GoodsLogic = new GoodsLogic();
         $Goods = D('Goods'); //
@@ -291,10 +317,10 @@ class GoodsController extends BaseController {
                 $this->ajaxReturn(json_encode($return_arr));
             }
 
-            if($prom_price < $price){
+            if($prom_price > $price){
                 $return_arr = array(
                     'status' => -1,
-                    'msg'   => '单买价格不得高于团购价格',
+                    'msg'   => '团购价格不能高于单买价格',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
@@ -375,6 +401,7 @@ class GoodsController extends BaseController {
 
                 if ($type == 2)
                 {
+                    $Goods->refresh = 0 ;
                     $goods_id = $_POST['goods_id'];
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
                     // 如果上传新图，删除旧图
@@ -400,7 +427,7 @@ class GoodsController extends BaseController {
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                 }
-                redislist("goods_refresh_id", $goods_id);
+                redisdelall("getDetaile_".$goods_id);
 
                 $GoodsLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
                 $return_arr = array(
@@ -410,7 +437,7 @@ class GoodsController extends BaseController {
                 );
 
                 $this->ajaxReturn(json_encode($return_arr));
-                echo M()->getLastSql();die;
+
             }
         }
 
@@ -687,7 +714,7 @@ class GoodsController extends BaseController {
         if(!empty(I('parent_id'))){
             $parent_id = I('get.parent_id'); // 商品分类 父id
             $list = M('haitao')->where("parent_id = $parent_id")->select();
-
+            $html = '';
             foreach($list as $k => $v)
                 $html .= "<option value='{$v['id']}'>{$v['name']}</option>";
             exit($html);
@@ -703,8 +730,9 @@ class GoodsController extends BaseController {
         if(IS_POST)
         {
             $min_num = key($_POST['item']);
-            $price = $_POST['item'][$min_num]['prom_price'];
-            if($price==0||empty($price))
+            $price = $_POST['item'][$min_num]['price'];
+            $prom_price = $_POST['item'][$min_num]['prom_price'];
+            if($prom_price==0||empty($prom_price))
             {
                 $return_arr = array(
                     'status' => -1,
@@ -733,6 +761,14 @@ class GoodsController extends BaseController {
                 $return_arr = array(
                     'status' => -1,
                     'msg'   => '请上传商品轮播图！',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+            if($prom_price > $price){
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '单买价格不得低于团购价格',
                     'data'  => $Goods->getError(),
                 );
                 $this->ajaxReturn(json_encode($return_arr));
@@ -769,6 +805,7 @@ class GoodsController extends BaseController {
                 session('goods',$_POST);
 
                 if ($type == 2){
+                    $Goods->refresh = 0 ;
                     $goods_id = $_POST['goods_id'];
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
@@ -789,7 +826,8 @@ class GoodsController extends BaseController {
                     }
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
-                    redislist("goods_refresh_id", $goods_id);
+//                    redislist("goods_refresh_id", $goods_id);
+                    redisdelall("getDetaile_".$goods_id);
                 }else{
                     $Goods->is_on_sale = 0 ;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
