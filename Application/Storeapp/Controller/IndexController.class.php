@@ -78,7 +78,7 @@ class IndexController {
 	 * $store_name 用户账号
 	 * */
 	function sendSMS(){
-		$store_name = I('store_name');
+		$store_name = I('store_mobile');
 
 		if (!check_mobile($store_name)){
 			exit(json_encode(array('status' => -1, 'msg' => '手机号码格式有误')));
@@ -86,8 +86,9 @@ class IndexController {
 		$store_info = M('merchant')->where("merchant_name = '$store_name'")->find();
 
 		if($store_info['state']==0){
-			exit(json_encode(array('status' => -1, 'msg' => '您输入的帐号或密码不正确')));
+			exit(json_encode(array('status' => -1, 'msg' => '您输入的帐号不正确')));
 		}
+		
 		$code = rand(100000, 999999);
 		$alidayu = new AlidayuController();
 		$result = $alidayu->sms($store_name, "code", $code, "SMS_62265043", "normal", "拼趣多修改验证", "拼趣多");
@@ -130,10 +131,14 @@ class IndexController {
 
 		if($code==$session_store_code && $store_name==$session_store_name){
 			$store_info = M('merchant')->where("merchant_name = '$store_name'")->field('id')->find();
-			session($store_name.'_name',null);
-			session($store_name.'_code',null);
-			session($store_name.'_time',null); //销毁session
-			exit(json_encode(array('status'=>1,'msg'=>'获取成功','store_id'=>$store_info['id'])));
+			if(!empty($store_info)){
+				session($store_name.'_name',null);
+				session($store_name.'_code',null);
+				session($store_name.'_time',null); //销毁session
+				exit(json_encode(array('status'=>1,'msg'=>'获取成功','store_id'=>$store_info['id'])));
+			}else{
+				exit(json_encode(array('status'=>-1,'msg'=>'该商户不存在 ^_^')));
+			}
 		}else{
 			exit(json_encode(array('status'=>-1,'msg'=>'商户名或验证码错误 ^_^')));
 		}

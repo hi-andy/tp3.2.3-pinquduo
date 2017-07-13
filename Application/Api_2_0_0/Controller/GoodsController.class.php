@@ -99,7 +99,7 @@ class GoodsController extends BaseController {
 			}
 		}elseif($type==1){
 			if($id==0){//全部
-				$where = '`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0 and haitao_cat != 65';
+				$where = 'is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0 and `is_special` = 1 and haitao_cat != 65';
 				$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
 			}else{
 				$cat = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$id)->field('id')->select();
