@@ -460,6 +460,8 @@ class BuyController extends  BaseController
                     } elseif ($order['pay_code'] == 'alipay_wap') { // 添加手机网页版支付 2017-5-25 hua
                         $AlipayWap = new AlipayWapController();
                         $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+                        var_dump($pay_detail);
+                        exit();
                     } elseif ($order['pay_code'] == 'qpay') {
                         $qqPay = new QQPayController();
                         $pay_detail = $qqPay->getQQPay($order);
