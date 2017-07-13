@@ -808,8 +808,8 @@ class BaseController extends Controller {
 
 //原有代码                $nicknames = substr($nicknames, 0, -1);
 //修改代码使用mb_substr 2017.7.13 wenlitao
-                $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3);
-                $nicknames = trim($nicknames) . "\\n";
+                $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3,'utf-8');
+//注释掉 温立涛                $nicknames = trim($nicknames) . "\\n";
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
                     $wxtmplmsg->spell_success($v['openid'],$goodsName,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍，COCO香水型洗衣液，20支软毛牙刷）');
