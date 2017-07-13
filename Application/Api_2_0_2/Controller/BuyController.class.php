@@ -120,9 +120,8 @@ class BuyController extends  BaseController
                     $this->getJsonp($json);
                 exit(json_encode($json));
             }
-            var_dump($type);
-            exit();
-            
+
+
             //参团购物
             if ($type == 0) {
                 $result = M('group_buy')->where("`id` = $prom_id")->find();
@@ -731,6 +730,9 @@ class BuyController extends  BaseController
             redisdelall($rdsname);//删除订单列表
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
+
+            var_dump($order['pay_code']);
+            exit();
 
             if($goods['the_raise']!=1) {
                 if ($order['pay_code'] == 'weixin') {
