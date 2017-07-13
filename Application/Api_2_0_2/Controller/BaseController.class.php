@@ -801,14 +801,20 @@ class BaseController extends Controller {
                 foreach ($user as $v){
                     if($v['mobile'] != null){
                         $nicknames = substr_replace($join_num[$i]['mobile'],'*****',3,5) . '、';
+//使用数组接收数据 温立涛
+                        $nicknamearr[] = substr_replace($join_num[$i]['mobile'],'*****',3,5);
                     }else{
                         $nicknames .= $v['nickname'] . '、';
+//使用数组接收数据 温立涛
+                        $nicknamearr[] = $v['nickname'];
                     }
                 }
 
 //原有代码                $nicknames = substr($nicknames, 0, -1);
 //修改代码使用mb_substr 2017.7.13 wenlitao
-                $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3,'utf-8');
+//注释掉                $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3,'utf-8');
+//使用数组转字符串函数
+                $nicknames = implode('、',$nicknamearr);
 //注释掉 温立涛                $nicknames = trim($nicknames) . "\\n";
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
