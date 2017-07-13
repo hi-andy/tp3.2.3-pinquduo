@@ -797,7 +797,9 @@ class BaseController extends Controller {
                 foreach ($user as $v){
                     $nicknames .= $v['nickname'] . '、';
                 }
-                $nicknames = substr($nicknames, 0, -1);
+//原有代码                $nicknames = substr($nicknames, 0, -1);
+//使用mb_substr函数截取中文，修改2017.7.13 wenlitao
+                $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
                     $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
