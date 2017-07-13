@@ -799,6 +799,7 @@ class BaseController extends Controller {
                 }
 //原有代码                $nicknames = substr($nicknames, 0, -1);
 //使用mb_substr函数截取中文，修改2017.7.13 wenlitao
+
                 $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
