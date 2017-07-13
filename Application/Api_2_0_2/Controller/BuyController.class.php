@@ -120,6 +120,9 @@ class BuyController extends  BaseController
                     $this->getJsonp($json);
                 exit(json_encode($json));
             }
+            var_dump($type);
+            exit();
+            
             //参团购物
             if ($type == 0) {
                 $result = M('group_buy')->where("`id` = $prom_id")->find();
@@ -211,6 +214,7 @@ class BuyController extends  BaseController
                         $this->getJsonp($json);
                     exit(json_encode($json));
                 }
+
                 $this->openGroup($parameter);
             } //自己买
             else if ($type == 2) {
