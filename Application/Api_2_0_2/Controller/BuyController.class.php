@@ -122,6 +122,7 @@ class BuyController extends  BaseController
             }
             var_dump($type);
             exit();
+            
             //参团购物
             if ($type == 0) {
                 $result = M('group_buy')->where("`id` = $prom_id")->find();
