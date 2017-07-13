@@ -731,8 +731,7 @@ class BuyController extends  BaseController
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
 
-            var_dump($order['pay_code']);
-            exit();
+
 
             if($goods['the_raise']!=1) {
                 if ($order['pay_code'] == 'weixin') {
@@ -749,7 +748,73 @@ class BuyController extends  BaseController
                     $pay_detail = $AliPay->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
                 } elseif ($order['pay_code'] == 'alipay_wap') { // 添加手机网页版支付 2017-5-25 hua
                     $AlipayWap = new AlipayWapController();
-                    $pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+
+
+
+
+
+
+
+                    //$pay_detail = $AlipayWap->addAlipayOrder($order['order_sn'], $user_id, $goods_id);
+
+
+
+
+
+                    vendor('AlipayWap.AopSdk');
+                    vendor('AlipayWap.wappay.buildermodel.AlipayTradeWapPayContentBuilder');
+                    vendor('AlipayWap.wappay.service.AlipayTradeService');
+
+                    //商户订单号, 商户网站订单系统中唯一订单号，必填
+                    $out_trade_no = $order['order_sn'];
+                    //订单名称 必填
+                    $subject = '拼趣多商品支付';
+                    //付款金额
+                    $total_fee = $order['order_amount'];
+                    //订单描述
+                    $body = M('goods')->where(array('goods_id'=>$order['goods_id']))->getField('goods_name');
+
+                    $config = C('alipay_wap');
+
+                    //服务器异步通知页面路径
+                    $config['notify_url'] = C('HTTP_URL') . '/Api_2_0_2/AlipayWap/alipayendpay';
+                    if($order['prom_id']){
+                        $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
+                        $type = $prom_info['mark'] > 0 ? 1 : 0;
+                        $config['return_url'] ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+                    }else{
+                        $config['return_url'] ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+                    }
+
+                    $timeout_express="30m";
+
+                    $payRequestBuilder = new \AlipayTradeWapPayContentBuilder();
+
+                    $payRequestBuilder->setBody($body);
+                    $payRequestBuilder->setSubject($subject);
+                    $payRequestBuilder->setOutTradeNo($out_trade_no);
+                    $payRequestBuilder->setTotalAmount($total_fee);
+                    $payRequestBuilder->setTimeExpress($timeout_express);
+                    $payResponse = new \AlipayTradeService($config);
+                    $result = $payResponse->wapPay($payRequestBuilder,$config['return_url'],$config['notify_url']);
+                    var_dump($result);
+                    exit();
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     var_dump($pay_detail);
                     exit();
                 } elseif ($order['pay_code'] == 'qpay') {
