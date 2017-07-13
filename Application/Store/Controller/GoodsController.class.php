@@ -265,6 +265,7 @@ class GoodsController extends BaseController {
 
     /**
      * 添加修改商品
+     * 修改：17/07/05 刘亚豪 内容：添加单买价格不得大于团购价格判断
      */
     public function addEditGoods(){
         if(empty($_SESSION['merchant_id']))
