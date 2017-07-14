@@ -15,7 +15,7 @@ namespace Api_2_0_2\Controller;
 
 use Api_2_0_2\Controller;
 
-class PurchaseController extends  BaseController
+class BuyController extends  BaseController
 {
 
     public function _initialize() {
