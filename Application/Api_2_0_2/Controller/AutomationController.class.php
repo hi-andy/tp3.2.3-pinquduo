@@ -257,6 +257,7 @@ class AutomationController extends BaseController
         $conditon = null;
         $time = time() + 16 * 60 * 60;
         $end_time = time() + 24 * 60 * 60;
+        
 
         $prom_order = M('group_buy')
             ->where('`auto`=0 and 
