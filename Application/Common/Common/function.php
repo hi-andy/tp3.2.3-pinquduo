@@ -8,7 +8,7 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-    /*if (REDIS_SWITCH) {
+    if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -26,7 +26,7 @@ function redis($key, $value=null, $time="", $del=null){
         }
     } else {
         redisdelall("*");
-    }*/
+    }
 }
 
 /**
@@ -35,7 +35,7 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
-    /*if (REDIS_SWITCH) {
+    if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -46,7 +46,7 @@ function redislist($key, $value=null){
         }
     } else {
         redisdelall("*");
-    }*/
+    }
 }
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
@@ -54,10 +54,10 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-    /*$redis = new Redis();
+    $redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
-    $redis->delete($redis->keys($key));*/
+    $redis->delete($redis->keys($key));
 }
 /**
  * @param $arr
@@ -877,20 +877,29 @@ function getAdress($adress)
 		{
 			$cha = explode('自治州',$cha[1]);
 			$city = $cha[0].'自治州';
+			$area = $cha[1];
 		}elseif(strstr($cha[1],'地区')){
 			$cha = explode('地区',$cha[1]);
 			$city = $cha[0].'地区';
+			$area = $cha[1];
 		}elseif(strstr($cha[1],'自治区')){
 			$cha = explode('自治区',$cha[1]);
 			$city = $cha[0].'自治区';
+			$area = $cha[1];
 		}elseif(strstr($cha[1],'行政单位')){
 			$cha = explode('行政单位',$cha[1]);
 			$city = $cha[0].'行政单位';
+			$area = $cha[1];
+		}elseif(substr_count($cha[1],'市')>1){
+			$cha = explode('市',$cha[1]);
+			$city = $cha[0].'市';
+			$area = $cha[1].'市';
 		}else{
 			$cha = explode('市',$cha[1]);
 			$city = $cha[0].'市';
+			$area = $cha[1];
 		}
-		$area = $cha[1];
+
 	}elseif(strstr($cha,"北京市") || strstr($cha,"天津市") || strstr($cha,"上海市") ||strstr($cha,"重庆市")){//判断是否为直辖市
 		//按市区切割
 		$cha = explode('市',$cha);

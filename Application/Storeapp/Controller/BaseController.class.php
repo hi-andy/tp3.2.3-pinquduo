@@ -10,7 +10,7 @@
  * ============================================================================
  * $Author: IT宇宙人 2015-08-10 $
  */ 
-namespace Api_2_0_2\Controller;
+namespace Storeapp\Controller;
 use Think\Controller;
 class BaseController extends Controller {
     public $http_url;
@@ -699,7 +699,7 @@ class BaseController extends Controller {
     }
 
     /**
-     * 团满执行的操作
+     * 圆满执行的操作
      * 修改：17/07/05 刘亚豪 修改内容：微信消息推送 手机号中间几位用*号代替
      * @param $prom_id
      * @param string $type
@@ -737,18 +737,16 @@ class BaseController extends Controller {
             ->select();
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
-        $goodsName = $join_num[0]['goods_name'];
         M()->startTrans();
         //把所有人的状态改成发货
         $user_ids = "";
-
         for($i=0;$i<count($join_num);$i++){
             //　不是机器开团
             if($join_num[$i]['auto']==0){
                 $this->order_redis_status_ref($join_num[$i]['user_id']);
                 $user_ids .= $join_num[$i]['user_id'].",";
-
-                // 如果团长发起的是为我点赞团
+                if (empty($goodsname)) {$goodsname = $join_num[$i]['goods_name'];}
+                // 如果团长发起的不是为我点赞团
                 if(!empty($join_num[0]['is_raise'])){
                     if($i==0){
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
@@ -763,23 +761,21 @@ class BaseController extends Controller {
                             $name = substr_replace($join_num[0]['mobile'],'*****',3,5);
 // 原有代码：                           $name = $join_num[0]['mobile'];
                         }else{
-                            $name = $join_num[0]['nickname'];
+                            $name = $join_num[0]['nicknames'];
                         }
-                        $name = trim($name);
                         //　微信推送拼团成功消息
-                        $wxtmplmsg->spell_success($join_num[0]['openid'],$goodsName,$name,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
+                        $wxtmplmsg->spell_success($join_num[0]['openid'],$goodsname,$name,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>4))->save();
                     }
                 } else {
-                    if($join_num[$i]['mobile'] != null){
+                    if(($join_num[$i]['mobile'])!=null){
                         $name = substr_replace($join_num[$i]['mobile'],'*****',3,5);
 //原有代码：                        $name = $join_num[$i]['mobile'];
                     }else{
-                        $name = $join_num[$i]['nickname'];
+                        $name = $join_num[$i]['nicknames'];
                     }
-                    $name = trim($name);
-                    $wxtmplmsg->spell_success($join_num[$i]['openid'],$goodsName,$name,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
+                    $wxtmplmsg->spell_success($join_num[$i]['openid'],$goodsname,$name,'','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                     $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
                 }
             }else{
@@ -795,30 +791,16 @@ class BaseController extends Controller {
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
         if (!empty($user_ids)){
-            $user = M('users','','DB_CONFIG2')->field('mobile,nickname')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
+            $user = M('users','','DB_CONFIG2')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
             if ($user) {
                 $nicknames = "";
                 foreach ($user as $v){
-                    if($v['mobile'] != null){
-                        $nicknames = substr_replace($join_num[$i]['mobile'],'*****',3,5) . '、';
-//使用数组接收数据 温立涛
-                        $nicknamearr[] = substr_replace($join_num[$i]['mobile'],'*****',3,5);
-                    }else{
-                        $nicknames .= $v['nickname'] . '、';
-//使用数组接收数据 温立涛
-                        $nicknamearr[] = $v['nickname'];
-                    }
+                    $nicknames .= $v['nickname'] . '、';
                 }
-
-//原有代码                $nicknames = substr($nicknames, 0, -1);
-//修改代码使用mb_substr 2017.7.13 wenlitao
-//注释掉                $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3,'utf-8');
-//使用数组转字符串函数
-                $nicknames = implode('、',$nicknamearr);
-//注释掉 温立涛                $nicknames = trim($nicknames) . "\\n";
+                $nicknames = substr($nicknames, 0, -1);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
-                    $wxtmplmsg->spell_success($v['openid'],$goodsName,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍，COCO香水型洗衣液，20支软毛牙刷）');
+                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                 }
             }
         }

@@ -117,7 +117,7 @@
                                     <td>
                                         {$order.shipping_name}
                                         <if condition="$order[shipping_name]">
-                                            <a href="{:U('Admin/Order/shipping_print',array('order_id'=>$order['order_id'],'code'=>$order['shipping_code']))}" target="_blank" class="btn btn-primary input-sm" onclick="">打印快递单</a>
+                                            <a href="{:U('Store/Order/shipping_print',array('order_id'=>$order['order_id'],'code'=>$order['shipping_code']))}" target="_blank" class="btn btn-primary input-sm" onclick="">打印快递单</a>
                                         </if>
                                     </td>
                                 </tr>
@@ -145,7 +145,7 @@
                                 <volist name="orderGoods" id="good">
                                     <tr>
                                         <td class="text-left">
-                                            <a href="{:U('/Admin/Goods/addEditGoods',array('id'=>$good['goods_id']))}">{$good.goods_name}</a>
+                                            <a href="{:U('/Store/Goods/addEditGoods',array('id'=>$good['goods_id']))}">{$good.goods_name}</a>
                                         </td>
                                         <td class="text-left">{$good.spec_key_name}</td>
                                         <td class="text-right">{$good.goods_num}</td>
@@ -166,7 +166,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title text-center">费用信息
-                                <a class="btn btn-primary btn-xs" data-original-title="修改费用" title="" data-toggle="tooltip" href="{:U('Admin/Order/editprice',array('order_id'=>$order['order_id']))}">
+                                <a class="btn btn-primary btn-xs" data-original-title="修改费用" title="" data-toggle="tooltip" href="{:U('Store/Order/editprice',array('order_id'=>$order['order_id']))}">
                                     <i class="fa fa-pencil"></i>
                                 </a></h3>
                         </div>
@@ -301,7 +301,7 @@
 
     // 弹出退换货商品
     function selectGoods2(order_id){
-        var url = "/Admin/Order/get_order_goods/order_id="+order_id;
+        var url = "/Store/Order/get_order_goods/order_id="+order_id;
         layer.open({
             type: 2,
             title: '选择商品',
@@ -314,7 +314,7 @@
     // 申请退换货
     function call_back(order_id,goods_id)
     {
-        var url = "/Admin/Order/add_return_goods/order_id="+order_id+"/goods_id="+goods_id;
+        var url = "/Store/Order/add_return_goods/order_id="+order_id+"/goods_id="+goods_id;
         location.href = url;
     }
 </script>

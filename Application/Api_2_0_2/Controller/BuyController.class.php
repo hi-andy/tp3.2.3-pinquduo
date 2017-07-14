@@ -15,7 +15,7 @@ namespace Api_2_0_2\Controller;
 
 use Api_2_0_2\Controller;
 
-class PurchaseController extends  BaseController
+class BuyController extends  BaseController
 {
 
     public function _initialize() {
@@ -475,7 +475,7 @@ class PurchaseController extends  BaseController
                     $this->aftermath($user_id,$goods,$num,$o_id);//修改库存
                 }
                 if(!empty($ajax_get)){
-//注释掉代码  温立涛                    echo "<script> location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
+                    //echo "<script> location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
                     exit;
                 }
                 exit(json_encode($json));
@@ -756,7 +756,7 @@ class PurchaseController extends  BaseController
                 $this->aftermath($user_id, $goods, $num, $o_id);
             }
             if(!empty($ajax_get)){
-//注释掉代码 温立涛                echo "<script>location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
+                //echo "<script>location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
                 exit;
             }
             exit(json_encode($json));

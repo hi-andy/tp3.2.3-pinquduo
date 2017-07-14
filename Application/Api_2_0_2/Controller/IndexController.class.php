@@ -51,7 +51,7 @@ class IndexController extends BaseController {
             //中间活动模块
             $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
             $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
-            $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
+//            $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
 
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             //getGoodsList  获取商品列表
@@ -865,7 +865,6 @@ class IndexController extends BaseController {
 			 * ad_code=>图片地址
 			 * type=>跳转类型
 			 */
-
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 5')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -877,11 +876,4 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
-
-
-        function test()
-        {
-            $num = 1;
-            var_dump( $num >1);
-        }
 }

@@ -35,7 +35,7 @@ class ActivityiconController extends BaseController{
 			->join('INNER JOIN tp_goods g on g.goods_id = pi.goods_id ')
 			->where($where)
 			->count();
-		$Page = new AjaxPage($count, 20);
+		$Page = new AjaxPage($count, 15);
 		foreach ($where as $key => $val) {
 			$Page->parameter[$key] = urlencode($val);
 		}
@@ -44,6 +44,7 @@ class ActivityiconController extends BaseController{
 		$goods = M('promote_icon')->alias('pi')
 			->join('INNER JOIN tp_goods g on g.goods_id = pi.goods_id ')
 			->where($where)
+			->limit($Page->firstRow,$Page->listRows)
 			->field('g.goods_id,g.goods_name,g.shop_price,g.prom_price,pi.type,g.store_id,g.cat_id,g.is_on_sale,g.is_show')
 			->select();
 		for ($i = 0; $i < count($goods); $i++) {

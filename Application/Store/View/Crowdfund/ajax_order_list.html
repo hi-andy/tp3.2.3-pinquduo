@@ -48,9 +48,9 @@
                     <td class="text-center">{$list.shipping_name}</td>
                     <td class="text-center">{$list.add_time|date='Y-m-d H:i',###}</td>
                     <td class="text-center">
-                        <a href="{:U('Admin/order/detail',array('order_id'=>$list['order_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
+                        <a href="{:U('Store/order/detail',array('order_id'=>$list['order_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
                         <if condition="($list['order_status'] eq 3) or ($list['order_status'] eq 5)">
-                            <a href="{:U('Admin/order/delete_order',array('order_id'=>$list['order_id']))}"  data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="删除"><i class="fa fa-trash-o"></i></a>
+                            <a href="{:U('Store/order/delete_order',array('order_id'=>$list['order_id']))}"  data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="删除"><i class="fa fa-trash-o"></i></a>
                             <else/>
                             <a href="javascript:void(0)" data-toggle="tooltip" title="" class="btn btn-default disabled" data-original-title="查看"><i class="fa fa-trash-o"></i></a>
                         </if>

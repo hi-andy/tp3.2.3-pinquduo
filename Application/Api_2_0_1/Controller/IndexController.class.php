@@ -43,7 +43,7 @@ class IndexController extends BaseController {
             //中间活动模块
             $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
             $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
-            $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
+//            $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
 
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
