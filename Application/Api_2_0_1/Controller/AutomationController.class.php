@@ -379,7 +379,7 @@ class AutomationController extends BaseController
     public function auto_add_group_buy() {
         $ids = "";
         $group_buy_values = "";
-        $time = time()-3*60*60;
+        $time = time() - mt_rand(1, 5) * 60 * 60; // 随机时间
         $end_time = time()+24*60*60;
         $goods = M('goods')->where("is_on_sale=1 and is_show=1 and is_recommend=1 and auto_time < ".$time)->order('goods_id desc')->limit(0,50)->select();
         foreach ($goods as $k => $v){
