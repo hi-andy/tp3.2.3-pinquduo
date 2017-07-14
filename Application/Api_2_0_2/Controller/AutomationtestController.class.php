@@ -10,7 +10,7 @@ namespace Api_2_0_2\Controller;
 
 use Admin\Logic\OrderLogic;
 
-class AutomationController extends BaseController
+class AutomationtestController extends BaseController
 {
     public $userLogic;
 
@@ -258,13 +258,21 @@ class AutomationController extends BaseController
         $time = time() + 16 * 60 * 60;
         $end_time = time() + 24 * 60 * 60;
 
+        //auto=1是机器人团 0是真人团
+        //is_raise  1是点赞 0支付买
+        //free 免单人数
+        //is_dissolution 0是团没有解散 1团解散
+        //is_pay  1是支付过了 0是没有支付
+        //mark 0是团长  大于0是团员
+        //is_successful 1为成功团 0失败团
+        //end_time 结束时间
         $prom_order = M('group_buy')
             ->where('`auto`=0 and 
                         `is_raise`=0 and 
                         `free`=0 and 
                         `is_dissolution`=0 and 
                         `is_pay`=1 and 
-                        `mark`=0 and
+                        `mark`=0 and 
                         `is_return_or_exchange`=0 and
                         `is_successful`=0 and 
                         `end_time`<=' . $time)
@@ -305,9 +313,21 @@ class AutomationController extends BaseController
             foreach ($prom_order as $v) {
                 if (empty(redis("getBuy_lock_" . $v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
+
                     $group_buy_mark = M('group_buy')
                         ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and auto=0")
                         ->select();
+                    //var_dump($group_buy_mark);
+                    //echo '<hr>';
+                    $tablefix = C('DB_PREFIX');
+                    $Model = M();
+                    $group_buy_mark = $Model->table('__GROUP_BUY__')
+                          ->field("id,user_id,goods_name,order_id")
+                          ->where("id={$v['id']} and is_pay=1 and auto=0")
+                          ->union("SELECT id,user_id,goods_name,order_id FROM {$tablefix}group_buy WHERE mark={$v['id']} and is_pay=1 and auto=0 ",true)
+                          ->select();
+                    //var_dump($group_buy_mark);
+                    //exit();
                     //　生成参团用户信息
                     $values = "";
                     $nicknames = "";
