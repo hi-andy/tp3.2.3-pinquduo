@@ -575,4 +575,44 @@ class StoreController extends BaseController{
 		$this->assign('store',$store);
 		$this->display();
 	}
+
+	/*
+	 * nature：站内信
+	 * author：吴银海
+	 * time：17/07/14
+	 */
+	function stand_inside_letter(){
+
+		$this->display();
+	}
+
+	function ajaxstand_inside_letter(){
+
+		$MIL = M('feedback')->field('msg_id,store_id,user_name,msg_title,msg_time')->select();
+		$this->assign('List',$MIL);
+		$this->display();
+	}
+
+	function addeditMIL(){
+		$msgid = $_GET['msg_id'];
+
+		if(empty($_POST)){
+
+		}
+
+
+		$this->display();
+	}
+
+	function detail(){
+		$msgid = $_GET['id'];
+		$MIL = M('feedback')
+			->where('msg_id  = '.$msgid)
+			->field('msg_id,store_id,msg_title,msg_content')->find();
+
+		$MIL['store_name'] = M('merchant')->where('id = '.$MIL['store_id'])->getField('store_name');
+		
+		$this->assign('msg',$MIL);
+		$this->display();
+	}
 }

@@ -86,16 +86,7 @@ class IndexController {
 		$data = $_REQUEST;
 		$store_name = $data['store_mobile'];
 		$time = $data['time'];
-//		$code = rand(100000, 999999);
-//		session($store_name.'_name',$store_name);
-//		session($store_name.'_code',$code);
-//		session($store_name.'_time',$time);
 
-//		$session_store_name = $_SESSION[$store_name.'_name'];
-//		$session_store_code = $_SESSION[$store_name.'_code'];
-//		$session_store_time = $_SESSION[$store_name.'_time'];
-//
-//		var_dump($session_store_name.'_'.$session_store_code.'_'.$session_store_time);die;
 		if (!check_mobile($store_name)){
 			exit(json_encode(array('status' => -1, 'msg' => '手机号码格式有误')));
 		}
@@ -110,10 +101,10 @@ class IndexController {
 		$result = $alidayu->sms($store_name, "code", $code, "SMS_62265043", "normal", "拼趣多修改验证", "拼趣多");
 
 		if(!empty($result)){
-			session($store_name.'_name',$store_name);
-			session($store_name.'_code',$code);
-			session($store_name.'_time',$time);
-			exit(json_encode(array('status' => 1, 'msg' => $_SESSION[$store_name.'_time'])));
+			redis($store_name.'_name', serialize($store_name));
+			redis($store_name.'_code', serialize($code));
+			redis($store_name.'_time', serialize($time));
+			exit(json_encode(array('status' => 1, 'msg' => '验证码发送成功')));
 		}else{
 			exit(json_encode(array('status' => -1, 'msg' => '验证码发送失败')));
 		}
@@ -132,29 +123,28 @@ class IndexController {
 		$store_name = $data['store_mobile'];
 		$code = $data['code'];
 		$time = $data['time'];
-		session('time2',$time);
 		if(empty($store_name) || empty($code)){
 			exit(json_encode(array('status'=>-1,'msg'=>'商户账号或验证码不能为空 ^_^')));
 		}
 
-		$session_store_name = $_SESSION[$store_name.'_name'];
-		$session_store_code = $_SESSION[$store_name.'_code'];
-		$session_store_time = $_SESSION[$store_name.'_time'];
+		$session_store_name = unserialize(redis($store_name.'_name'));
+		$session_store_code = unserialize(redis($store_name.'_code'));
+		$session_store_time = unserialize(redis($store_name.'_time'));
 
 		$q = $time - $session_store_time;
 		if($q > 60){
-//			session($store_name.'_name',null);
-//			session($store_name.'_code',null);
-//			session($store_name.'_time',null); //销毁session
-			exit(json_encode(array('status'=>-1,'msg'=>$session_store_time.'_'.$time.'_'.$q)));
+			redisdelall($store_name.'_name');
+			redisdelall($store_name.'_code');
+			redisdelall($store_name.'_time');
+			exit(json_encode(array('status'=>-1,'msg'=>'验证码超时，请重新获取 ^_^')));
 		}
 
 		if($code==$session_store_code && $store_name==$session_store_name){
 			$store_info = M('merchant')->where("merchant_name = '$store_name'")->field('id')->find();
 			if(!empty($store_info)){
-//				session($store_name.'_name',null);
-//				session($store_name.'_code',null);
-//				session($store_name.'_time',null); //销毁session
+				redisdelall($store_name.'_name');
+				redisdelall($store_name.'_code');
+				redisdelall($store_name.'_time');
 				exit(json_encode(array('status'=>1,'msg'=>'获取成功','store_id'=>$store_info['id'])));
 			}else{
 				exit(json_encode(array('status'=>-1,'msg'=>'该商户不存在 ^_^')));
@@ -166,9 +156,9 @@ class IndexController {
 	}
 
 	function test($store_name){
-		$session_store_name = $_SESSION[$store_name.'_name'];
-		$session_store_code = $_SESSION[$store_name.'_code'];
-		$session_store_time = $_SESSION[$store_name.'_time'];
+		$session_store_name = unserialize(redis($store_name.'_name'));
+		$session_store_code = unserialize(redis($store_name.'_code'));
+		$session_store_time = unserialize(redis($store_name.'_time'));
 		var_dump($session_store_name);var_dump($session_store_code);var_dump($session_store_time);
 	}
 
@@ -176,9 +166,8 @@ class IndexController {
 		var_dump($_SESSION);
 	}
 	function test2($store_name){
-		session($store_name.'_name',null);
-		session($store_name.'_code',null);
-		session($store_name.'_time',null);
-		session('time',null);
+		redisdelall($store_name.'_name');
+		redisdelall($store_name.'_code');
+		redisdelall($store_name.'_time');
 	}
 }
