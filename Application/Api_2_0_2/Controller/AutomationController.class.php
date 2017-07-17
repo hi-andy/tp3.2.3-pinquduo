@@ -354,11 +354,11 @@ class AutomationController extends BaseController
                     }
                     //查询添加成功的机器人个数 温立涛
                     $autonum = M('group_buy')
-                        ->where("mark = {$v['id']} and is_successful=1 and auto=1")
-                        ->count();
+                        ->where("mark={$v['id']} and is_successful=1 and auto=1")
+                        ->select();
                     //如果机器人个数和需要的机器人个数不相等  温立涛
-                    if($autonum!=$flag){
-                        echo $autonum.'==='.$flag.'<hr>';
+                    if(count($autonum)!=$flag){
+                        echo "mark={$v['id']} and is_successful=1 and auto=1========".$autonum.'==='.$flag.'<hr>';
                         return false;
                     }
 
