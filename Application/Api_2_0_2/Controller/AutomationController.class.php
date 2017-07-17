@@ -356,9 +356,11 @@ class AutomationController extends BaseController
                     $autonum = M('group_buy')
                         ->where("mark={$v['id']} and is_successful=1 and auto=1")
                         ->select();
+                    var_dump($autonum);
+                    echo '<hr>';
                     //如果机器人个数和需要的机器人个数不相等  温立涛
                     if(count($autonum)!=$flag){
-                        echo "mark={$v['id']} and is_successful=1 and auto=1========".M('group_buy')->getLastSql().'==='.$flag.'<hr>';
+                        echo "mark={$v['id']} and is_successful=1 and auto=1".'==='.$flag.'<hr>';
                         return false;
                     }
 
