@@ -349,10 +349,11 @@ class AutomationController extends BaseController
                     //　插入伪拼团用户信息，以成团
                     $values = substr($values, 0, -1);
                     if ($values) {
-                        $sql .= $values;
-                        echo $sql;
+                        $newsql = $sql.$values;
+                        //$sql .= $values;
+                        echo $newsql;
                         echo '<hr>';
-                        M()->query($sql);
+                        M()->query($newsql);
                     }
                     //查询添加成功的机器人个数 温立涛
                     $autonum = M('group_buy')
