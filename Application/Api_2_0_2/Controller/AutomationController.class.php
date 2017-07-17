@@ -358,6 +358,7 @@ class AutomationController extends BaseController
                         ->count();
                     //如果机器人个数和需要的机器人个数不相等  温立涛
                     if($autonum!=$flag){
+                        echo $autonum.'==='.$flag.'<hr>';
                         return false;
                     }
 
