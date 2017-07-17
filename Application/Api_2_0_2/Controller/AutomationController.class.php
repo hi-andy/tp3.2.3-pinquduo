@@ -358,7 +358,7 @@ class AutomationController extends BaseController
                         ->select();
                     //如果机器人个数和需要的机器人个数不相等  温立涛
                     if(count($autonum)!=$flag){
-                        echo "mark={$v['id']} and is_successful=1 and auto=1========".$autonum.'==='.$flag.'<hr>';
+                        echo "mark={$v['id']} and is_successful=1 and auto=1========".M('group_buy')->getLastSql().'==='.$flag.'<hr>';
                         return false;
                     }
 
