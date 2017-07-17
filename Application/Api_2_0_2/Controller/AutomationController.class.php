@@ -312,6 +312,8 @@ class AutomationController extends BaseController
                     //　生成参团用户信息
                     $values = "";
                     $nicknames = "";
+                    //机器人个数
+                    $flag = 0;
                     for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                         $num += 1;
                         $user = $this->get_robot($v['user_id']);
@@ -340,7 +342,26 @@ class AutomationController extends BaseController
                                         {$v['is_return_or_exchange']},
                                         {$v['is_dissolution']},
                                         1),";
+                        $flag++;
                     }
+
+
+                    //　插入伪拼团用户信息，以成团
+                    $values = substr($values, 0, -1);
+                    if ($values) {
+                        $sql .= $values;
+                        M()->query($sql);
+                    }
+                    //查询添加成功的机器人个数 温立涛
+                    $autonum = M('group_buy')
+                        ->where("mark = {$v['id']} and is_successful=1 and auto=1")
+                        ->count();
+                    //如果机器人个数和需要的机器人个数不相等  温立涛
+                    if($autonum!=$flag){
+                        return false;
+                    }
+
+
                     foreach ($group_buy_mark as $v1) {
                         $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
                         $nicknames .= $nickname . "、";
@@ -352,12 +373,7 @@ class AutomationController extends BaseController
                         $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
                         $wxtmplmsg->spell_success($openid, $v2['goods_name'], $nicknames);
                     }
-                    //　插入伪拼团用户信息，以成团
-                    $values = substr($values, 0, -1);
-                    if ($values) {
-                        $sql .= $values;
-                        M()->query($sql);
-                    }
+
                     foreach ($group_buy_mark as $value) {
                         $ids .= $value['id'] . ",";
                         $order_ids .= $value['order_id'] . ",";
