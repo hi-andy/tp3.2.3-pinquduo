@@ -350,6 +350,8 @@ class AutomationController extends BaseController
                     $values = substr($values, 0, -1);
                     if ($values) {
                         $sql .= $values;
+                        echo $sql;
+                        echo '<hr>';
                         M()->query($sql);
                     }
                     //查询添加成功的机器人个数 温立涛
