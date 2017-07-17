@@ -87,14 +87,6 @@
 </script>
 <!--以上是在线编辑器 代码  end-->
 
-
-
-<if condition="$goodsInfo[is_promote] neq 1">
-    <style>
-        .is_promote{ display:none;}
-    </style>
-</if>
-
 <div class="wrapper">
     <include file="Public/breadcrumb"/>
     <section class="content">
@@ -128,15 +120,29 @@
                                         <td>发放商户:</td>
                                         <td>
                                             <div style="height: 34px">
-                                                <input type="text" value="{$msg.store_id}" name="user_id" class="form-control" style="width:350px;float: left"/>
-                                                <if>
-                                                    <span style="float: left;line-height:34px;margin-left:10px"> 商户名： {$msg.store_name}</span>
-                                                </if>
-
+                                                <input type="text" value="{$msg.store_id}" name="store_id" class="form-control" style="float: left"/>
                                             </div>
-                                        <div style="color: #ee0000;margin-top:5px;">* 0为发放给所有商家</div>
+                                        <div style="color: #ee0000;margin-top:5px;">* 0为发放给所有商家，如果发给多个不同商家，请用英文的','将商户id隔开</div>
                                         </td>
                                     </tr>
+                                    <if condition="$store_name neq null">
+                                        <tr>
+                                            <td>发放商户名:</td>
+                                            <td>
+                                                <foreach name="store_name" item="v" key="k" >
+                                                    <span style="font-size: 16px;line-height:30px;font-weight: 400;margin-left:10px;">
+                                                        {$v['store_name']}
+                                                    </span>
+                                                    <br>
+                                                </foreach>
+                                            </td>
+                                        </tr>
+
+                                        <span style="float: left;line-height:34px;margin-left:10px"> 商户名： {$msg.store_name}</span>
+                                    </if>
+
+
+
                                     <tr>
                                         <td>商品详情描述:</td>
                                         <td width="85%">

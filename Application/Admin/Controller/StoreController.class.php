@@ -588,31 +588,124 @@ class StoreController extends BaseController{
 
 	function ajaxstand_inside_letter(){
 
-		$MIL = M('feedback')->field('msg_id,store_id,user_name,msg_title,msg_time')->select();
+		$MIL = M('stand_inside_letter')->field('msg_id,store_id,store_name,msg_title,msg_time,modify_time')->select();
+
 		$this->assign('List',$MIL);
 		$this->display();
 	}
 
 	function addeditMIL(){
-		$msgid = $_GET['msg_id'];
 
-		if(empty($_POST)){
+		if(!empty($_POST)){
 
+			$data = $_POST;
+			$type = $_POST['msg_id'] > 0 ? 2 : 1;
+			$arr['store_id'] = $data['store_id'];
+			$arr['msg_content'] = $data['msg_content'];
+			$arr['msg_title'] = $data['msg_title'];
+			$Feedback = M('stand_inside_letter');
+			if($type==2){
+				//先取出原有的数据 modify_time
+				$old_msg = $Feedback->where('msg_id = '.$_POST['msg_id'])->find();
+				//判断商户id是否有修改
+				if($arr['store_id']==$old_msg['store_id']){
+					unset($arr['store_id']);
+				}else{
+					//将新的商户名字段更新
+					if(substr_count($arr['store_id'],',')){
+						$cha = explode(',',$arr['store_id']);
+						$condition['id'] = array('in',$cha);
+						$store_name = M('merchant')->where($condition)->field('store_name')->select();
+						foreach ($store_name as $value){
+							$arr['store_name'] .= ','.$value['store_name'];
+						}
+						$arr['store_name'] = substr($arr['store_name'], 1);
+					}else{
+						$arr['store_name'] = M('merchant')->where('id = '.$arr['store_id'])->getField('store_name');
+					}
+				}
+
+				$arr['modify_time'] = time();
+				$res = $Feedback->where('msg_id = '.$_POST['msg_id'])->data($arr)->save();
+				if($res){
+					$return_arr = array(
+						'status' => 1,
+						'msg'   => '更改成功',
+						'data'  => array('url'=>U('Admin/store/stand_inside_letter')),
+					);
+					$this->ajaxReturn(json_encode($return_arr));
+				}else{
+					$return_arr = array(
+						'status' => -1,
+						'msg'   => '更改失败',
+						'data'  => $Feedback->getError(),
+					);
+					$this->ajaxReturn(json_encode($return_arr));
+				}
+			}else{
+				$arr['msg_time'] = time();
+				if(substr_count($arr['store_id'],',')){
+					$cha = explode(',',$arr['store_id']);
+					$condition['id'] = array('in',$cha);
+					$store_name = M('merchant')->where($condition)->field('store_name')->select();
+					foreach ($store_name as $value){
+						$arr['store_name'] .= ','.$value['store_name'];
+					}
+					$arr['store_name'] = substr($arr['store_name'], 1);
+				}else{
+					$arr['store_name'] = M('merchant')->where('id = '.$arr['store_id'])->getField('store_name');
+				}
+				$res = $Feedback->data($arr)->add();
+				if($res){
+					$return_arr = array(
+						'status' => 1,
+						'msg'   => '发布成功',
+						'data'  => array('url'=>U('Admin/store/stand_inside_letter')),
+					);
+					$this->ajaxReturn(json_encode($return_arr));
+				}else{
+					$return_arr = array(
+						'status' => -1,
+						'msg'   => '发布失败',
+						'data'  => $Feedback->getError(),
+					);
+					$this->ajaxReturn(json_encode($return_arr));
+				}
+			}
 		}
-
 
 		$this->display();
 	}
 
 	function detail(){
 		$msgid = $_GET['id'];
-		$MIL = M('feedback')
+		$MIL = M('stand_inside_letter')
 			->where('msg_id  = '.$msgid)
 			->field('msg_id,store_id,msg_title,msg_content')->find();
-
-		$MIL['store_name'] = M('merchant')->where('id = '.$MIL['store_id'])->getField('store_name');
-		
+		//判断是否为多个商户
+		if(substr_count($MIL['store_id'],',')){
+			$cha = explode(',',$MIL['store_id']);
+			$condition['id'] = array('in',$cha);
+			$store_name = M('merchant')->where($condition)->field('store_name')->select();
+		}else{
+			$store_name = M('merchant')->where('id = '.$MIL['store_id'])->field('store_name')->select();
+		}
+		$this->assign('store_name',$store_name);
 		$this->assign('msg',$MIL);
 		$this->display();
+	}
+
+	function delMSG(){
+		$msgid = $_GET['id'];
+
+		$info = M('stand_inside_letter')->where('msg_id = '.$msgid)->find();
+		if(empty($info)){
+			$this->error('该站内信已不存在!', U('Admin/Store/stand_inside_letter'));
+		}
+		$res1 = M('stand_inside_letter')->where('msg_id = '.$msgid)->delete();
+		if($res1)
+		{
+			$this->success("已删除!!!", U('Admin/Store/stand_inside_letter'));
+		}
 	}
 }
