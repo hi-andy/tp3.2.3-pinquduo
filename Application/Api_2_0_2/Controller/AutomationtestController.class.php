@@ -272,7 +272,7 @@ class AutomationtestController extends BaseController
                         `free`=0 and 
                         `is_dissolution`=0 and 
                         `is_pay`=1 and 
-                        `mark`=0 and 
+                        `mark`=0 and
                         `is_return_or_exchange`=0 and
                         `is_successful`=0 and 
                         `end_time`<=' . $time)
@@ -319,6 +319,7 @@ class AutomationtestController extends BaseController
                         ->select();
                     //var_dump($group_buy_mark);
                     //echo '<hr>';
+
                     $tablefix = C('DB_PREFIX');
                     $Model = M();
                     $group_buy_mark = $Model->table('__GROUP_BUY__')
@@ -360,17 +361,31 @@ class AutomationtestController extends BaseController
                                         {$v['is_dissolution']},
                                         1),";
                     }
+
+
+                    /*
                     foreach ($group_buy_mark as $v1) {
                         $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
                         $nicknames .= $nickname . "、";
                     }
                     $nicknames = substr($nicknames, 0, -1);
                     $nicknames = trim($nicknames);
-                    // 获取拼团成功用户微信 openid ，推送拼团成功消息
                     foreach ($group_buy_mark as $v2) {
                         $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
                         $wxtmplmsg->spell_success($openid, $v2['goods_name'], $nicknames);
                     }
+                    */
+                    //SELECT GROUP_CONCAT(cat_id SEPARATOR ';') FROM goods_cat WHERE pid = 25
+                    foreach($group_buy_mark as $v1){
+                        $userids .= ",".$v1['user_id'];
+                    }
+                    $userids = substr($userids,1);
+                    $userdata = M('users')->field("GROUP_CONCAT(nickname SEPARATOR '、') as usernames")
+                                          ->where("user_id in({$userids})")
+                                          ->find();
+                    var_dump($userdata);
+                    exit();
+
                     //　插入伪拼团用户信息，以成团
                     $values = substr($values, 0, -1);
                     if ($values) {
