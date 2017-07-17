@@ -1092,7 +1092,7 @@ class OrderController extends BaseController {
 	// 编辑收货人及物流信息
     public function edit_consignee(){
         $order_id = I('get.order_id');
-        $order = M('order')->field('order_id,address,address_base,shipping_code,shipping_order')->where('order_id='.$order_id)->find();
+        $order = M('order')->field('order_id,address,address_base,shipping_code,shipping_order,consignee,mobile')->where('order_id='.$order_id)->find();
         if($order['shipping_status'] != 0){
             $this->error('已发货订单不允许编辑');
             exit;
@@ -1103,6 +1103,13 @@ class OrderController extends BaseController {
             $order['address_base'] = I('address_base'); // 收货地址
             $order['shipping_code'] = I('shipping_code'); //  物流公司
             $order['shipping_order'] = I('shipping_order'); // 物流单号
+	        $order['consignee'] = I('consignee');//收件人
+	        $order['mobile'] = I('mobile');//电话
+
+	        $delivery = M('delivery_doc')->where('order_id='.$order_id)->count();
+	        if(!empty($delivery)){
+		        $d = M('delivery_doc')->where('order_id='.$order_id)->save($order);
+	        }
 
             $o = M('order')->where('order_id='.$order_id)->save($order);
             $orderLogic = new OrderLogic();
