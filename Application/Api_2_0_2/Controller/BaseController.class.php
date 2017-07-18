@@ -761,7 +761,6 @@ class BaseController extends Controller {
 
                         if(($join_num[0]['mobile'])!=null){
                             $name = substr_replace($join_num[0]['mobile'],'*****',3,5);
-// 原有代码：                           $name = $join_num[0]['mobile'];
                         }else{
                             $name = $join_num[0]['nickname'];
                         }
@@ -774,7 +773,6 @@ class BaseController extends Controller {
                 } else {
                     if($join_num[$i]['mobile'] != null){
                         $name = substr_replace($join_num[$i]['mobile'],'*****',3,5);
-//原有代码：                        $name = $join_num[$i]['mobile'];
                     }else{
                         $name = $join_num[$i]['nickname'];
                     }
@@ -797,25 +795,17 @@ class BaseController extends Controller {
         if (!empty($user_ids)){
             $user = M('users','','DB_CONFIG2')->field('mobile,nickname')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
             if ($user) {
-                $nicknames = "";
                 foreach ($user as $v){
                     if($v['mobile'] != null){
-                        $nicknames = substr_replace($join_num[$i]['mobile'],'*****',3,5) . '、';
 //使用数组接收数据 温立涛
                         $nicknamearr[] = substr_replace($join_num[$i]['mobile'],'*****',3,5);
                     }else{
-                        $nicknames .= $v['nickname'] . '、';
 //使用数组接收数据 温立涛
                         $nicknamearr[] = $v['nickname'];
                     }
                 }
-
-//原有代码                $nicknames = substr($nicknames, 0, -1);
-//修改代码使用mb_substr 2017.7.13 wenlitao
-//注释掉                $nicknames = mb_substr($nicknames,0,strlen($nicknames)-3,'utf-8');
 //使用数组转字符串函数
                 $nicknames = implode('、',$nicknamearr);
-//注释掉 温立涛                $nicknames = trim($nicknames) . "\\n";
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
                     $wxtmplmsg->spell_success($v['openid'],$goodsName,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍，COCO香水型洗衣液，20支软毛牙刷）');
