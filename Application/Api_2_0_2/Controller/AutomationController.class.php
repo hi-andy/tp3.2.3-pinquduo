@@ -269,7 +269,7 @@ class AutomationController extends BaseController
                         `is_return_or_exchange`=0 and
                         `is_successful`=0 and 
                         `end_time`<=' . $time)
-            ->limit(0, 50)
+            ->limit(0, 1)
             ->select();
         if (count($prom_order) > 0) {
             redis("get_Free_Order_status", "1");
