@@ -269,7 +269,7 @@ class AutomationController extends BaseController
                         `is_return_or_exchange`=0 and
                         `is_successful`=0 and 
                         `end_time`<=' . $time)
-            ->limit(0, 50)
+            ->limit(0, 1)
             ->select();
         if (count($prom_order) > 0) {
             redis("get_Free_Order_status", "1");
@@ -362,12 +362,9 @@ class AutomationController extends BaseController
                     var_dump($autonum);
                     echo '<hr>';
                     //如果机器人个数和需要的机器人个数不相等  温立涛
-                    /*
                     if(count($autonum)!=$flag){
-                        echo "mark={$v['id']} and is_successful=1 and auto=1".'==='.$flag.'<hr>';
                         return false;
                     }
-                    */
 
                     foreach ($group_buy_mark as $v1) {
                         $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
