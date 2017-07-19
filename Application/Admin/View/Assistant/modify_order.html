@@ -1,0 +1,60 @@
+<include file="Public/min-header" />
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+    <section class="content ">
+        <!-- Main content -->
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="javascript:history.go(-1)" data-toggle="tooltip" title="" class="btn btn-default" data-original-title="返回"><i class="fa fa-reply"></i></a>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-list"></i> 修改订单状态</h3>
+                </div>
+                <div class="panel-body ">   
+                    <!--表单数据-->
+                    <form action="{:U('Store/Order/edit_consignee',array('order_id'=>$order['order_id']))}" method="post">
+                        <!--通用信息-->
+                    <div class="tab-content col-md-10">                 	  
+                        <div class="tab-pane active" id="tab_tongyong">                           
+                            <table class="table table-bordered">
+                                <tbody>
+                                <tr>
+                                    <td class="col-sm-2">订单号：<span style="color: red;font-size: 15px">（支持多个订单同时处理，订单号之间用英文的 , 隔开即可）</span></td>
+                                    <td class="col-sm-4">
+                                        <input type="text" value="{$order.order_sn}" class="form-control" name="order_sn" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-sm-2">目标状态:</td>
+                                    <td class="col-sm-4">
+                                        <select name="status" class="form-control">
+                                            <option value="0">选择状态</option>
+                                            <option value="1">已退货</option>
+                                            <option value="2">已换货</option>
+                                        </select>
+                                    </td>
+                                </tr>
+
+                                </tbody> 
+                                <tfoot>
+                                	<tr>
+
+                                	<td class="text-right" colspan="2"><input class="btn btn-primary" type="submit" value="保存"></td>
+                                	</tr>
+                                </tfoot>                               
+                            </table>
+                        </div>                           
+                    </div>              
+			    	</form><!--表单数据-->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+
+</script>
+</body>
+</html>

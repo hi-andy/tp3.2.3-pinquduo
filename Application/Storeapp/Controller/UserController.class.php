@@ -8,10 +8,9 @@
 
 namespace Storeapp\Controller;
 
-use Api_2_0_0\Controller\AlidayuController;
-use Mobile\Controller\CartController;
+use Api_2_0_2\Controller\BaseController;
 
-class UserController extends CartController{
+class UserController extends BaseController{
 
 	/*
 	 * nature：用户反馈
@@ -55,16 +54,24 @@ class UserController extends CartController{
 		if(empty($store_id) || empty($page) || empty($pagesize)){
 			exit(json_encode(array('status' => -1, 'msg' => '参数有误 ^_^')));
 		}
+		$page = ($page-1)*$pagesize;
 
-		$stand_inside_letter_list = M('stand_inside_letter')
+		$count =  M('stand_inside_letter')
 			->where("store_id like '%".$store_id."%'")
-			->field('msg_id,msg_title,msg_time,msg_content')
-			->page($page,$pagesize)
-			->select();
+			->union("SELECT	COUNT(*) AS tp_count FROM `tp_stand_inside_letter` WHERE store_id = 0",true)
+			->field('COUNT(*) AS tp_count')
+			->SELECT();
+
+		$count = $count[0]['tp_count'] + $count[1]['tp_count'];
+
+		$stand_inside_letter_list = M('stand_inside_letter')->query("SELECT * FROM ((SELECT `msg_id`,`msg_title`,`msg_time`,`msg_content`,`msg_logo_url` FROM `tp_stand_inside_letter` WHERE (store_id LIKE '%2%')) UNION ALL (SELECT `msg_id`,`msg_title`,`msg_time`,`msg_content`,`msg_logo_url` FROM `tp_stand_inside_letter` WHERE store_id = 0)) AS a LIMIT $page,$pagesize");
+		
 		foreach ($stand_inside_letter_list as $k=>$v){
 			$stand_inside_letter_list[$k]['msg_content'] = strip_tags($v['msg_content']);
 			$stand_inside_letter_list[$k]['msg_content_url']  = $url = "http://119.23.56.30/Storeapp/user/stand_inside_letter_H5?msg_id=".$v['msg_id']."&store_id=$store_id";
 		}
+
+		$stand_inside_letter_list = $this->listPageData($count,$stand_inside_letter_list,$pagesize);
 
 		exit(json_encode(array('status' => 1, 'msg' => '获取成功','result'=>$stand_inside_letter_list)));
 	}
