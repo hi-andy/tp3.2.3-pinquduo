@@ -31,6 +31,7 @@ class ChatController extends BaseController
     {
         if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload != '' && $status != '') {
             $payload = htmlspecialchars($payload);
+            $payload = addslashes($payload);
             $chatcount = M('chat','','DB_CONFIG2')->where(array('msg_id'=>array('eq',$msg_id)))->count();
             if ($chatcount < 1) {
                 $msgdata = array(
