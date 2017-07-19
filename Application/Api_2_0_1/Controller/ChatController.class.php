@@ -50,6 +50,16 @@ class ChatController extends BaseController
                 $sql .= "('{$msg_id}',{$timestamp},'{$direction}','{$to}','{$from}','{$chat_type}','{$payload}',{$status})";
                 M()->query($sql);
 
+
+                $addarray = array(
+                    'admin_id' => 999,
+                    'log_info' => "aaa={$sql}",
+                    'log_ip' => '127.0.0.1',
+                    'log_url' => 'tt',
+                    'log_time' => time(),
+                );
+                M('admin_log')->add($addarray);
+
                 json('保存成功',$msgdata);
             } else {
                 errjson('msg_id已存在');
