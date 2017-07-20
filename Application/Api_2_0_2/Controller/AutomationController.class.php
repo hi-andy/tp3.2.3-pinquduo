@@ -265,6 +265,7 @@ class AutomationController extends BaseController
                         `free`=0 and 
                         `is_dissolution`=0 and 
                         `is_pay`=1 and 
+                        `is_cancel`=0 and
                         `mark`=0 and
                         `is_return_or_exchange`=0 and
                         `is_successful`=0 and 
