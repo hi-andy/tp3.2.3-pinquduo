@@ -307,17 +307,17 @@ class AutomationController extends BaseController
                 if (empty(redis("getBuy_lock_" . $v['goods_id']))) {//如果无锁
                     redis("getBuy_lock_" . $v['goods_id'], "1", 5);//写入锁
                     $group_buy_mark = M('group_buy')
-                        ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and auto=0")
+                        ->where("(id = {$v['id']} or mark = {$v['id']}) and is_pay=1 and is_cancel=0")
                         ->select();
                     //　生成参团用户信息
                     $values = "";
-                    $nicknames = "";
+                    $nicknames = array();
                     //机器人个数
                     $flag = 0;
                     for ($i = 0; $i < ($v['goods_num'] - count($group_buy_mark)); $i++) {
                         $num += 1;
                         $user = $this->get_robot($v['user_id']);
-                        $nicknames .= $user['nickname'] . "、";
+                        $nicknames[] = $user['nickname'];
                         $values .= "(" . time() . ",
                                         {$end_time},
                                         {$v['goods_id']},
@@ -357,35 +357,41 @@ class AutomationController extends BaseController
                     }
                     //查询添加成功的机器人个数 温立涛
                     $autonum = M('group_buy')
-                        ->where("mark={$v['id']} and is_successful=1 and auto=1")
+                        ->where("mark={$v['id']} and is_successful=1 and auto=1 ")
                         ->select();
                     var_dump($autonum);
                     echo '<hr>';
                     //如果机器人个数和需要的机器人个数不相等  温立涛
-                    if(count($autonum)!=$flag){
+                    if(count($autonum)<$flag){
+                        echo count($autonum).'=========='.$flag;
+                        echo '<hr>';
                         return false;
                     }
 
                     foreach ($group_buy_mark as $v1) {
-                        $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
-                        $nicknames .= $nickname . "、";
+                        if($v1['auto']==0){
+                            $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
+                            $nicknames .= $nickname . "、";
+                        }
                     }
+
                     $nicknames = substr($nicknames, 0, -1);
                     $nicknames = trim($nicknames);
                     // 获取拼团成功用户微信 openid ，推送拼团成功消息
-                    foreach ($group_buy_mark as $v2) {
-                        $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
-                        $wxtmplmsg->spell_success($openid, $v2['goods_name'], $nicknames);
+                    foreach ($group_buy_mark as $value) {
+                        if($value['auto']==0){
+                            $openid = M('users')->where("user_id={$value['user_id']}")->getField('openid');
+                            $wxtmplmsg->spell_success($openid, $value['goods_name'], $nicknames);
+
+                            $ids .= $value['id'] . ",";
+                            $order_ids .= $value['order_id'] . ",";
+                            $this->order_redis_status_ref($value['user_id']);
+                            $custom = array('type' => '2', 'id' => $v['id']);
+                            $user_id = $value['user_id'];
+                            SendXinge($message, "$user_id", $custom);
+                        }
                     }
 
-                    foreach ($group_buy_mark as $value) {
-                        $ids .= $value['id'] . ",";
-                        $order_ids .= $value['order_id'] . ",";
-                        $this->order_redis_status_ref($value['user_id']);
-                        $custom = array('type' => '2', 'id' => $v['id']);
-                        $user_id = $value['user_id'];
-                        SendXinge($message, "$user_id", $custom);
-                    }
                     redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
                 }
             }
