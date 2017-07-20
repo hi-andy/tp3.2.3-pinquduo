@@ -371,12 +371,11 @@ class AutomationController extends BaseController
                     foreach ($group_buy_mark as $v1) {
                         if($v1['auto']==0){
                             $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
-                            $nicknames .= $nickname . "、";
+                            $nicknames[] = $nickname;
                         }
                     }
-
-                    $nicknames = substr($nicknames, 0, -1);
-                    $nicknames = trim($nicknames);
+                    
+                    $nicknames = implode("、",$nicknames);
                     // 获取拼团成功用户微信 openid ，推送拼团成功消息
                     foreach ($group_buy_mark as $value) {
                         if($value['auto']==0){
