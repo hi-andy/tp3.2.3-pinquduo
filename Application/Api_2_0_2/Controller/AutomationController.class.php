@@ -399,7 +399,7 @@ class AutomationController extends BaseController
             $order_ids = substr($order_ids, 0, -1);
             if (!empty($ids) && !empty($order_ids)) {
                 M("group_buy")->where("id in({$ids}) and is_pay=1")->save(array("is_successful" => 1));
-                M("order")->where("order_id in({$order_ids})")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
+                M("order")->where("order_id in({$order_ids}) and order_type<>15")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
             }
         }
     }
