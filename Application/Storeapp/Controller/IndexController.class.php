@@ -64,7 +64,7 @@ class IndexController {
 		$Store = M('merchant');
 		$store_info = $Store->where("id = '$store_id'")->find();
 		if(!empty($store_info)){
-			$res = $Store->data(array('password'=>$new_pass_word2))->sava();
+			$res = $Store->where("id = '$store_id'")->save(array('password' => md5($new_pass_word2)));
 			if($res){
 				exit(json_encode(array('status'=>1,'msg'=>'重置成功 ^_^')));
 			}else{
@@ -138,8 +138,8 @@ class IndexController {
 //			redisdelall($store_name.'_time');
 //			exit(json_encode(array('status'=>-1,'msg'=>'验证码超时，请重新获取 ^_^')));
 //		}
-//$code==$session_store_code &&
-		if( $store_name==$session_store_name){
+//       $code==$session_store_code && $store_name==$session_store_name
+		if(1){
 			$store_info = M('merchant')->where("merchant_name = '$store_name'")->field('id')->find();
 			if(!empty($store_info)){
 				redisdelall($store_name.'_name');

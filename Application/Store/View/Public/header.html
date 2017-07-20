@@ -35,24 +35,37 @@
     <link rel="stylesheet" href="__PUBLIC__/css/chat/jquery-ui.css">
     <script type="text/javascript" src="__PUBLIC__/js/chat/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="__PUBLIC__/css/chat/chat.css">
+
+    <!-- 安全退出清除cookie -->
+    <script>
+    window.onload=function () {
+        document.getElementById('#quit').addEventListener('click',function(){
+            var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
+            if(keys) {
+                for(var i = keys.length; i--;)
+                    alert(keys[i]);
+                document.cookie = keys[i] + '=0;expires=' + new Date(0).toUTCString()
+            }
+        }, false)
+    }
     </script>
     <!--好友列表模板-->
     <script id="firendListItem" type="text/html">
-            <% for(var i=0;i<list.length ;i++) { %>
-    <li id="<%=list[i].froms%>" class="<%=list[i].is_active%>" index="<%=i%>">
+        <% for(var i=0;i<list.length ;i++) { %>
+            <li id="<%=list[i].froms%>" class="<%=list[i].is_active%>" index="<%=i%>">
                 <div class="avatarIcon">
-                <img src="<%=list[i].payload.ext.senderUser.avatar%>" alt="">
-                <% if(list[i].count>0&&list[i].count<=99){ %>
-        <i class="status" style="display: block"><%=list[i].count%></i>
+                    <img src="<%=list[i].payload.ext.senderUser.avatar%>" alt="">
+                    <% if(list[i].count>0&&list[i].count<=99){ %>
+                    <i class="status" style="display: block"><%=list[i].count%></i>
                     <% } %>
-    </div>
-        <div class="contactInfo" style='margin-left:20px'>
-                <p class="contactUsername"><%=list[i].payload.ext.senderUser.username%></p>
-                <p class="contactText"><%=list[i].payload.bodies[0].msg%></p>
+                </div>
+                <div class="contactInfo" style='margin-left:20px'>
+                    <p class="contactUsername"><%=list[i].payload.ext.senderUser.username%></p>
+                    <p class="contactText"><%=list[i].payload.bodies[0].msg%></p>
 
                 </div>
-                </li>
-                <% } %>
+            </li>
+            <% } %>
     </script>
     <!--聊天内容模板-->
     <script id="chatWindowMsg" type="text/html">
@@ -189,7 +202,7 @@
                                 <div class="pull-left">
                                     <!--<a href="javascript:void(0)" data-url="{:U('Index/map')}" class="btn btn-default btn-flat model-map">网站地图</a>-->
                                     <!--<a href="{:U('Admin/admin_info',array('store_id'=>$merchant_info['id']))}" target="rightContent" class="btn btn-default btn-flat">修改密码</a>-->
-                                    <a href="{:U('Admin/logout')}" class="btn btn-default btn-flat">安全退出</a>
+                                    <a href="{:U('Admin/logout')}" class="btn btn-default btn-flat" id='quit'>安全退出</a>
                                 </div>
                             </li>
                         </ul>

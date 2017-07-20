@@ -7,7 +7,7 @@ class IndexController extends BaseController {
     public $version = null;
     public function _initialize() {
         $version = I('version');
-        
+        header("Access-Control-Allow-Origin:*");
 //        $this->encryption();
     }
 

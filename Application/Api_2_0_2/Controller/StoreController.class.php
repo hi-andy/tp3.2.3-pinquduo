@@ -8,6 +8,7 @@ namespace Api_2_0_2\Controller;
 class StoreController extends BaseController{
 
     public function _initialize() {
+	    header("Access-Control-Allow-Origin:*");
         $this->encryption();
     }
 
