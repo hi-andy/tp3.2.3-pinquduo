@@ -103,10 +103,10 @@ $(function() {
             //console.log(file.name+'开始上传');
         },
         onUploadComplete:function(file, data, response){
-            console.log(file.name+'上传完成');
+            //console.log(file.name+'上传完成');
             console.log(data);
-            //$(".fileWarp ul").append(SetImgContent(data));
-            //SetUploadFile();
+            $(".fileWarp ul").append(SetImgContent(data));
+            SetUploadFile();
         }
 
     });
