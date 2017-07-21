@@ -47,7 +47,7 @@ class UsersLogic extends RelationModel
             redis("get_user_info","2");
             $user = get_user_info($openid, 3, $oauth, $unionid);
             redis('head_pic',$data['head_pic'],REDISTIME);
-            if ($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile'])) {
+            if (($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile']))) {
                 $map['head_pic'] = saveimage($data['head_pic']);
                 //拉取微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();
@@ -55,14 +55,9 @@ class UsersLogic extends RelationModel
                 $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                 $map['test'] = 1;
                 $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
-            }elseif (!empty($data['head_pic'])){
-                $map['head_pic'] = saveimage($data['head_pic']);
-                //拉取微信头像传到七牛云
-                $qiniu = new \Admin\Controller\QiniuController();
-                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
-                $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
+                $user['head_pic'] = $map['head_pic'];
             }
+
 
             if (!$user) {
                 redis("get_user_info","3");
@@ -83,8 +78,10 @@ class UsersLogic extends RelationModel
                 $row = M('users')->add($map);
                 $user = get_user_info($openid, 3, $oauth, $unionid);
                 $user['status'] = 1;
-            }elseif (!empty($data['nickname'])){
+            }
+            if ($user['nickname'] != $data['nickname'] && !empty($data['nickname'])){
                 $row = M('users')->where('user_id=' . $user['user_id'])->save(array('nickname'=>$data['nickname']));
+                $user['nickname'] = $data['nickname'];
             }
             $BASE = new BaseController();
             $user['userdetails'] = $BASE->getCountUserOrder($user['user_id']);

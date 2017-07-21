@@ -68,7 +68,6 @@ function saveimage($path) {
         $thumb_url = C("UPLOADPATH") . '/avatar/other/'  . $namearr[0] . '200_200.' . $namearr[1];
         // 生成一个居中裁剪为200*200的缩略图并保存为thumb.jpg
         $image->thumb(200, 200, \Think\Image::IMAGE_THUMB_SCALE)->save($thumb_url);
-
     } else {
         $thumb_url = $path;
     }

@@ -47,8 +47,9 @@ function reString(data) {
         for (var i = 0; i < data.result.length; i++) {
             if (data.result[i].payload.indexOf("banner") != -1) {
                 data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.indexOf('"goods"') - 1)+'}}'
-                data.result[i].payload = data.result[i].payload.replace(/[\\]/g, '/');
+                
             }
+			data.result[i].payload = data.result[i].payload.replace(/[\\]/g, '/');
         }
 }
 

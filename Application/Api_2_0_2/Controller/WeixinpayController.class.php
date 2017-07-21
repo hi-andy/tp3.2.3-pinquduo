@@ -214,10 +214,10 @@ EOF;
         $notify->saveData($xml);
 
         //以log文件形式记录回调信息
-        $log_ = new \Log_();
-        $log_name=dirname(__FILE__)."/notify_url.log";//log文件路径
+//        $log_ = new \Log_();
+//        $log_name=dirname(__FILE__)."/notify_url.log";//log文件路径
 
-        $log_->log_result($log_name,"【接收到的notify通知】:\n".$xml."\n");
+//        $log_->log_result($log_name,"【接收到的notify通知】:\n".$xml."\n");
 
         if($notify->checkSign() == TRUE)
         {
@@ -237,14 +237,14 @@ EOF;
 
             if(!$res)
             {
-                $log_->log_result($log_name,"【修改订单状态】:\n".$res."\n");
+//                $log_->log_result($log_name,"【修改订单状态】:\n".$res."\n");
                 M()->rollback();
                 exit();
             }
 
             if($order['prom_id']){
                 $res2 = $this->Join_Prom($order['prom_id']);
-                $log_->log_result($log_name,"【团修改】:\n".$res2."\n");
+//                $log_->log_result($log_name,"【团修改】:\n".$res2."\n");
                 if($res2){
                     $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
                     M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
@@ -269,10 +269,10 @@ EOF;
             }else{
                 M()->commit();
             }
-            $log_->log_result($log_name,"【成功】");
+//            $log_->log_result($log_name,"【成功】");
             $notify->setReturnParameter("return_code","SUCCESS");
         }else{
-            $log_->log_result($log_name,"签名验证:".$notify->checkSign());
+//            $log_->log_result($log_name,"签名验证:".$notify->checkSign());
         }
     }
 
@@ -292,10 +292,10 @@ EOF;
         $notify->saveData($xml);
 
         //以log文件形式记录回调信息
-        $log_ = new \Log_();
-        $log_name=dirname(__FILE__)."/notify_url.log";//log文件路径
+//        $log_ = new \Log_();
+//        $log_name=dirname(__FILE__)."/notify_url.log";//log文件路径
 
-        $log_->log_result($log_name,"【接收到WX的notify通知】:\n".$notify->data['out_trade_no']."\n");
+//        $log_->log_result($log_name,"【接收到WX的notify通知】:\n".$notify->data['out_trade_no']."\n");
 
         M()->startTrans();
 
@@ -314,18 +314,18 @@ EOF;
 
         if(!$res)
         {
-            $log_->log_result($log_name,"【WX修改订单状态】:\n".$res."\n");
+//            $log_->log_result($log_name,"【WX修改订单状态】:\n".$res."\n");
             M()->rollback();
             exit();
         }
 
         if($order['prom_id']){
             $res2 = $this->Join_Prom($order['prom_id']);
-            $log_->log_result($log_name,"【WX团修改】:\n".$res2."\n");
+//            $log_->log_result($log_name,"【WX团修改】:\n".$res2."\n");
             if($res2){
                 $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
                 M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
-                $log_->log_result($log_name,"【WX】:\n".$group_info."\n");
+//                $log_->log_result($log_name,"【WX】:\n".$group_info."\n");
                 if($group_info['mark']>0){
                     $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
@@ -333,7 +333,7 @@ EOF;
                     {
                         $Goods = new BaseController();
                         $Goods->getFree($group_info['mark']);
-                        $log_->log_result($log_name,"【getFree】:\n".$group_info['mark']."\n");
+//                        $log_->log_result($log_name,"【getFree】:\n".$group_info['mark']."\n");
                         M()->commit();
                     }
                     M()->commit();
@@ -346,7 +346,7 @@ EOF;
         }else{
             M()->commit();
         }
-        $log_->log_result($log_name,"【WX成功】");
+//        $log_->log_result($log_name,"【WX成功】");
         $notify->setReturnParameter("return_code","SUCCESS");
     }
 

@@ -40,7 +40,7 @@ function saveimage($path) {
 
     if ($path == '') return false;
     $pathArr = array();
-    $url = $path; //阿普匠路径
+    $url = $path; //
     if(stripos($url,'http://')!== false or stripos($url,'ftp://')!== false){ //仅处理外部路径
         $filename = substr($url, strripos($url, '/')); //图片名.后缀
         $ext = substr($url, strripos($url, '.')); //图片后缀

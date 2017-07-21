@@ -145,7 +145,7 @@ class IndexController {
 				redisdelall($store_name.'_name');
 				redisdelall($store_name.'_code');
 				redisdelall($store_name.'_time');
-				exit(json_encode(array('status'=>1,'msg'=>'获取成功','store_id'=>$store_info['id'])));
+				exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('store_id'=>$store_info['id']))));
 			}else{
 				exit(json_encode(array('status'=>-1,'msg'=>'该商户不存在 ^_^')));
 			}
@@ -155,12 +155,12 @@ class IndexController {
 
 	}
 
-	function test($store_name){
-		$session_store_name = unserialize(redis($store_name.'_name'));
-		$session_store_code = unserialize(redis($store_name.'_code'));
-		$session_store_time = unserialize(redis($store_name.'_time'));
-		var_dump($session_store_name);var_dump($session_store_code);var_dump($session_store_time);
-	}
+//	function test($store_name){
+//		$session_store_name = unserialize(redis($store_name.'_name'));
+//		$session_store_code = unserialize(redis($store_name.'_code'));
+//		$session_store_time = unserialize(redis($store_name.'_time'));
+//		var_dump($session_store_name);var_dump($session_store_code);var_dump($session_store_time);
+//	}
 
 	/*
 	 * nature：工作台

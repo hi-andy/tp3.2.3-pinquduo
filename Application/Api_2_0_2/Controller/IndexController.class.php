@@ -884,4 +884,18 @@ class IndexController extends BaseController {
 			$this->getJsonp($json);
 		exit(json_encode($json));
 	}
+
+    function test(){
+        $data['head_pic'] = "http://wx.qlogo.cn/mmhead/Q3auHgzwzM6SI85MLk8KogKS8zgf3YkhDJ7eosmWNqaXTdCEtL1GrQ/0";
+        $user['user_id'] = 247 ;
+        $map['head_pic'] = saveimage($data['head_pic']);
+        //拉取微信头像传到七牛云
+        $qiniu = new \Admin\Controller\QiniuController();
+        $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+        $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+        $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
+//        var_dump(getimagesize('http://wx.qlogo.cn/mmhead/Q3auHgzwzM6SI85MLk8KogKS8zgf3YkhDJ7eosmWNqaXTdCEtL1GrQ/0'));
+
+        var_dump($row);
+    }
 }

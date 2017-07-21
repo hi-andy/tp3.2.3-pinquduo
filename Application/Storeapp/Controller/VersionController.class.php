@@ -3,7 +3,7 @@
 /**
  * 版本接口
  */
-namespace Api_2_0_2\Controller;
+namespace Storeapp\Controller;
 use Think\Controller;
 
 class VersionController extends BaseController {
@@ -15,11 +15,13 @@ class VersionController extends BaseController {
 	/**
 	 * 获取最新的android版本信息
 	 */
-	public function getlastversion($terminal="")
+	public function getlastversion()
     {
-        $rdsname = "getlastversion".$terminal;
+        $data = $_REQUEST;
+        $terminal = $data['terminal'];
+        $rdsname = "getstorelastversion".$terminal;
         if (empty(redis($rdsname))) {
-            $where['type'] = array("eq", 0);
+            $where['type'] = array("eq", 1);
         if ($terminal) {
             $where["terminal"] = array("eq", $terminal);
         } else {
@@ -32,14 +34,14 @@ class VersionController extends BaseController {
             $data['filepath'] = $item['file'];
             $data['force'] = $item['force'];
             $data['terminal'] = $item['terminal'];
+            if (empty($data))
+                $data = null;
             $json = array('status'=>1,'msg'=>'获取成功','result'=>$data);
             redis($rdsname, serialize($json), REDISTIME);
         } else {
             $json = unserialize(redis($rdsname));
         }
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        if(!empty($ajax_get))
-            $this->getJsonp($json);
+
         exit(json_encode($json));
     }
 }

@@ -1104,22 +1104,39 @@ class OrderController extends BaseController {
         }
 
         if(IS_POST) {
-            $order['address'] = I('address');           // 收货地址
-            $order['address_base'] = I('address_base'); // 收货地址
-            $order['shipping_code'] = I('shipping_code'); //  物流公司
-            $order['shipping_order'] = I('shipping_order'); // 物流单号
-	        $order['consignee'] = I('consignee');//收件人
-	        $order['mobile'] = I('mobile');//电话
+	        if(!empty(I('address')) && I('address')!=$order['address']){
+		         $data['address'] = I('address');           // 收货地址
+	        }
+	        if(!empty(I('address_base')) && I('address_base')!=$order['address_base']){
+		         $data['address_base'] = I('address_base'); // 收货地址
+	        }
+	        if(!empty(I('shipping_order')) && I('shipping_order')!=$order['shipping_order']){
+		         $data['shipping_order'] = I('shipping_order'); // 物流单号
+	        }
+	        if(!empty(I('consignee')) && I('consignee')!=$order['consignee']){
+		         $data['consignee'] = I('consignee');//收件人
+	        }
+	        if(!empty(I('mobile')) && I('mobile')!=$order['mobile']){
+		         $data['mobile'] = I('mobile');//电话
+	        }
+	        if(!empty(I('shipping_code')) && $data['shipping_code']!='选择物流方式' && I('shipping_code')!=$order['shipping_code']){
+		        $data['shipping_code'] = I('shipping_code'); //  物流公司
+	        }
+
+
+
 
 	        $delivery = M('delivery_doc')->where('order_id='.$order_id)->count();
 	        if(!empty($delivery)){
-		        $d = M('delivery_doc')->where('order_id='.$order_id)->save($order);
+		        $d = M('delivery_doc')->where('order_id='.$order_id)->save($data);
+	        }else{
+		        $d = 1;
 	        }
 
-            $o = M('order')->where('order_id='.$order_id)->save($order);
+            $o = M('order')->where('order_id='.$order_id)->save($data);
             $orderLogic = new OrderLogic();
             $l = $orderLogic->orderActionLog($order_id,'edit','修改订单——收货人地址');//操作日志
-            if($o && $l){
+            if($o && $l && $d){
                 $this->success('修改成功',U('Store/Order/edit_consignee',array('order_id'=>$order_id)));
             }else{
                 $this->success('修改失败',U('Store/Order/detail',array('order_id'=>$order_id)));
