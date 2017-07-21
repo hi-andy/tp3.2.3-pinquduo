@@ -8,6 +8,7 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
+<<<<<<< HEAD
 //    if (REDIS_SWITCH) {
 //        $redis = new Redis();
 //        $redis->connect(REDISIP, PORT);
@@ -27,6 +28,31 @@ function redis($key, $value=null, $time="", $del=null){
 //    } else {
 //        redisdelall("*");
 //    }
+=======
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($del == true) {
+            $redis->delete($key);
+        }
+
+        $result = '';
+        if ($value) {
+            if ($time) {
+                $redis->setex($key, $time, $value);
+            } else {
+                $redis->set($key, $value);
+            }
+        } else {
+            $result = $redis->get($key);
+        }
+        $redis->close();
+        return $result;
+    } else {
+        redisdelall("*");
+    }
+>>>>>>> aeda3f1d5697e5ce0696417fdd3ad06c3c581f78
 }
 
 /**
@@ -35,6 +61,7 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
+<<<<<<< HEAD
 //    if (REDIS_SWITCH) {
 //        $redis = new Redis();
 //        $redis->connect(REDISIP, PORT);
@@ -47,6 +74,22 @@ function redislist($key, $value=null){
 //    } else {
 //        redisdelall("*");
 //    }
+=======
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($key && $value) {
+            $redis->rpush($key, $value);
+        } else {
+             $result =  $redis->lpop($key);
+             $redis->close();
+             return $result;
+        }
+    } else {
+        redisdelall("*");
+    }
+>>>>>>> aeda3f1d5697e5ce0696417fdd3ad06c3c581f78
 }
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
@@ -54,10 +97,18 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
+<<<<<<< HEAD
 //    $redis = new Redis();
 //    $redis->connect(REDISIP, PORT);
 //    $redis->auth(REDISPASS);
 //    $redis->delete($redis->keys($key));
+=======
+    $redis = new Redis();
+    $redis->connect(REDISIP, PORT);
+    $redis->auth(REDISPASS);
+    $redis->delete($redis->keys($key));
+    $redis->close();
+>>>>>>> aeda3f1d5697e5ce0696417fdd3ad06c3c581f78
 }
 /**
  * @param $arr
