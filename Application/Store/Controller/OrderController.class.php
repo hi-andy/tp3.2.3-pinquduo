@@ -923,17 +923,22 @@ class OrderController extends BaseController {
     public function download_delivery(){
         $condition['o.store_id'] = $_SESSION['merchant_id'];
 
-        $condition['o.pay_status'] = array('eq',1);
-        $condition['o.order_type'] = array('eq',3);
-        $condition['o.is_return_or_exchange'] = array('eq',0);
-        $condition['o.store_id'] = 2;
-        $condition['o.shipping_status'] = 1;
+	    if(!empty(I('pay_code'))){
+		    $condition['o.pay_code'] = array('eq',I('pay_code'));
+	    }
+
+	    if(!empty(I('order_type'))){
+		    $condition['order_type'] = array('eq',I('order_type'));
+		    if(I('order_type')==10)
+			    $condition['order_type'] = array('eq',16);
+	    }
 
         $orderList = M('order')->alias('o')
                      ->join(" LEFT JOIN __GOODS__ g on o.goods_id = g.goods_id ")
                      ->where($condition)->order('o.delivery_time DESC')
                      ->field('o.*,g.goods_name,g.goods_remark,g.keywords')
                      ->select();
+
         foreach($orderList as &$value){
             $value['yunfei'] = 0.00;
             $value['jiaoyihao'] = 0;

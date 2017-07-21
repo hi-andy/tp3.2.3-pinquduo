@@ -79,7 +79,7 @@ class OrderController extends BaseController {
 	    if(!empty(I('store_name')))
 	    {
 		    $this->assign('store_name', I('store_name'));
-		    $store_id = M('merchant')->where("store_name like '%".I('store_name')."%'")->getField('id');
+		    $store_id = M('merchant')->where("store_name = '".I('store_name')."'")->getField('id');
 		    $condition['o.store_id'] = array('eq',$store_id);
 	    }
 	    I('order_sn') ? $condition['o.order_sn'] = trim(I('order_sn')) : false;

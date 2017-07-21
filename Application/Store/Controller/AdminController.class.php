@@ -213,6 +213,7 @@ class AdminController extends BaseController {
 		if(empty($_COOKIE['user_name']) || empty($_COOKIE['pass_word']) || empty($_COOKIE['storeid']))
 		{
 			setcookie("user_name","$user_name",time()+1*7*24*3600);
+			setcookie("pass_word","$user_name",time()+1*7*24*3600);
 			setcookie("storeid","$storeid",time()+1*7*24*3600);
 		}
 		if($storeid != $_COOKIE['storeid'])
@@ -226,6 +227,7 @@ class AdminController extends BaseController {
     public function logout(){
         session_unset();
         session_destroy();
+	    setcookie('storeid',null);
         $this->success("退出成功",U('Store/Admin/login'));
     }
     

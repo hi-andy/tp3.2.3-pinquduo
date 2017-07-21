@@ -7,6 +7,7 @@ class IndexController extends BaseController {
     public $version = null;
     public function _initialize() {
         $version = I('version');
+        header("Access-Control-Allow-Origin:*");
 //        $this->encryption();
     }
 
@@ -526,6 +527,7 @@ class IndexController extends BaseController {
     //免单拼
     public function getFreeProm()
     {
+
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         $version = I('version','');
@@ -564,6 +566,7 @@ class IndexController extends BaseController {
 	*/
     function getRankingList()
     {
+
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         $rdsname = "getRankingList".$page.$pagesize;
@@ -584,6 +587,7 @@ class IndexController extends BaseController {
     //为我点赞
     public function getThe_raise()
     {
+
         $version = I('version');
         $rdsname = "getThe_raise".$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
@@ -616,6 +620,7 @@ class IndexController extends BaseController {
     }
     //热门商品
     function hot_goods(){
+
         $page = I('page',1);
         $pagesize = I('pagesize',30);
         $version = I('version');
@@ -643,6 +648,7 @@ class IndexController extends BaseController {
     }
     //为我点赞顶部滚动内容
     function rolling(){
+
         $version = I('version');
         $rdsname = "rolling".$version;
         if(empty(redis($rdsname))){
@@ -684,6 +690,7 @@ class IndexController extends BaseController {
      */
     public function getEconomizeGoods()
     {
+
         $version = I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',20);
@@ -725,6 +732,7 @@ class IndexController extends BaseController {
     //中间展示免单的拼团
     function get_Free_Order()
     {
+
         $free_num = I('free_num');//免单人数
         $page = I('page',1);
         $pagesize = I('pagesize',10);

@@ -31,7 +31,7 @@ define('HTML_PATH','./Application/Runtime/Html/');
 //静态缓存文件目录，HTML_PATH可任意设置，此处设为当前项目下新建的html目录
 // 引入ThinkPHP入口文件
 require './ThinkPHP/ThinkPHP.php';
-
+header("Access-Control-Allow-Origin:*");
 /* 
  //系统常量定义  
 //去THinkPHP手册中进行查找  

@@ -25,6 +25,12 @@ return array(
         '2' => '双11',
         '3' => 'http://cdn.pinquduo.cn/activity_3.png',
 	    '4' => 'http://cdn.pinquduo.cn/5zhe.png'
-    )
+    ),
 
+	'msg_logo' => array(
+		array('id'=>'1','url'=>'http://cdn.pinquduo.cn/fa@2x.png','name'=>'罚款'),//罚款
+		array('id'=>'2','url'=>'http://cdn.pinquduo.cn/huo@2x.png','name'=>'活动'),//活动
+		array('id'=>'3','url'=>'http://cdn.pinquduo.cn/xin@2x.png','name'=>'新版本'),//新版本
+		array('id'=>'4','url'=>'http://cdn.pinquduo.cn/gong@2x.png','name'=>'公告'),//公告
+	),
 );

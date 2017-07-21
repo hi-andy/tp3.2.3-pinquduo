@@ -8,6 +8,7 @@ use Think\Page;
 class GoodsController extends BaseController {
 
     public function _initialize() {
+	    header("Access-Control-Allow-Origin:*");
 //        $this->encryption();
     }
     

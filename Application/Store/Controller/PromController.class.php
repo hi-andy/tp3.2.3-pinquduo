@@ -762,14 +762,14 @@ class PromController extends BaseController {
 	{
 		//搜索条件
 		$store_id = $_SESSION['merchant_id'];
-		$where = ' where 1=1 and prom_id is not Null';
+		$where = ' where 1=1 and o.prom_id is not Null and o.the_raise = 0';
 		$consignee = I('consignee');
 		$timegap = I('timegap');
 		if($timegap){
 			$gap = explode('-', $timegap);
 			$begin = strtotime($gap[0]);
 			$end = strtotime($gap[1]);
-			$where .= " and add_time<=$end and add_time>=$begin ";
+			$where .= " and o.add_time<=$end and o.add_time>=$begin ";
 		}
 		if($consignee){
 			$where .= "AND consignee like '%$consignee%' ";
@@ -783,10 +783,29 @@ class PromController extends BaseController {
 		if($order_sn){
 			$where .= "AND order_sn = '$order_sn' ";
 		}
-		if(I('order_status')){
-			$where .= "AND order_status = ".I('order_status');
+		if(!empty(I('order_type'))){
+			$t = I('order_type');
+			if($t==1){
+				$where .= " AND o.order_type = 4 ";
+			}elseif($t==2){
+				$where .= " AND o.order_type = 5 ";
+			}elseif($t==3){
+				$where .= " AND o.order_type = 10 ";
+			}elseif($t==4){
+				$where .= " AND o.order_type = 11 ";
+			}elseif($t==5){
+				$where .= " AND o.order_type = 12 ";
+			}elseif($t==6){
+				$where .= " AND o.order_type = 13 ";
+			}elseif($t==7){
+				$where .= " AND o.order_type = 14 ";
+			}elseif($t==8){
+				$where .= " AND o.order_type = 15 ";
+			}else{
+				$where .= " AND o.order_type = 16 ";
+			}
 		}
-		$sql = "select o.*,FROM_UNIXTIME(o.add_time,'%Y-%m-%d') as create_time from __PREFIX__order o LEFT JOIN __PREFIX__group_buy as g ON o.order_id = g.order_id $where and o.is_show = 1 and o.store_id='$store_id' order by order_id";
+		$sql = "select o.*,FROM_UNIXTIME(o.add_time,'%Y-%m-%d') as create_time from __PREFIX__order o LEFT JOIN __PREFIX__group_buy as g ON o.order_id = g.order_id INNER JOIN tp_users u ON g.user_id = u.user_id $where and o.is_show = 1 and o.store_id='$store_id' order by order_id";
 
 		$orderList = D()->query($sql);
 

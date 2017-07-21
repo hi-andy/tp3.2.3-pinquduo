@@ -806,7 +806,6 @@ class BaseController extends Controller {
                 }
 //使用数组转字符串函数
                 $nicknames = implode('、',$nicknamearr);
-                $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
                     $wxtmplmsg->spell_success($v['openid'],$goodsName,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍，COCO香水型洗衣液，20支软毛牙刷）');
                 }

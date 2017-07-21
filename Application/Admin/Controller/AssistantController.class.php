@@ -5,8 +5,11 @@
  * Date: 2017/7/17
  * Time: 10:06
  */
+namespace Admin\Controller;
 
-class AssistantController {
+use Think\Controller;
+
+class AssistantController extends Controller{
 
 	/*
 	 * nature：修改订单信息
@@ -16,13 +19,11 @@ class AssistantController {
 	 * $text 反馈内容
 	 * $store_name 商户名id
 	 */
-	function modify_order_index(){
+	function modify_order(){
 		$this->display();
 	}
 
-
-	function modify_order(){
-		$data = $_REQUEST;
+	function save_modify(){
 		
 	}
 }

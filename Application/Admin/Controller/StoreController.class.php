@@ -434,7 +434,7 @@ class StoreController extends BaseController{
 
 		$store_info = M('merchant')->where(array('id'=>$storeid))->field('mobile,store_name')->find();
 		if($is_check == 1){
-			sendMessage($store_info['mobile'],array($store_info['store_name']),'184203');
+			sendMessage($store_info['mobile'],array($store_info['store_name']),'191945');
 		}else{
 			sendMessage($store_info['mobile'],array($store_info['store_name']),'138884');
 		}
@@ -597,12 +597,13 @@ class StoreController extends BaseController{
 	function addeditMIL(){
 
 		if(!empty($_POST)){
-
 			$data = $_POST;
 			$type = $_POST['msg_id'] > 0 ? 2 : 1;
 			$arr['store_id'] = $data['store_id'];
 			$arr['msg_content'] = $data['msg_content'];
 			$arr['msg_title'] = $data['msg_title'];
+			$arr['type'] = $data['logo_type'];
+			$arr['msg_logo_url'] = C('msg_logo')[$arr['type']-1]['url'];
 			$Feedback = M('stand_inside_letter');
 			if($type==2){
 				//先取出原有的数据 modify_time
@@ -612,17 +613,7 @@ class StoreController extends BaseController{
 					unset($arr['store_id']);
 				}else{
 					//将新的商户名字段更新
-					if(substr_count($arr['store_id'],',')){
-						$cha = explode(',',$arr['store_id']);
-						$condition['id'] = array('in',$cha);
-						$store_name = M('merchant')->where($condition)->field('store_name')->select();
-						foreach ($store_name as $value){
-							$arr['store_name'] .= ','.$value['store_name'];
-						}
-						$arr['store_name'] = substr($arr['store_name'], 1);
-					}else{
-						$arr['store_name'] = M('merchant')->where('id = '.$arr['store_id'])->getField('store_name');
-					}
+					$arr['store_name'] = $this->getStorename($arr['store_id']);
 				}
 
 				$arr['modify_time'] = time();
@@ -644,17 +635,7 @@ class StoreController extends BaseController{
 				}
 			}else{
 				$arr['msg_time'] = time();
-				if(substr_count($arr['store_id'],',')){
-					$cha = explode(',',$arr['store_id']);
-					$condition['id'] = array('in',$cha);
-					$store_name = M('merchant')->where($condition)->field('store_name')->select();
-					foreach ($store_name as $value){
-						$arr['store_name'] .= ','.$value['store_name'];
-					}
-					$arr['store_name'] = substr($arr['store_name'], 1);
-				}else{
-					$arr['store_name'] = M('merchant')->where('id = '.$arr['store_id'])->getField('store_name');
-				}
+				$arr['store_name'] = $this->getStorename($arr['store_id']);
 				$res = $Feedback->data($arr)->add();
 				if($res){
 					$return_arr = array(
@@ -690,9 +671,31 @@ class StoreController extends BaseController{
 		}else{
 			$store_name = M('merchant')->where('id = '.$MIL['store_id'])->field('store_name')->select();
 		}
+
+		$this->assign('logolist',C('msg_logo'));
 		$this->assign('store_name',$store_name);
 		$this->assign('msg',$MIL);
 		$this->display();
+	}
+
+	function getStorename($store_id){
+		if($store_id != 0){
+			if(substr_count($store_id,',')){
+				$cha = explode(',',$store_id);
+				$condition['id'] = array('in',$cha);
+				$store_name = M('merchant')->where($condition)->field('store_name')->select();
+				foreach ($store_name as $value){
+					$store_name .= ','.$value['store_name'];
+				}
+				$store_name = substr($store_name, 1);
+			}else{
+				$store_name = M('merchant')->where('id = '.$store_id)->getField('store_name');
+			}
+		}else{
+			$store_name = '全平台商家';
+		}
+
+		return $store_name;
 	}
 
 	function delMSG(){

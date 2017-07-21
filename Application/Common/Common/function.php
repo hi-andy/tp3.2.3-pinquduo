@@ -15,6 +15,8 @@ function redis($key, $value=null, $time="", $del=null){
         if ($del == true) {
             $redis->delete($key);
         }
+
+        $result = '';
         if ($value) {
             if ($time) {
                 $redis->setex($key, $time, $value);
@@ -22,8 +24,10 @@ function redis($key, $value=null, $time="", $del=null){
                 $redis->set($key, $value);
             }
         } else {
-            return $redis->get($key);
+            $result = $redis->get($key);
         }
+        $redis->close();
+        return $result;
     } else {
         redisdelall("*");
     }
@@ -42,7 +46,9 @@ function redislist($key, $value=null){
         if ($key && $value) {
             $redis->rpush($key, $value);
         } else {
-            return $redis->lpop($key);
+             $result =  $redis->lpop($key);
+             $redis->close();
+             return $result;
         }
     } else {
         redisdelall("*");
@@ -58,6 +64,7 @@ function redisdelall($key)
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
     $redis->delete($redis->keys($key));
+    $redis->close();
 }
 /**
  * @param $arr
