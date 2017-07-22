@@ -10,6 +10,8 @@ define("REDISTIME", 120);
 define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
 define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
+
+
 return array(
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
@@ -348,4 +350,6 @@ return array(
 
     //　五折专享开始时间
     'DiscountTime' => '2017-07-08',
+	
+	'SHARE_URL' => 'http://wxx.pinquduo.cn',
 );

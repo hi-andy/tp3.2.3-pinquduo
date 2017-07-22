@@ -130,9 +130,9 @@ class QQPayController extends BaseController
         if($order['prom_id']){
             $prom_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
             $type = $prom_info['mark']>0?1:0;
-            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
+            $go_url =C('SHARE_URL').'/order_detail.html?order_id='.$prom_info['order_id'].'&type='.$type.'&user_id='.$order['user_id'];
         }else{
-            $go_url ='http://wx.pinquduo.cn/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
+            $go_url =C('SHARE_URL').'/order_detail.html?order_id='.$order['order_id'].'&type=2&user_id='.$order['user_id'];;
         }
 	$data['go_url'] = $go_url;
 

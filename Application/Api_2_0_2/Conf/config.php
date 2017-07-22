@@ -6,7 +6,7 @@ return array(
 	'SIGN_KEY' => 'pinquduo',
 	'order_sn'         => date('YmdHis').rand(1000,9999), // 订单编号
 	'automatic_time' => 5*24*60*60,
-	'SHARE_URL' => 'http://wx.pinquduo.cn',
+	
 	'alipay_config'=>array(
 		'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接
 		//口后获取到的PID；
