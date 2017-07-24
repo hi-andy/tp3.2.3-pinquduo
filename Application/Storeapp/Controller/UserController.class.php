@@ -68,7 +68,7 @@ class UserController extends BaseController{
 		
 		foreach ($stand_inside_letter_list as $k=>$v){
 			$stand_inside_letter_list[$k]['msg_content'] = strip_tags($v['msg_content']);
-			$stand_inside_letter_list[$k]['msg_content_url']  = $url = "http://119.23.56.30/Storeapp/user/stand_inside_letter_H5?msg_id=".$v['msg_id']."&store_id=$store_id";
+			$stand_inside_letter_list[$k]['msg_content_url']  = $url = "http://pinquduo.cn/Storeapp/user/stand_inside_letter_H5?msg_id=".$v['msg_id']."&store_id=$store_id";
 		}
 
 		$stand_inside_letter_list = $this->listPageData($count,$stand_inside_letter_list,$pagesize);

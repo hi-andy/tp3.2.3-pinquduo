@@ -6,8 +6,10 @@
  * Time: 上午10:18
  */
 
-namespace Api_2_0_2\Controller;
+namespace Storeapp\Controller;
 
+
+use Api_2_0_2\Controller\BaseController;
 
 class ChatController extends BaseController
 {
@@ -45,7 +47,7 @@ class ChatController extends BaseController
                 // 暂不使用缓存
                 //redislist("chatlist", json_encode($msgdata));//写入redis队列
 
-                $sql = "INSERT INTO tp_chat (msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
+                $sql = "INSERT INTO tp_chat(msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
                 $sql .= "('{$msg_id}',{$timestamp},'{$direction}','{$to}','{$from}','{$chat_type}','{$payload}',{$status})";
                 M()->query($sql);
 
@@ -64,7 +66,7 @@ class ChatController extends BaseController
     public function auto_set_chatlist(){
         $num = 100;//每次读取N条
         $values  = "";
-        $sql = "INSERT INTO tp_chat(msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
+        $sql = "INSERT INTO tp_chat (msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
         for ($i=0; $i<$num; $i++) {
             $msg = (array) json_decode(redislist("chatlist"));//读取redis队列
             if ($msg) {

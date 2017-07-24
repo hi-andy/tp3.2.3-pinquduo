@@ -886,9 +886,9 @@ class IndexController extends BaseController {
 	}
 
     function test(){
-        $str = ",sdasdasd,das,dasdas,dasd,";
-        ;
-        var_dump(substr_count($str,',')>1);
+        $fine = M('store_punishment')->where('store_id = '. 910)->sum('sp_penal_sum');
+        var_dump(M()->getLastsql());
+        var_dump($fine);
     }
 
     //删除缓存

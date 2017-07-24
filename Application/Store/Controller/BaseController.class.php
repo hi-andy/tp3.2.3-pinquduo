@@ -142,8 +142,11 @@ class BaseController extends Controller {
         }
 		(float)$reflects = $reflect;
 		(float)$reflect = $reflect-$total;
-        if(empty($reflect)||((string)$reflects==(string)$total))
-            $reflect = 0;
+		$fine = M('store_punishment')->where('store_id = '.$store_id)->sum();
+        if(empty($reflect)||((string)$reflects==(string)$total)){
+	        $reflect = 0;
+        }
+
         $c = getFloatLength($reflect);
         if($c>=3){
             $reflect = operationPrice($reflect);

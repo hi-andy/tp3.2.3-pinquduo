@@ -32,7 +32,7 @@ class StoreController extends BaseController{
 		$rdsname = "getStoreList".$store_id.$stor.$page.$pagesize.$version;
 		if(empty(redis($rdsname))) {//判断是否有缓存
 			$store = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
-			$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
+			$store['store_share_url'] = C('HTTP_URL').'/shop_detail.html?store_id=' . $store_id;
 			$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim/dissolve/100/gravity/South/dx/0/dy/0";
 			$store['store_logo'] = TransformationImgurl($store['store_logo']);
 			//获取店铺优惠卷store_logo_compression
