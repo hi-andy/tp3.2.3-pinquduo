@@ -1119,6 +1119,10 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         $rdsname = "getUserOrderList".$user_id.$type.$page.$pagesize;
+        if (redis("getUserOrderList_status".$user_id) == 1){
+            redisdelall('getUserOrderList'.$user_id);
+            redisdelall($rdsname."*");
+        }
         if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
                 $condition = '`order_status`=8 and `user_id`=' . $user_id;

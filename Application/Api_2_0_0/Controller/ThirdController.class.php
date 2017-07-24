@@ -123,7 +123,7 @@ class ThirdController extends BaseController{
 		$logistics = array('shunfeng'=>'顺丰','shentong'=>'申通','youzhengguonei'=>'邮政包裹/平邮','yuantong'=>'圆通','zhongtong'=>'中通','huitongkuaidi'=>'百世物流','yunda'=>'韵达','zhaijisong'=>'宅急送','tiantian'=>'天天','youzhengguoji'=>'国际包裹','ems'=>'EMS','emsguoji'=>'EMS-国际件','huitongkuaidi'=>'汇通','debangwuliu'=>'德邦','guotongkuaidi'=>'国通','zengyisudi'=>'增益','suer'=>'速尔','zhongtiewuliu'=>'中铁快运','ganzhongnengda'=>'能达','youshuwuliu'=>'优速','quanfengkuaidi'=>'全峰','kuaijiesudi'=>'快捷','wanxiangwuliu'=>'万象','tiandihuayu'=>'天地华宇','annengwuliu'=>'安能');
 		$data['shipping_name'] = $logistics[$code];
 		M()->startTrans();
-		$res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name']));
+		$res = M('order')->where('store_id = '.$store_id.' and order_sn = '.$data['order_sn'])->save(array('shipping_code'=>$data['shipping_code'],'shipping_order'=>$data['shipping_order'],'shipping_name'=>$data['shipping_name'],'y_time'=>$data['y_time']));
 		$res1 = $this->deliveryHandle($data);
 		if($res && $res1){
 			M()->commit();
@@ -158,8 +158,9 @@ class ThirdController extends BaseController{
 		$datas['ytime'] = $data['y_time'];
 		$did = M('delivery_doc')->add($datas);
 
-		$goods = M('goods')->where('`goods_id`='.$order['goods_id'])->find();
+		$this->order_redis_status_ref($order['user_id']);
 
+		$goods = M('goods')->where('`goods_id`='.$order['goods_id'])->find();
 		$updata['shipping_code'] = $data['shipping_code'];
 		$updata['shipping_name'] = $data['shipping_name'];
 		$updata['shipping_order'] = $data['shipping_order'];

@@ -25,8 +25,13 @@ class UserController extends BaseController {
         if(I('oauth','') == 'qq') redis('unionid',I('unionid',''),REDISTIME);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $data = $this->userLogic->thirdLogin($map);
+        $HXcall = new HxcallController();
         if($data['status'] ==1){
-            $HXcall = new HxcallController();
+            $username = $data['user_id'];
+            $password = md5($username.C('SIGN_KEY'));
+            $nickname = $data['nickname'];
+            $res = $HXcall->hx_register($username,$password,$nickname);
+        }else{
             $username = $data['user_id'];
             $password = md5($username.C('SIGN_KEY'));
             $nickname = $data['nickname'];
@@ -904,7 +909,7 @@ class UserController extends BaseController {
             $mobile = I('mobile');
             if (!check_mobile($mobile))
                 exit(json_encode(array('status' => -1, 'msg' => '手机号码格式有误')));
-            if ($mobile != '15019236664') {
+            if ($mobile != '15019236664' && $mobile != '15919910684') {
                 $code = rand(1000, 9999);
                 $alidayu = new AlidayuController();
                 $result = $alidayu->sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
@@ -1041,6 +1046,10 @@ class UserController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',10);
         $rdsname = "getUserOrderList".$user_id.$type.$page.$pagesize;
+        if (redis("getUserOrderList_status".$user_id) == 1){
+            redisdelall('getUserOrderList'.$user_id);
+            redisdelall($rdsname."*");
+        }
         if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
                 $condition = '`order_status`=8 and `user_id`=' . $user_id;

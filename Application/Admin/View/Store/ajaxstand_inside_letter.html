@@ -4,7 +4,6 @@
                             <table class="table table-bordered table-hover" style="font-size:12px;">
                                 <thead>
                                 <tr>
-                                    <!--<td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"></td>-->
                                     <td class="text-center">
                                         <a href="javascript:sort('msg_id');">站内信id</a>
                                     </td>
@@ -17,6 +16,9 @@
                                     <td class="text-center">
                                         <a href="">标题</a>
                                     </td>
+                                    <td class="text-center">
+                                        <a href="">类型</a>
+                                    </td>
                                     <td class="text-center">创建时间</td>
                                     <td class="text-center">修改时间</td>
                                     <td class="text-center">操作</td>
@@ -25,10 +27,6 @@
                                 <tbody>
                                 <volist name="List" id="list">
                                     <tr>
-                                        <!--<td class="text-center">-->
-                                        	<!--<input type="checkbox" name="selected[]" value="6">-->
-                                        	<!--<input type="hidden" name="shipping_code[]" value="flat.flat">-->
-                                        <!--</td>-->
                                         <td class="text-center">{$list.msg_id}</td>
                                         <td class="text-center">{$list.store_id}</td>
                                         <td class="text-center">{$list.store_name|getSubstr=0,33}</td>
@@ -40,6 +38,7 @@
                                         <if condition="$list.modify_time neq 0">
                                             <td class="text-center">{$list.modify_time|date='Y-m-d H:i',###}</td>
                                         </if>
+                                        <td class="text-center"><img style="width: 65px;height: 65px;" src="{$list.msg_logo_url}    "></td>
                                         <td class="text-center">
                                             <a href="{:U('Admin/Store/detail',array('id'=>$list['msg_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
                                             <a href="{:U('Admin/Store/delMSG',array('id'=>$list['msg_id']))}" onclick="del('{$list.msg_id   }')" data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="删除"><i class="fa fa-trash-o"></i></a>

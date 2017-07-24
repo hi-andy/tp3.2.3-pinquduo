@@ -119,7 +119,7 @@ class ChatController extends BaseController
      * 获取未读列表
      * @param string $user_id //接收方ID
      */
-    public function get_unread($user_id=''){
+    public function get_unread($user_id='',$page,$pagesize){
         if ($user_id){
             if (empty(redis('get_unread'))) {
                 $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC");

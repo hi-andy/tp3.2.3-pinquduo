@@ -57,14 +57,14 @@ class UserController extends BaseController{
 		$page = ($page-1)*$pagesize;
 
 		$count =  M('stand_inside_letter')
-			->where("store_id like '%".$store_id."%'")
-			->union("SELECT	COUNT(*) AS tp_count FROM `tp_stand_inside_letter` WHERE store_id = 0",true)
+			->where("store_id like '%,".$store_id.",%'")
+			->union("SELECT	COUNT(*) AS tp_count FROM `tp_stand_inside_letter` WHERE store_id = ',0,'",true)
 			->field('COUNT(*) AS tp_count')
 			->SELECT();
 
 		$count = $count[0]['tp_count'] + $count[1]['tp_count'];
 
-		$stand_inside_letter_list = M('stand_inside_letter')->query("SELECT * FROM ((SELECT `msg_id`,`msg_title`,`msg_time`,`msg_content`,`msg_logo_url` FROM `tp_stand_inside_letter` WHERE (store_id LIKE '%2%')) UNION ALL (SELECT `msg_id`,`msg_title`,`msg_time`,`msg_content`,`msg_logo_url` FROM `tp_stand_inside_letter` WHERE store_id = 0)) AS a LIMIT $page,$pagesize");
+		$stand_inside_letter_list = M('stand_inside_letter')->query("SELECT * FROM ((SELECT `msg_id`,`msg_title`,`msg_time`,`msg_content`,`msg_logo_url` FROM `tp_stand_inside_letter` WHERE (store_id LIKE '%,$store_id,%')) UNION ALL (SELECT `msg_id`,`msg_title`,`msg_time`,`msg_content`,`msg_logo_url` FROM `tp_stand_inside_letter` WHERE store_id = ',0,')) AS a LIMIT $page,$pagesize");
 		
 		foreach ($stand_inside_letter_list as $k=>$v){
 			$stand_inside_letter_list[$k]['msg_content'] = strip_tags($v['msg_content']);

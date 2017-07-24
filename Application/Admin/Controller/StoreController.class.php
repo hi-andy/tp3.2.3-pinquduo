@@ -587,10 +587,18 @@ class StoreController extends BaseController{
 	}
 
 	function ajaxstand_inside_letter(){
-
-		$MIL = M('stand_inside_letter')->field('msg_id,store_id,store_name,msg_title,msg_time,modify_time')->select();
-
+		$count = M('stand_inside_letter')->field('msg_id,store_id,store_name,msg_title,msg_time,modify_time')->count();
+		$Page  = new AjaxPage($count,20);
+		$show = $Page->show();
+		$MIL = M('stand_inside_letter')->field('msg_id,store_id,store_name,msg_title,msg_time,modify_time,msg_logo_url')->limit($Page->firstRow,$Page->listRows)->select();
+		foreach ($MIL as $k=>$v){
+			if($MIL[$k]['store_id']!= '0' && substr_count($MIL[$k]['store_id'], ',')>1){
+				$MIL[$k]['store_id'] = substr($MIL[$k]['store_id'],1);
+				$MIL[$k]['store_id'] = substr($MIL[$k]['store_id'],0,strlen($MIL[$k]['store_id'])-1);
+			}
+		}
 		$this->assign('List',$MIL);
+		$this->assign('page',$show);// 赋值分页输出
 		$this->display();
 	}
 
@@ -599,7 +607,7 @@ class StoreController extends BaseController{
 		if(!empty($_POST)){
 			$data = $_POST;
 			$type = $_POST['msg_id'] > 0 ? 2 : 1;
-			$arr['store_id'] = $data['store_id'];
+			$arr['store_id'] = ','.$data['store_id'].',';
 			$arr['msg_content'] = $data['msg_content'];
 			$arr['msg_title'] = $data['msg_title'];
 			$arr['type'] = $data['logo_type'];
@@ -662,9 +670,13 @@ class StoreController extends BaseController{
 		$msgid = $_GET['id'];
 		$MIL = M('stand_inside_letter')
 			->where('msg_id  = '.$msgid)
-			->field('msg_id,store_id,msg_title,msg_content')->find();
+			->field('msg_id,store_id,msg_title,msg_content,type')->find();
 		//判断是否为多个商户
-		if(substr_count($MIL['store_id'],',')){
+		if(substr_count($MIL['store_id'],',')>1){
+
+			$MIL['store_id'] = substr($MIL['store_id'],1);
+			$MIL['store_id'] = substr($MIL['store_id'],0,strlen($MIL['store_id'])-1);
+
 			$cha = explode(',',$MIL['store_id']);
 			$condition['id'] = array('in',$cha);
 			$store_name = M('merchant')->where($condition)->field('store_name')->select();
@@ -672,9 +684,11 @@ class StoreController extends BaseController{
 			$store_name = M('merchant')->where('id = '.$MIL['store_id'])->field('store_name')->select();
 		}
 
-		$this->assign('logolist',C('msg_logo'));
+		$this->assign('msg_logo',C('msg_logo'));
 		$this->assign('store_name',$store_name);
 		$this->assign('msg',$MIL);
+
+		$this->initEditor(); // 编辑器
 		$this->display();
 	}
 
@@ -710,5 +724,21 @@ class StoreController extends BaseController{
 		{
 			$this->success("已删除!!!", U('Admin/Store/stand_inside_letter'));
 		}
+	}
+
+	/**
+	 * 初始化编辑器链接
+	 * 本编辑器参考 地址 http://fex.baidu.com/ueditor/
+	 */
+	private function initEditor()
+	{
+		$this->assign("URL_upload", U('Admin/Ueditor/imageUpText', array('savepath' => 'goods'))); // 图片上传目录
+		$this->assign("URL_imageUp", U('Admin/Ueditor/imageUp', array('savepath' => 'article'))); //  不知道啥图片
+		$this->assign("URL_fileUp", U('Admin/Ueditor/fileUp', array('savepath' => 'article'))); // 文件上传s
+		$this->assign("URL_scrawlUp", U('Admin/Ueditor/scrawlUp', array('savepath' => 'article')));  //  图片流
+		$this->assign("URL_getRemoteImage", U('Admin/Ueditor/getRemoteImage', array('savepath' => 'article'))); // 远程图片管理
+		$this->assign("URL_imageManager", U('Admin/Ueditor/imageManager', array('savepath' => 'article'))); // 图片管理
+		$this->assign("URL_getMovie", U('Admin/Ueditor/getMovie', array('savepath' => 'article'))); // 视频上传
+		$this->assign("URL_Home", "");
 	}
 }

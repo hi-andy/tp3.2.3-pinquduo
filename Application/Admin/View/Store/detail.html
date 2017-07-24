@@ -121,7 +121,7 @@
                                         <td>
                                             <select name="logo_type" id="logo_type" class="form-control" style="width:250px;">
                                                 <option value="">请选择标识</option>
-                                                <foreach name="logolist" item="v" key="k" >
+                                                <foreach name="msg_logo" item="v" key="k" >
                                                     <option value="{$v['id']}"  <if condition="$v['id'] eq $msg['type'] ">selected="selected"</if>>
                                                     {$v['name']}
                                                     </option>
@@ -131,7 +131,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>发放商户:</td>
+                                        <td>发放商户ID:</td>
                                         <td>
                                             <div style="height: 34px">
                                                 <input type="text" value="{$msg.store_id}" name="store_id" class="form-control" style="float: left"/>

@@ -837,6 +837,15 @@ class BaseController extends Controller {
     }
 
     public function order_redis_status_ref($user_id){
+//        redis("getOrderList".$user_id, "1", 1);
+//        redis("getCountUserOrder".$user_id, "1", 1);
+//        redisdelall('getCountUserOrder'.$user_id."*");
+//        redis("return_goods_list".$user_id, "1", 1);
+//        redisdelall("return_goods_list".$user_id."*");
+//        redis("getUserPromList".$user_id, "1", 1);
+//        redisdelall("getUserPromList".$user_id."*");
+
+
         redis("getOrderList_status_".$user_id,"1");
         redis("getCountUserOrder_status".$user_id,"1");
         redis("return_goods_list_status".$user_id,"1");
