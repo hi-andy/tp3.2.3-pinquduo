@@ -194,7 +194,7 @@ class IndexController {
 		$info[3]['value'] = $Order->where('pay_status = 0 and order_type != 5 and store_id = '.$store_id)->count();
 
 		$info[4]['key'] = '未处理售后';
-		$info[4]['value'] = M('return_goods')->where("status = 0 and store_id = $store_id")->count();
+		$info[4]['value'] = $Order->where("store = $store_id and order_type in (6,8)")->count();
 
 		$info[5]['key'] = '退款中';
 		$info[5]['value'] = M('return_goods')->where("status != 3 and status != 0 and store_id = $store_id")->count();

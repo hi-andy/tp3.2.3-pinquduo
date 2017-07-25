@@ -1,4 +1,9 @@
 <include file="Public/min-header" />
+<style>
+    form {
+        float: left;
+    }
+</style>
 <div class="wrapper">
 	<include file="Public/breadcrumb"/>		
     <section class="content ">
@@ -20,29 +25,30 @@
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
+                                    <td>商品名称：</td>
+                                    <td >
+                                        {$store}
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="col-sm-2">订单编号：</td>
                                     <td class="col-sm-8">
                                         <a href="{:U('Admin/order/detail',array('order_id'=>$order['order_id']))}">{$order.order_sn}</a>
                                     </td>
                                 </tr>  
                                 <tr>
-                                    <td>用户：</td>
+                                    <td>用户名：</td>
                                     <td>                    
 					                    {$user_name}
                                     </td>
                                 </tr>  
                                 <tr>
-                                    <td>下单日期：</td>
+                                    <td>下单时间：</td>
                                     <td>                    
 					                    {$order.add_time|date="Y-m-d H:i",###}
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>商品名称：</td>
-                                    <td >
-                                        {$store}
-                                    </td>
-                                </tr>
+
                                 <tr>
                                     <td>订单金额：</td>
                                     <td >
@@ -52,11 +58,40 @@
                                 <tr>
                                     <td>惩罚金额：</td>
                                     <td >
-                                        <input type="number" name="punishment_money" value="">
+                                        <form action="" method="get">
+                                            <label></label>
+                                            <select name="">
+                                                <option value="0">延迟发货</option>
+                                                <option value="1">虚假发货</option>
+                                                <option value="2">假货处理</option>
+                                            </select>
+                                        </form>
+                                        <form action="" method="get">
+                                            <label> </label>
+                                            <select name="">
+                                                <option value="0">1天</option>
+                                                <option value="1">2天</option>
+                                                <option value="2">3天</option>
+                                                <option value="2">4天</option>
+                                                <option value="2">5天及以上</option>
+                                            </select>
+                                        </form>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>惩罚理由：</td>
+                                    <td>惩罚基数：</td>
+                                    <td >
+                                        10元
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>惩罚金额：</td>
+                                    <td >
+                                        10元
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>添加备注：</td>
                                     <td>
                                         <textarea name="reason" placeholder="请输入惩罚理由" rows="3" class="area" style="width:400px; height:120px;"></textarea>
                                     </td>

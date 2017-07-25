@@ -475,6 +475,25 @@ class StoreController extends BaseController{
         $this->display();
     }
 
+    function  find_index(){
+        $this->display();
+    }
+
+    function  ajax_find_index(){
+        $store_id = $_SESSION['merchant_id'];
+        $where = " `store_id`=".$store_id;
+        $store_punishment = M('store_punishment');
+        $count = $store_punishment->where($where)->count();
+        $Page = new AjaxPage($count, 10);
+        $show = $Page->show();
+        $order_str = " `datetime` desc ";
+        $List = $store_punishment->where($where)->order($order_str)->limit($Page->firstRow . ',' . $Page->listRows)->field('order_sn,reason,datetime')->select();
+
+        $this->assign('page',$show);
+        $this->assign('List',$List);
+        $this->display();
+    }
+
     function getReceipt($store)
     {
         $bigImgPath = 'Public/images/shouju.jpg';

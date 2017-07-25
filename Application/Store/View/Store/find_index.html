@@ -1,0 +1,84 @@
+<include file="Public/min-header"/>
+
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+    <style>#search-form > .form-group{margin-left: 10px;}
+
+    </style>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-list"></i> 提现申请列表</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="navbar navbar-default">
+                        <form action="" id="search-form2" class="navbar-form form-inline" method="post" onsubmit="return false">
+
+                        </form>
+                    </div>
+                    <div id="ajax_return">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<script>
+    $(document).ready(function(){
+        // ajax 加载列表
+        ajax_get_table('search-form2',1);
+
+    });
+
+
+    // ajax 抓取页面 form 为表单id  page 为当前第几页
+    function ajax_get_table(form,page){
+        cur_page = page; //当前页面 保存为全局变量
+        $.ajax({
+            type : "POST",
+            url:"/Store/Store/ajax_find_index?p="+page,//+tab,
+            data : $('#'+form).serialize(),// 你的formid
+            success: function(data){
+                $("#ajax_return").html('');
+                $("#ajax_return").append(data);
+            }
+        });
+    }
+
+    // 点击排序
+    function sort(field)
+    {
+        $("input[name='orderby1']").val(field);
+        var v = $("input[name='orderby2']").val() == 'desc' ? 'asc' : 'desc';
+        $("input[name='orderby2']").val(v);
+        ajax_get_table('search-form2',cur_page);
+    }
+
+    // 删除操作
+    function del(id)
+    {
+        if(!confirm('确定要删除吗?'))
+            return false;
+        $.ajax({
+            url:"/Admin/store/delStore?id="+id,
+            success: function(v){
+                var v =  eval('('+v+')');
+                if(v.hasOwnProperty('status') && (v.status == 1))
+                    ajax_get_table('search-form2',cur_page);
+                else
+                    layer.msg(v.msg, {icon: 2,time: 1000}); //alert(v.msg);
+            }
+        });
+        return false;
+    }
+</script>
+
+</body>
+</html>

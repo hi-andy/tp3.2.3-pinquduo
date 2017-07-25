@@ -92,7 +92,7 @@ class UserController extends BaseController{
 
 		$msg = M('stand_inside_letter')
 			->where('msg_id = '.$msg_id)
-			->field('store_id,msg_content')
+			->field('store_id,msg_title,msg_content')
 			->find();
 
 		if(!empty(substr_count($store_id,$msg['store_id']))){
@@ -100,6 +100,7 @@ class UserController extends BaseController{
 		}
 
 		$this->assign('msg_content',$msg['msg_content']);
+		$this->assign('msg_title',$msg['msg_title']);
 		$this->display();
 	}
 }

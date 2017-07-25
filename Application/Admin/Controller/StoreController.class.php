@@ -144,6 +144,9 @@ class StoreController extends BaseController{
 					}else{
 						$base['password'] = md5($base['password']);
 					}
+				}else{
+					unset($base['password2']);
+					unset($base['password']);
 				}
 				if($merchant['state'] != $base['state']){
 					if($base['state'] == 1){
