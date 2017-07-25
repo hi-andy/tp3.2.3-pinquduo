@@ -369,6 +369,7 @@ class AutomationController extends BaseController
                         return false;
                     }
 
+
                     foreach ($group_buy_mark as $v1) {
                         if($v1['auto']==0){
                             $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
@@ -397,9 +398,27 @@ class AutomationController extends BaseController
             }
             $ids = substr($ids, 0, -1);
             $order_ids = substr($order_ids, 0, -1);
+            $promid = $prom_order[0]['id'];
+            $goodsnum = $prom_order[0]['goods_num'];
             if (!empty($ids) && !empty($order_ids)) {
                 M("group_buy")->where("id in({$ids}) and is_pay=1")->save(array("is_successful" => 1));
+                //判断成团个数大于0
+                if($goodsnum>0){
+                    //再次查询数据库获取所有成团信息
+                    $all = M('group_buy')
+                        ->where("(id = {$promid} or mark = {$promid}) and is_pay=1 and is_cancel=0 and is_successful=1")
+                        ->select();
+                    if(count($all) > (int)$goodsnum){
+                        $duonum = count($all)-(int)$goodsnum;
+                        for($startnum=1;$startnum<=$duonum;$startnum++){
+                            M('group_buy')->where("mark = {$promid} and is_pay=1 and is_cancel=0 and is_successful=1 and auto=1")->delete();
+                        }
+                    }
+
+                }
+
                 M("order")->where("order_id in({$order_ids}) and order_type<>15")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
+
             }
         }
     }
