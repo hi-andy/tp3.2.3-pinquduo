@@ -790,6 +790,20 @@ class BaseController extends Controller {
                 M()->rollback();
             }
         }
+
+
+        //去掉点赞团多余的数据-温立涛 开始
+        if(1==$join_num[0]['is_raise']){
+            $duonum = count($join_num) - (int)$join_num[0]['goods_num'];
+            if($duonum>0){
+                $mainid = $join_num[0]['id'];
+                for($startnum=1;$startnum<=$duonum;$startnum++){
+                    M('group_buy')->where("mark={$mainid} and is_successful=1 and is_cancel=0 and is_pay=1")->order('id desc')->limit(1)->delete();
+                }
+            }
+        }
+        //结束
+
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
         if (!empty($user_ids)){

@@ -252,7 +252,8 @@ EOF;
                     if($group_info['mark']>0){
                         $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
                         M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
-                        if(($nums)==$group_info['goods_num'])
+                        //修改逻辑判断-温立涛
+                        if(intval($nums)>=$group_info['goods_num'])
                         {
                             $Goods = new BaseController();
                             $Goods->getFree($group_info['mark'],$order);
@@ -329,7 +330,8 @@ EOF;
                 if($group_info['mark']>0){
                     $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
-                    if(($nums)==$group_info['goods_num'])
+                    //修改逻辑判断-温立涛
+                    if(intval($nums)>=$group_info['goods_num'])
                     {
                         $Goods = new BaseController();
                         $Goods->getFree($group_info['mark']);

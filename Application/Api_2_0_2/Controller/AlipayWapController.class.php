@@ -130,7 +130,8 @@ class AlipayWapController extends BaseController
                     $group_info = M('group_buy')->where(array('id'=>$order['prom_id']))->find();
                     if($group_info['mark'] > 0){
                         $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
-                        if(($nums)==$group_info['goods_num'])
+                        //修改逻辑判断-温立涛
+                        if(intval($nums)>=$group_info['goods_num'])
                         {
                             $Goods = new BaseController();
                             $Goods->getFree($group_info['mark'],$order);
