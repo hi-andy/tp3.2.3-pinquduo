@@ -411,7 +411,7 @@ class AutomationController extends BaseController
                     if(count($all) > (int)$goodsnum){
                         $duonum = count($all)-(int)$goodsnum;
                         for($startnum=1;$startnum<=$duonum;$startnum++){
-                            M('group_buy')->where("mark = {$promid} and is_pay=1 and is_cancel=0 and is_successful=1 and auto=1")->delete();
+                            M('group_buy')->where("mark = {$promid} and is_pay=1 and is_cancel=0 and is_successful=1 and auto=1")->limt(1)->delete();
                         }
                     }
 
