@@ -140,12 +140,8 @@ class BaseController extends Controller {
         {
 	        (float)$total = (float)$total+$v['withdrawal_money'];
         }
-		(float)$fine = M('store_punishment')->where('store_id = '.$store_id)->sum('sp_penal_sum');
-		if(empty($fine)){
-			$fine = 0;
-		}
 		(float)$reflects = $reflect;
-		(float)$reflect = $reflect-$total-$fine;
+		(float)$reflect = $reflect-$total;
 
         if(empty($reflect)||((string)$reflects==(string)$total)){
 	        $reflect = 0;

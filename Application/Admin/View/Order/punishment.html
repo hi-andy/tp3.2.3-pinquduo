@@ -2,10 +2,14 @@
 <style>
     form {
         float: left;
+        display: inline-block;
+    }
+    .hidden {
+        display: none;
     }
 </style>
 <div class="wrapper">
-	<include file="Public/breadcrumb"/>		
+    <include file="Public/breadcrumb"/>
     <section class="content ">
         <!-- Main content -->
         <div class="container-fluid">
@@ -16,134 +20,212 @@
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-list"></i>退换货</h3>
                 </div>
-                <div class="panel-body ">   
+                <div class="panel-body ">
                     <!--表单数据-->
-                    <form method="post" id="return_form" action="{:U('Admin/Order/punishment')}">
                         <!--通用信息-->
-                    <div class="tab-content col-md-10">                 	  
-                        <div class="tab-pane active" id="tab_tongyong">                           
-                            <table class="table table-bordered">
-                                <tbody>
-                                <tr>
-                                    <td>商品名称：</td>
-                                    <td >
-                                        {$store}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-sm-2">订单编号：</td>
-                                    <td class="col-sm-8">
-                                        <a href="{:U('Admin/order/detail',array('order_id'=>$order['order_id']))}">{$order.order_sn}</a>
-                                    </td>
-                                </tr>  
-                                <tr>
-                                    <td>用户名：</td>
-                                    <td>                    
-					                    {$user_name}
-                                    </td>
-                                </tr>  
-                                <tr>
-                                    <td>下单时间：</td>
-                                    <td>                    
-					                    {$order.add_time|date="Y-m-d H:i",###}
-                                    </td>
-                                </tr>
+                        <div class="tab-content col-md-10">
+                            <div class="tab-pane active" id="tab_tongyong">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <td>商品名称：</td>
+                                        <td >
+                                            {$store}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2">订单编号：</td>
+                                        <td class="col-sm-8">
+                                            <a href="{:U('Admin/order/detail',array('order_id'=>$order['order_id']))}" id="order">{$order.order_sn}</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>用户名：</td>
+                                        <td>
+                                            {$user_name}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>下单时间：</td>
+                                        <td>
+                                            {$order.add_time|date="Y-m-d H:i",###}
+                                        </td>
+                                    </tr>
 
-                                <tr>
-                                    <td>订单金额：</td>
-                                    <td >
-                                        ￥{$order.order_amount}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>惩罚金额：</td>
-                                    <td >
-                                        <form action="" method="get">
-                                            <label></label>
-                                            <select name="">
-                                                <option value="0">延迟发货</option>
-                                                <option value="1">虚假发货</option>
-                                                <option value="2">假货处理</option>
-                                            </select>
-                                        </form>
-                                        <form action="" method="get">
-                                            <label> </label>
-                                            <select name="">
-                                                <option value="0">1天</option>
-                                                <option value="1">2天</option>
-                                                <option value="2">3天</option>
-                                                <option value="2">4天</option>
-                                                <option value="2">5天及以上</option>
-                                            </select>
-                                        </form>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>惩罚基数：</td>
-                                    <td >
-                                        10元
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>惩罚金额：</td>
-                                    <td >
-                                        10元
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>添加备注：</td>
-                                    <td>
-                                        <textarea name="reason" placeholder="请输入惩罚理由" rows="3" class="area" style="width:400px; height:120px;"></textarea>
-                                    </td>
-                                </tr>
-                                </tbody> 
-                                <tfoot>
-                                	<tr>
-                                	<td><input type="hidden" name="order_id" value="{$order.order_id}">
-                                	</td>
+                                    <tr>
+                                        <td >订单金额：</td>
+                                        <td id="orderMoney">
+                                            {$order.order_amount}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>惩罚金额：</td>
+                                        <td >
+                                            <form action="" method="get" >
+                                                <label></label>
+                                                <select name="type" id="type">
+                                                    <option value="0">延迟发货</option>
+                                                    <option value="1">虚假发货</option>
+                                                    <option value="2">假货处理</option>
+                                                </select>
+                                                <select name="data" id="day">
+                                                    <option value="0">1天</option>
+                                                    <option value="1">2天</option>
+                                                    <option value="2">3天</option>
+                                                    <option value="3">4天</option>
+                                                    <option value="4">5天及以上</option>
+                                                </select>
+                                            </form>
+                                            <!--<form action="" method="get" >-->
+                                            <!--<label> </label>-->
+                                            <!---->
+                                            <!--</form>-->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>惩罚基数：</td>
+                                        <td id="base">
+                                            10
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>惩罚金额：</td>
+                                        <td id="money" name="money">
+                                            10
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>添加备注：</td>
+                                        <td>
+                                            <textarea id="textarea" name="reason" placeholder="请输入惩罚理由" rows="3" class="area" style="width:400px; height:120px;"></textarea>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td><input type="hidden" name="order_id" value="{$order.order_id}">
+                                        </td>
                                         <td class="text-right">
                                             <if condition="$return_goods['ok_time'] eq 0">
-                                                <input class="btn btn-primary" type="submit"  value="保存">
+                                                <button class="btn btn-primary" id="saveBtn">保存</button>
                                             </if>
-                                </tfoot>                               
+                                    </tfoot>
                                 </table>
-                        </div>                           
-                    </div>              
-			    	</form><!--表单数据-->
+                            </div>
+                        </div>
+
                 </div>
             </div>
         </div>
     </section>
 </div>
 <script>
-function adsubmit(){
-	$('#handleposition').submit();
-}
-
-function backPay(order_id){
-    if(confirm('确定退款吗？')){
-        var index = layer.load(1, {
-            shade: [0.1,'#222'] //0.1透明度的白色背景
-        });
-        $.ajax({
-            type : 'POST',
-            url : '/Admin/Order/account_edit',
-            data : {'order_id':order_id},
-            dataType : 'JSON',
-            success : function(res){
-                layer.close(index);
-                if(res.status==1){
-                    alert('退款成功');
-                } else {
-                    alert('退款失败');
+    $(function(){
+        $("#type").change(function(){
+//            console.log($("#type option:selected").val());
+//            console.log(1);
+//            console.log($("#type option:selected").val());
+            if($("#type option:selected").val()==0){
+                $('#base').text(10)
+                console.log($('#day option:selected').val());
+//                console.log(($('#day option:selected').val() + 1) * 10);
+                $('#money').text((parseInt($('#day option:selected').val())+1)*10)
+                //延迟发货
+                $('#day').show()
+            } else {
+                $('#day').hide()
+                if($("#type option:selected").val()==1){
+                    //虚假发货
+                    var orderMoney =$('#orderMoney').text();
+                    console.log(orderMoney);
+                    if(orderMoney<50){
+                        $('#base').text(10)
+                        $('#money').text(10)
+                    }else if(orderMoney>=50&&orderMoney<100){
+                        $('#base').text(20)
+                        $('#money').text(20)
+                    }else if(orderMoney>=100&&orderMoney<300){
+                        $('#base').text(30)
+                        $('#money').text(30)
+                    }else {
+                        $('#base').text(40)
+                        $('#money').text(40)
+                    }
+                }else{
+                    //假货处理
+                    $('#base').text($('#orderMoney').text())
+                    $('#money').text($('#orderMoney').text()*10)
                 }
             }
-        });
+        })
+        $('#day').change(function () {
+            $('#base').text('10')
+            console.log($('#day option:selected').val());
+            switch (parseInt($('#day option:selected').val())){
+                case 0:$('#money').text('10')
+                    break;
+                case 1:$('#money').text('20');
+                    break;
+                case 2:$('#money').text('30');
+                    break;
+                case 3:$('#money').text('40');
+                    break;
+                default:$('#money').text('50');
+            }
+        })
+        console.log($('#saveBtn'));
+        $('#saveBtn').click(function () {
+            console.log(222);
+            $.ajax({
+                type : 'POST',
+                url : '/Admin/Order/punishment',
+                data : {
+                    order_sn:$('#order').text(),
+                    type:$('#type option:selected').val(),
+                    day:$('#day option:selected').val(),
+                    money:parseInt($('#money').text()),
+                    text:$('#textarea').val()
+                },
+                dataType : 'JSON',
+                success : function(res){
+                    if(res.status==1){
+                        alert('提交成功');
+                    }
+                }
+            });
+        })
 
-    }else{
-        return false;
+    })
+</script>
+<script>
+    function adsubmit(){
+        $('#handleposition').submit();
     }
-}
+
+    function backPay(order_id){
+        if(confirm('确定退款吗？')){
+            var index = layer.load(1, {
+                shade: [0.1,'#222'] //0.1透明度的白色背景
+            });
+            $.ajax({
+                type : 'POST',
+                url : '/Admin/Order/account_edit',
+                data : {'order_id':order_id},
+                dataType : 'JSON',
+                success : function(res){
+                    layer.close(index);
+                    if(res.status==1){
+                        alert('退款成功');
+                    } else {
+                        alert('退款失败');
+                    }
+                }
+            });
+
+        }else{
+            return false;
+        }
+    }
 </script>
 </body>
 </html>

@@ -48,16 +48,7 @@
                     <td class="text-center">{$list.nickname}</td>
                     <td class="text-center">{$list.goods_num}</td>
                     <td class="text-center">{$list.order_num}</td>
-                    <td class="text-center">
-                        <php>
-                            $group_res = $list['goods_num'] - $list['order_num'];
-                            if($group_res == 0){
-                                echo "成功";
-                            }else{
-                                echo "未成功";
-                            }
-                        </php>
-                    </td>
+                    <td class="text-center"><if condition="$list.is_successful eq 1"> 已成团</if> <if condition="$list.is_successful neq 1"> 未成团</if> </td>
                     <td class="text-center">{$list.start_time|date='Y-m-d H:i',###}</td>
                     <td class="text-center">{$list.end_time|date='Y-m-d H:i',###}</td>
                     <td class="text-center">{$list.pay_time|date='Y-m-d H:i',###}</td>

@@ -3,28 +3,23 @@
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
-                <td style="width: 1px;" class="text-center">
-                    <!--
-                        <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);">
-                    -->
-                </td>
                 <!--<td class="text-center">申请ID</td>-->
                 <!--<td class="text-center">商户名称</td>-->
                 <td class="text-center">罚款金额</td>
                 <td class="text-center">罚款原因</td>
                 <td class="text-center">涉及订单号</td>
                 <td class="text-center">处罚时间</td>
+                <td class="text-center">状态</td>
             </tr>
             </thead>
             <tbody>
             <volist name="List" id="list">
                 <tr>
-                    <td class="text-center">{$list.withdrawal_money}</td>
-                    <td class="text-center">{$list.withdrawal_type}</td>
-                    <td class="text-center">{$list.withdrawal_code}</td>
+                    <td class="text-center">{$list.sp_penal_sum}</td>
+                    <td class="text-center">{$list.reason}</td>
+                    <td class="text-center">{$list.order_sn}</td>
                     <td class="text-center">{$list.datetime}</td>
-                    <td class="text-center">{$withdralwal_STATUS[$list[status]]}</td>
-                    <td class="text-center">{$list.handletime}</td>
+                    <td class="text-center">{$type[$list[status]].name}</td>
                 </tr>
             </volist>
             </tbody>

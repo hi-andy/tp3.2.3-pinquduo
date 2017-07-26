@@ -57,6 +57,9 @@ class StoreController extends BaseController{
 			->order($order_str)
 			->limit($Page->firstRow . ',' . $Page->listRows)->select();
 		$this->assign('page',$show);
+
+		
+
 		$this->assign('storesList',$storesList);
 		$this->display();
 	}

@@ -11,12 +11,12 @@
         <div class="container-fluid">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> 提现申请列表</h3>
+                    <h3 class="panel-title"><i class="fa fa-list"></i>  惩罚列表</h3>
                 </div>
                 <div class="panel-body">
                     <div class="navbar navbar-default">
                         <form action="" id="search-form2" class="navbar-form form-inline" method="post" onsubmit="return false">
-
+                            <span>您的保证余额为：￥{$margin}</span><if condition="$margin elt 0"><span style="color: red"> (您的保证金已不足，请及时缴纳！！)</span></if>
                         </form>
                     </div>
                     <div id="ajax_return">
@@ -43,7 +43,7 @@
         cur_page = page; //当前页面 保存为全局变量
         $.ajax({
             type : "POST",
-            url:"/Store/Store/ajax_find_index?p="+page,//+tab,
+            url:"/Store/Store/ajax_fine_index?p="+page,//+tab,
             data : $('#'+form).serialize(),// 你的formid
             success: function(data){
                 $("#ajax_return").html('');
