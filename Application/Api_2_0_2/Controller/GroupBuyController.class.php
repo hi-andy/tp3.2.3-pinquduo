@@ -57,6 +57,7 @@ class GroupBuyController extends BaseController {
         $postdata['address_id'] = 0;
 
         $orderid = $result['order_id'];
+        $goods_id = $result['goods_id'];
         $ordergood = M('order_goods')->field('spec_key')->where(['goods_id'=>$goods_id,'order_id'=>$orderid])->find();
         $postdata['spec_key'] = $ordergood['spec_key'];
         //模拟为我点赞请求
