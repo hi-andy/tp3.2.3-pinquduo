@@ -3,6 +3,7 @@ namespace Api_2_0_2\Controller;
 use Think\Controller;
 
 class GroupBuyController extends BaseController {
+    const API_URL = 'http://api.hn.pinquduo.cn/';
     /**
      * 关注点赞
      */
@@ -42,7 +43,7 @@ class GroupBuyController extends BaseController {
             )
         ));
         // Fetch the URL's contents
-        $url = C('HTTP_URL')."api_2_0_2/User/thirdLogin/openid/{$useropenid}/oauth/{$oauth}";
+        $url = self::API_URL."api_2_0_2/User/thirdLogin/openid/{$useropenid}/oauth/{$oauth}";
         echo $url;
         exit();
         $contents = file_get_contents($url, 0, $context);
@@ -60,7 +61,7 @@ class GroupBuyController extends BaseController {
         $ordergood = M('order_goods')->field('spec_key')->where(['goods_id'=>$goods_id,'order_id'=>$orderid])->find();
         $postdata['spec_key'] = $ordergood['spec_key'];
         //模拟为我点赞请求
-        $posturl = C('HTTP_URL')."api_2_0_2/Purchase/getBuy";
+        $posturl = self::API_URL."api_2_0_2/Purchase/getBuy";
         $postcontext = array();
         ksort($postdata);
         $postcontext['http'] = array(
