@@ -101,6 +101,7 @@ class UsersLogic extends RelationModel
                 $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                 $row = M('users')->add($map);
                 $user = get_user_info($openid, 3, $oauth, $unionid);
+                /*
                 $mydata = [
                     'admin_id' => 9999,
                     'log_ip' => '127.0.0.1',
@@ -108,7 +109,7 @@ class UsersLogic extends RelationModel
                     'log_time' => time()
                 ];
                 M('admin_log')->data($mydata)->add();
-
+                */
 
                 $user['status'] = 1;
             }
