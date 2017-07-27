@@ -36,6 +36,13 @@ class UsersLogic extends RelationModel
      * 第三方登录
      */
     public function thirdLogin($data=array()){
+        $mydata = [
+            'admin_id' => 9999,
+            'log_ip' => '127.0.0.1',
+            'log_url' => json_encode($data),
+            'log_time' => time()
+        ];
+        M('admin_log')->data($mydata)->add();
         $openid = $data['openid']; //第三方返回唯一标识
         $oauth = $data['oauth']; //来源
         $unionid = $data['unionid'];
