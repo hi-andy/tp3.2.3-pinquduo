@@ -66,7 +66,8 @@ class GroupBuyController extends BaseController {
             'method' => 'POST',
             'content' => http_build_query($postdata, '', '&'),
         );
-        @file_get_contents($posturl, false, stream_context_create($postcontext));
+        $resdata = file_get_contents($posturl, false, stream_context_create($postcontext));
+        echo $resdata;
         exit();
     }
 
