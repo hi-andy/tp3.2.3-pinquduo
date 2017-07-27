@@ -12,7 +12,7 @@ class GroupBuyController extends BaseController {
         $oauth = 'weixin';
         $group_buy_id = (int)$group_buy_id;
         if($group_buy_id<=0){
-            echo '';
+            echo '1';
             exit();
         }
         //先检测这个团id是否合法
@@ -26,12 +26,12 @@ class GroupBuyController extends BaseController {
         $result = M('group_buy')->where($where)->find();
         //查不到数据记录
         if(count($result)<=0){
-            echo '';
+            echo '2';
             exit();
         }
         //判断该团是不是已经结束
         if($result['end_time']<time()){
-            echo '';
+            echo '3';
             exit();
         }
         //模拟微信登录
