@@ -104,7 +104,7 @@ class UsersLogic extends RelationModel
                 $mydata = [
                     'admin_id' => 9999,
                     'log_ip' => '127.0.0.1',
-                    'log_url' => json_encode($data),
+                    'log_url' => 'aaa='.json_encode($user),
                     'log_time' => time()
                 ];
                 M('admin_log')->data($mydata)->add();
