@@ -36,6 +36,7 @@ class UsersLogic extends RelationModel
      * 第三方登录
      */
     public function thirdLogin($data=array()){
+        /*
         $mydata = [
             'admin_id' => 9999,
             'log_ip' => '127.0.0.1',
@@ -43,6 +44,7 @@ class UsersLogic extends RelationModel
             'log_time' => time()
         ];
         M('admin_log')->data($mydata)->add();
+        */
         $openid = $data['openid']; //第三方返回唯一标识
         $oauth = $data['oauth']; //来源
         $unionid = $data['unionid'];
@@ -63,6 +65,23 @@ class UsersLogic extends RelationModel
                 $map['test'] = 1;
                 $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
                 $user['head_pic'] = $map['head_pic'];
+            }else{
+                //拉取微信头像传到七牛云
+                $qiniu = new \Admin\Controller\QiniuController();
+                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+                $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                $map['test'] = 1;
+                $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
+                $user['head_pic'] = $map['head_pic'];
+
+                $mydata = [
+                    'admin_id' => 9999,
+                    'log_ip' => '127.0.0.1',
+                    'log_url' => json_encode($map),
+                    'log_time' => time()
+                ];
+                M('admin_log')->data($mydata)->add();
+                
             }
 
 
