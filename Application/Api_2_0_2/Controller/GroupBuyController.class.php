@@ -44,8 +44,7 @@ class GroupBuyController extends BaseController {
         ));
         // Fetch the URL's contents
         $url = self::API_URL."api_2_0_2/User/thirdLogin/openid/{$useropenid}/oauth/{$oauth}";
-        echo $url;
-        exit();
+
         $contents = file_get_contents($url, 0, $context);
         $getArray = json_decode($contents,true);
         $userdata = $getArray['result'];
