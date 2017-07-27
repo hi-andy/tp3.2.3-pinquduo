@@ -154,7 +154,7 @@ class PurchaseController extends  BaseController
                 if ($result['is_raise'] == 1) {
                     $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
                     if(!empty($raise)){
-                        $json = array('status' => -1, 'msg' => '您已参加过这个活动，请选择开团邀请好友得奖品');
+                        $json = array('status' => -1, 'msg' => '您已经参加过活动，请选择开团 ^_^');
                         redisdelall("getBuy_lock_" . $goods_id);//删除锁
                         if (!empty($ajax_get)) {
                             echo "<script> alert('" . $json['msg'] . "') </script>";

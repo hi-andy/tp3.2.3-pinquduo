@@ -1068,7 +1068,8 @@ class OrderController extends BaseController {
 			$data['admin_name'] = $admin['user_name'];
 			$data['datetime'] = date('Y-m-d H:m:s',time());
 			$res = M('store_punishment')->data($data)->add();
-			if($res)
+			$res1 = M('store_detail')->where('storeid = ' . $order['store_id'])->setDec('margin', $data['sp_penal_sum']);
+			if($res && $res1)
 			{
 				$this->success('修改成功!',U("Admin/Order/index"));
 			}else{

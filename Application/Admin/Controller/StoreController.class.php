@@ -58,7 +58,7 @@ class StoreController extends BaseController{
 			->limit($Page->firstRow . ',' . $Page->listRows)->select();
 		$this->assign('page',$show);
 
-		
+
 
 		$this->assign('storesList',$storesList);
 		$this->display();
@@ -419,9 +419,19 @@ class StoreController extends BaseController{
 		$data['admin_name'] = $_SESSION['admin_info']['user_name'];
 		$data['datetime'] = date('Y-m-d H:i:s');
 
+		$info = M('store_punishment')->where(array('sp_id' => $sp_id))->find();
 		$res = M('store_punishment')->where(array('sp_id'=>$sp_id))->save($data);
+		if($info['status']!=$status) {
+			if ($status == 1) {
+				$res1 = M('store_detail')->where('storeid = ' . $info['store_id'])->setDec('margin', $info['sp_penal_sum']);
+			} else {
+				$res1 = M('store_detail')->where('storeid = ' . $info['store_id'])->setInc('margin', $info['sp_penal_sum']);
+			}
+		}else{
+			$res1 = 1;
+		}
 
-		if($res){
+		if($res&&$res1){
 			echo json_encode(array('status'=>1,'msg'=>'修改成功'));
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'修改失败'));

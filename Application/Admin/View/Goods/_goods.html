@@ -98,7 +98,7 @@
                                         <td>商品分类:</td>
                                         <td>
                                             <div class="col-xs-3">
-                                                <select name="cat_id" disabled="disabled" id="cat_id" onchange="get_categoryforhaitao(this.value,'cat_id_2','0');" class="form-control" style="width:250px;margin-left:-15px;">
+                                                <select name="cat_id" disabled="disabled" id="cat_id" onchange="get_category(this.value,'cat_id_2','0');" class="form-control" style="width:250px;margin-left:-15px;">
                                                     <option value="0">请选择商品分类</option>
                                                     <foreach name="cat_list" item="v" key="k" >
                                                         <option value="{$v['id']}" <if condition="$v['id'] eq $level_cat['1']">selected="selected"</if> >
@@ -108,29 +108,16 @@
                                                 </select>
                                             </div>
                                             <div class="col-xs-3">
-                                                <select name="cat_id_2" disabled="disabled" id="cat_id_2"  class="form-control" style="width:250px;margin-left:-15px;">
-                                                    <foreach name="cat_list2" item="v" key="k" >
-                                                        <option value="{$v['id']}" <if condition="$v['id'] eq $goodsInfo['category_id']">selected="selected"</if> >
-                                                        {$v['name']}
-                                                        </option>
-                                                    </foreach>
+                                                <select name="cat_id_2" disabled="disabled" id="cat_id_2" onchange="get_category(this.value,'cat_id_3','0');" class="form-control" style="width:250px;margin-left:-15px;">
+                                                    <option value="0">请选择商品分类</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <select name="cat_id_3"  id="cat_id_3" class="form-control" style="width:250px;margin-left:-15px;">
+                                                    <option value="0">请选择商品分类</option>
                                                 </select>
                                             </div>
                                             <span id="err_cat_id" style="color:#F00; display:none;"></span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>商品归属:</td>
-                                        <td>
-                                            <select name="countries_type" disabled="disabled" id="countries_type" class="form-control" style="width:250px;">
-                                                <option value="0">所有归属</option>
-                                                <foreach name="haitao_style" item="v" key="k" >
-                                                    <option value="{$v['id']}"  <if condition="$v['id'] eq $goodsInfo['countries_type'] ">selected="selected"</if>>
-                                                    {$v['name']}
-                                                    </option>
-                                                </foreach>
-                                            </select>
-                                            <label id="err_is_special" style="color:#F00; ">*必须选择</label>
                                         </td>
                                     </tr>
                                     <tr>
@@ -291,7 +278,7 @@
                             <if condition="$goodsInfo.is_audit neq 2">
                                 <input type="hidden" name="is_audit" value="{$goodsInfo.is_audit}" >
                             </if>
-                            <button class="btn btn-primary" onclick="ajax_submit_form('addEditGoodsForm','{:U('Haitao/addEditGoods?is_ajax=1')}');" title="" data-toggle="tooltip" type="button" data-original-title="保存">保存</button>
+                            <button class="btn btn-primary" onclick="ajax_submit_form('addEditGoodsForm','{:U('Goods/addEditGoods?is_ajax=1')}');" title="" data-toggle="tooltip" type="button" data-original-title="保存">保存</button>
                         </div>
                     </form>
                     <!--表单数据-->
@@ -309,7 +296,7 @@
         var  last_div = $(".goods_xc2:last").prop("outerHTML");
         for (i=0;i<paths.length ;i++ )
         {
-            $(".goods_xc2:eq(0)").before(last_div);	// 插入一个 新图片
+            $(".goods_xc2:eq(0)").before(last_div); // 插入一个 新图片
             $(".goods_xc2:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
             $(".goods_xc2:eq(0)").find('img').attr('src',paths[i]);// 修改他的图片路径
             $(".goods_xc2:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
@@ -340,7 +327,7 @@
         var  last_div = $(".goods_xc:last").prop("outerHTML");
         for (i=0;i<paths.length ;i++ )
         {
-            $(".goods_xc:eq(0)").before(last_div);	// 插入一个 新图片
+            $(".goods_xc:eq(0)").before(last_div);  // 插入一个 新图片
             $(".goods_xc:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
             $(".goods_xc:eq(0)").find('img').attr('src',paths[i]);// 修改他的图片路径
             $(".goods_xc:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
@@ -394,7 +381,7 @@
                     $("#ajax_spec_data").html('')
                     $("#ajax_spec_data").append(data);
                     //alert('132');
-                    ajaxGetSpecInput();	// 触发完  马上触发 规格输入框
+                    ajaxGetSpecInput(); // 触发完  马上触发 规格输入框
                 }
             });
         });
@@ -405,8 +392,8 @@
     /** 以下是编辑时默认选中某个商品分类*/
     $(document).ready(function(){
         <if condition="$level_cat['2'] gt 0">
-            // 商品分类第二个下拉菜单
-            get_category_haitao('{$level_cat[1]}','cat_id_2','{$level_cat[2]}');
+                // 商品分类第二个下拉菜单
+                get_category_haitao('{$level_cat[1]}','cat_id_2','{$level_cat[2]}');
         </if>
 
         <if condition="$level_cat['3'] gt 0">
@@ -414,7 +401,7 @@
                 get_category_haitao('{$level_cat[2]}','cat_id_3','{$level_cat[3]}');
         </if>
 
-        });
+    });
 </script>
 </body>
 </html>

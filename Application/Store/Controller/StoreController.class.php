@@ -451,6 +451,28 @@ class StoreController extends BaseController{
         $this->display();
     }
 
+    function  fine_index(){
+        (float)$margin = M('store_detail')->where('storeid = '.$_SESSION['merchant_id'])->getField('margin');
+        $this->assign('margin',$margin);
+        $this->display();
+    }
+
+    function  ajax_fine_index(){
+        $store_id = $_SESSION['merchant_id'];
+        $where = " `store_id`=".$store_id ;
+        $store_punishment = M('store_punishment');
+        $count = $store_punishment->where($where)->count();
+        $Page = new AjaxPage($count, 10);
+        $show = $Page->show();
+        $order_str = " `datetime` desc ";
+        $List = $store_punishment->where($where)->order($order_str)->limit($Page->firstRow . ',' . $Page->listRows)->field('order_sn,sp_penal_sum,reason,datetime,type,status')->select();
+
+        $this->assign('page',$show);
+        $this->assign('List',$List);
+        $this->assign('type',C('TYPE_STATUS'));
+        $this->display();
+    }
+
     function ajaxreceipt()
     {
         $store_id = $_SESSION['merchant_id'];
@@ -472,31 +494,6 @@ class StoreController extends BaseController{
         }
 
         $this->assign('receipt',$receipt);
-        $this->display();
-    }
-
-    function  fine_index(){
-        (float)$margin = M('store_detail')->where('storeid = '.$_SESSION['merchant_id'])->getField('margin');
-        (float)$fine = M('store_punishment')->where('store_id = '.$_SESSION['merchant_id'].' and status = 1')->sum('sp_penal_sum');
-        if(empty($fine))
-            $fine = 0;
-        $this->assign('margin',$margin-$fine);
-        $this->display();
-    }
-
-    function  ajax_fine_index(){
-        $store_id = $_SESSION['merchant_id'];
-        $where = " `store_id`=".$store_id ;
-        $store_punishment = M('store_punishment');
-        $count = $store_punishment->where($where)->count();
-        $Page = new AjaxPage($count, 10);
-        $show = $Page->show();
-        $order_str = " `datetime` desc ";
-        $List = $store_punishment->where($where)->order($order_str)->limit($Page->firstRow . ',' . $Page->listRows)->field('order_sn,sp_penal_sum,reason,datetime,type,status')->select();
-
-        $this->assign('page',$show);
-        $this->assign('List',$List);
-        $this->assign('type',C('TYPE_STATUS'));
         $this->display();
     }
 

@@ -887,9 +887,7 @@ class IndexController extends BaseController {
 	}
 
     function test(){
-        $fine = M('store_punishment')->where('store_id = '. 910)->sum('sp_penal_sum');
-        var_dump(M()->getLastsql());
-        var_dump($fine);
+        var_dump(date('Y-m-d H:m:s',time()));
     }
 
     //删除缓存
