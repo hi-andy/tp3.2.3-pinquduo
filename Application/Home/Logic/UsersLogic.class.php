@@ -57,31 +57,29 @@ class UsersLogic extends RelationModel
             $user = get_user_info($openid, 3, $oauth, $unionid);
             redis('head_pic',$data['head_pic'],REDISTIME);
             if (($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile']))) {
-                $map['head_pic'] = saveimage($data['head_pic']);
+                //$map['head_pic'] = saveimage($data['head_pic']);
+                $map['head_pic'] = $data['head_pic'];
                 //拉取微信头像传到七牛云
+                /*
                 $qiniu = new \Admin\Controller\QiniuController();
                 $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
-                $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                */
+                //$map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                 $map['test'] = 1;
                 $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
                 $user['head_pic'] = $map['head_pic'];
             }else{
                 //拉取微信头像传到七牛云
-                $qiniu = new \Admin\Controller\QiniuController();
-                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
-                $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                $map['test'] = 1;
-                $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
-                $user['head_pic'] = $map['head_pic'];
+                //$qiniu = new \Admin\Controller\QiniuController();
+                //$qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+                //$map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
 
-                $mydata = [
-                    'admin_id' => 9999,
-                    'log_ip' => '127.0.0.1',
-                    'log_url' => json_encode($map),
-                    'log_time' => time()
-                ];
-                M('admin_log')->data($mydata)->add();
-                
+                $map['head_pic'] = $data['head_pic'];
+                $map['test'] = 1;
+                if($data['head_pic']!=$user['head_pic']){
+                    $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
+                }
+                $user['head_pic'] = $map['head_pic'];
             }
 
 
