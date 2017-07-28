@@ -240,11 +240,9 @@ class AutomationController extends BaseController
 
     public function zan(){
         //处理点赞逻辑代码开始
-        $endtime = time()+86400;
-        $minute = (int)date('i');
+        $end_time = time()+86400;
 
         //if($minute%5==0){
-
         $dianzan = M('group_buy')->field('goods_num,mark,count(id) as zongji')->where('`auto`=0 and 
                         `is_raise`=1 and 
                         `free`=0 and 
@@ -273,7 +271,6 @@ class AutomationController extends BaseController
             }
 
         }
-
         //}
         //处理点赞逻辑代码结束
 
