@@ -238,6 +238,44 @@ class AutomationController extends BaseController
         if ($is_special > 0) redis("get_Seconds_Kill_status", "1");
     }
 
+    public function zan(){
+        //处理点赞逻辑代码开始
+        $end_time = time()+86400;
+
+        //if($minute%5==0){
+        $dianzan = M('group_buy')->field('goods_num,mark,count(id) as zongji')->where('`auto`=0 and 
+                        `is_raise`=1 and 
+                        `free`=0 and 
+                        `is_dissolution`=0 and 
+                        `is_pay`=1 and 
+                        `is_cancel`=0 and
+                        `is_successful`=0 and 
+                        `end_time`<=' . $end_time)->group('mark')->select();
+        foreach($dianzan as $key=>$zanrow){
+            $goods_num = (int)$zanrow['goods_num'];
+            $dianzanid = (int)$zanrow['mark'];
+            $zongji = (int)$zanrow['zongji'];
+            $zongshu = $zongji+1;
+
+            if( $zongshu >= $goods_num ){
+                echo '====='.$dianzanid;
+                echo '<hr>';
+                $groupdata = M('group_buy')->field('order_id')->where("id = {$dianzanid}")->find();
+                $dianorderid = $groupdata['order_id'];
+                $dianorderinfo = M('order')->where("order_id={$dianorderid}")->find();
+                if($dianorderinfo['order_status']==8 && $dianorderinfo['order_type']==11){
+                    $baseObj = new BaseController();
+                    $baseObj->getFree($dianzanid);
+                }
+
+            }
+
+        }
+        //}
+        //处理点赞逻辑代码结束
+
+    }
+
     /**
      * 八小时自动成团
      *
@@ -258,42 +296,6 @@ class AutomationController extends BaseController
         $time = time() + 16 * 60 * 60;
         $end_time = time() + 24 * 60 * 60;
 
-        //处理点赞逻辑代码开始
-        $endtime = time();
-        $minute = (int)date('i');
-        //if($minute%5==0){
-
-            $dianzan = M('group_buy')->field('id,order_id,goods_num')->where('`auto`=0 and 
-                        `is_raise`=1 and 
-                        `free`=0 and 
-                        `is_dissolution`=0 and 
-                        `is_pay`=1 and 
-                        `is_cancel`=0 and
-                        `mark`=0 and
-                        `is_return_or_exchange`=0 and
-                        `is_successful`=0 and 
-                        `end_time`<=' . $end_time)->select();
-            foreach($dianzan as $key=>$zanrow){
-                $dianzanArray = $zanrow;
-                $dianzanid = $dianzanArray['id'];
-                $dianorderid = $dianzanArray['order_id'];
-                $resultnum = M('group_buy')->where("(id = {$dianzanid} or mark = {$dianzanid}) and is_pay=1 and is_raise=1 and is_cancel=0")->count();
-                if((int)$resultnum >= (int)$dianzanArray['goods_num']){
-                    echo '====='.$dianzanid;
-                    echo '<hr>';
-
-                    $dianorderinfo = M('order')->where("order_id={$dianorderid}")->find();
-                    if($dianorderinfo['order_status']==8 && $dianorderinfo['order_type']==11){
-                        $baseObj = new BaseController();
-                        $baseObj->getFree($dianzanid);
-                    }
-
-                }
-
-            }
-
-        //}
-        //处理点赞逻辑代码结束
 
         $prom_order = M('group_buy')
             ->where('`auto`=0 and 
