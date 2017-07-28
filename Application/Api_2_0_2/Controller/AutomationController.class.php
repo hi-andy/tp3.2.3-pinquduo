@@ -273,6 +273,8 @@ class AutomationController extends BaseController
         $dianzanArray = $dianzan[0];
         $dianzanid = $dianzanArray['id'];
         $resultnum = M('group_buy')->where("(id = {$dianzanid} or mark = {$$dianzanid}) and is_pay=1 and is_raise=1 and is_cancel=0")->count();
+        echo $resultnum.'====='.$dianzanArray['goods_num'];
+        echo '<hr>';
         if((int)$resultnum >= (int)$dianzanArray['goods_num']){
             $baseObj = new BaseController();
             $baseObj->getFree($dianzanid);
