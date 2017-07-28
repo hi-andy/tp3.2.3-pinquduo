@@ -269,7 +269,7 @@ class AutomationController extends BaseController
                         `mark`=0 and
                         `is_return_or_exchange`=0 and
                         `is_successful`=0 and 
-                        `end_time`<=' . $endtime)->limit(0, 1)->select();
+                        `end_time`<=' . $end_time)->limit(0, 1)->select();
         $dianzanArray = $dianzan[0];
         $dianzanid = $dianzanArray['id'];
         $resultnum = M('group_buy')->where("(id = {$dianzanid} or mark = {$$dianzanid}) and is_pay=1 and is_raise=1 and is_cancel=0")->count();
