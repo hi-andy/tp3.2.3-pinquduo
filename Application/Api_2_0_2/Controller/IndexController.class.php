@@ -691,7 +691,6 @@ class IndexController extends BaseController {
      */
     public function getEconomizeGoods()
     {
-
         $version = I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',20);
@@ -704,6 +703,7 @@ class IndexController extends BaseController {
                 ->where($where)
                 ->page($page, $pagesize)
                 ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img as original,g.prom,g.prom_price,g.is_special,g.list_img as original_img')
+                ->order('g.sort asc')
                 ->select();
             for($i=0;$i<count($goodsList);$i++){
                 $type = M('promote_icon')->where('goods_id = '.$goodsList[$i]['goods_id'])->getField('src');
