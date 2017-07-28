@@ -14,9 +14,19 @@
                     <h3 class="panel-title"><i class="fa fa-list"></i>  惩罚列表</h3>
                 </div>
                 <div class="panel-body">
+                    <span>  您的保证余额为：￥{$margin}</span><if condition="$margin elt 0"><span style="color: red"> (您的保证金已不足，请及时缴纳！！)</span></if>
+                </div>
+                <div class="panel-body">
                     <div class="navbar navbar-default">
                         <form action="" id="search-form2" class="navbar-form form-inline" method="post" onsubmit="return false">
-                            <span>您的保证余额为：￥{$margin}</span><if condition="$margin elt 0"><span style="color: red"> (您的保证金已不足，请及时缴纳！！)</span></if>
+                            <div class="form-group">
+                                <label class="control-label" for="input-order-id">订单号：</label>
+                                <div class="input-group">
+                                    <input type="text" name="order_sn" value="" placeholder="订单号" id="input-order-id" class="form-control">
+                                </div>
+                            </div>
+                            <!--排序规则-->
+                            <button type="submit" onclick="ajax_get_table('search-form2',1)" id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i> 筛选</button>
                         </form>
                     </div>
                     <div id="ajax_return">

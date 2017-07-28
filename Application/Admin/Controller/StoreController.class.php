@@ -391,16 +391,23 @@ class StoreController extends BaseController{
 		$where = " 1=1 ";
 
 		//关键字搜索
-		$key_word = I('key_word') ? trim(I('key_word')) : '';
+		$key_word = I('store_name') ? trim(I('store_name')) : '';
+		$order_sn = I('order_sn') ? trim(I('order_sn')) : '';
+		$status = I('status') ? trim(I('status')) : '';
 		if ($key_word) {
-			$where = "$where and store_name like '%$key_word%'";
+			$where = "$where and store_name = '$key_word'";
 		}
-
+		if ($order_sn) {
+			$where = "$where and order_sn = '$order_sn'";
+		}
+		if($status != 99){
+			$where = "$where and status = '$status'";
+		}
 		$STORE_PUMISHMENT = M('store_punishment');
 		$count = $STORE_PUMISHMENT->where($where)->count();
-		$Page = new AjaxPage($count, 10);
+		$Page = new AjaxPage($count, 20);
 		$show = $Page->show();
-		$order_str = " `datetime` desc ";
+		$order_str = " `sp_id` desc ";
 		$List = $STORE_PUMISHMENT->where($where)->order($order_str)->limit($Page->firstRow . ',' . $Page->listRows)->select();
 		$this->assign('page',$show);
 		$this->assign('List',$List);

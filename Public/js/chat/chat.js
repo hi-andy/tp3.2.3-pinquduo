@@ -132,9 +132,10 @@ $.ajax({
                 // 如果isAutoLogin设置为false，那么必须手动设置上线，否则无法收消息
                 // 手动上线指的是调用conn.setPresence(); 如果conn初始化时已将isAutoLogin设置为true
                 // 则无需调用conn.setPresence();
+				conn.setPresence()
             },
             onClosed: function(message) {
-                conn.open(options);
+                //alert('您已在其他地方登陆，请刷新页面!')
             }, //连接关闭回调
             onTextMessage: function(message) {
 				if(message.ext.goods){

@@ -48,7 +48,6 @@
         <!-- Main content -->
         <div class="container-fluid">
             <div class="pull-right">
-
                 <a href="javascript:history.go(-1)" data-toggle="tooltip" title="" class="btn btn-default" data-original-title="返回"><i class="fa fa-reply"></i></a>
             </div>
             <div class="panel panel-default">
@@ -71,27 +70,28 @@
                                 <table class="table table-bordered">
                                     <tbody>
                                     <if condition="$goodsInfo.goods_id neq 0">
-                                        <if condition="$goodsInfo.is_audit eq 0">
+                                    <if condition="$goodsInfo.is_audit eq 0">
                                             <tr>
                                                 <td>驳回原因:</td>
                                                 <td>
                                                     <textarea rows="3" cols="50" name="reason">{$goodsInfo.reason}</textarea>
                                                 </td>
                                             </tr>
-                                        </if>
+                                    </if>
                                     </if>
                                     <tr>
                                         <td>商品名称:</td>
                                         <td>
-                                            <input type="text" value="{$goodsInfo.goods_name}" name="goods_name" class="form-control" style="display:inline;width:350px;"/> &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 必填</span>
-                                            <span id="err_goods_name" style="color:#F00;"></span>
+                                            <input type="text" value="{$goodsInfo.goods_name}" name="goods_name" class="form-control" style="width:350px;"/>
+                                            <span id="err_goods_name" style="color:#F00; display:none;"></span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>商品简介:</td>
                                         <td>
-                                            <textarea maxlength="300" rows="3" cols="50" name="goods_remark">{$goodsInfo.goods_remark}</textarea>
+                                            <textarea rows="3" cols="50" name="goods_remark">{$goodsInfo.goods_remark}</textarea>
                                             <span id="err_goods_remark" style="color:#F00; display:none;"></span>
+
                                         </td>
                                     </tr>
                                     <tr>
@@ -121,29 +121,35 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>市场售价:</td>
+                                        <td>商户选择:</td>
                                         <td>
-                                            <input type="text" value="{$goodsInfo.market_price}" name="market_price" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
-                                            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 必填</span>
-                                            <span id="err_market_price" style="color:#F00; display:none;"></span>
+                                            <select name="store_id" disabled="disabled" id="store_id" class="form-control" style="width:250px;">
+                                                <option value="">所有商户</option>
+                                                <foreach name="merchantList" item="v" key="k" >
+                                                    <option value="{$v['id']}"  <if condition="$v['id'] eq $goodsInfo['store_id'] ">selected="selected"</if>>
+                                                    {$v['store_name']}
+                                                    </option>
+                                                </foreach>
+                                            </select>
+                                        <span style="color: #ee0000;">*必选<span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>单独售价:</td>
-                                        <td>
-                                            <input type="text" value="{$goodsInfo.shop_price}" disabled="disabled" placeholder="自动获取" name="shop_price" class="form-control" style="display:inline;width:150px;"   onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
-                                            <span class="notice" title="单独售价由程序自动生成，无需填写"></span>
-                                            <span id="err_shop_price" style="color:#F00; display:none;"></span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>团购售价:</td>
-                                        <td>
-                                            <input type="text" value="{$goodsInfo.prom_price}"  disabled="disabled" placeholder="自动获取"  name="prom_price" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
-                                            <span class="notice" title="团购售价由程序自动生成，无需填写"></span>
-                                            <span id="err_prom_price" style="color:#F00; display:none;"></span>
-                                        </td>
-                                    </tr>
+										<td>单独售价:</td>
+										<td>
+											<input type="text" value="{$goodsInfo.shop_price}" disabled="disabled" placeholder="自动获取" name="shop_price" class="form-control" style="display:inline;width:150px;"   onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
+											<span class="notice" notice="单独售价由程序自动生成，无需填写"></span>
+											<span id="err_shop_price" style="color:#F00; display:none;"></span>
+										</td>
+									</tr>
+									<tr>
+										<td>团购售价:</td>
+										<td>
+											<input type="text" value="{$goodsInfo.prom_price}"  disabled="disabled" placeholder="自动获取"  name="prom_price" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
+											<span class="notice" notice="团购售价由程序自动生成，无需填写"></span>
+											<span id="err_prom_price" style="color:#F00; display:none;"></span>
+										</td>
+									</tr>
                                     <if condition="$goodsInfo.is_special != 6">
                                         <tr>
                                             <td>开团人数:</td>
@@ -180,7 +186,7 @@
                                                 </a>
                                             </if>
                                             <span id="err_list_img" style="color:#F00; display:none;"></span>
-                                            <span  style="color:red; ">列表展示主图：640*300px </span>
+                                            <span  style="color:red; ">首页展示主图：640*300px， 必须为白底无文字 （非首页商品可选填）</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -195,13 +201,16 @@
                                                 </a>
                                             </if>
                                             <span id="err_original_img" style="color:#F00; display:none;"></span>
-                                            <span  style="color:red; ">列表展示副图：400*400px 纯白底无Logo/无文字（服饰箱包除外）</span>
+                                            <span  style="color:red; ">APP类目主图：400*400px 纯白底无Logo/无文字（服饰箱包除外）</span>
                                         </td>
                                     </tr>
 
-                                    <input type="hidden" name="store_id" value="<?php echo $_SESSION['merchant_id'];?>">
+
                                     </tbody>
                                 </table>
+
+
+
                                 <!-- 商品规格-->
                                 <div class="tab-pane" id="tab_goods_spec">
                                     <table class="table table-bordered" id="goods_spec_table">
@@ -221,6 +230,7 @@
                                     <div id="ajax_spec_data"><!-- ajax 返回规格--></div>
                                 </div>
                                 <!-- 商品规格-->
+
                             </div>
                             <!--其他信息-->
 
@@ -248,7 +258,8 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><span style="color: red">必填：点击 + 号上传商品轮播图，640px * 400px（宽 * 高）, 封面图片最后上传</span></td>
+                                        <td><span style="color: red">点 + 号上传轮播图，尺寸为：640px * 400px（宽 * 高）, 或为正方型图片1：1长宽比例（长、宽不得小于600，不大于800，且上传多张图的，大小规格需一致。）
+</span></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -265,46 +276,19 @@
                             </div>
                             <!-- 商品描述-->
                         </div>
-                        <div class="pull-right">
-                            <input type="hidden" name="is_special" value="1">
-                            <input type="hidden" name="goods_id" value="{$goodsInfo.goods_id}">
-                            <input type="hidden" name="store_id" value="{$goodsInfo.store_id}">
-                            <input type="hidden" name="haitao_cat" value="{$goodsInfo.haitao_cat}">
-                            <input type="hidden" name="category_id" value="{$goodsInfo.category_id}" >
-                            <input type="hidden" name="goods_id" value="{$goodsInfo.goods_id}" >
-                            <if condition="$goodsInfo.is_audit eq 2">
-                                <input type="hidden" name="is_audit" value="0" >
-                            </if>
-                            <if condition="$goodsInfo.is_audit neq 2">
-                                <input type="hidden" name="is_audit" value="{$goodsInfo.is_audit}" >
-                            </if>
-                            <button class="btn btn-primary" onclick="ajax_submit_form('addEditGoodsForm','{:U('Goods/addEditGoods?is_ajax=1')}');" title="" data-toggle="tooltip" type="button" data-original-title="保存">保存</button>
-                        </div>
-                    </form>
-                    <!--表单数据-->
+                            <div class="pull-right">
+                                <input type="hidden" name="goods_id" value="{$goodsInfo.goods_id}">
+                                <input type="hidden" name="the_raise" value="{$the_raise}" >
+                                <button class="btn btn-primary" onclick="ajax_submit_form('addEditGoodsForm','{:U('Goods/addEditGoods?is_ajax=1')}');" title="" data-toggle="tooltip" type="button" data-original-title="保存">保存</button>
+                            </div>
+                    </form><!--表单数据-->
                 </div>
             </div>
-        </div>
+        </div>    <!-- /.content -->
     </section>
 </div>
 
 <script>
-
-    // 上传商品相册回调函数
-    function call_back4(paths){
-
-        var  last_div = $(".goods_xc2:last").prop("outerHTML");
-        for (i=0;i<paths.length ;i++ )
-        {
-            $(".goods_xc2:eq(0)").before(last_div); // 插入一个 新图片
-            $(".goods_xc2:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
-            $(".goods_xc2:eq(0)").find('img').attr('src',paths[i]);// 修改他的图片路径
-            $(".goods_xc2:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
-            $(".goods_xc2:eq(0)").find('input').val(paths[i]); // 设置隐藏域 要提交的值
-        }
-    }
-
-
     /*
      * 以下是图片上传方法
      */
@@ -327,7 +311,7 @@
         var  last_div = $(".goods_xc:last").prop("outerHTML");
         for (i=0;i<paths.length ;i++ )
         {
-            $(".goods_xc:eq(0)").before(last_div);  // 插入一个 新图片
+            $(".goods_xc:eq(0)").before(last_div);	// 插入一个 新图片
             $(".goods_xc:eq(0)").find('a:eq(0)').attr('href',paths[i]).attr('onclick','').attr('target', "_blank");// 修改他的链接地址
             $(".goods_xc:eq(0)").find('img').attr('src',paths[i]);// 修改他的图片路径
             $(".goods_xc:eq(0)").find('a:eq(1)').attr('onclick',"ClearPicArr2(this,'"+paths[i]+"')").text('删除');
@@ -351,6 +335,26 @@
         });
     }
 
+    /** 以下 商品属性相关 js*/
+    $(document).ready(function(){
+
+        // 商品类型切换时 ajax 调用  返回不同的属性输入框
+        $("#goods_type").change(function(){
+            var goods_id = $("input[name='goods_id']").val();
+            var type_id = $(this).val();
+            $.ajax({
+                type:'GET',
+                data:{goods_id:goods_id,type_id:type_id},
+                url:"/admin/Goods/ajaxGetAttrInput",
+                success:function(data){
+                    $("#goods_attr_table tr:gt(0)").remove()
+                    $("#goods_attr_table").append(data);
+                }
+            });
+        });
+        // 触发商品类型
+        $("#goods_type").trigger('change');
+    });
 
 
     // 属性输入框的加减事件
@@ -366,6 +370,7 @@
         $(a).parent().parent().remove();
     }
 
+
     /** 以下 商品规格相关 js*/
     $(document).ready(function(){
 
@@ -376,12 +381,11 @@
             $.ajax({
                 type:'GET',
                 data:{goods_id:goods_id,spec_type:spec_type},
-                url:"{:U('Admin/Special/ajaxGetSpecSelect')}",
+                url:"{:U('admin/Goods/ajaxGetSpecSelect')}",
                 success:function(data){
                     $("#ajax_spec_data").html('')
                     $("#ajax_spec_data").append(data);
-                    //alert('132');
-                    ajaxGetSpecInput(); // 触发完  马上触发 规格输入框
+                    ajaxGetSpecInput();	// 触发完  马上处罚 规格输入框
                 }
             });
         });
@@ -391,17 +395,174 @@
 
     /** 以下是编辑时默认选中某个商品分类*/
     $(document).ready(function(){
+
         <if condition="$level_cat['2'] gt 0">
                 // 商品分类第二个下拉菜单
-                get_category_haitao('{$level_cat[1]}','cat_id_2','{$level_cat[2]}');
+                get_category('{$level_cat[1]}','cat_id_2','{$level_cat[2]}');
         </if>
-
         <if condition="$level_cat['3'] gt 0">
                 // 商品分类第二个下拉菜单
-                get_category_haitao('{$level_cat[2]}','cat_id_3','{$level_cat[3]}');
+                get_category('{$level_cat[2]}','cat_id_3','{$level_cat[3]}');
         </if>
 
     });
+
+</script>
+<script type="text/javascript" src="http://www.jsdaima.com/Public/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+    var FancyForm=function(){
+        return{
+            inputs:".FancyForm input, .FancyForm textarea",
+            setup:function(){
+                var a=this;
+                this.inputs=$(this.inputs);
+                a.inputs.each(function(){
+                    var c=$(this);
+                    a.checkVal(c)
+                });
+                a.inputs.live("keyup blur",function(){
+                    var c=$(this);
+                    a.checkVal(c);
+                });
+            },checkVal:function(a){
+                a.val().length>0?a.parent("li").addClass("val"):a.parent("li").removeClass("val")
+            }
+        }
+    }();
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        FancyForm.setup();
+    });
+</script>
+
+<script type="text/javascript">
+    var searchAjax=function(){};
+    var G_tocard_maxTips=30;
+    $(function(){(
+            function(){
+                var a=$(".plus-tag");
+                $("a em",a).live("click",function(){
+                    var c=$(this).parents("a"),b=c.attr("title"),d=c.attr("value");
+                    delTips(b,d)
+                });
+                hasTips=function(b){
+                    var d=$("a",a),c=false;
+                    d.each(function(){
+                        if($(this).attr("title")==b){
+                            c=true;
+                            return false
+                        }
+                    });
+                    return c
+                };
+                isMaxTips=function(){
+                    return
+                    $("a",a).length>=G_tocard_maxTips
+                };
+                setTips=function(c,d){
+                    if(hasTips(c)){
+                        return false
+                    }if(isMaxTips()){
+                        alert("最多添加"+G_tocard_maxTips+"个标签！");
+                        return false
+                    }
+                    var b=d?'value="'+d+'"':"";
+                    a.append($("<a "+b+' title="'+c+'" href="javascript:void(0);" >'+"<input type='hidden' name='label_id[]' value='"+d+"'>"+'<span>'+c+"</span><em></em></a>"));
+                    searchAjax(c,d,true);
+                    return true
+                };
+                delTips=function(b,c){
+                    if(!hasTips(b)){
+                        return false
+                    }
+                    $("a",a).each(function(){
+                        var d=$(this);
+                        if(d.attr("title")==b){
+                            d.remove();
+                            return false
+                        }
+                    });
+                    searchAjax(b,c,false);
+                    return true
+                };
+                getTips=function(){
+                    var b=[];
+                    $("a",a).each(function(){
+                        b.push($(this).attr("title"))
+                    });
+                    return b
+                };
+                getTipsId=function(){
+                    var b=[];
+                    $("a",a).each(function(){
+                        b.push($(this).attr("value"))
+                    });
+                    return b
+                };
+                getTipsIdAndTag=function(){
+                    var b=[];
+                    $("a",a).each(function(){
+                        b.push($(this).attr("value")+"##"+$(this).attr("title"))
+                    });
+                    return b
+                }
+            }
+    )()});
+</script>
+<script type="text/javascript">
+    // 更新选中标签标签
+    $(function(){
+        setSelectTips();
+        $('.plus-tag').append($('.plus-tag a'));
+    });
+    var searchAjax = function(name, id, isAdd){
+        setSelectTips();
+    };
+    // 搜索
+    (function(){
+        var $b = $('.plus-tag-add button'),$i = $('.plus-tag-add input');
+        $i.keyup(function(e){
+            if(e.keyCode == 13){
+                $b.click();
+            }
+        });
+        $b.click(function(){
+            var name = $i.val().toLowerCase();
+            if(name != '') setTips(name,-1);
+            $i.val('');
+            $i.select();
+        });
+    })();
+    // 推荐标签
+    (function(){
+        $('.default-tag a').live('click', function(){
+            var $this = $(this),
+                    name = $this.attr('title'),
+                    id = $this.attr('value');
+            setTips(name, id);
+        });
+        // 更新高亮显示
+        setSelectTips = function(){
+            var arrName = getTips();
+            if(arrName.length){
+                $('#myTags').show();
+            }else{
+                $('#myTags').hide();
+            }
+            $('.default-tag a').removeClass('selected');
+            $.each(arrName, function(index,name){
+                $('.default-tag a').each(function(){
+                    var $this = $(this);
+                    if($this.attr('title') == name){
+                        $this.addClass('selected');
+                        return false;
+                    }
+                })
+            });
+        }
+    })();
 </script>
 </body>
 </html>

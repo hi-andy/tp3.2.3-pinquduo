@@ -8,29 +8,29 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-    if (REDIS_SWITCH) {
-        $redis = new Redis();
-        $redis->connect(REDISIP, PORT);
-        $redis->auth(REDISPASS);
-        if ($del == true) {
-            $redis->delete($key);
-        }
-
-        $result = '';
-        if ($value) {
-            if ($time) {
-                $redis->setex($key, $time, $value);
-            } else {
-                $redis->set($key, $value);
-            }
-        } else {
-            $result = $redis->get($key);
-        }
-        $redis->close();
-        return $result;
-    } else {
-        redisdelall("*");
-    }
+//    if (REDIS_SWITCH) {
+//        $redis = new Redis();
+//        $redis->connect(REDISIP, PORT);
+//        $redis->auth(REDISPASS);
+//        if ($del == true) {
+//            $redis->delete($key);
+//        }
+//
+//        $result = '';
+//        if ($value) {
+//            if ($time) {
+//                $redis->setex($key, $time, $value);
+//            } else {
+//                $redis->set($key, $value);
+//            }
+//        } else {
+//            $result = $redis->get($key);
+//        }
+//        $redis->close();
+//        return $result;
+//    } else {
+//        redisdelall("*");
+//    }
 
 }
 

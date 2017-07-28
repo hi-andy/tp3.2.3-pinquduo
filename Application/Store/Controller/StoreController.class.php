@@ -461,11 +461,13 @@ class StoreController extends BaseController{
         $store_id = $_SESSION['merchant_id'];
         $where = " `store_id`=".$store_id ;
         $store_punishment = M('store_punishment');
+        if(!empty(I('order_sn'))){
+            $where = "$where and order_sn = ".I('order_sn');
+        }
         $count = $store_punishment->where($where)->count();
-        $Page = new AjaxPage($count, 10);
+        $Page = new AjaxPage($count, 20);
         $show = $Page->show();
-        $order_str = " `datetime` desc ";
-        $List = $store_punishment->where($where)->order($order_str)->limit($Page->firstRow . ',' . $Page->listRows)->field('order_sn,sp_penal_sum,reason,datetime,type,status')->select();
+        $List = $store_punishment->where($where)->limit($Page->firstRow . ',' . $Page->listRows)->field('order_sn,sp_penal_sum,reason,datetime,type,status')->order('sp_id desc')->select();
 
         $this->assign('page',$show);
         $this->assign('List',$List);
