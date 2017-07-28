@@ -260,7 +260,10 @@ class AutomationController extends BaseController
 
         //处理点赞逻辑代码开始
         $endtime = time();
-        $dianzan = M('group_buy')->field('id,goods_num')->where('`auto`=0 and 
+        $minute = (int)date('i');
+        //if($minute%5==0){
+
+            $dianzan = M('group_buy')->field('id,order_id,goods_num')->where('`auto`=0 and 
                         `is_raise`=1 and 
                         `free`=0 and 
                         `is_dissolution`=0 and 
@@ -269,16 +272,27 @@ class AutomationController extends BaseController
                         `mark`=0 and
                         `is_return_or_exchange`=0 and
                         `is_successful`=0 and 
-                        `end_time`<=' . $end_time)->limit(0, 1)->select();
-        $dianzanArray = $dianzan[0];
-        $dianzanid = $dianzanArray['id'];
-        $resultnum = M('group_buy')->where("(id = {$dianzanid} or mark = {$dianzanid}) and is_pay=1 and is_raise=1 and is_cancel=0")->count();
-        echo $resultnum.'====='.$dianzanArray['goods_num'];
-        echo '<hr>';
-        if((int)$resultnum >= (int)$dianzanArray['goods_num']){
-            $baseObj = new BaseController();
-            $baseObj->getFree($dianzanid);
-        }
+                        `end_time`<=' . $end_time)->select();
+            foreach($dianzan as $key=>$zanrow){
+                $dianzanArray = $zanrow;
+                $dianzanid = $dianzanArray['id'];
+                $dianorderid = $dianzanArray['order_id'];
+                $resultnum = M('group_buy')->where("(id = {$dianzanid} or mark = {$dianzanid}) and is_pay=1 and is_raise=1 and is_cancel=0")->count();
+                if((int)$resultnum >= (int)$dianzanArray['goods_num']){
+                    echo '====='.$dianzanid;
+                    echo '<hr>';
+
+                    $dianorderinfo = M('order')->where("order_id={$dianorderid}")->find();
+                    if($dianorderinfo['order_status']==8 && $dianorderinfo['order_type']==11){
+                        $baseObj = new BaseController();
+                        $baseObj->getFree($dianzanid);
+                    }
+
+                }
+
+            }
+
+        //}
         //处理点赞逻辑代码结束
 
         $prom_order = M('group_buy')
