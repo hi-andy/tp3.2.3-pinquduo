@@ -259,7 +259,7 @@ class AutomationController extends BaseController
             $zongji = (int)$zanrow['zongji'];
             $zongshu = $zongji+1;
 
-            if((int)$resultnum >= (int)$dianzanArray['goods_num']){
+            if( $zongshu >= $goods_num ){
                 echo '====='.$dianzanid;
                 echo '<hr>';
                 $groupdata = M('group_buy')->field('order_id')->where("id = {$dianzanid}")->find();
