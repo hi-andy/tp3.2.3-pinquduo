@@ -53,6 +53,18 @@ class PurchaseController extends  BaseController
         $parameter['spec_key'] = $spec_key;
         $parameter['ajax_get'] = $ajax_get;
         $parameter['coupon_list_id'] = $coupon_list_id;
+        //判断商品是否已经下架-温立涛开始
+        $goodsstatus = M('goods')
+            ->where("goods_id=$goods_id and (show_type=1 or is_show=0 or is_on_sale=0)")
+            ->count();
+        if ($goodsstatus >0){
+            $json = array('status' => -1, 'msg' => '该商品已下架');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+            //$json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
+        }
+        //判断商品是否已经下架-温立涛结束
 
         //　非为我点赞商品，收货地址不能为空，为我点赞商品除外
         $is_special = M('goods')->where('goods_id='.$goods_id)->getField('is_special');
