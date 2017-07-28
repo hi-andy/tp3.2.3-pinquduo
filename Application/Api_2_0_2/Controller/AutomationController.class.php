@@ -247,7 +247,8 @@ class AutomationController extends BaseController
                         `is_raise`=1 and 
                         `free`=0 and 
                         `is_dissolution`=0 and 
-                        `is_pay`=1 and 
+                        `is_pay`=1 and
+                        `mark`>0 and 
                         `is_cancel`=0 and
                         `is_successful`=0 and 
                         `end_time`<=' . $end_time)->group('mark')->select();
@@ -291,6 +292,12 @@ class AutomationController extends BaseController
      */
     public function auto_group_buy()
     {
+        $minute = intval(date('i'));
+        if($minute%10 == 0){
+            $this->zan();
+        }
+
+
         $where = null;
         $conditon = null;
         $time = time() + 16 * 60 * 60;
