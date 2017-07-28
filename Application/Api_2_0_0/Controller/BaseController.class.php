@@ -542,6 +542,8 @@ class BaseController extends Controller {
         if(!empty($goods)){
             //商品详情
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
+            $goods['goods_share_url'] = C('SHARE_URL')  . '/goods_detail.html?goods_id=' . $goods_id;
+
             $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
             $store['store_logo'] = TransformationImgurl($store['store_logo']);
             $goods['store'] = $store;
