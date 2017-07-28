@@ -272,7 +272,7 @@ class AutomationController extends BaseController
                         `end_time`<=' . $end_time)->limit(0, 1)->select();
         $dianzanArray = $dianzan[0];
         $dianzanid = $dianzanArray['id'];
-        $resultnum = M('group_buy')->where("(id = {$dianzanid} or mark = {$$dianzanid}) and is_pay=1 and is_raise=1 and is_cancel=0")->count();
+        $resultnum = M('group_buy')->where("(id = {$dianzanid} or mark = {$dianzanid}) and is_pay=1 and is_raise=1 and is_cancel=0")->count();
         echo $resultnum.'====='.$dianzanArray['goods_num'];
         echo '<hr>';
         if((int)$resultnum >= (int)$dianzanArray['goods_num']){
