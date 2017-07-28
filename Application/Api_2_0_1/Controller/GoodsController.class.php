@@ -20,8 +20,8 @@ class GoodsController extends BaseController {
 	{
 		$user_id = I('user_id');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$a = M('user_address', '', 'DB_CONFIG2')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
-		$b = M('user_address', '', 'DB_CONFIG2')->where('`user_id` = '.$user_id.' and `is_default` != 1')->field('address_id,consignee,address_base,address,mobile,is_default')->select();
+		$a = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` = 1')->field('address_id,consignee,address_base,address,mobile,is_default')->find();
+		$b = M('user_address')->where('`user_id` = '.$user_id.' and `is_default` != 1')->field('address_id,consignee,address_base,address,mobile,is_default')->select();
 
 		if(!empty($a)){
 			$address[0] = $a;//把数组第一个放入默认地址
@@ -71,18 +71,18 @@ class GoodsController extends BaseController {
 	function getOtheyMore($id,$type,$page,$pagesize,$ajax_get)
 	{
 		if($type==0){
-			$parent_id = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`=0 and id != 10044 ')->field('id')->select();
+			$parent_id = M('goods_category')->where('`parent_id`=0 and id != 10044 ')->field('id')->select();
 			$ids =array(array_column($parent_id,'id'));
 			if(in_array("$id", $ids[0])){
 				$data = $this->getNextCat($id);
 				return $data;
 			}else{
 				$condition['parent_id'] = $ids =array('in',array_column($parent_id,'id'));
-				$parent_id2 = M('goods_category', '', 'DB_CONFIG2')->where($condition)->field('id')->select();
+				$parent_id2 = M('goods_category')->where($condition)->field('id')->select();
 				$ids2 =array(array_column($parent_id2,'id'));
 				if(in_array("$id", $ids2[0])){//确定为二级分类id
 					//找到一级菜单的下级id
-					$parent_cat = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`='.$id)->field('id')->select();
+					$parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
 					$condition2['cat_id'] =array('in',array_column($parent_cat,'id'));
 					$condition2['is_on_sale']=1;
 					$condition2['is_show'] = 1;
@@ -102,7 +102,7 @@ class GoodsController extends BaseController {
 				$where = '`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0';
 				$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
 			}else{
-				$cat = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$id)->field('id')->select();
+				$cat = M('haitao')->where('`parent_id` = '.$id)->field('id')->select();
 				$condition['is_on_sale']=1;
 				$condition['is_show'] = 1;
 				$condition['is_audit'] = 1;
@@ -130,9 +130,9 @@ class GoodsController extends BaseController {
 		$page = I('page',1);
 		$pagesize = I('pagesize',20);
 		//找到一级菜单的下级id
-		$parent_cat = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`='.$id)->field('id')->select();
+		$parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
 		$condition['parent_id'] =array('in',array_column($parent_cat,'id'));
-		$parent_cat2 = M('goods_category', '', 'DB_CONFIG2')->where($condition)->field('id')->select();
+		$parent_cat2 = M('goods_category')->where($condition)->field('id')->select();
 		$condition2['cat_id'] =array('in',array_column($parent_cat2,'id'));
 		$condition2['is_on_sale']=1;
 		$condition2['is_show'] = 1;
@@ -147,7 +147,7 @@ class GoodsController extends BaseController {
      */
     public function goodsCategoryList(){
         $parent_id = I("parent_id",0);
-        $goodsCategoryList = M('GoodsCategory', '', 'DB_CONFIG2')->where("parent_id = $parent_id AND is_show=1")->order("parent_id_path,sort_order desc")->select();
+        $goodsCategoryList = M('GoodsCategory')->where("parent_id = $parent_id AND is_show=1")->order("parent_id_path,sort_order desc")->select();
         $json_arr = array('status'=>1,'msg'=>'获取成功','result'=>$goodsCategoryList );
         $json_str = json_encode($json_arr);
         exit($json_str);
@@ -183,7 +183,7 @@ class GoodsController extends BaseController {
         $goods_id = I('goods_id');
         $type = I('type',0);
 	    I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        $count = M('Goods', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->count();
+        $count = M('Goods')->where("goods_id = $goods_id")->count();
         if($count == 0)  exit(json_encode(array('status'=> -1,'msg'=>'收藏商品不存在')));
         //删除收藏商品
         if($type==1){
@@ -397,7 +397,7 @@ class GoodsController extends BaseController {
 			$code = $code.substr($string,$end,1);
 		}
 
-		$test = M('order', '', 'DB_CONFIG2')->where('`invitation_num`='.$code)->find();
+		$test = M('order')->where('`invitation_num`='.$code)->find();
 		if(!empty($test))
 			$code = $this->getInvitationNum();
 		return $code;
@@ -502,8 +502,8 @@ class GoodsController extends BaseController {
 		$num = I('num',1);
 		$goods_id = I('goods_id');
 
-		$key = M('temporary_key', '', 'DB_CONFIG2')->where('goods_id='.$goods_id.' and user_id='.$user_id)->order('add_time desc')->find();
-		$spec_price = M('spec_goods_price', '', 'DB_CONFIG2')->where('goods_id='.$goods_id. " and `key`='".$key['goods_spec_key']."'")->find();
+		$key = M('temporary_key')->where('goods_id='.$goods_id.' and user_id='.$user_id)->order('add_time desc')->find();
+		$spec_price = M('spec_goods_price')->where('goods_id='.$goods_id. " and `key`='".$key['goods_spec_key']."'")->find();
 		if($type==1||$type==0) {
 			$price = $spec_price['prom_price']*$num;
 		} elseif($type==2) {
@@ -512,11 +512,11 @@ class GoodsController extends BaseController {
 			exit(json_encode(array('status'=>-1,'msg'=>'参数错误')));
 		}
 
-		$user_coupon = M('coupon_list', '', 'DB_CONFIG2')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
+		$user_coupon = M('coupon_list')->where('`uid`='.$user_id.' and `store_id`='.$store_id.' and `is_use`=0')->field('id,cid')->select();
         if(!empty($user_coupon)){
 	        $id =array_column($user_coupon,'cid');
 	        //拿到所有优惠券，并根据condition倒叙输出
-	        $coupon = M('coupon', '', 'DB_CONFIG2')->alias('c')
+	        $coupon = M('coupon')->alias('c')
 		        ->join('INNER JOIN tp_merchant m on m.id = c.store_id')
 		        ->where('c.`id` in ('.join(',',$id).') and c.`condition`<='.$price.' and c.`use_end_time`>'.time())->order('c.`money` desc')
 		        ->field('c.`id`,c.`name`,c.`money`,c.`condition`,c.`use_start_time`,c.`use_end_time`,m.`store_name`')
@@ -550,7 +550,7 @@ class GoodsController extends BaseController {
 		$page = I('page',1);
 		$pagesize = I('pagesize',20);
 		$version = I('version');
-		$countries = M('haitao_style', '', 'DB_CONFIG2')->where('`id` = '.$id)->find();
+		$countries = M('haitao_style')->where('`id` = '.$id)->find();
 		$countries['img'] = TransformationImgurl($countries['img']);
 
 		$where ='`show_type` = 0 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `countries_type` = '.$id;
@@ -567,7 +567,7 @@ class GoodsController extends BaseController {
 	function getCategory()
 	{
 		$id = I('id');
-		$category = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$id)->field('id,name')->select();
+		$category = M('haitao')->where('`parent_id` = '.$id)->field('id,name')->select();
 
 		array_unshift($category,array('id'=>'0','name'=>'全部'));
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -586,7 +586,7 @@ class GoodsController extends BaseController {
 		$pagesize = I('pagesize',20);
 		if($p_id && $id == 0)
 		{
-			$cat = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = '.$p_id)->field('id')->select();
+			$cat = M('haitao')->where('`parent_id` = '.$p_id)->field('id')->select();
 
 			$condition['is_on_sale']=1;
 			$condition['is_show'] = 1;
@@ -595,13 +595,13 @@ class GoodsController extends BaseController {
 			//array_column()将二维数组转成一维
 			$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 
-			$count = M('goods', '', 'DB_CONFIG2')->where($condition)->count();
-			$goods = M('goods', '', 'DB_CONFIG2')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
+			$count = M('goods')->where($condition)->count();
+			$goods = M('goods')->where($condition)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
 		}
 		else
 		{
-			$count = M('goods', '', 'DB_CONFIG2')->where('`is_special`=1 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `haitao_cat` = '.$id)->count();
-			$goods = M('goods', '', 'DB_CONFIG2')->where('`is_special`=1 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `haitao_cat` = '.$id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
+			$count = M('goods')->where('`is_special`=1 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `haitao_cat` = '.$id)->count();
+			$goods = M('goods')->where('`is_special`=1 and `is_on_sale` = 1 and `is_show` = 1 and is_audit=1 and `haitao_cat` = '.$id)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,free')->page($page,$pagesize)->select();
 		}
 
 		foreach($goods as &$v)
@@ -801,7 +801,7 @@ class GoodsController extends BaseController {
 			exit(json_encode($json));
 		}
 
-		$order = M('order', '', 'DB_CONFIG2')->where('`order_id` = '.$order_id)->field('shipping_code,shipping_order')->find();
+		$order = M('order')->where('`order_id` = '.$order_id)->field('shipping_code,shipping_order')->find();
 		if(empty($order)){
 			$json = array('status'=>-1,'msg'=>'订单不存在');
 			if(!empty($ajax_get))
@@ -809,7 +809,7 @@ class GoodsController extends BaseController {
 			exit(json_encode($json));
 		}
 
-		$logistics = M('logistics', '', 'DB_CONFIG2')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
+		$logistics = M('logistics')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
 		$logistics['shipping_order']=$order['shipping_order'];
 		//参数设置
 		$post_data = array();
@@ -850,14 +850,14 @@ class GoodsController extends BaseController {
 	{
 		$id= I('id');
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$order_info = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$id.' or `mark`='.$id.' and is_successful=1')->field('user_id,goods_num,mark')->select();
+		$order_info = M('group_buy')->where('`id`='.$id.' or `mark`='.$id.' and is_successful=1')->field('user_id,goods_num,mark')->select();
 		//判断进来的是不是团长
 		if(count($order_info)==1)
 		{
-			$order_info = M('group_buy', '', 'DB_CONFIG2')->where('`id`='.$order_info[0]['mark'].' or `mark`='.$order_info[0]['mark'].' and is_successful=1')->field('user_id,goods_num')->select();
+			$order_info = M('group_buy')->where('`id`='.$order_info[0]['mark'].' or `mark`='.$order_info[0]['mark'].' and is_successful=1')->field('user_id,goods_num')->select();
 		}
 		$user_id['user_id'] = array('in',array_column($order_info,'user_id'));
-		$user_info = M('users', '', 'DB_CONFIG2')->where($user_id)->field('oauth,head_pic,nickname,user_id')->select();
+		$user_info = M('users')->where($user_id)->field('oauth,head_pic,nickname,user_id')->select();
 
 		$order_array = array();
 		for($i=0;$i<count($user_info);$i++)
@@ -872,9 +872,9 @@ class GoodsController extends BaseController {
 			$order_array[$user_info[$i]['user_id']] = $i;
 		}
 
-		$free = M('group_buy', '', 'DB_CONFIG2')->where('(`id`='.$id.' or `mark`='.$id.') and `is_free`=1')->field('user_id,goods_num')->select();
+		$free = M('group_buy')->where('(`id`='.$id.' or `mark`='.$id.') and `is_free`=1')->field('user_id,goods_num')->select();
 		$free_id['user_id'] = array('in',array_column($free,'user_id'));
-		$free_info = M('users', '', 'DB_CONFIG2')->where($free_id)->field('oauth,head_pic,nickname,user_id')->select();
+		$free_info = M('users')->where($free_id)->field('oauth,head_pic,nickname,user_id')->select();
 
 		for($j=0;$j<count($free_info);$j++)
 		{
@@ -903,7 +903,7 @@ class GoodsController extends BaseController {
         //自动脚本
         if ($refresh) {
             $goods_id = redislist("goods_refresh_id");
-            if (!$goods_id) $goods_id = M('goods', '', 'DB_CONFIG2')->where(array('refresh'=>array('eq',0)))->getField('goods_id');
+            if (!$goods_id) $goods_id = M('goods')->where(array('refresh'=>array('eq',0)))->getField('goods_id');
             if ($goods_id){
                 redisdelall("getDetaile_".$goods_id);
                 M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->save(array('refresh'=>1));
@@ -923,9 +923,9 @@ class GoodsController extends BaseController {
 	            //轮播图
 	            if($goods['is_special']==7){
 		            $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
-		            $banner = M('goods_images', '', 'DB_CONFIG2')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
+		            $banner = M('goods_images')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
 	            }else{
-		            $banner = M('goods_images', '', 'DB_CONFIG2')->where("`goods_id` = $goods_id")->field('image_url')->select();
+		            $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
 	            }
 
 	            foreach ($banner as &$v) {
@@ -945,7 +945,7 @@ class GoodsController extends BaseController {
 	            }
                 //商品规格
                 $goodsLogic = new \Home\Logic\GoodsLogic();
-                $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
+                $spec_goods_price = M('spec_goods_price')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
                 $filter_spec = $goodsLogic->get_spec($goods_id,$goods['is_special']);//规格参数
                 $new_spec_goods = array();
                 foreach ($spec_goods_price as $spec) {
@@ -967,7 +967,7 @@ class GoodsController extends BaseController {
                 }
                 //如果有传规格过来就改变商品名字
                 if (!empty($spec_key)) {
-                    $key_name = M('spec_goods_price', '', 'DB_CONFIG2')->where("`key`='$spec_key'")->field('key_name')->find();
+                    $key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
                     $goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
                 }
                 if (!empty($ajax_get)) {
@@ -986,6 +986,8 @@ class GoodsController extends BaseController {
             } else {
                 $json = unserialize(redis($rdsname));
             }
+            // 分享地址不加入缓存，避免地址失效缓存也要全部更新。
+            $json['result']['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
         }
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($ajax_get))
@@ -999,11 +1001,11 @@ class GoodsController extends BaseController {
 		$user_id = I('user_id');
 		I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
 		if(!empty($user_id)){
-			$collect = M('goods_collect', '', 'DB_CONFIG2')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
+			$collect = M('goods_collect')->where('goods_id = '.$goods_id.' and user_id = '.$user_id)->count();
 		}else{
 			$collect = 0;
 		}
-        $goods = M('goods', '', 'DB_CONFIG2')->alias('g')
+        $goods = M('goods')->alias('g')
 	        ->join('INNER JOIN tp_merchant m on m.id = g.store_id')
 	        ->where(array('g.goods_id'=>array('eq',$goods_id)))
 	        ->field('g.store_count,g.sales,g.is_special,g.on_time,g.is_support_buy,m.sales as store_sales,g.is_prom_buy')
@@ -1013,7 +1015,7 @@ class GoodsController extends BaseController {
 		$data['prompt']=null;
 		//判断特殊商品是否在可购买时间内
 		if($goods['is_special']==7){//0.1秒杀
-			$time = M('goods_activity', '', 'DB_CONFIG2')->where('goods_id='.$goods_id)->find();
+			$time = M('goods_activity')->where('goods_id='.$goods_id)->find();
 			$res = $time['start_date']+$time['start_time']*3600;
 			if($res<time()){
 				if($goods['store_count']<=0){
@@ -1069,10 +1071,10 @@ class GoodsController extends BaseController {
                     $order_id['prom_id'] = $group_buy[$i]['id'];
                 }
 
-				$mens = M('group_buy', '', 'DB_CONFIG2')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
+				$mens = M('group_buy')->where('`mark` = ' . $order_id['prom_id'] . ' and `is_pay`=1 and `is_return_or_exchange`=0')->count();
 				$group_buy[$i]['prom_mens'] = $group_buy[$i]['goods_num'] - $mens - 1;
 
-				$user_name = M('users', '', 'DB_CONFIG2')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
+				$user_name = M('users')->where('`user_id` = ' . $group_buy[$i]['user_id'])->field('nickname,oauth,mobile,head_pic')->find();
 				if (!empty($user_name['oauth'])) {
 					$group_buy[$i]['user_name'] = $user_name['nickname'];
 					$group_buy[$i]['photo'] = TransformationImgurl($user_name['head_pic']);
@@ -1278,7 +1280,7 @@ class GoodsController extends BaseController {
 		$today_zero = strtotime(date('Y-m-d', time()));
 		$today_zero2 = strtotime(date('Y-m-d', (time() + 2 * 24 * 3600)));
 		$sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
-		$time = M('', '', 'DB_CONFIG2')->query($sql);
+		$time = M('')->query($sql);
 
 		return $time;
 	}
