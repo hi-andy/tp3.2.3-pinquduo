@@ -35,7 +35,7 @@ class BaseController extends Controller {
             $this->user[user_id] = 0;
         }
         $this->assign('user_id',$this->user_id); 
-                
+
         // 判断当前用户是否手机                
         if(isMobile())
             cookie('is_mobile','1',3600); 
@@ -66,7 +66,7 @@ class BaseController extends Controller {
        	  }       	  
           $tpshop_config[$v['inc_type'].'_'.$v['name']] = $v['value'];
        }                        
-       
+
        $goods_category_tree = get_goods_category_tree();    
        $this->cateTrre = $goods_category_tree;
        $this->assign('goods_category_tree', $goods_category_tree);                     
