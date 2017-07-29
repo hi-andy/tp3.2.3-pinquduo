@@ -335,6 +335,7 @@ class AutomationController extends BaseController
         if($minute%10 == 0){
             $this->zan();
         }
+        
 
 
         $where = null;
