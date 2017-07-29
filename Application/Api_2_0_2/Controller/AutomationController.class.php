@@ -279,6 +279,44 @@ class AutomationController extends BaseController
 
     }
 
+
+    /**
+     * 处理成团后机器人多增加的问题
+     */
+    public function moreAutomation(){
+        //10天以前的
+        $start_time = time()-432000;
+        $getdata = M('group_buy')->field('id,order_id,goods_num')->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark=0 and start_time>'.$start_time)->select();
+        foreach($getdata as $row){
+            $goods_num = (int)$row['goods_num'];
+            if($goods_num>0){
+                $buyid = $row['id'];
+                $person = M('group_buy')->field('order_id')->where('is_successful=1 and auto=0 and is_cancel=0 and is_pay=1 and mark='.$buyid)->select();
+                $autonum = M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->count();
+                $personnum = count($person);
+                $zongji = (int)$personnum+(int)$autonum;
+                $zongji+=1;
+                if($zongji>$goods_num){
+                    $duonum = $zongji-$goods_num;
+                    for($i=1;$i<=$duonum;$i++){
+                        M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
+                    }
+                }
+                if(count($person)>0){
+                    foreach($person as $item){
+                        M('order')->where('order_status=8 and order_type=11 and order_id='.$item['order_id'])
+                            ->save(['order_status'=>11,'order_type'=>14]);
+                    }
+                }
+                M('order')->where('order_status=8 and order_type=11 and order_id='.$row['order_id'])
+                    ->save(['order_status'=>11,'order_type'=>14]);
+
+            }
+        }
+
+    }
+
+
     /**
      * 八小时自动成团
      *
@@ -294,10 +332,12 @@ class AutomationController extends BaseController
      */
     public function auto_group_buy()
     {
+        $this->moreAutomation();
         $minute = intval(date('i'));
         if($minute%10 == 0){
             $this->zan();
         }
+        
 
 
         $where = null;
