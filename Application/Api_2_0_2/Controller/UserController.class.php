@@ -1560,36 +1560,42 @@ class UserController extends BaseController {
             $user_id = $order[$i]['user_id'];
             $this->order_redis_status_ref($order[$i]['user_id']);
             SendXinge('抱歉您的拼团未成功，请重新开团',"$user_id",$custom);
-            if ($order[$i]['pay_code'] == 'weixin') {
-                if ($order[$i]['is_jsapi']==1){
-                    $result = $orderLogic->weixinJsBackPay($order[$i]['order_sn'], $order[$i]['order_amount']);
-                }else{
-                    $result = $orderLogic->weixinBackPay($order[$i]['order_sn'], $order[$i]['order_amount']);
+            if($order[$i]['the_raise']==0) {
+                if ($order[$i]['pay_code'] == 'weixin') {
+                    if ($order[$i]['is_jsapi'] == 1) {
+                        $result = $orderLogic->weixinJsBackPay($order[$i]['order_sn'], $order[$i]['order_amount']);
+                    } else {
+                        $result = $orderLogic->weixinBackPay($order[$i]['order_sn'], $order[$i]['order_amount']);
+                    }
+                    if ($result['status'] == 1) {
+                        $data['order_status'] = 10;
+                        $data['order_type'] = 13;
+                        M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
+                        $this->fallback($order[$i]);
+                    }
+                } elseif ($order[$i]['pay_code'] == 'alipay') {
+                    $result = $orderLogic->alipayBackPay($order[$i]['order_sn'], $order[$i]['order_amount']);
+                    if ($result['status'] == 1) {
+                        $data['order_status'] = 10;
+                        $data['order_type'] = 13;
+                        M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
+                        $this->fallback($order[$i]);
+                    }
+                } elseif ($order[$i]['pay_code'] == 'qpay') {
+                    // Begin code by lcy
+                    $qqPay = new QQPayController();
+                    $result = $qqPay->doRefund($order[$i]['order_sn'], $order[$i]['order_amount']);
+                    if ($result['status'] == 1) {
+                        $data['order_status'] = 10;
+                        $data['order_type'] = 13;
+                        M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
+                        $this->fallback($order[$i]);
+                    }
                 }
-                if ($result['status'] == 1) {
-                    $data['order_status'] = 10;
-                    $data['order_type'] = 13;
-                    M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
-                    $this->fallback($order[$i]);
-                }
-            } elseif ($order[$i]['pay_code'] == 'alipay') {
-                $result = $orderLogic->alipayBackPay($order[$i]['order_sn'], $order[$i]['order_amount']);
-                if ($result['status'] == 1) {
-                    $data['order_status'] = 10;
-                    $data['order_type'] = 13;
-                    M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
-                    $this->fallback($order[$i]);
-                }
-            }elseif($order[$i]['pay_code'] == 'qpay'){
-                // Begin code by lcy
-                $qqPay = new QQPayController();
-                $result = $qqPay->doRefund($order[$i]['order_sn'], $order[$i]['order_amount']);
-                if ($result['status'] == 1) {
-                    $data['order_status'] = 10;
-                    $data['order_type'] = 13;
-                    M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
-                    $this->fallback($order[$i]);
-                }
+            }else{
+                $data['order_status'] = 10;
+                $data['order_type'] = 13;
+                M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
             }
 //            var_dump($result);
             $res = M('return_goods')->where('order_id='.$order[$i]['order_id'])->find();

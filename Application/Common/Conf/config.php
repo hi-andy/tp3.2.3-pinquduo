@@ -313,7 +313,7 @@ return array(
     'DiscountTime' => '2017-07-08',
 	
 	'SHARE_URL' => 'http://wx.pinquduo.cn',
-<<<<<<< HEAD
+
 
 	'TYPE_STATUS' => array(
 		array('id'=>'0','name'=>'处理中'),//延迟发货
@@ -321,8 +321,6 @@ return array(
 		array('id'=>'2','name'=>'已撤回'),//假货处理
 	),
 
-=======
->>>>>>> 5d9b4ea7705886df99ed756de7a5ea9fc079abc6
 );
 
 

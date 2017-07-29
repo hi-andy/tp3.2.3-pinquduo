@@ -137,7 +137,7 @@
                                     <tr>
 										<td>单独售价:</td>
 										<td>
-											<input type="text" value="{$goodsInfo.shop_price}" disabled="disabled" placeholder="自动获取" name="shop_price" class="form-control" style="display:inline;width:150px;"   onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
+											<input type="text" value="{$goodsInfo.shop_price}" name="shop_price" class="form-control" style="display:inline;width:150px;"   onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
 											<span class="notice" notice="单独售价由程序自动生成，无需填写"></span>
 											<span id="err_shop_price" style="color:#F00; display:none;"></span>
 										</td>
@@ -145,7 +145,7 @@
 									<tr>
 										<td>团购售价:</td>
 										<td>
-											<input type="text" value="{$goodsInfo.prom_price}"  disabled="disabled" placeholder="自动获取"  name="prom_price" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
+											<input type="text" value="{$goodsInfo.prom_price}" name="prom_price" class="form-control" style="display:inline;width:150px;" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" onpaste="this.value=this.value.replace(/[^\d.]/g,'')" />
 											<span class="notice" notice="团购售价由程序自动生成，无需填写"></span>
 											<span id="err_prom_price" style="color:#F00; display:none;"></span>
 										</td>
@@ -230,7 +230,16 @@
                                     <div id="ajax_spec_data"><!-- ajax 返回规格--></div>
                                 </div>
                                 <!-- 商品规格-->
-
+                                <php>
+                                    if($goodsInfo['the_raise']==1){
+                                    $the_raise = 1;
+                                    }else{
+                                    if($_GET['the_raise']==1)
+                                    $the_raise = 1;
+                                    else
+                                    $the_raise = 0;
+                                    }
+                                </php>
                             </div>
                             <!--其他信息-->
 
