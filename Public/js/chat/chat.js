@@ -44,13 +44,18 @@ function formatDateTime(inputTime) {
 //   截取字符串
 function reString(data) {
     // 截取商品中有用的部分
-        for (var i = 0; i < data.result.length; i++) {
+       for (var i = 0; i < data.result.length; i++) {
             if (data.result[i].payload.indexOf("banner") != -1) {
-                data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.indexOf('"goods"') - 1)+'}}'
-                
+                data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.indexOf('"goods"') - 1) + '}}'
             }
-			data.result[i].payload = data.result[i].payload.replace(/[\\]/g, '/');
+            data.result[i].payload = data.result[i].payload.replace(/[\\]/g, '/');
+            if (data.result[i].payload.indexOf(',"goods"') == -1) {
+                data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.indexOf('}}')) + '},"goods":null}}'
+            }
+            data.result[i].payload = data.result[i].payload.slice(0, data.result[i].payload.lastIndexOf('"username":"') + 12) + data.result[i].payload.slice(data.result[i].payload.lastIndexOf('"username":"') + 12, data.result[i].payload.indexOf(
+                '"},"goods')).replace('"', '') + data.result[i].payload.slice(data.result[i].payload.indexOf('"},"goods'))
         }
+        return data
 }
 
 function getCookie(cname) {
@@ -127,9 +132,10 @@ $.ajax({
                 // 如果isAutoLogin设置为false，那么必须手动设置上线，否则无法收消息
                 // 手动上线指的是调用conn.setPresence(); 如果conn初始化时已将isAutoLogin设置为true
                 // 则无需调用conn.setPresence();
+				conn.setPresence()
             },
             onClosed: function(message) {
-                conn.open(options);
+                //alert('您已在其他地方登陆，请刷新页面!')
             }, //连接关闭回调
             onTextMessage: function(message) {
 				if(message.ext.goods){

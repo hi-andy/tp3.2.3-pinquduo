@@ -465,7 +465,7 @@ class GoodsController extends BaseController {
         I('spec_key') && $spec_key = I('spec_key');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $rdsname = "getGoodsDetails".$goods_id.$user_id.$ajax_get;
-        //if (empty(redis($rdsname))) {//判断是否有缓存
+        if (empty(redis($rdsname))) {//判断是否有缓存
             //轮播图
             $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
 
@@ -483,7 +483,6 @@ class GoodsController extends BaseController {
 
             //商品详情
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
-            $goods['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
             $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
             $store['store_logo'] = TransformationImgurl($store['store_logo']);
             $goods['store'] = $store;
@@ -568,10 +567,12 @@ class GoodsController extends BaseController {
             }
 
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'group_buy' => $group_buy, 'goods' => $goods, 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
-        //    redis($rdsname, serialize($json), REDISTIME);//写入缓存
-        //} else {
-        //    $json = unserialize(redis($rdsname));//读取缓存
-        //}
+            redis($rdsname, serialize($json), REDISTIME);//写入缓存
+        } else {
+            $json = unserialize(redis($rdsname));//读取缓存
+        }
+        // 分享地址不加入缓存，避免地址失效缓存也要全部更新。
+        $json['result']['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));

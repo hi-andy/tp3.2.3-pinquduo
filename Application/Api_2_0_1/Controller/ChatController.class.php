@@ -119,15 +119,15 @@ class ChatController extends BaseController
      * 获取未读列表
      * @param string $user_id //接收方ID
      */
-    public function get_unread($user_id='',$page,$pagesize){
+    public function get_unread($user_id='',$page='',$pagesize=''){
         if ($user_id){
-            if (empty(redis('get_unread'))) {
+//            if (empty(redis('get_unread'))) {
                 $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC");
                 $froms='';
                 foreach ($data1 as $k1 => $v1) {
                     $data[$k1] = $v1;
                     $payload = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v1['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
-                    $data[$k1]['payload'] = htmlspecialchars_decode($payload);
+                    $data[$k1]['payload'] = addslashes(htmlspecialchars_decode($payload));
                     $froms .= "'".$v1['froms']."',";
                 }
                 $froms = substr($froms, 0, -1);
@@ -136,14 +136,15 @@ class ChatController extends BaseController
                 foreach ($data2 as $k2 => $v2) {
                     $data[count($data1)+$k2] = $v2;
                     $payload = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
-                    $data[count($data1)+$k2]['payload'] = htmlspecialchars_decode($payload);
+                    $data[count($data1)+$k2]['payload'] = addslashes(htmlspecialchars_decode($payload));
                 }
                 // 暂不使用缓存
                 //redis('get_unread', serialize($data), 8);
-            } else {
-                $data = unserialize(redis('get_unread'));
-            }
+//            } else {
+//                $data = unserialize(redis('get_unread'));
+//            }
             json('读取成功',$data);
+            //var_dump(json_decode($aaa,true));
         } else {
             errjson('缺少参数');
         }

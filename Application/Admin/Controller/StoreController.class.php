@@ -57,6 +57,9 @@ class StoreController extends BaseController{
 			->order($order_str)
 			->limit($Page->firstRow . ',' . $Page->listRows)->select();
 		$this->assign('page',$show);
+
+
+
 		$this->assign('storesList',$storesList);
 		$this->display();
 	}
@@ -144,6 +147,9 @@ class StoreController extends BaseController{
 					}else{
 						$base['password'] = md5($base['password']);
 					}
+				}else{
+					unset($base['password2']);
+					unset($base['password']);
 				}
 				if($merchant['state'] != $base['state']){
 					if($base['state'] == 1){
@@ -385,16 +391,23 @@ class StoreController extends BaseController{
 		$where = " 1=1 ";
 
 		//关键字搜索
-		$key_word = I('key_word') ? trim(I('key_word')) : '';
+		$key_word = I('store_name') ? trim(I('store_name')) : '';
+		$order_sn = I('order_sn') ? trim(I('order_sn')) : '';
+		$status = I('status') ? trim(I('status')) : '';
 		if ($key_word) {
-			$where = "$where and store_name like '%$key_word%'";
+			$where = "$where and store_name = '$key_word'";
 		}
-
+		if ($order_sn) {
+			$where = "$where and order_sn = '$order_sn'";
+		}
+		if($status != 99){
+			$where = "$where and status = '$status'";
+		}
 		$STORE_PUMISHMENT = M('store_punishment');
 		$count = $STORE_PUMISHMENT->where($where)->count();
-		$Page = new AjaxPage($count, 10);
+		$Page = new AjaxPage($count, 20);
 		$show = $Page->show();
-		$order_str = " `datetime` desc ";
+		$order_str = " `sp_id` desc ";
 		$List = $STORE_PUMISHMENT->where($where)->order($order_str)->limit($Page->firstRow . ',' . $Page->listRows)->select();
 		$this->assign('page',$show);
 		$this->assign('List',$List);
@@ -413,9 +426,19 @@ class StoreController extends BaseController{
 		$data['admin_name'] = $_SESSION['admin_info']['user_name'];
 		$data['datetime'] = date('Y-m-d H:i:s');
 
+		$info = M('store_punishment')->where(array('sp_id' => $sp_id))->find();
 		$res = M('store_punishment')->where(array('sp_id'=>$sp_id))->save($data);
+		if($info['status']!=$status) {
+			if ($status == 1) {
+				$res1 = M('store_detail')->where('storeid = ' . $info['store_id'])->setDec('margin', $info['sp_penal_sum']);
+			} else {
+				$res1 = M('store_detail')->where('storeid = ' . $info['store_id'])->setInc('margin', $info['sp_penal_sum']);
+			}
+		}else{
+			$res1 = 1;
+		}
 
-		if($res){
+		if($res&&$res1){
 			echo json_encode(array('status'=>1,'msg'=>'修改成功'));
 		}else{
 			echo json_encode(array('status'=>0,'msg'=>'修改失败'));

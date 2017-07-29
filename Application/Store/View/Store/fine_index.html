@@ -11,36 +11,21 @@
         <div class="container-fluid">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> 商户惩罚列表</h3>
+                    <h3 class="panel-title"><i class="fa fa-list"></i>  惩罚列表</h3>
+                </div>
+                <div class="panel-body">
+                    <span>  您的保证余额为：￥{$margin}</span><if condition="$margin elt 0"><span style="color: red"> (您的保证金已不足，请及时缴纳！！)</span></if>
                 </div>
                 <div class="panel-body">
                     <div class="navbar navbar-default">
                         <form action="" id="search-form2" class="navbar-form form-inline" method="post" onsubmit="return false">
                             <div class="form-group">
-                                <select name="status" class="form-control">
-                                    <option value="99">全部</option>
-                                    <option value="1">已处理</option>
-                                    <option value="2">已撤销</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="input-order-id">商户名称</label>
+                                <label class="control-label" for="input-order-id">订单号：</label>
                                 <div class="input-group">
-                                    <input type="text" name="store_name" value="" placeholder="搜索词" id="input-order-id" class="form-control">
+                                    <input type="text" name="order_sn" value="" placeholder="订单号" id="input-order-id" class="form-control">
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="input-order-id">订单号</label>
-                                <div class="input-group">
-                                    <input type="text" name="order_sn" value="" placeholder="搜索词" class="form-control">
-                                </div>
-                            </div>
-
                             <!--排序规则-->
-                            <input type="hidden" name="orderby1" value="id" />
-                            <input type="hidden" name="orderby2" value="desc" />
                             <button type="submit" onclick="ajax_get_table('search-form2',1)" id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i> 筛选</button>
                         </form>
                     </div>
@@ -56,34 +41,19 @@
 </div>
 <!-- /.content-wrapper -->
 <script>
-    var store_id = '{$store_id}';
-
     $(document).ready(function(){
-        // ajax 加载商品列表
+        // ajax 加载列表
         ajax_get_table('search-form2',1);
 
     });
 
-    function check_store_withdrawal(store_id2){
-        page = 1;
-        store_id = store_id2;
-        $.ajax({
-            type : "POST",
-            url:"/Admin/store/withdrawal_ajax?p="+page+'&store_id='+store_id,//+tab,
-            data : $('#search-form2').serialize(),// 你的formid
-            success: function(data){
-                $("#ajax_return").html('');
-                $("#ajax_return").append(data);
-            }
-        });
-    }
 
     // ajax 抓取页面 form 为表单id  page 为当前第几页
     function ajax_get_table(form,page){
         cur_page = page; //当前页面 保存为全局变量
         $.ajax({
             type : "POST",
-            url:"/Admin/store/ajax_punishment_list?p="+page+'&store_id='+store_id,//+tab,
+            url:"/Store/Store/ajax_fine_index?p="+page,//+tab,
             data : $('#'+form).serialize(),// 你的formid
             success: function(data){
                 $("#ajax_return").html('');
@@ -107,7 +77,7 @@
         if(!confirm('确定要删除吗?'))
             return false;
         $.ajax({
-            url:"/Admin/store/del_punishment?id="+id,
+            url:"/Admin/store/delStore?id="+id,
             success: function(v){
                 var v =  eval('('+v+')');
                 if(v.hasOwnProperty('status') && (v.status == 1))

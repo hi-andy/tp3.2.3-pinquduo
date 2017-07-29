@@ -18,7 +18,7 @@ class StoreController extends BaseController{
 		$page = I('page',1);
 		$pagesize = I('pagesize',10);
 		$store = M('merchant')->where('`id` = '.$store_id)->field('store_name,mobile,store_logo,sales,introduce,store_logo')->find();
-		$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id='.$store_id;
+		$store['store_share_url'] = C('SHARE_URL').'/shop_detail.html?store_id='.$store_id;
 
 		$count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->count();
 		$goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
