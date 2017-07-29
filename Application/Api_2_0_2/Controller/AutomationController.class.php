@@ -154,7 +154,7 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time() - 30;
-        $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 50)->select();
+        $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 15)->select();
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -284,18 +284,23 @@ class AutomationController extends BaseController
     public function moreAutomation(){
         //10天以前的
         $start_time = time()-432000;
-        $getdata = M('group_buy')->field('id,order_id,goods_num')->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark=0 and start_time>'.$start_time)->select();
+
+        $getdata = M('group_buy')->field('goods_num,mark,count(id)+1 as zongji')
+                                 ->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark>0 and start_time>'.$start_time)
+                                 ->group('mark')
+                                 ->having('zongji>goods_num')
+                                 ->select();
+
+        //$getdata = M('group_buy')->field('id,order_id,goods_num')->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark=0 and start_time>'.$start_time)->select();
         foreach($getdata as $row){
             $goods_num = (int)$row['goods_num'];
             if($goods_num>0){
-                $buyid = $row['id'];
+                $buyid = $row['mark'];
+                echo $buyid.'=====<hr>';
+                $zongshu = $row['zongji'];
                 $person = M('group_buy')->field('order_id')->where('is_successful=1 and auto=0 and is_cancel=0 and is_pay=1 and mark='.$buyid)->select();
-                $autonum = M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->count();
-                $personnum = count($person);
-                $zongji = (int)$personnum+(int)$autonum;
-                $zongji+=1;
-                if($zongji>$goods_num){
-                    $duonum = $zongji-$goods_num;
+                if($zongshu>$goods_num){
+                    $duonum = $zongshu-$goods_num;
                     for($i=1;$i<=$duonum;$i++){
                         M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
                     }
@@ -306,7 +311,8 @@ class AutomationController extends BaseController
                             ->save(['order_status'=>11,'order_type'=>14]);
                     }
                 }
-                M('order')->where('order_status=8 and order_type=11 and order_id='.$row['order_id'])
+                $datainfo = M('group_buy')->field('order_id')->where("id={$buyid}")->find();
+                M('order')->where('order_status=8 and order_type=11 and order_id='.$datainfo['order_id'])
                     ->save(['order_status'=>11,'order_type'=>14]);
 
             }
