@@ -286,7 +286,7 @@ class AutomationController extends BaseController
         $start_time = time()-432000;
 
         $getdata = M('group_buy')->field('goods_num,mark,count(id)+1 as zongji')
-            ->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark>0 and start_time>'.$start_time)
+            ->where('is_successful=1 and is_cancel=0  and is_pay=1 and mark>0 and start_time>'.$start_time)
             ->group('mark')
             ->having('zongji>goods_num')
             ->select();
