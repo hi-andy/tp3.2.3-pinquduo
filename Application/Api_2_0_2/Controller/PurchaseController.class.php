@@ -64,7 +64,8 @@ class PurchaseController extends  BaseController
             exit(json_encode($json));
             //$json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
         }
-        //判断商品是否已经下架-温立涛结束
+        //暂时停止为我点赞的开团操作  吴银海
+
 
         //　非为我点赞商品，收货地址不能为空，为我点赞商品除外
         $is_special = M('goods')->where('goods_id='.$goods_id)->getField('is_special');

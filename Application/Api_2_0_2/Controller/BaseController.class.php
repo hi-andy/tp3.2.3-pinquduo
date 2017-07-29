@@ -169,24 +169,22 @@ class BaseController extends Controller {
         if(($num+1)<$prom['goods_num'] && ($prom['end_time']>time()) && $order['pay_status']==0 && $order['order_status']==8){
             $status['annotation'] = '拼团中,未付款';
             $status['order_type'] = '10';
-        }
-        elseif($order['order_type']==11){
+        }elseif($order['order_type']==11){
             $status['annotation'] = '拼团中,已付款';
             $status['order_type'] = '11';
-        }
-        elseif(($num+1)<$prom['goods_num'] && $prom['end_time'] && $order['order_status']==9){//< time() && $order['pay_status']==1 && $order['order_status']==9
+        }elseif ($order['order_type']==11 && $prom['end_time']<time()){
+            $status['annotation'] = '未成团,待退款';
+            $status['order_type'] = '11';
+        }elseif(($num+1)<$prom['goods_num'] && $prom['end_time'] && $order['order_status']==9){//< time() && $order['pay_status']==1 && $order['order_status']==9
             $status['annotation'] = '未成团,待退款';
             $status['order_type'] = '12';
-        }
-        elseif(($num+1)<$prom['goods_num']  && $order['pay_status']==1 && $order['order_status']==10){
+        }elseif(($num+1)<$prom['goods_num']  && $order['pay_status']==1 && $order['order_status']==10){
             $status['annotation'] = '未成团,已退款';
             $status['order_type'] = '13';
-        }
-        elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==0 && $order['order_status']==11){
+        }elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==0 && $order['order_status']==11){
             $status['annotation'] = '已成团,待发货';
             $status['order_type'] = '14';
-        }
-        elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==11){
+        }elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==11){
             $status['annotation'] = '已成团,待收货';
             $status['order_type'] = '15';
         }elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==2) {
