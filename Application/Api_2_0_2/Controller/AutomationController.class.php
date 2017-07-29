@@ -299,19 +299,35 @@ class AutomationController extends BaseController
                 echo $buyid.'=====<hr>';
                 $zongshu = $row['zongji'];
                 $person = M('group_buy')->field('order_id')->where('is_successful=1 and auto=0 and is_cancel=0 and is_pay=1 and mark='.$buyid)->select();
-                if($zongshu>$goods_num){
+                
+				$datainfo = M('group_buy')->field('order_id,is_raise')->where("id={$buyid}")->find();
+				
+				
+				
+				if($zongshu>$goods_num){
                     $duonum = $zongshu-$goods_num;
+					
                     for($i=1;$i<=$duonum;$i++){
-                        M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
+						if($datainfo['is_raise'] == 0){
+							M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
+						}else if($datainfo['is_raise'] == 1){
+							M('group_buy')->where('is_successful=1 and auto=0 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
+						}	
                     }
                 }
                 if(count($person)>0){
                     foreach($person as $item){
-                        M('order')->where('order_status=8 and order_type=11 and order_id='.$item['order_id'])
-                            ->save(['order_status'=>11,'order_type'=>14]);
+						if($datainfo['is_raise'] == 0){
+
+							M('order')->where('order_status=8 and order_type=11 and order_id='.$item['order_id'])
+								->save(['order_status'=>11,'order_type'=>14]);
+						}else if($datainfo['is_raise'] == 1){
+							M('order')->where('order_status=8 and order_type=11 and order_id='.$item['order_id'])
+								->save(['order_status'=>2,'shipping_status'=>1,'order_type'=>4]);
+						}	
                     }
                 }
-                $datainfo = M('group_buy')->field('order_id')->where("id={$buyid}")->find();
+                
                 M('order')->where('order_status=8 and order_type=11 and order_id='.$datainfo['order_id'])
                     ->save(['order_status'=>11,'order_type'=>14]);
 
