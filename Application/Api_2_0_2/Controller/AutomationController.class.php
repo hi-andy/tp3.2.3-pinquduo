@@ -148,14 +148,13 @@ class AutomationController extends BaseController
     }
 
     //将时间到了团又没有成团的团解散
-        public function incomplete_mass_overtime()
+    public function incomplete_mass_overtime()
     {
         $user = new UserController();
         $where = null;
         $conditon = null;
         $time = time() - 30;
-        $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 50)->select();
-        var_dump($prom_order);
+        $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 5)->select();
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -181,9 +180,8 @@ class AutomationController extends BaseController
             $wheres = $user->ReturnSQL($prom_man);
             $i_d = $wheres['id'];
             $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
-            var_dump(M()->getLastsql());
             $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
-            var_dump(M()->getLastsql());
+
             if ($res && $result1) {//给未成团订单退款
                 $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi,the_raise')->select();
                 $user->BackPay($pay_cod);
@@ -286,18 +284,23 @@ class AutomationController extends BaseController
     public function moreAutomation(){
         //10天以前的
         $start_time = time()-432000;
-        $getdata = M('group_buy')->field('id,order_id,goods_num')->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark=0 and start_time>'.$start_time)->select();
+
+        $getdata = M('group_buy')->field('goods_num,mark,count(id)+1 as zongji')
+            ->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark>0 and start_time>'.$start_time)
+            ->group('mark')
+            ->having('zongji>goods_num')
+            ->select();
+
+        //$getdata = M('group_buy')->field('id,order_id,goods_num')->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark=0 and start_time>'.$start_time)->select();
         foreach($getdata as $row){
             $goods_num = (int)$row['goods_num'];
             if($goods_num>0){
-                $buyid = $row['id'];
+                $buyid = $row['mark'];
+                echo $buyid.'=====<hr>';
+                $zongshu = $row['zongji'];
                 $person = M('group_buy')->field('order_id')->where('is_successful=1 and auto=0 and is_cancel=0 and is_pay=1 and mark='.$buyid)->select();
-                $autonum = M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->count();
-                $personnum = count($person);
-                $zongji = (int)$personnum+(int)$autonum;
-                $zongji+=1;
-                if($zongji>$goods_num){
-                    $duonum = $zongji-$goods_num;
+                if($zongshu>$goods_num){
+                    $duonum = $zongshu-$goods_num;
                     for($i=1;$i<=$duonum;$i++){
                         M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
                     }
@@ -308,7 +311,8 @@ class AutomationController extends BaseController
                             ->save(['order_status'=>11,'order_type'=>14]);
                     }
                 }
-                M('order')->where('order_status=8 and order_type=11 and order_id='.$row['order_id'])
+                $datainfo = M('group_buy')->field('order_id')->where("id={$buyid}")->find();
+                M('order')->where('order_status=8 and order_type=11 and order_id='.$datainfo['order_id'])
                     ->save(['order_status'=>11,'order_type'=>14]);
 
             }
@@ -337,7 +341,7 @@ class AutomationController extends BaseController
         if($minute%10 == 0){
             $this->zan();
         }
-        
+
 
 
         $where = null;
@@ -463,7 +467,7 @@ class AutomationController extends BaseController
                             $nicknames[] = $nickname;
                         }
                     }
-                    
+
                     $nicknames = implode("、",$nicknames);
                     // 获取拼团成功用户微信 openid ，推送拼团成功消息
                     foreach ($group_buy_mark as $value) {
