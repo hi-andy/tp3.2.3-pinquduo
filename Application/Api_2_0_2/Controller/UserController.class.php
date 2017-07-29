@@ -1603,6 +1603,7 @@ class UserController extends BaseController {
                 $data['order_status'] = 10;
                 $data['order_type'] = 13;
                 M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
+                var_dump(M()->getLastsql());
             }
         }
     }
