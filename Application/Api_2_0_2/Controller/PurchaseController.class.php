@@ -28,8 +28,25 @@ class PurchaseController extends  BaseController
     function getBuy()
     {
         header("Access-Control-Allow-Origin:*");
+        $user_id = (int)I('user_id');
 
-        $user_id = I('user_id');
+        //处理掉用户id非法的情况-温立涛开始
+        if($user_id<=0){
+            $json = array('status' => -1, 'msg' => '用户id非法');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+        $userdata = M('users')->field('user_id')->where(['user_id'=>$user_id])->find();
+        if(count($userdata)==0){
+            $json = array('status' => -1, 'msg' => '用户id非法无记录');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+        //处理掉用户id非法的情况-温立涛结束
+
+
         $prom_id =I('prom_id');
         $address_id = I('address_id',0);
         $goods_id = I('goods_id');
