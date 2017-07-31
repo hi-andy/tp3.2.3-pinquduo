@@ -154,7 +154,41 @@ class AutomationController extends BaseController
         $where = null;
         $conditon = null;
         $time = time() - 30;
-        $prom_order = M('group_buy')->where('(`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 50)->select();
+        $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+            ->field('id,is_raise,order_id')
+            ->limit(0, 2)
+            ->select();
+        foreach($prom_order as $key=>$val){
+            $listbuyid = [];
+            $listorderid = [];
+            $buyid = $val['id'];
+            $listbuyid[] = $buyid;
+            $listorderid[] = $val['order_id'];
+
+            //获取团员
+            $tuandata = M('group_buy')->field('id,order_id')
+                ->where('is_pay=1 and is_dissolution=0 and is_successful=0 and is_cancel=0 and mark='.$buyid)
+                ->select();
+            foreach($tuandata as $row){
+                $listbuyid[] = $row['id'];
+                $listorderid[] = $row['order_id'];
+
+            }
+            $getlistbuyid = implode(',',$listbuyid);
+            $getlistorderid = implode(',',$listorderid);
+            $res = M('group_buy')->where("id in({$getlistbuyid})")->data(array('is_dissolution' => 1))->save();
+            $result1 = M('order')->where("order_id in({$getlistorderid})")->data(array('order_status' => 9, 'order_type' => 12))->save();
+
+            if ($res && $result1) {//给未成团订单退款
+                $pay_cod = M('order')->where("order_id in({$getlistorderid})")
+                    ->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi,the_raise')
+                    ->select();
+                $user->BackPay($pay_cod);
+            }
+
+
+        }
+        /*
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -183,10 +217,11 @@ class AutomationController extends BaseController
             $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
 
             if ($res && $result1) {//给未成团订单退款
-                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
+                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi,the_raise')->select();
                 $user->BackPay($pay_cod);
             }
         }
+        */
     }
 
     //将自动确认收货的订单的状态进行修改
