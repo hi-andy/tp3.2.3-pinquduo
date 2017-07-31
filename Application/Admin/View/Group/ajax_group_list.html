@@ -40,6 +40,7 @@
                     <td class="text-center"> <if condition="$list.is_pay eq 0">未支付</if> <if condition="$list.is_pay eq 1">已支付</if></td>
                     <td class="text-center"> <if condition="$list.is_free eq 0">不免单</if><if condition="$list.is_free neq 0">免单</if> </td>
                     <td class="text-center"> <if condition="$list.is_successful eq 0">未成团</if><if condition="$list.is_successful eq 1">已成团</if> </td>
+
                     <td class="text-center">
                         <a href="{:U('Admin/Group/detail',array('group_id'=>$list['id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
                         <if condition="($list['is_pay'] neq 1)">

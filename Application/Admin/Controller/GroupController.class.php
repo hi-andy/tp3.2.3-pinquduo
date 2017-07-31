@@ -105,6 +105,9 @@ class GroupController extends BaseController {
         if(!empty(I('store_name'))){
             $this->assign('store_name', I('store_name'));
             $store_id = M('merchant')->where("store_name = '".I('store_name')."'")->getField('id');
+            if(empty($store_id)){
+                $store_id = M('merchant')->where("store_name like '%".I('store_name')."%'")->getField('id');
+            }
             $condition['o.store_id'] = array('eq',$store_id);
         }
         $count = M('group_buy')->alias('g')
@@ -128,7 +131,7 @@ class GroupController extends BaseController {
             ->join('INNER JOIN tp_order_goods d on d.order_id = g.order_id')
             ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
             ->where($condition)
-            ->field('g.id,g.start_time,g.end_time,g.mark,g.free,g.is_successful,g.is_pay,g.goods_name,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,m.store_name,d.goods_price')
+            ->field('g.id,g.start_time,g.end_time,g.mark,g.free,g.is_successful,g.is_pay,g.goods_name,g.is_free,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,m.store_name,d.goods_price')
             ->order('o.add_time desc')
             ->limit($Page->firstRow,$Page->listRows)
             ->select();
