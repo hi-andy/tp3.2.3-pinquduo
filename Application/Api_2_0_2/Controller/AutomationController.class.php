@@ -156,7 +156,7 @@ class AutomationController extends BaseController
         $time = time() - 30;
         $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
                                     ->field('id,is_raise,order_id')
-                                    ->limit(0, 2)
+                                    ->limit(0, 10)
                                     ->select();
         foreach($prom_order as $key=>$val){
             $listbuyid = [];
@@ -179,7 +179,7 @@ class AutomationController extends BaseController
             $getlistbuyid = implode(',',$listbuyid);
             $getlistorderid = implode(',',$listorderid);
             $res = M('group_buy')->where("id in({$getlistbuyid})")->data(array('is_dissolution' => 1))->save();
-            $result1 = M('order')->where("order_id in({$getlistorderid})")->data(array('order_status' => 9, 'order_type' => 12))->save();
+            $result1 = M('order')->where("order_status=8 and order_type=11 and order_id in({$getlistorderid})")->data(array('order_status' => 9, 'order_type' => 12))->save();
 
             if ($res && $result1) {//给未成团订单退款
                 $pay_cod = M('order')->where("order_id in({$getlistorderid})")
