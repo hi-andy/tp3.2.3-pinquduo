@@ -165,6 +165,8 @@ class AutomationController extends BaseController
             $listbuyid[] = $buyid;
             $listorderid[] = $val['order_id'];
 
+            echo '==============='.$buyid.'<hr>';
+
             //获取团员
             $tuandata = M('group_buy')->field('id,order_id')
                 ->where('is_pay=1 and is_dissolution=0 and is_successful=0 and is_cancel=0 and mark='.$buyid)
