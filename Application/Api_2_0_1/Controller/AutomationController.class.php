@@ -165,7 +165,7 @@ class AutomationController extends BaseController
             $listbuyid[] = $buyid;
             $listorderid[] = $val['order_id'];
 
-            echo '==============='.$buyid.'<hr>';
+            echo '==============='.$buyid.'====='.$val['is_raise'].'<hr>';
 
             //获取团员
             $tuandata = M('group_buy')->field('id,order_id')
