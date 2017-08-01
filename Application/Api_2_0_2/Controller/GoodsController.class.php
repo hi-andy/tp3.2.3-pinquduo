@@ -729,7 +729,7 @@ class GoodsController extends BaseController {
 			$res = M('user_address')->data($data)->add();
 			if($res)
 			{
-				$json = array('status'=>1,'msg'=>'添加成功');
+				$json = array('status'=>1,'msg'=>'添加成功','result'=>array('id'=>$res));
 				if(!empty($ajax_get))
 					$this->getJsonp($json);
 				exit(json_encode($json));

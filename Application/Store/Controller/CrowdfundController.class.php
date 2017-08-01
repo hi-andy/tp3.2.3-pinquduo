@@ -45,6 +45,8 @@ class CrowdfundController extends BaseController {
         // 搜索条件
         $condition = array();
         $condition['g.is_raise'] = 1;
+        $condition['g.store_id'] = $_SESSION['merchant_id'];
+        $condition['g.mark'] = 0;
         if($begin && $end){
             $condition['g.start_time'] = array('GT',$begin);
             $condition['g.end_time'] = array('LT',$end);
@@ -56,12 +58,6 @@ class CrowdfundController extends BaseController {
             }elseif(I('Open_group')==2){
                 $condition['_string'] = " g.goods_num != g.order_num ";
             }
-        }
-        if(!empty(I('store_name')))
-        {
-            $this->assign('store_name', I('store_name'));
-            $store_id = M('merchant')->where("store_name like '%".I('store_name')."%' and state=1")->getField('id');
-            $condition['g.store_id'] = array('eq',$store_id);
         }
         if(I('consignee')){
             $condition['u.nickname'] =array('LIKE',"%".I('consignee')."%");
@@ -306,4 +302,64 @@ class CrowdfundController extends BaseController {
         return $categoryList;
     }
 
+    function delivery_list(){
+        $this->display();
+    }
+
+    /**
+     * 生成发货单
+     */
+    public function deliveryHandle(){
+        $promLogic = new PromLogic();
+        $data = I('post.');
+        $res = M('delivery_doc')->where('`order_id`='.$data['order_id'])->find();
+        if(!empty($res))
+        {
+            $this->success('已经发货了',U('Store/Crowdfund/delivery_list',array('order_id'=>$data['order_id'])));
+            exit();
+        }
+        $res = $promLogic->deliveryHandle($data);
+        //
+        if($res){
+            reserve_logistics($data['order_id']);
+            $this->success('操作成功',U('Store/Crowdfund/delivery_info',array('order_id'=>$data['order_id'])));
+        }else{
+            $this->success('操作失败',U('Store/Crowdfund/delivery_info',array('order_id'=>$data['order_id'])));
+        }
+    }
+
+    /*
+	 * ajax 发货订单列表
+	*/
+    public function ajaxdelivery(){
+//		$orderLogic = new OrderLogic();
+//	    protected $comparison = array('eq'=>'=','neq'=>'<>','gt'=>'>','egt'=>'>=','lt'=>'<','elt'=>'<=','notlike'=>'NOT LIKE','like'=>'LIKE','in'=>'IN','notin'=>'NOT IN');
+        $condition = array();
+        $consignee = I('consignee');
+        $order_sn = I('order_sn');
+        $consignee && $condition['consignee'] = array('like',$consignee);
+        $order_sn && $condition['order_sn'] = array('like',$order_sn);
+        $condition['prom_id'] = array('neq',0);
+        $condition['the_raise'] = array('eq',1);
+        if(empty($consignee) && empty($order_sn)){
+            if((I('shipping_status')==0 || I('shipping_status')==1))
+            {
+                $condition['order_type']=array('eq',14);
+            }else{
+                $condition['order_type']=array('eq',15);
+            }
+        }
+        $condition['store_id'] = $_SESSION['merchant_id'];
+        $count = M('order')->where($condition)->count();
+        $Page  = new AjaxPage($count,10);
+        //搜索条件下 分页赋值
+        foreach($condition as $key=>$val) {
+            $Page->parameter[$key]   =   urlencode($val);
+        }
+        $show = $Page->show();
+        $orderList = M('order')->where($condition)->limit($Page->firstRow.','.$Page->listRows)->order('add_time DESC')->select();
+        $this->assign('orderList',$orderList);
+        $this->assign('page',$show);// 赋值分页输出
+        $this->display();
+    }
 }

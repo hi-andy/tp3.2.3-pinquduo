@@ -15,7 +15,7 @@ namespace Api_2_0_2\Controller;
 
 use Api_2_0_2\Controller;
 
-class PurchaseController extends  BaseController
+class WenController extends  BaseController
 {
 
     public function _initialize() {
@@ -28,23 +28,8 @@ class PurchaseController extends  BaseController
     function getBuy()
     {
         header("Access-Control-Allow-Origin:*");
-        $user_id = (int)I('user_id');
+        $user_id = I('user_id');
 
-        //处理掉用户id非法的情况-温立涛开始
-        if($user_id<=0){
-            $json = array('status' => -1, 'msg' => '用户id非法');
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
-        $userdata = M('users')->field('user_id')->where(['user_id'=>$user_id])->find();
-        if(count($userdata)==0){
-            $json = array('status' => -1, 'msg' => '用户id非法无记录');
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        }
-        //处理掉用户id非法的情况-温立涛结束
 
 
         $prom_id =I('prom_id');
@@ -506,7 +491,6 @@ class PurchaseController extends  BaseController
                 }
                 if(!empty($ajax_get)){
 //注释掉代码  温立涛                    echo "<script> location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
-                    $this->getJsonp($json);
                     exit;
                 }
                 exit(json_encode($json));
@@ -788,7 +772,6 @@ class PurchaseController extends  BaseController
             }
             if(!empty($ajax_get)){
 //注释掉代码 温立涛                echo "<script>location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
-                $this->getJsonp($json);
                 exit;
             }
             exit(json_encode($json));

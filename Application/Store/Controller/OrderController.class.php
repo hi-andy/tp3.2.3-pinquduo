@@ -1147,5 +1147,4 @@ class OrderController extends BaseController {
         $this->display();
     }
 
-//	function
 }
