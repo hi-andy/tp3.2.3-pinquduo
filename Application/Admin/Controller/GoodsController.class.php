@@ -764,22 +764,32 @@ class GoodsController extends BaseController
     public function ajaxGetSpecSelect()
     {
         $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
-        $GoodsLogic = new GoodsLogic();
-        $specList = D('Spec')->where("type_id = " . $_GET['spec_type'])->order('`order` desc')->select();
-        foreach ($specList as $k => $v)
-            $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = " . $v['id'])->getField('id,item'); // 获取规格项
-
-        $items_id = M('SpecGoodsPrice')->where('goods_id = ' . $goods_id)->getField("GROUP_CONCAT(`key` SEPARATOR '_') AS items_id");
-        $items_ids = explode('_', $items_id);
-
-        // 获取商品规格图片                
-        if ($goods_id) {
-            $specImageList = M('SpecImage')->where("goods_id = $goods_id")->getField('spec_image_id,src');
+        $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
+        foreach($specList as $k => $v){
+            $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
         }
 
-        $this->assign('specImageList', $specImageList);
-        $this->assign('items_ids', $items_ids);
-        $this->assign('specList', $specList);
+        $items_id = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();
+        $count = count($items_id);
+        $ids = null;
+        for($i=0;$i<$count;$i++)
+        {
+            $ids = $ids.'_'. $items_id[$i]['key'];
+        }
+        $items_ids = explode('_', $ids);
+        if(empty($items_ids[0]))
+        {
+            array_shift($items_ids);
+        }
+        // 获取商品规格图片
+        if($goods_id)
+        {
+            $specImageList = M('SpecImage')->where("goods_id = $goods_id")->getField('spec_image_id,src');
+        }
+        $this->assign('specImageList',$specImageList);
+
+        $this->assign('items_ids',$items_ids);
+        $this->assign('specList',$specList);
         $this->display('ajax_spec_select');
     }
 
@@ -790,7 +800,7 @@ class GoodsController extends BaseController
     {
         $GoodsLogic = new GoodsLogic();
         $goods_id = $_REQUEST['goods_id'] ? $_REQUEST['goods_id'] : 0;
-        $str = $GoodsLogic->getSpecInput($goods_id, $_POST['spec_arr']);
+            $str = $GoodsLogic->getSpecInput($goods_id, $_POST['spec_arr']);
         exit($str);
     }
 

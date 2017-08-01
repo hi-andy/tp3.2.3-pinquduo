@@ -164,7 +164,7 @@ class GoodsController extends BaseController {
 
         $where = ' g.show_type = 0 '. ' and g.store_id = '.$_SESSION['merchant_id'] ; // 搜索条件
         if ($intro = I('intro')){
-            $where .= ' and g.intro like \'%' .$intro. '%\'';
+            $where .= " and g.intro like %$intro%'";
         }
         I('is_on_sale') != null && $where .= " and `g.is_on_sale`= ".I('is_on_sale') ;
         (I('merchant_id') !=0) && $where .= " and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';

@@ -63,15 +63,19 @@ class IndexController {
 		}
 		$Store = M('merchant');
 		$store_info = $Store->where("id = '$store_id'")->find();
-		if(!empty($store_info)){
-			$res = $Store->where("id = '$store_id'")->save(array('password' => md5($new_pass_word2)));
-			if($res){
-				exit(json_encode(array('status'=>1,'msg'=>'重置成功 ^_^')));
+		if($store_info['password']!=md5($new_pass_word2)){
+			if(!empty($store_info)){
+				$res = $Store->where("id = '$store_id'")->save(array('password' => md5($new_pass_word2)));
+				if($res){
+					exit(json_encode(array('status'=>1,'msg'=>'重置成功 ^_^')));
+				}else{
+					exit(json_encode(array('status'=>-1,'msg'=>'重置失败 ^_^')));
+				}
 			}else{
-				exit(json_encode(array('status'=>-1,'msg'=>'重置失败 ^_^')));
+				exit(json_encode(array('status'=>-1,'msg'=>'商户账号不存在 ^_^')));
 			}
 		}else{
-			exit(json_encode(array('status'=>-1,'msg'=>'商户账号不存在 ^_^')));
+			exit(json_encode(array('status'=>-1,'msg'=>'新密码与原密码重复 ^_^')));
 		}
 	}
 
@@ -103,7 +107,7 @@ class IndexController {
 			$alidayu = new AlidayuController();
 			$result = $alidayu->sms($store_name, "code", $code, "SMS_62265043", "normal", "拼趣多修改验证", "拼趣多");
 		}
-
+		
 		if(!empty($result)){
 			redis($store_name.'_name', serialize($store_name));
 			redis($store_name.'_code', serialize($code));

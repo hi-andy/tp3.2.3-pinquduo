@@ -70,6 +70,7 @@ class CrowdfundController extends BaseController {
             $this->ajaxReturn(json_encode($return_arr));
         }
         // 删除此商品
+        // 删除此商品
         M("Goods")->where('goods_id =' . $_GET['id'])->save(array('is_special'=>0,'the_raise'=>0));
         $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
         $this->ajaxReturn(json_encode($return_arr));
@@ -99,6 +100,7 @@ class CrowdfundController extends BaseController {
         // 搜索条件
         $condition = array();
         $condition['g.is_raise'] = 1;
+        $condition['g.mark'] = 0;
         if($begin && $end){
             $condition['g.start_time'] = array('GT',$begin);
             $condition['g.end_time'] = array('LT',$end);
@@ -138,6 +140,7 @@ class CrowdfundController extends BaseController {
                      ->where($condition)
                      ->field('g.*,u.nickname,o.order_sn,o.pay_time')
                      ->limit($Page->firstRow,$Page->listRows)
+                     ->order('g.id desc')
                      ->select();
 
         $this->assign('grouplist',$grouplist);

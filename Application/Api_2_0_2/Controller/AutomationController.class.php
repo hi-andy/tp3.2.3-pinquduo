@@ -158,6 +158,7 @@ class AutomationController extends BaseController
             ->field('id,is_raise,order_id')
             ->limit(0, 10)
             ->select();
+
         foreach($prom_order as $key=>$val){
             $listbuyid = [];
             $listorderid = [];
@@ -171,6 +172,7 @@ class AutomationController extends BaseController
             $tuandata = M('group_buy')->field('id,order_id')
                 ->where('is_pay=1 and is_dissolution=0 and is_successful=0 and is_cancel=0 and mark='.$buyid)
                 ->select();
+
             foreach($tuandata as $row){
                 $listbuyid[] = $row['id'];
                 $listorderid[] = $row['order_id'];
@@ -190,7 +192,6 @@ class AutomationController extends BaseController
 
 
         }
-
     }
 
     //将时间到了团又没有成团的团解散
@@ -201,6 +202,7 @@ class AutomationController extends BaseController
         $conditon = null;
         $time = time() - 30;
         $prom_order = M('group_buy')->where('(`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 50)->select();
+
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -229,7 +231,7 @@ class AutomationController extends BaseController
             $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
 
             if ($res && $result1) {//给未成团订单退款
-                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi')->select();
+                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi,the_raise')->select();
                 $user->BackPay($pay_cod);
             }
         }
@@ -283,9 +285,9 @@ class AutomationController extends BaseController
     public function zan(){
         //处理点赞逻辑代码开始
         $end_time = time()+86400;
-
         //if($minute%5==0){
-        $dianzan = M('group_buy')->field('goods_num,mark,count(id) as zongji')->where('`auto`=0 and 
+        $dianzan = M('group_buy')->field('goods_num,mark,count(id)+1 as zongji')
+            ->where('`auto`=0 and 
                         `is_raise`=1 and 
                         `free`=0 and 
                         `is_dissolution`=0 and 
@@ -293,31 +295,91 @@ class AutomationController extends BaseController
                         `mark`>0 and 
                         `is_cancel`=0 and
                         `is_successful`=0 and 
-                        `end_time`<=' . $end_time)->group('mark')->select();
+                        `end_time`<=' . $end_time)
+            ->group('mark')
+            ->having('zongji>=goods_num')
+            ->select();
         foreach($dianzan as $key=>$zanrow){
             $goods_num = (int)$zanrow['goods_num'];
             $dianzanid = (int)$zanrow['mark'];
             $zongji = (int)$zanrow['zongji'];
-            $zongshu = $zongji+1;
-
-            if( $zongshu >= $goods_num ){
-                echo '====='.$dianzanid;
-                echo '<hr>';
-                $groupdata = M('group_buy')->field('order_id')->where("id = {$dianzanid}")->find();
-                $dianorderid = $groupdata['order_id'];
-                $dianorderinfo = M('order')->where("order_id={$dianorderid}")->find();
-                if($dianorderinfo['order_status']==8 && $dianorderinfo['order_type']==11){
-                    $baseObj = new BaseController();
-                    $baseObj->getFree($dianzanid);
+            if( $zongji >= $goods_num ){
+                $groupdata = M('group_buy')->field('order_id,is_dissolution')->where("id = {$dianzanid}")->find();
+                if($groupdata['is_dissolution'] == 0){
+                    echo '====='.$dianzanid;
+                    echo '<hr>';
+                    $dianorderid = $groupdata['order_id'];
+                    $dianorderinfo = M('order')->where("order_id={$dianorderid}")->find();
+                    if($dianorderinfo['order_status']==8 && $dianorderinfo['order_type']==11){
+                        $baseObj = new BaseController();
+                        $baseObj->getFree($dianzanid);
+                    }
                 }
-
             }
-
         }
         //}
         //处理点赞逻辑代码结束
+    }
+
+
+    /**
+     * 处理成团后机器人多增加的问题
+     */
+    public function moreAutomation(){
+        //10天以前的
+        $start_time = time()-432000;
+
+        $getdata = M('group_buy')->field('goods_num,mark,count(id)+1 as zongji')
+            ->where('is_successful=1 and is_cancel=0  and is_pay=1 and mark>0 and start_time>'.$start_time)
+            ->group('mark')
+            ->having('zongji>goods_num')
+            ->select();
+
+        //$getdata = M('group_buy')->field('id,order_id,goods_num')->where('is_successful=1 and is_cancel=0 and auto=0 and is_pay=1 and mark=0 and start_time>'.$start_time)->select();
+        foreach($getdata as $row){
+            $goods_num = (int)$row['goods_num'];
+            if($goods_num>0){
+                $buyid = $row['mark'];
+                echo $buyid.'=====<hr>';
+                $zongshu = $row['zongji'];
+                $person = M('group_buy')->field('order_id')->where('is_successful=1 and auto=0 and is_cancel=0 and is_pay=1 and mark='.$buyid)->select();
+                
+				$datainfo = M('group_buy')->field('order_id,is_raise')->where("id={$buyid}")->find();
+				
+				
+				
+				if($zongshu>$goods_num){
+                    $duonum = $zongshu-$goods_num;
+					
+                    for($i=1;$i<=$duonum;$i++){
+						if($datainfo['is_raise'] == 0){
+							M('group_buy')->where('is_successful=1 and auto=1 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
+						}else if($datainfo['is_raise'] == 1){
+							M('group_buy')->where('is_successful=1 and auto=0 and is_cancel=0 and is_pay=1 and mark='.$buyid)->order('id desc')->limit(1)->delete();
+						}	
+                    }
+                }
+                if(count($person)>0){
+                    foreach($person as $item){
+						if($datainfo['is_raise'] == 0){
+
+							M('order')->where('order_status=8 and order_type=11 and order_id='.$item['order_id'])
+								->save(['order_status'=>11,'order_type'=>14]);
+						}else if($datainfo['is_raise'] == 1){
+							M('order')->where('order_status=8 and order_type=11 and order_id='.$item['order_id'])
+								->save(['order_status'=>2,'shipping_status'=>1,'order_type'=>4]);
+						}	
+                    }
+                }
+                
+                M('order')->where('order_status=8 and order_type=11 and order_id='.$datainfo['order_id'])
+                    ->save(['order_status'=>11,'order_type'=>14]);
+
+            }
+        }
 
     }
+
 
     /**
      * 八小时自动成团
@@ -334,10 +396,12 @@ class AutomationController extends BaseController
      */
     public function auto_group_buy()
     {
+        $this->moreAutomation();
         $minute = intval(date('i'));
         if($minute%10 == 0){
             $this->zan();
         }
+
 
 
         $where = null;
@@ -455,15 +519,12 @@ class AutomationController extends BaseController
                         echo '<hr>';
                         return false;
                     }
-
-
                     foreach ($group_buy_mark as $v1) {
                         if($v1['auto']==0){
                             $nickname = M('users')->where("user_id={$v1['user_id']}")->getField('nickname');
                             $nicknames[] = $nickname;
                         }
                     }
-                    
                     $nicknames = implode("、",$nicknames);
                     // 获取拼团成功用户微信 openid ，推送拼团成功消息
                     foreach ($group_buy_mark as $value) {

@@ -60,7 +60,8 @@
                     <td class="text-left"><img src="{$list.store_logo}" height="40px" width="40px"></td>
                     <td class="text-center">{$list.email}</td>
                     <td class="text-center">{$list.mobile}</td>
-                    <td class="text-center">{$haitao[$list[is_haitao]]}</td>
+                    <if condition="$list[is_haitao] eq 1"><td class="text-center">海淘店</td></if>
+                    <if condition="$list[is_haitao] neq 1"><td class="text-center">非海淘</td></if>
                     <td class="text-center">{$STORE_FROM[$list[store_from]]}</td>
                     <td class="text-center">{$STORE_TYPE[$list[store_type]]}</td>
                     <td class="text-center">{$list.margin} RMB</td>

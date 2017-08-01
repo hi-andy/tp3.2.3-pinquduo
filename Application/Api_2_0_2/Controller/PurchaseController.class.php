@@ -28,8 +28,25 @@ class PurchaseController extends  BaseController
     function getBuy()
     {
         header("Access-Control-Allow-Origin:*");
+        $user_id = (int)I('user_id');
 
-        $user_id = I('user_id');
+        //处理掉用户id非法的情况-温立涛开始
+        if($user_id<=0){
+            $json = array('status' => -1, 'msg' => '用户id非法');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+        $userdata = M('users')->field('user_id')->where(['user_id'=>$user_id])->find();
+        if(count($userdata)==0){
+            $json = array('status' => -1, 'msg' => '用户id非法无记录');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+        //处理掉用户id非法的情况-温立涛结束
+
+
         $prom_id =I('prom_id');
         $address_id = I('address_id',0);
         $goods_id = I('goods_id');
@@ -64,7 +81,8 @@ class PurchaseController extends  BaseController
             exit(json_encode($json));
             //$json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
         }
-        //判断商品是否已经下架-温立涛结束
+        //暂时停止为我点赞的开团操作  吴银海
+
 
         //　非为我点赞商品，收货地址不能为空，为我点赞商品除外
         $is_special = M('goods')->where('goods_id='.$goods_id)->getField('is_special');
@@ -155,7 +173,7 @@ class PurchaseController extends  BaseController
                 if ($result['is_raise'] == 1) {
                     $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
                     if(!empty($raise)){
-                        $json = array('status' => -1, 'msg' => '您已参加过这个活动，请选择开团邀请好友得奖品');
+                        $json = array('status' => -1, 'msg' => '您已经参加过活动，请选择开团 ^_^');
                         redisdelall("getBuy_lock_" . $goods_id);//删除锁
                         if (!empty($ajax_get)) {
                             echo "<script> alert('" . $json['msg'] . "') </script>";

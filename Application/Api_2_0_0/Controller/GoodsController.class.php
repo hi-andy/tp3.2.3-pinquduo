@@ -795,6 +795,16 @@ class GoodsController extends BaseController {
             exit(json_encode($json));
         }
 
+		/*
+		 * 出现填写地址喜欢输入空格的各种大佬，为了预防再次出现相同的问题导致手机号码不完整且存在空格问题
+		 * */
+		if (!check_mobile($data['mobile'])){
+			$json = array('status'=>-1,'msg'=>'请填写完整且正确的手机号码');
+			if(!empty($ajax_get))
+				$this->getJsonp($json);
+			exit(json_encode($json));
+		}
+
 		if($type==1)//type:1修改、2增加
 		{
 			if($data['is_default']==1)

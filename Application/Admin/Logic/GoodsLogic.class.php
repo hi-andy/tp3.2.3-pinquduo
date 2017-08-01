@@ -360,6 +360,7 @@ class GoodsLogic extends RelationModel
      */
     public function getSpecInput($goods_id, $spec_arr)
     {
+        $info = M('goods')->where('goods_id = '.$goods_id)->find();
         // <input name="item[2_4_7][price]" value="100" /><input name="item[2_4_7][name]" value="蓝色_S_长袖" />        
         /*$spec_arr = array(         
             20 => array('7','8','9'),
@@ -382,8 +383,8 @@ class GoodsLogic extends RelationModel
          $clo_name = array_keys($spec_arr2);         
          $spec_arr2 = combineDika($spec_arr2); //  获取 规格的 笛卡尔积                 
                        
-         $spec = M('Spec')->getField('id,name'); // 规格表
-         $specItem = M('SpecItem')->getField('id,item,spec_id');//规格项
+         $spec = M('Spec')->where('is_show = 1 and store_id ='.$info['store_id'])->getField('id,name'); // 规格表
+         $specItem = M('SpecItem')->where('is_show = 1')->getField('id,item,spec_id');//规格项
          $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code,prom_price');//规格项
                           
        $str = "<table class='table table-bordered' id='spec_input_tab'>";

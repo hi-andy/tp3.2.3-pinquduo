@@ -50,9 +50,10 @@ class IndexController extends BaseController {
             $category[7]['cat_name'] = '省钱大法';
             $category[7]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.gif';
             //中间活动模块
-            $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
-            $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
+//            $activity['banner_url'] = CDN . '/Public/images/daojishibanner.jpg';
+//            $activity['H5_url'] = 'http://pinquduo.cn/index.php?s=/Api/SecondBuy/';
 //            $activity['logo_url'] = 'http://cdn.pinquduo.cn/activity.gif';
+            $activity = null;
 
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             //getGoodsList  获取商品列表
@@ -690,7 +691,6 @@ class IndexController extends BaseController {
      */
     public function getEconomizeGoods()
     {
-
         $version = I('version');
         $page = I('page',1);
         $pagesize = I('pagesize',20);
@@ -703,6 +703,7 @@ class IndexController extends BaseController {
                 ->where($where)
                 ->page($page, $pagesize)
                 ->field('g.goods_id,g.goods_name,g.market_price,g.shop_price,g.original_img as original,g.prom,g.prom_price,g.is_special,g.list_img as original_img')
+                ->order('g.sort asc')
                 ->select();
             for($i=0;$i<count($goodsList);$i++){
                 $type = M('promote_icon')->where('goods_id = '.$goodsList[$i]['goods_id'])->getField('src');
@@ -886,9 +887,7 @@ class IndexController extends BaseController {
 	}
 
     function test(){
-        $fine = M('store_punishment')->where('store_id = '. 910)->sum('sp_penal_sum');
-        var_dump(M()->getLastsql());
-        var_dump($fine);
+        var_dump(date('Y-m-d H:m:s',time()));
     }
 
     //删除缓存

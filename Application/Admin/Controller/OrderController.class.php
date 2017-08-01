@@ -1041,25 +1041,35 @@ class OrderController extends BaseController {
 		}
 		if($_POST)
 		{
-			if(empty($_POST['punishment_money']))
-				$this->error('惩罚金额不能为空或者为0');
+			$info = M('store_punishment')->where('order_sn='.$_POST['order_sn'])->find();
+			if(!empty($info)&&$info['status']==1){
+				$this->success('已惩罚!',U("Admin/Order/index"));
+			}
 
-			$order = M('order')->where('order_id='.$_POST['order_id'])->find();
+			$order = M('order')->where('order_sn='.$_POST['order_sn'])->find();
+			$user_info = M('users')->where('user_id='.$order['user_id'])->field("REPLACE(mobile, SUBSTR(mobile,4,4), '****') as mobile,nickname")->find();
 			$store = M('merchant')->where('id='.$order['store_id'])->field('id,store_name')->find();
 			$admin =M('admin')->where('admin_id='.session('admin_id'))->find();
 			$data['store_id'] = $store['id'];
 			$data['store_name'] = $store['store_name'];
-			$data['order_id'] = $_POST['order_id'];
+			$data['order_id'] = $order['order_id'];
+			$data['user_id'] = $order['user_id'];
+			if(!empty($user_info['nickname'])){
+				$data['user_name'] = $user_info['nickname'];
+			}else{
+				$data['user_name'] = $user_info['mobile'];
+			}
 			$data['order_add_time'] = $order['add_time'];
 			$data['order_sn'] = $order['order_sn'];
 			$data['order_amount'] = $order['order_amount'];
-			$data['sp_penal_sum'] = $_POST['punishment_money'];
-			$data['reason'] = $_POST['reason'];
+			$data['sp_penal_sum'] = (float)$_POST['money'];
+			$data['reason'] = (string)$_POST['text'];
 			$data['admin_id'] = $admin['admin_id'];
 			$data['admin_name'] = $admin['user_name'];
 			$data['datetime'] = date('Y-m-d H:m:s',time());
 			$res = M('store_punishment')->data($data)->add();
-			if($res)
+			$res1 = M('store_detail')->where('storeid = ' . $order['store_id'])->setDec('margin', $data['sp_penal_sum']);
+			if($res && $res1)
 			{
 				$this->success('修改成功!',U("Admin/Order/index"));
 			}else{
