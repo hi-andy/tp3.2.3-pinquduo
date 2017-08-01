@@ -9,10 +9,14 @@
 namespace Api_2_0_2\Controller;
 
 
+use Think\Cache\Driver\Redis;
+
 class ChatController extends BaseController
 {
+    private $redis = '';
     public function _initialize()
     {
+        $this->redis = new Redis();
         parent::_initialize();
     }
 
@@ -30,10 +34,10 @@ class ChatController extends BaseController
     public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status='')
     {
         if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload != '' && $status != '') {
-            $chatcount = M('chat','','DB_CONFIG2')->where(array('msg_id'=>array('eq',$msg_id)))->count();
-            if ($chatcount < 1) {
-                $msgdata = array(
-                    'msg_id' => $msg_id,
+
+            $msg_id = $this->redis->hget('message:', $msg_id);
+            if (!$msg_id) {
+                $msgData = array(
                     'timestamp' => $timestamp,
                     'direction' => $direction,
                     'to' => $to,
@@ -42,39 +46,13 @@ class ChatController extends BaseController
                     'payload' => $payload,
                     'status' => $status
                 );
-                // 暂不使用缓存
-                //redislist("chatlist", json_encode($msgdata));//写入redis队列
-
-                $sql = "INSERT INTO tp_chat (msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
-                $sql .= "('{$msg_id}',{$timestamp},'{$direction}','{$to}','{$from}','{$chat_type}','{$payload}',{$status})";
-                M()->query($sql);
-
-                json('保存成功',$msgdata);
+                $this->redis->hset('message:', $msg_id, $msgData);
+                json('保存成功',$msgData);
             } else {
                 errjson('msg_id已存在');
             }
         } else {
             errjson('缺少参数');
-        }
-    }
-
-    /**
-     * 自动脚本保存消息队列
-     */
-    public function auto_set_chatlist(){
-        $num = 100;//每次读取N条
-        $values  = "";
-        $sql = "INSERT INTO tp_chat(msg_id, timestamp, direction, tos, froms, chat_type, payload, status) VALUES";
-        for ($i=0; $i<$num; $i++) {
-            $msg = (array) json_decode(redislist("chatlist"));//读取redis队列
-            if ($msg) {
-                $values .= "('{$msg['msg_id']}',{$msg['timestamp']},'{$msg['direction']}','{$msg['to']}','{$msg['from']}','{$msg['chat_type']}','{$msg['payload']}',{$msg['status']}),";
-            }
-        }
-        $values = substr($values, 0, -1);
-        if ($values) {
-            $sql .= $values;
-            M()->query($sql);
         }
     }
 
@@ -119,8 +97,11 @@ class ChatController extends BaseController
      */
     public function get_unread($user_id=''){
         if ($user_id){
+            $messages = $this->redis->hget('unread:', $user_id);
+
             if (empty(redis('get_unread'))) {
                 $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC ");
+
                 $froms='';
                 foreach ($data1 as $k1 => $v1) {
                     $data[$k1] = $v1;
@@ -129,6 +110,7 @@ class ChatController extends BaseController
                 }
                 $froms = substr($froms, 0, -1);
                 if (!empty($froms)) $andwhere = "and froms not in({$froms})";
+                
                 $data2 = M('chat', '', 'DB_CONFIG2')->query("SELECT froms,0 as count FROM tp_chat where tos='{$user_id}' and status=1 {$andwhere} GROUP BY froms ORDER BY timestamp DESC");
                 $data = array();
                 foreach ($data2 as $k2 => $v2) {
@@ -152,7 +134,7 @@ class ChatController extends BaseController
      */
     public function del_chat($msg_id=''){
         if ($msg_id){
-            $result = M('chat')->where(array('msg_id'=>array('eq',$msg_id)))->save(array('status'=>2));
+            $result = $this->redis->hdel('message:', $msg_id);
             if ($result) {
                 json('删除成功',$result);
             } else {

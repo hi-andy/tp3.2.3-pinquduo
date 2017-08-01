@@ -166,14 +166,14 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
-                        <!--<div class="row">-->
-                            <!--<td class="text-right col-sm-2"><p class="margin">操作备注：</p></td>-->
-                            <!--<td colspan="3">-->
-                                <!--<form id="order-action">-->
-                                    <!--<textarea name="note" placeholder="请输入操作备注" rows="3" class="form-control" va></textarea>-->
-                                <!--</form>-->
-                            <!--</td>-->
-                        <!--</div>-->
+                        <div class="row">
+                            <td class="text-right col-sm-2"><p class="margin">操作备注：</p></td>
+                            <td colspan="3">
+                                <form id="order-action">
+                                    <textarea name="note" placeholder="请输入操作备注" rows="3" class="form-control" va></textarea>
+                                </form>
+                            </td>
+                        </div>
                     </tr>
                     <tr>
                         <div class="row">
@@ -207,39 +207,39 @@
         </div>
 
         <!--新订单列表 操作记录信息-->
-        <!--<div class="panel panel-default">-->
-            <!--<div class="panel-heading">-->
-                <!--<h3 class="panel-title text-center">操作记录</h3>-->
-            <!--</div>-->
-            <!--<div class="panel-body">-->
-                <!--<table class="table table-bordered">-->
-                    <!--<thead>-->
-                    <!--<tr>-->
-                        <!--<td class="text-center">操作者</td>-->
-                        <!--<td class="text-center">操作时间</td>-->
-                        <!--<td class="text-center">订单状态</td>-->
-                        <!--<td class="text-center">付款状态</td>-->
-                        <!--<td class="text-center">发货状态</td>-->
-                        <!--<td class="text-center">描述</td>-->
-                        <!--<td class="text-center">备注</td>-->
-                    <!--</tr>-->
-                    <!--</thead>-->
-                    <!--<tbody>-->
-                    <!--<volist name="action_log" id="log">-->
-                        <!--<tr>-->
-                            <!--<td class="text-center">{$log.action_user}</td>-->
-                            <!--<td class="text-center">{$log.log_time|date='Y-m-d H:i:s',###}</td>-->
-                            <!--<td class="text-center">{$order_status[$log[order_status]]}</td>-->
-                            <!--<td class="text-center">{$pay_status[$log[pay_status]]}<if condition="$order['pay_code'] eq 'code'"><span style="color: red">(货到付款)</span></if></td>-->
-                            <!--<td class="text-center">{$shipping_status[$log[shipping_status]]}</td>-->
-                            <!--<td class="text-center">{$log.status_desc}</td>-->
-                            <!--<td class="text-center">{$log.action_note}</td>-->
-                        <!--</tr>-->
-                    <!--</volist>-->
-                    <!--</tbody>-->
-                <!--</table>-->
-            <!--</div>-->
-          <!--</div>-->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">操作记录</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td class="text-center">操作者</td>
+                        <td class="text-center">操作时间</td>
+                        <td class="text-center">订单状态</td>
+                        <td class="text-center">付款状态</td>
+                        <td class="text-center">发货状态</td>
+                        <td class="text-center">描述</td>
+                        <td class="text-center">备注</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="action_log" id="log">
+                        <tr>
+                            <td class="text-center">{$log.action_user}</td>
+                            <td class="text-center">{$log.log_time|date='Y-m-d H:i:s',###}</td>
+                            <td class="text-center">{$order_status[$log[order_status]]}</td>
+                            <td class="text-center">{$pay_status[$log[pay_status]]}<if condition="$order['pay_code'] eq 'code'"><span style="color: red">(货到付款)</span></if></td>
+                            <td class="text-center">{$shipping_status[$log[shipping_status]]}</td>
+                            <td class="text-center">{$log.status_desc}</td>
+                            <td class="text-center">{$log.action_note}</td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+            </div>
+          </div>
         </div>
 	  </div>
     </div> 
