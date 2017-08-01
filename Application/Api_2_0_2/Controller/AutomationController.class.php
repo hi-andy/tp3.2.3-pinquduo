@@ -73,7 +73,7 @@ class AutomationController extends BaseController
         }
     }
 
-    //将单买超时支付的订单设置成取消
+    //取消单买超时未支付的订单
     public function single_buy_overtime()
     {
         $self_cancel_order = M('order')->where('prom_id is null and `is_cancel`=0 and `order_type`=1 and `pay_status`=0')->field('order_id,add_time,user_id,goods_id')->select();
@@ -104,7 +104,7 @@ class AutomationController extends BaseController
         }
     }
 
-    //将团购里超时支付的订单设置成取消
+    //将团购超时未支付的订单设置成取消
     public function group_purchase_overtime()
     {
         $where = null;
@@ -113,7 +113,7 @@ class AutomationController extends BaseController
             ->where('gb.`is_pay`=0 and gb.is_cancel=0')
             ->field('gb.id,gb.order_id,gb.start_time,gb.user_id,gb.goods_id,gb.free,gb.goods_id,o.num')
             ->select();
-        if (count($join_prom_order) > 0) {
+        if ($join_prom_order) {
             for ($z = 0; $z < count($join_prom_order); $z++) {
                 $data_time = $join_prom_order[$z]['start_time'] + ORDER_END_TIME;
                 if ($data_time <= time()) {
@@ -147,7 +147,7 @@ class AutomationController extends BaseController
         }
     }
 
-    //将时间到了团又没有成团的团解散
+    //解散超时未成团的团
     public function incomplete_mass_overtime()
     {
         $user = new UserController();
@@ -155,9 +155,10 @@ class AutomationController extends BaseController
         $conditon = null;
         $time = time() - 30;
         $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
-                                    ->field('id,is_raise,order_id')
-                                    ->limit(0, 10)
-                                    ->select();
+            ->field('id,is_raise,order_id')
+            ->limit(0, 10)
+            ->select();
+
         foreach($prom_order as $key=>$val){
             $listbuyid = [];
             $listorderid = [];
@@ -169,8 +170,9 @@ class AutomationController extends BaseController
 
             //获取团员
             $tuandata = M('group_buy')->field('id,order_id')
-                                      ->where('is_pay=1 and is_dissolution=0 and is_successful=0 and is_cancel=0 and mark='.$buyid)
-                                      ->select();
+                ->where('is_pay=1 and is_dissolution=0 and is_successful=0 and is_cancel=0 and mark='.$buyid)
+                ->select();
+
             foreach($tuandata as $row){
                 $listbuyid[] = $row['id'];
                 $listorderid[] = $row['order_id'];
@@ -183,14 +185,24 @@ class AutomationController extends BaseController
 
             if ($res && $result1) {//给未成团订单退款
                 $pay_cod = M('order')->where("order_id in({$getlistorderid})")
-                                     ->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi,the_raise')
-                                     ->select();
+                    ->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi,the_raise')
+                    ->select();
                 $user->BackPay($pay_cod);
             }
 
 
         }
-        /*
+    }
+
+    //将时间到了团又没有成团的团解散
+    public function old_incomplete_mass_overtime()
+    {
+        $user = new UserController();
+        $where = null;
+        $conditon = null;
+        $time = time() - 30;
+        $prom_order = M('group_buy')->where('(`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 50)->select();
+
         if (count($prom_order) > 0) {
             //将团ＩＤ一次性拿出来
             $where = $user->getPromid($prom_order);
@@ -223,47 +235,42 @@ class AutomationController extends BaseController
                 $user->BackPay($pay_cod);
             }
         }
-        */
     }
 
-    //将自动确认收货的订单的状态进行修改
-    //单买的订单拿出来
+    //将单买的已自动确认收货的，订单的状态进行修改
     public function get_single_buy_order()
     {
-        $one_buy = M('order')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
-        $one_buy_number = count($one_buy);
-        if ($one_buy_number > 0) {
-            $data = null;
+        $one_buy = M('order')->field('user_id,order_id')->where('shipping_status=1 and order_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<>""')->select();
+        if ($one_buy) {
+            $data = array();
             $ids['order_id'] = array('IN', array_column($one_buy, 'order_id'));
             $data['confirm_time'] = time();
             $data['order_status'] = 2;
             $data['order_type'] = 4;
             M('order')->where($ids)->data($data)->save();
-            for ($oi = 0; $oi < $one_buy_number; $oi++) {
-                $this->order_redis_status_ref($one_buy[$oi]['user_id']);
+            foreach ($one_buy as $value) {
+                $this->order_redis_status_ref($value['user_id']);
             }
         }
     }
-
-    //拿出团购的订单
+    //将团购的已自动确认收货的，订单的状态进行修改
     public function group_purchase_order()
     {
-        $group_nuy = M('order')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<=' . time())->select();
-        $group_nuy_number = count($group_nuy);
-        if ($group_nuy_number > 0) {
-            $data = null;
+        $group_nuy = M('order')->where('order_status=11 and shipping_status=1 and pay_status=1 and is_return_or_exchange=0 and confirm_time=0 and automatic_time<>""')->select();
+        if ($group_nuy) {
+            $data = array();
             $order_id_array['order_id'] = array('IN', array_column($group_nuy, 'order_id'));
             $data['confirm_time'] = time();
             $data['order_status'] = 2;
             $data['order_type'] = 4;
             M('order')->where($order_id_array)->data($data)->save();
-            for ($gi = 0; $gi < $group_nuy_number; $gi++) {
-                $this->order_redis_status_ref($group_nuy[$gi]['user_id']);
+            foreach ($group_nuy as $value) {
+                $this->order_redis_status_ref($value['user_id']);
             }
         }
     }
 
-    //更新限时秒杀列表
+    //更新限时秒杀列表　//停用自动脚本　2017-8-1　yonghua
     public function seconds_kill_list()
     {
         $is_special = M('goods')
