@@ -278,9 +278,9 @@ class AutomationController extends BaseController
     public function zan(){
         //处理点赞逻辑代码开始
         $end_time = time()+86400;
-
         //if($minute%5==0){
-        $dianzan = M('group_buy')->field('goods_num,mark,count(id) as zongji')->where('`auto`=0 and 
+        $dianzan = M('group_buy')->field('goods_num,mark,count(id)+1 as zongji')
+            ->where('`auto`=0 and 
                         `is_raise`=1 and 
                         `free`=0 and 
                         `is_dissolution`=0 and 
@@ -288,30 +288,30 @@ class AutomationController extends BaseController
                         `mark`>0 and 
                         `is_cancel`=0 and
                         `is_successful`=0 and 
-                        `end_time`<=' . $end_time)->group('mark')->select();
+                        `end_time`<=' . $end_time)
+            ->group('mark')
+            ->having('zongji>=goods_num')
+            ->select();
         foreach($dianzan as $key=>$zanrow){
             $goods_num = (int)$zanrow['goods_num'];
             $dianzanid = (int)$zanrow['mark'];
             $zongji = (int)$zanrow['zongji'];
-            $zongshu = $zongji+1;
-
-            if( $zongshu >= $goods_num ){
-                echo '====='.$dianzanid;
-                echo '<hr>';
-                $groupdata = M('group_buy')->field('order_id')->where("id = {$dianzanid}")->find();
-                $dianorderid = $groupdata['order_id'];
-                $dianorderinfo = M('order')->where("order_id={$dianorderid}")->find();
-                if($dianorderinfo['order_status']==8 && $dianorderinfo['order_type']==11){
-                    $baseObj = new BaseController();
-                    $baseObj->getFree($dianzanid);
+            if( $zongji >= $goods_num ){
+                $groupdata = M('group_buy')->field('order_id,is_dissolution')->where("id = {$dianzanid}")->find();
+                if($groupdata['is_dissolution'] == 0){
+                    echo '====='.$dianzanid;
+                    echo '<hr>';
+                    $dianorderid = $groupdata['order_id'];
+                    $dianorderinfo = M('order')->where("order_id={$dianorderid}")->find();
+                    if($dianorderinfo['order_status']==8 && $dianorderinfo['order_type']==11){
+                        $baseObj = new BaseController();
+                        $baseObj->getFree($dianzanid);
+                    }
                 }
-
             }
-
         }
         //}
         //处理点赞逻辑代码结束
-
     }
 
 
