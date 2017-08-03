@@ -108,9 +108,9 @@ class CrowdfundController extends BaseController {
 
         if(I('Open_group')){
             if(I('Open_group')==1){
-                $condition['_string'] = " g.goods_num = g.order_num ";
+                $condition['is_successful'] = 1;
             }elseif(I('Open_group')==2){
-                $condition['_string'] = " g.goods_num != g.order_num ";
+                $condition['is_successful'] = 0;
             }
         }
         if(!empty(I('store_name')))

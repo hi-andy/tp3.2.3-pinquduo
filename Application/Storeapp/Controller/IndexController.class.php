@@ -7,7 +7,7 @@
  */
 
 namespace Storeapp\Controller;
-
+use Api\Controller\HxcallController;
 use Api_2_0_0\Controller\AlidayuController;
 
 class IndexController {
@@ -33,6 +33,11 @@ class IndexController {
 		}
 		$store_info = M('merchant')->where("merchant_name = '$store_name' and password = '$store_pass' ")->find();
 		if(!empty($store_info)){
+			$HXcall = new HxcallController();
+			$username = 'store'.$store_info['id'];
+			$password = md5($username);
+			$nickname = $_SESSION['merchant_name'];
+			$res = $HXcall->hx_register($username,$password,$nickname);
 			exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('store_id'=>$store_info['id'],'store_logo'=>$store_info['store_logo'],'store_name'=>$store_info['store_name']))));
 		}else{
 			exit(json_encode(array('status'=>-1,'msg'=>'商户密码不正确 ^_^')));

@@ -603,8 +603,11 @@ class IndexController extends BaseController {
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $goods = M('goods', '', 'DB_CONFIG2')->where($where)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
-            foreach ($goods as &$v) {
-                $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
+            foreach ($goods as $k=>$v) {
+                $goods[$k]['original_img'] = empty($goods[$k]['original_img'])?$goods[$k]['original']:$goods[$k]['original_img'];
+                if($goods[$k]['is_special']==8){
+                    $goods[$k]['spec_key'] = M('spec_goods_price')->where('goods_id = '.$goods[$k]['goods_id'])->getField('key');
+                }
             }
 
             $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
@@ -887,7 +890,9 @@ class IndexController extends BaseController {
 	}
 
     function test(){
-        var_dump(date('Y-m-d H:m:s',time()));
+        $res = M('admin_log')->add(array('log_ip'=>'111','admin_id'=>1,'log_url'=>1));
+        var_dump($res);
+        var_dump(M()->getLastsql());
     }
 
     //删除缓存

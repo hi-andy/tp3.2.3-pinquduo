@@ -1123,9 +1123,6 @@ class OrderController extends BaseController {
 		        $data['shipping_code'] = I('shipping_code'); //  物流公司
 	        }
 
-
-
-
 	        $delivery = M('delivery_doc')->where('order_id='.$order_id)->count();
 	        if(!empty($delivery)){
 		        $d = M('delivery_doc')->where('order_id='.$order_id)->save($data);

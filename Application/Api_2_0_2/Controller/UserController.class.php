@@ -1592,19 +1592,17 @@ class UserController extends BaseController {
                         $this->fallback($order[$i]);
                     }
                 }
-
+            }else{
+                $data['order_status'] = 10;
+                $data['order_type'] = 13;
+                M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
+            }
                 $res = M('return_goods')->where('order_id='.$order[$i]['order_id'])->find();
                 if(empty($res)){
                     $e =  M('return_goods')->add(array('order_id'=>$order[$i]['order_id'],'order_sn'=>$order[$i]['order_sn'],'goods_id'=>$order[$i]['goods_id'],'store_id'=>$order[$i]['store_id'],'gold'=>$order[$i]['order_amount'],'status'=>3,'is_prom'=>1,'reason'=>'未成团退款','is_return'=>1,'pay_code'=>$order[$i]['pay_code'],'addtime'=>time(),'user_id'=>$order[$i]['user_id'],'one_time'=>time(),'two_time'=>time(),'ok_time'=>time(),'is_return'=>1));
                 }else{
                     $e = M('return_goods')->where('order_id='.$order[$i]['order_id'])->save(array('order_id'=>$order[$i]['order_id'],'order_sn'=>$order[$i]['order_sn'],'goods_id'=>$order[$i]['goods_id'],'store_id'=>$order[$i]['store_id'],'gold'=>$order[$i]['order_amount'],'status'=>3,'is_prom'=>1,'reason'=>'未成团退款','is_return'=>1,'pay_code'=>$order[$i]['pay_code'],'addtime'=>time(),'user_id'=>$order[$i]['user_id'],'one_time'=>time(),'two_time'=>time(),'ok_time'=>time(),'is_return'=>1));
                 }
-            }else{
-                $data['order_status'] = 10;
-                $data['order_type'] = 13;
-                M('order')->where('`order_id`=' . $order[$i]['order_id'])->data($data)->save();
-                var_dump(M()->getLastsql());
-            }
         }
     }
     //将商品相关的库存，销量，使用的优惠券还原成原来的样子

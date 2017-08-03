@@ -59,7 +59,7 @@
         cur_page = page; //当前页面 保存为全局变量
             $.ajax({
                 type : "POST",
-                url:"/Store/Group/ajaxdelivery/p/"+page,//+tab,
+                url:"/Store/Crowdfund/ajaxdelivery/p/"+page,//+tab,
                 data : $('#'+tab).serialize(),// 你的formid
                 success: function(data){
                     $("#ajax_return").html('');

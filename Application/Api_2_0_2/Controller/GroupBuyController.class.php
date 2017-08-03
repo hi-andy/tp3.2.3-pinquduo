@@ -70,6 +70,10 @@ class GroupBuyController extends BaseController {
             'content' => http_build_query($postdata, '', '&'),
         );
         $resdata = file_get_contents($posturl, false, stream_context_create($postcontext));
+
+        $wxtmplmsg = new WxtmplmsgController();
+        $wxtmplmsg->spell_success($useropenid,'yyyy','wwwwwww','如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
+
         echo $resdata;
         exit();
     }

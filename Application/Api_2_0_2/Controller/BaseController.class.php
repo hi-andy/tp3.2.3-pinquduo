@@ -539,12 +539,23 @@ class BaseController extends Controller {
         $count = M('goods')->where($where)->count();
         $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
-        for($i=0;$i<count($goods);$i++){
-            $type = M('promote_icon')->where('goods_id = '.$goods[$i]['goods_id'])->getField('src');
+        foreach ($goods as $k=>$v){
+            $type = M('promote_icon')->where('goods_id = '.$goods[$k]['goods_id'])->getField('src');
             if(!empty($type)){
-                $goods[$i]['icon_src'] = $type;
+                $goods[$k]['icon_src'] = $type;
+            }
+            if($goods[$k]['is_special']==8){
+                $goods[$k]['spec_key'] = M('spec_goods_price')->where('goods_id = '.$goods[$k]['goods_id'])->getField('key');
             }
         }
+        
+//        for($i=0;$i<count($goods);$i++){
+//            $type = M('promote_icon')->where('goods_id = '.$goods[$i]['goods_id'])->getField('src');
+//            if(!empty($type)){
+//                $goods[$i]['icon_src'] = $type;
+//            }
+//        }
+
         $result = $this->listPageData($count, $goods,$pagesize);
         foreach ($result['items'] as &$v) {
             $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
