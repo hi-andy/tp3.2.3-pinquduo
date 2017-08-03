@@ -379,24 +379,6 @@ function combineDika() {
 
 
 /**
- * 两个数组的笛卡尔积
- * @param unknown_type $arr1
- * @param unknown_type $arr2
-*/
-function combineArray($arr1,$arr2) {		 
-	$result = array();
-	foreach ($arr1 as $item1) 
-	{
-		foreach ($arr2 as $item2) 
-		{
-			$temp = $item1;
-			$temp[] = $item2;
-			$result[] = $temp;
-		}
-	}
-	return $result;
-}
-/**
  * 将二维数组以元素的某个值作为键 并归类数组
  * array( array('name'=>'aa','type'=>'pay'), array('name'=>'cc','type'=>'pay') )
  * array('pay'=>array( array('name'=>'aa','type'=>'pay') , array('name'=>'cc','type'=>'pay') ))
@@ -405,6 +387,24 @@ function combineArray($arr1,$arr2) {
  * @return array
  */
 function group_same_key($arr,$key){
+    /**
+     * 两个数组的笛卡尔积
+     * @param unknown_type $arr1
+     * @param unknown_type $arr2
+     */
+    function combineArray($arr1,$arr2) {
+        $result = array();
+        foreach ($arr1 as $item1)
+        {
+            foreach ($arr2 as $item2)
+            {
+                $temp = $item1;
+                $temp[] = $item2;
+                $result[] = $temp;
+            }
+        }
+        return $result;
+    }
     $new_arr = array();
     foreach($arr as $k=>$v ){
         $new_arr[$v[$key]][] = $v;
@@ -955,4 +955,18 @@ function getAdress($adress)
 	$adress_arry['city'] = $city;
 	$adress_arry['district'] = $area;
 	return $adress_arry;
+}
+
+/**
+ * 把缓存状态置为待刷新缓存。
+ *
+ * @param $user_id
+ */
+function order_redis_status_ref($user_id)
+{
+    redis("getOrderList_status_".$user_id,"1");
+    redis("getCountUserOrder_status".$user_id,"1");
+    redis("return_goods_list_status".$user_id,"1");
+    redis("getUserPromList_status".$user_id,"1");
+    redisdelall("TuiSong*");//删除推送缓存
 }

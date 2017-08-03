@@ -346,7 +346,12 @@ class OrderLogic extends RelationModel
 			$msg .= "退款金额：".$refundResult['refund_fee']."<br>";
 			$msg .= "现金券退款金额：".$refundResult['coupon_refund_fee']."<br>";
 
-			return array('status'=>1,'msg'=>$msg,'out_refund_no'=>$out_refund_no);
+            // 对返回结果做处理，实际可能未退款成功，直接返回处理结果。　2017-8-3　陈勇华
+            if ($refundResult['result_code'] == 'SUCCESS') {
+                return array('status'=>1,'msg'=>$msg,'out_refund_no'=>$out_refund_no);
+            } else {
+                return $refundResult;
+            }
 		}
 	}
 
@@ -397,7 +402,12 @@ class OrderLogic extends RelationModel
             $msg .= "退款金额：".$refundResult['refund_fee']."<br>";
             $msg .= "现金券退款金额：".$refundResult['coupon_refund_fee']."<br>";
 
-            return array('status'=>1,'msg'=>$msg,'out_refund_no'=>$out_refund_no);
+            // 对返回结果做处理，实际可能未退款成功，直接返回处理结果。　2017-8-3　陈勇华
+            if ($refundResult['result_code'] == 'SUCCESS') {
+                return array('status'=>1,'msg'=>$msg,'out_refund_no'=>$out_refund_no);
+            } else {
+                return $refundResult;
+            }
         }
     }
 

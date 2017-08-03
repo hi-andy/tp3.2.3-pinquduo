@@ -8,7 +8,6 @@
 
 namespace Api_2_0_2\Controller;
 
-
 use Think\Cache\Driver\Redis;
 
 class ChatController extends BaseController
@@ -69,6 +68,7 @@ class ChatController extends BaseController
             $page = $page <= 0 ? 1 : $page;
             $fromPage = $page > 1 ? $page * $pageSize : 1;
 
+            $this->redis->hget('message:', $to.$from.$chat_type);
             $in_msg_id = "0,";
             $where = "((tos = '{$to}' and froms = '{$from}') or (tos = '{$from}' and froms = '{$to}')) and chat_type = '{$chat_type}' and status <> 2";
             $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp desc')->limit($fromPage,$pageSize)->select();
