@@ -376,24 +376,6 @@ function combineDika() {
 
 
 /**
- * 两个数组的笛卡尔积
- * @param unknown_type $arr1
- * @param unknown_type $arr2
-*/
-function combineArray($arr1,$arr2) {		 
-	$result = array();
-	foreach ($arr1 as $item1) 
-	{
-		foreach ($arr2 as $item2) 
-		{
-			$temp = $item1;
-			$temp[] = $item2;
-			$result[] = $temp;
-		}
-	}
-	return $result;
-}
-/**
  * 将二维数组以元素的某个值作为键 并归类数组
  * array( array('name'=>'aa','type'=>'pay'), array('name'=>'cc','type'=>'pay') )
  * array('pay'=>array( array('name'=>'aa','type'=>'pay') , array('name'=>'cc','type'=>'pay') ))
@@ -402,6 +384,24 @@ function combineArray($arr1,$arr2) {
  * @return array
  */
 function group_same_key($arr,$key){
+    /**
+     * 两个数组的笛卡尔积
+     * @param unknown_type $arr1
+     * @param unknown_type $arr2
+     */
+    function combineArray($arr1,$arr2) {
+        $result = array();
+        foreach ($arr1 as $item1)
+        {
+            foreach ($arr2 as $item2)
+            {
+                $temp = $item1;
+                $temp[] = $item2;
+                $result[] = $temp;
+            }
+        }
+        return $result;
+    }
     $new_arr = array();
     foreach($arr as $k=>$v ){
         $new_arr[$v[$key]][] = $v;
@@ -954,12 +954,14 @@ function getAdress($adress)
 	return $adress_arry;
 }
 
-function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
+
+function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price='')
+{
 	$font = 'Public/images/yahei.ttf';//字体
 	// 背景图片宽度
-	$bg_w    = 600;
+	$bg_w = 600;
 	// 背景图片高度
-	$bg_h    = 700; // 背景图片高度
+	$bg_h = 700; // 背景图片高度
 	//二维码宽
 	$ewmWidth = 200;
 	//二维码高
@@ -973,86 +975,100 @@ function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
 	//二维码距离底部框距离
 	$ewmBottomMargin = 24;
 	// 背景图片
-	$background = imagecreatetruecolor($bg_w,$bg_h);
+	$background = imagecreatetruecolor($bg_w, $bg_h);
 	// 为真彩色画布创建白色背景，再设置为透明
-	$color   = imagecolorallocate($background, 255, 255, 255);
+	$color = imagecolorallocate($background, 255, 255, 255);
 	//颜色填充
 	imagefill($background, 0, 0, $color);
 	//透明图片
 	imageColorTransparent($background, $color);
 
 	// 开始位置X
-	$start_x    = intval($bg_w-$ewmWidth-$ewmLeftMargin);
+	$start_x = intval($bg_w - $ewmWidth - $ewmLeftMargin);
 	// 开始位置Y
-	$start_y    = intval($bg_h-$ewmHeight-$ewmBottomMargin);
+	$start_y = intval($bg_h - $ewmHeight - $ewmBottomMargin);
 	// 宽度
-	$pic_w   = intval($ewmWidth);
+	$pic_w = intval($ewmWidth);
 	// 高度
-	$pic_h   = intval($ewmHeight);
+	$pic_h = intval($ewmHeight);
 	//创建down图片资源
 	$downresource = imagecreatefrompng('Public/images/down.png');
 	//图片合并
-	imagecopyresized($background,$downresource,480,450,0,0,18,20,imagesx($downresource),imagesy($downresource));
+	imagecopyresized($background, $downresource, 480, 450, 0, 0, 18, 20, imagesx($downresource), imagesy($downresource));
 	//商品图片资源
 	$goodresource = imagecreatefromjpeg($goods_img);
 	//图片合并
-	imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
+	imagecopyresized($background, $goodresource, 5, 5, 0, 0, $goodWidth, $goodHeight, imagesx($goodresource), imagesy($goodresource));
 	//文字颜色
-	$fontcolor = imagecolorallocate($background, 204,204,204);
+	$fontcolor = imagecolorallocate($background, 204, 204, 204);
 	//商品名
-	if(strlen($goods_name)>39){
+	if (strlen($goods_name) > 39) {
 		//第一行
-		$one = msubstr($goods_name,0,13);
-		imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$one);
-		$two = msubstr($goods_name,11,13);
-		if(strlen($two)<36){
-			imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
-		}else{
-			$two = msubstr($goods_name,11,11).'...';
-			imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
+		$one = msubstr($goods_name, 0, 13);
+		imagettftext($background, 20, 0, 20, 503, imagecolorallocate($background, 0, 0, 0), $font, $one);
+		$two = msubstr($goods_name, 11, 13);
+		if (strlen($two) < 36) {
+			imagettftext($background, 20, 0, 20, 547, imagecolorallocate($background, 0, 0, 0), $font, $two);
+		} else {
+			$two = msubstr($goods_name, 11, 11) . '...';
+			imagettftext($background, 20, 0, 20, 547, imagecolorallocate($background, 0, 0, 0), $font, $two);
 		}
-	}else{
-		imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$goods_name);
+	} else {
+		imagettftext($background, 20, 0, 20, 503, imagecolorallocate($background, 0, 0, 0), $font, $goods_name);
 	}
 
-	imagettftext($background,17,0,$start_x,intval($start_y-39),$fontcolor,$font,"长按二维码为我助力");
+	imagettftext($background, 17, 0, $start_x, intval($start_y - 39), $fontcolor, $font, "长按二维码为我助力");
 
-	imagettftext($background,20,0,20,606,imagecolorallocate($background, 226,0,37),$font,'快来拼趣多秒购0元商品');
+	imagettftext($background, 20, 0, 20, 606, imagecolorallocate($background, 226, 0, 37), $font, '快来拼趣多秒购0元商品');
 
-	imagettftext($background,19,0,20,663,imagecolorallocate($background, 226,0,37),$font,'￥');
+	imagettftext($background, 19, 0, 20, 663, imagecolorallocate($background, 226, 0, 37), $font, '￥');
 
-	imagettftext($background,40,0,50,663,imagecolorallocate($background, 226,0,37),$font,'0');
+	imagettftext($background, 40, 0, 50, 663, imagecolorallocate($background, 226, 0, 37), $font, '0');
 
-	imagettftext($background,19,0,90,663,$fontcolor,$font,"原价:".$price);
+	imagettftext($background, 19, 0, 90, 663, $fontcolor, $font, "原价:" . $price);
 
-	if(strlen($price)==4){
+	if (strlen($price) == 4) {
 		imageline($background, 90, 654, 197, 654, $fontcolor);
 		imageline($background, 90, 653, 197, 653, $fontcolor);
-	}elseif(strlen($price)==5){
+	} elseif (strlen($price) == 5) {
 		imageline($background, 90, 654, 220, 654, $fontcolor);
 		imageline($background, 90, 653, 220, 653, $fontcolor);
-	}elseif (strlen($price)==6){
+	} elseif (strlen($price) == 6) {
 		imageline($background, 90, 654, 228, 654, $fontcolor);
 		imageline($background, 90, 653, 228, 653, $fontcolor);
-	}elseif (strlen($price)==7){
+	} elseif (strlen($price) == 7) {
 		imageline($background, 90, 654, 240, 654, $fontcolor);
 		imageline($background, 90, 653, 240, 653, $fontcolor);
-	}else{
+	} else {
 		imageline($background, 90, 654, 190, 654, $fontcolor);
 		imageline($background, 90, 653, 190, 653, $fontcolor);
 	}
 
 	$path = "Public/upload/raise";
-	if (!file_exists($path)){
+	if (!file_exists($path)) {
 		mkdir($path);
 	}
 	//拉图片传到七牛云
-	$path1 = "Public/upload/raise/goods_". $goods_id .'.jpg';
-	imagejpeg($background,$path1);
-	$path = gethostbyname($_SERVER['SERVER_NAME']).'/'.$path1;
+	$path1 = "Public/upload/raise/goods_" . $goods_id . '.jpg';
+	imagejpeg($background, $path1);
+	$path = gethostbyname($_SERVER['SERVER_NAME']) . '/' . $path1;
 	$qiniu = new \Admin\Controller\QiniuController();
 	$qiniu_result = $qiniu->fetch($path, "imgbucket", $path1);
-	unlink ($path1);
+	unlink($path1);
 	$url = CDN . "/" . $qiniu_result[0]["key"];
 	return $url;
+}
+/**
+ * 把缓存状态置为待刷新缓存。
+ *
+ * @param $user_id
+ */
+function order_redis_status_ref($user_id)
+{
+    redis("getOrderList_status_".$user_id,"1");
+    redis("getCountUserOrder_status".$user_id,"1");
+    redis("return_goods_list_status".$user_id,"1");
+    redis("getUserPromList_status".$user_id,"1");
+    redisdelall("TuiSong*");//删除推送缓存
+
 }

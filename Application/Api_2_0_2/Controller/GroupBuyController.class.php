@@ -3,7 +3,6 @@ namespace Api_2_0_2\Controller;
 use Think\Controller;
 
 class GroupBuyController extends BaseController {
-    const API_URL = 'http://api.hn.pinquduo.cn/';
     /**
      * 关注点赞
      */
@@ -11,71 +10,194 @@ class GroupBuyController extends BaseController {
         $group_buy_id = I('groupbuyid');
         $useropenid = I('useropenid');
         $oauth = 'weixin';
+        $nickname = I('nickname');
         $group_buy_id = (int)$group_buy_id;
-        if($group_buy_id<=0){
-            echo '1';
-            exit();
-        }
-        //先检测这个团id是否合法
-        $where = [
-            'id' => $group_buy_id,  //团id
-            'mark' => 0,            //团长
-            'is_raise' => 1,        //点赞团
-            'is_pay' => 1,          //已支付
-            'is_successful' => 0,   //未成团
-        ];
-        $result = M('group_buy')->where($where)->find();
-        //查不到数据记录
-        if(count($result)<=0){
-            echo '2';
-            exit();
-        }
-        //判断该团是不是已经结束
-        if($result['end_time']<time()){
-            echo '3';
-            exit();
-        }
-        //模拟微信登录
-        // Create the stream context
-        $context = stream_context_create(array(
-            'http' => array(
-                'timeout' => 5
-            )
-        ));
-        // Fetch the URL's contents
-        $url = self::API_URL."api_2_0_2/User/thirdLogin/openid/{$useropenid}/oauth/{$oauth}";
-
-        $contents = file_get_contents($url, 0, $context);
-        $getArray = json_decode($contents,true);
-        $userdata = $getArray['result'];
-        $postdata['user_id'] = $userdata['user_id'];
-        $postdata['prom_id'] = $result['id'];
-        $postdata['goods_id'] = $result['goods_id'];
-        $postdata['type'] = 0;
-        $postdata['free'] = 0;
-        $postdata['num'] = 1;
-        $postdata['address_id'] = 0;
-
-        $orderid = $result['order_id'];
-        $goods_id = $result['goods_id'];
-        $ordergood = M('order_goods')->field('spec_key')->where(['goods_id'=>$goods_id,'order_id'=>$orderid])->find();
-        $postdata['spec_key'] = $ordergood['spec_key'];
-        //模拟为我点赞请求
-        $posturl = self::API_URL."api_2_0_2/Purchase/getBuy";
-        $postcontext = array();
-        ksort($postdata);
-        $postcontext['http'] = array(
-            'timeout'=>5,
-            'method' => 'POST',
-            'content' => http_build_query($postdata, '', '&'),
-        );
-        $resdata = file_get_contents($posturl, false, stream_context_create($postcontext));
-
         $wxtmplmsg = new WxtmplmsgController();
-        $wxtmplmsg->spell_success($useropenid,'yyyy','wwwwwww','如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
+        $msgone = '助力享免单';
+        $msgtwo = '获得0元秒杀权利';
+        //非法的团id
+        if($group_buy_id<=0){
+            $wxmsg = '您参加的团id非法';
+            $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+            exit();
+        }
+        //检测有没有redis数据
+        if (empty(redis("GroupBuy_lock_".$group_buy_id))) {//如果无锁
+            redis("GroupBuy_lock_" . $group_buy_id, "1", 5);//写入锁
+            //先检测这个团id是否合法
+            $where = [
+                'id' => $group_buy_id,  //团id
+                'mark' => 0,            //团长
+                'is_raise' => 1,        //点赞团
+                'is_pay' => 1,          //已支付
+                'is_successful' => 0,   //未成团
+            ];
+            $result = M('group_buy')->field('goods_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
+            //查不到数据记录
+            if(count($result)<=0){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '您参加的团id查不到数据记录';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            //判断该团是不是已经结束
+            if($result['end_time']<=time()){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '您参加的团活动已经结束';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            $userdata = $this->thirdLogin($useropenid,$oauth,$nickname);
+            $user_id = (int)$userdata['user_id'];
+            //处理掉用户id非法的情况-温立涛开始
+            if($user_id<=0){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '您的用户信息非法';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            $userdata = M('users')->field('user_id')->where(['user_id'=>$user_id])->find();
+            if(count($userdata)==0){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '您的用户信息非法无记录';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            //处理掉用户id非法的情况-温立涛结束
+            $goods_id = $result['goods_id'];
+            //判断商品是否已经下架-温立涛开始
+            $goodsstatus = M('goods')
+                ->where("goods_id={$goods_id} and (show_type=1 or is_show=0 or is_on_sale=0)")
+                ->count();
+            if ($goodsstatus >0){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '该商品已经下架';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
+            if(!empty($raise)){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '您已经参加过活动，请选择开团 ^_^';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            $groupnum = M('group_buy')->where("mark={$group_buy_id}")->count();
+            $groupnum = (int)$groupnum+1;
+            if($groupnum>=(int)$result['goods_num']){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '该团已经满员开团了，请选择别的团参加';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            if(count($result)>0)
+            {
+                M()->startTrans();//开启事务处理
+                //在团购表加一张单
+                $data['start_time'] = time();
+                $data['end_time'] = $result['end_time'];
+                $data['goods_id'] = $goods_id;
+                $data['price'] = 0.00;
+                $data['goods_num'] = (int)$result['goods_num'];
+                $data['order_num'] = 1;
+                $data['intro'] = $result['intro'];
+                $data['goods_price'] = (float)$result['goods_price'];
+                $data['goods_name'] = $result['goods_name'];
+                $data['photo'] = CDN.'/Public/upload/logo/logo.jpg';
+                $data['mark'] = $group_buy_id;
+                $data['user_id'] = $user_id;
+                $data['store_id'] = (int)$result['store_id'];
+                $data['address_id'] = 0;
+                $data['free'] = 0;
+                $data['order_id'] = 0;
+                $data['is_raise']=1;
+                $data['is_pay']=1;
+                $group_buy = M('group_buy')->data($data)->add();
 
-        echo $resdata;
+                if( (int)$group_buy>0 )
+                {
+                    M()->commit();//都操作成功的时候才真的把数据放入数据库
+                    redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                    $wxmsg = '您参团成功';
+                    $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                    exit();
+
+                }else{
+                    M()->rollback();//有数据库操作不成功时进行数据回滚
+                    redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                    $wxmsg = '您参团失败';
+                    $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                    exit();
+                }
+            }
+        }
+
+
+    }
+
+    /**
+     * 我的免单
+     */
+    public function danList(){
+        $userid = I('userid',0);
+        $userid = (int)$userid;
+        if($userid<=0){
+            $data = [
+                'status' => -1,
+                'msg' => '参数非法'
+            ];
+            $this->ajaxReturn($data,'JSON');
+            exit();
+        }
+        $uerdata = M('users')->field("user_id")->where("user_id={$userid}")->find();
+        if(count($uerdata) == 0){
+            $data = [
+                'status' => -1,
+                'msg' => '用户id无效'
+            ];
+            $this->ajaxReturn($data,'JSON');
+            exit();
+        }
+        $groupbuylist = M('group_buy')->field("id,goods_id,end_time,goods_name,is_successful,goods_num")->where("is_raise=1 and mark=0 and user_id={$userid}")->select();
+        if(count($groupbuylist)>0){
+            foreach ($groupbuylist as $k => $value){
+                $buyid = (int)$value['id'];
+                $goods_id = (int)$value['goods_id'];
+                $groupbuylist[$k]['end'] = 0;
+                if($value['end_time']<time()){
+                    $groupbuylist[$k]['end'] = 1;
+                }
+                $goodsinfo = M('goods')->field('original_img,list_img')->where('goods_id='.$goods_id)->find();
+                $groupbuylist[$k]['list_img'] = $goodsinfo['list_img'];
+                $groupbuylist[$k]['original_img'] = $goodsinfo['original_img'];
+                $cantuannum = M('group_buy')->where('mark='.$buyid)->count();
+                $cantuannum = (int)$cantuannum + 1;
+                $groupbuylist[$k]['morenum'] = (int)$value['goods_num']-$cantuannum;
+            }
+        }
+        $data = [
+            'status' => 1,
+            'msg' => '获取信息成功',
+            'list' => $groupbuylist
+        ];
+        $this->ajaxReturn($data,'JSON');
         exit();
+
+    }
+
+
+        /*
+         * 第三方登录
+         */
+    public function thirdLogin($openid,$oauth,$nickname){
+        $map['openid'] = $openid;
+        $map['oauth'] = $oauth;
+        $map['nickname'] = $nickname;
+        $map['head_pic'] = '';
+        $map['unionid'] = '';
+        $userLogic = new \Home\Logic\UsersLogic();
+        $data = $userLogic->thirdLogin($map);
+        return $data;
     }
 
 }
