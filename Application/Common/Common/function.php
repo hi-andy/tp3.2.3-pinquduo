@@ -8,30 +8,29 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-//    if (REDIS_SWITCH) {
-//        $redis = new Redis();
-//        $redis->connect(REDISIP, PORT);
-//        $redis->auth(REDISPASS);
-//        if ($del == true) {
-//            $redis->delete($key);
-//        }
-//
-//        $result = '';
-//        if ($value) {
-//            if ($time) {
-//                $redis->setex($key, $time, $value);
-//            } else {
-//                $redis->set($key, $value);
-//            }
-//        } else {
-//            $result = $redis->get($key);
-//        }
-//        $redis->close();
-//        return $result;
-//    } else {
-//        redisdelall("*");
-//    }
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($del == true) {
+            $redis->delete($key);
+        }
 
+        $result = '';
+        if ($value) {
+            if ($time) {
+                $redis->setex($key, $time, $value);
+            } else {
+                $redis->set($key, $value);
+            }
+        } else {
+            $result = $redis->get($key);
+        }
+        $redis->close();
+        return $result;
+    } else {
+        redisdelall("*");
+    }
 }
 
 /**
@@ -40,21 +39,20 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
-
-//    if (REDIS_SWITCH) {
-//        $redis = new Redis();
-//        $redis->connect(REDISIP, PORT);
-//        $redis->auth(REDISPASS);
-//        if ($key && $value) {
-//            $redis->rpush($key, $value);
-//        } else {
-//            return $redis->lpop($key);
-//        }
-//    } else {
-//        redisdelall("*");
-//    }
-
-
+    if (REDIS_SWITCH) {
+        $redis = new Redis();
+        $redis->connect(REDISIP, PORT);
+        $redis->auth(REDISPASS);
+        if ($key && $value) {
+            $redis->rpush($key, $value);
+        } else {
+             $result =  $redis->lpop($key);
+             $redis->close();
+             return $result;
+        }
+    } else {
+        redisdelall("*");
+    }
 }
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
@@ -62,12 +60,11 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-
-//    $redis = new Redis();
-//    $redis->connect(REDISIP, PORT);
-//    $redis->auth(REDISPASS);
-//    $redis->delete($redis->keys($key));
-
+    $redis = new Redis();
+    $redis->connect(REDISIP, PORT);
+    $redis->auth(REDISPASS);
+    $redis->delete($redis->keys($key));
+    $redis->close();
 }
 /**
  * @param $arr
@@ -955,4 +952,107 @@ function getAdress($adress)
 	$adress_arry['city'] = $city;
 	$adress_arry['district'] = $area;
 	return $adress_arry;
+}
+
+function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
+	$font = 'Public/images/yahei.ttf';//字体
+	// 背景图片宽度
+	$bg_w    = 600;
+	// 背景图片高度
+	$bg_h    = 700; // 背景图片高度
+	//二维码宽
+	$ewmWidth = 200;
+	//二维码高
+	$ewmHeight = 200;
+	//商品图片宽度
+	$goodWidth = 590;
+	//商品图片高度
+	$goodHeight = 368;
+	//二维码距离右边框距离
+	$ewmLeftMargin = 20;
+	//二维码距离底部框距离
+	$ewmBottomMargin = 24;
+	// 背景图片
+	$background = imagecreatetruecolor($bg_w,$bg_h);
+	// 为真彩色画布创建白色背景，再设置为透明
+	$color   = imagecolorallocate($background, 255, 255, 255);
+	//颜色填充
+	imagefill($background, 0, 0, $color);
+	//透明图片
+	imageColorTransparent($background, $color);
+
+	// 开始位置X
+	$start_x    = intval($bg_w-$ewmWidth-$ewmLeftMargin);
+	// 开始位置Y
+	$start_y    = intval($bg_h-$ewmHeight-$ewmBottomMargin);
+	// 宽度
+	$pic_w   = intval($ewmWidth);
+	// 高度
+	$pic_h   = intval($ewmHeight);
+	//创建down图片资源
+	$downresource = imagecreatefrompng('Public/images/down.png');
+	//图片合并
+	imagecopyresized($background,$downresource,480,450,0,0,18,20,imagesx($downresource),imagesy($downresource));
+	//商品图片资源
+	$goodresource = imagecreatefromjpeg($goods_img);
+	//图片合并
+	imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
+	//文字颜色
+	$fontcolor = imagecolorallocate($background, 204,204,204);
+	//商品名
+	if(strlen($goods_name)>39){
+		//第一行
+		$one = msubstr($goods_name,0,13);
+		imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$one);
+		$two = msubstr($goods_name,11,13);
+		if(strlen($two)<36){
+			imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
+		}else{
+			$two = msubstr($goods_name,11,11).'...';
+			imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
+		}
+	}else{
+		imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$goods_name);
+	}
+
+	imagettftext($background,17,0,$start_x,intval($start_y-39),$fontcolor,$font,"长按二维码为我助力");
+
+	imagettftext($background,20,0,20,606,imagecolorallocate($background, 226,0,37),$font,'快来拼趣多秒购0元商品');
+
+	imagettftext($background,19,0,20,663,imagecolorallocate($background, 226,0,37),$font,'￥');
+
+	imagettftext($background,40,0,50,663,imagecolorallocate($background, 226,0,37),$font,'0');
+
+	imagettftext($background,19,0,90,663,$fontcolor,$font,"原价:".$price);
+
+	if(strlen($price)==4){
+		imageline($background, 90, 654, 197, 654, $fontcolor);
+		imageline($background, 90, 653, 197, 653, $fontcolor);
+	}elseif(strlen($price)==5){
+		imageline($background, 90, 654, 220, 654, $fontcolor);
+		imageline($background, 90, 653, 220, 653, $fontcolor);
+	}elseif (strlen($price)==6){
+		imageline($background, 90, 654, 228, 654, $fontcolor);
+		imageline($background, 90, 653, 228, 653, $fontcolor);
+	}elseif (strlen($price)==7){
+		imageline($background, 90, 654, 240, 654, $fontcolor);
+		imageline($background, 90, 653, 240, 653, $fontcolor);
+	}else{
+		imageline($background, 90, 654, 190, 654, $fontcolor);
+		imageline($background, 90, 653, 190, 653, $fontcolor);
+	}
+
+	$path = "Public/upload/raise";
+	if (!file_exists($path)){
+		mkdir($path);
+	}
+	//拉图片传到七牛云
+	$path1 = "Public/upload/raise/goods_". $goods_id .'.jpg';
+	imagejpeg($background,$path1);
+	$path = gethostbyname($_SERVER['SERVER_NAME']).'/'.$path1;
+	$qiniu = new \Admin\Controller\QiniuController();
+	$qiniu_result = $qiniu->fetch($path, "imgbucket", $path1);
+	unlink ($path1);
+	$url = CDN . "/" . $qiniu_result[0]["key"];
+	return $url;
 }

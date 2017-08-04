@@ -984,7 +984,7 @@ class OrderController extends BaseController {
 	        }else{
 		        $res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
 	        }
-        }elseif($order['pay_code']=='alipay'){
+        }elseif($order['pay_code']=='alipay' || $order['pay_code']=='alipay_wap'){
             $res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
         }elseif($order['pay_code'] == 'qpay'){
 	        // Begin code by lcy

@@ -986,5 +986,4 @@ class BaseController extends Controller {
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }
-
 }

@@ -562,6 +562,7 @@ class OrderController extends BaseController {
 			echo json_encode(array('status'=>2,'msg'=>'已退款'));
 			die;
 		}
+
 		if($order['order_type']==8){
 			$Order_Logic = new OrderLogic();
 			if($order['pay_code']=='weixin'){
@@ -570,7 +571,7 @@ class OrderController extends BaseController {
 				}else{
 					$res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
 				}
-			}elseif($order['pay_code']=='alipay'){
+			}elseif($order['pay_code']=='alipay' || $order['pay_code']=='alipay_wap'){
 				$res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
 			}elseif($order['pay_code'] == 'qpay'){
 				$qqPay = new QQPayController();
@@ -579,6 +580,7 @@ class OrderController extends BaseController {
 		}else{
 			$res['status'] = 1;
 		}
+
 		//找到退款的类型
 		$result = M('return_goods')->where('order_id='.$order_id)->field('type')->find();
         if($res['status'] == 1){
@@ -598,6 +600,7 @@ class OrderController extends BaseController {
 	        M('order')->where('`order_id`='.$order_id)->data($data)->save();
             echo json_encode(array('status'=>1,'msg'=>'退款成功'));
         }else{
+
             echo json_encode(array('status'=>0,'msg'=>'退款失败'));
         }
         die;

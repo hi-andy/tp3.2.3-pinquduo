@@ -382,11 +382,11 @@ class OrderLogic extends RelationModel
 
 		$responseNode = str_replace(".", "_", $request->getApiMethodName()) . "_response";
 		$resultCode = $result->$responseNode->code;
-		M('admin_log')->add(array('log_ip'=>'111','admin_id'=>1,'log_url'=>$resultCode.'7777'));
+
 		if(!empty($resultCode) && $resultCode == 10000){
 			return array('status'=>1,'msg'=>'退款成功','out_refund_no'=>$out_refund_no);
 		} else {
-			return array('status'=>0,'msg'=>$resultCode,'out_refund_no'=>$out_refund_no);
+			return array('status'=>0,'msg'=>'退款失败','out_refund_no'=>$out_refund_no);
 		}
 	}
 
