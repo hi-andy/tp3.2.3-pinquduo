@@ -731,7 +731,7 @@ class BaseController extends Controller {
          * gb.order_id 订单id
          * gb.goods_name 商品名
          * gb.goods_num 团人数
-         * gb.free 免单恩叔
+         * gb.free 免单人数
          * gb.is_raise 为我点赞显示
          * gb.user_id 用户id
          * gb.auto 机器人标识

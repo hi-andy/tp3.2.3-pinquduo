@@ -466,7 +466,7 @@ class PromController extends BaseController {
 			reserve_logistics($data['order_id']);
 			$custom = array('type' => '3','id'=>$data['order_id']);
 			$user_id = $data['user_id'];
-//			SendXinge('卖家已经发货，请点击此处查看',"$user_id",$custom);
+			SendXinge('卖家已经发货，请点击此处查看',"$user_id",$custom);
 			$this->success('操作成功',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
 		}else{
 			$this->success('操作失败',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
