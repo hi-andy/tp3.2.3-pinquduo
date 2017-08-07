@@ -30,13 +30,19 @@ class GroupBuyController extends BaseController {
                 'mark' => 0,            //团长
                 'is_raise' => 1,        //点赞团
                 'is_pay' => 1,          //已支付
-                'is_successful' => 0,   //未成团
+                //'is_successful' => 0,   //未成团
             ];
-            $result = M('group_buy')->field('user_id,goods_id,order_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
+            $result = M('group_buy')->field('user_id,goods_id,is_successful,order_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
             //查不到数据记录
             if(count($result)<=0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您参加的团id查不到数据记录';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            if((int)$result['is_successful'] == 1){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '该团已经满员了，请选择别的团参加';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
@@ -89,7 +95,7 @@ class GroupBuyController extends BaseController {
                     M('group_buy')->where("mark={$group_buy_id}")->order('id desc')->limit($morenum)->delete();
                 }
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '该团已经满员开团了，请选择别的团参加';
+                $wxmsg = '该团已经满员了，请选择别的团参加';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
