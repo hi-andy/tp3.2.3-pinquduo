@@ -1052,17 +1052,17 @@ class UserController extends BaseController {
         }
         if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
-                $condition = '`order_status`=8 and `user_id`=' . $user_id;
+                $condition = '`the_raise` = 0 and `order_status`=8 and `user_id`=' . $user_id;
             } elseif ($type == 2) {//待发货
-                $condition = '`pay_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `shipping_status` != 1  and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `pay_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `shipping_status` != 1  and `user_id` = ' . $user_id;
             } elseif ($type == 3) {//待收货
-                $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and (order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
             } elseif ($type == 4) {//待付款
-                $condition = '`pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = ' . $user_id;
             } elseif ($type == 5) {//已完成
-                $condition = '`order_status`=2 and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `order_status`=2 and `user_id` = ' . $user_id;
             } else {
-                $condition = '`user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `user_id` = ' . $user_id;
             }
             $count = M('order', '', 'DB_CONFIG2')->where($condition)->count();
             $all = M('order', '', 'DB_CONFIG2')->where($condition)->order('order_id desc')->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
@@ -1708,17 +1708,17 @@ class UserController extends BaseController {
 
         if(empty(redis($rdsname))) {//判断是否有缓存
         if ($type == 1) {
-            $condition = '(order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
         } elseif ($type == 2) {//待发货
-            $condition = '(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
         } elseif ($type == 3) {//待收货
-            $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
         } elseif ($type == 4) {//待付款
-            $condition = '(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
         } elseif ($type == 5) {//已完成
-            $condition = 'order_type = 4 and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and order_type = 4 and `user_id` = ' . $user_id;
         } else {
-            $condition = '`user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and `user_id` = ' . $user_id;
         }
         $all = $this->get_OrderList($condition,$page,$pagesize);
         $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);
@@ -1732,7 +1732,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
     //获取团的团详情
-    function get_Detaile_for_Prom()
+        function get_Detaile_for_Prom()
     {
         $prom_id = I('prom_id');
         $user_id = I('user_id');
@@ -1769,7 +1769,7 @@ class UserController extends BaseController {
                 $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
                 $c = getFloatLength($price);
                 if($c>=3){
-                    $price = operationPrice($price);
+                    (string)$price = operationPrice($price);
                 }
             }else{
                 (string)$price=(string)$spec_price;
@@ -1858,14 +1858,15 @@ class UserController extends BaseController {
             }
         }
         //获取商品详情
-        $goods_info= $goods = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
+        $goods_info = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
         $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         //获取规格详情
         $spec_info = M('order_goods')->alias('og')
             ->join('INNER JOIN tp_spec_goods_price sgp on sgp.`key` = og.`spec_key` ')
             ->where('order_id = '.$order_id)
-            ->field('sgp.key_name,sgp.price,sgp.prom_price')
+            ->field('og.goods_name,sgp.key_name,sgp.price,sgp.prom_price')
             ->find();
+        $goods_info['goods_name'] = $spec_info['goods_name'];
         //判断订单是否为团购或者代买订单
         if(!empty($order_info['prom_id'])){
             //判断是用户在团里面的身份

@@ -110,8 +110,8 @@ class PromController extends BaseController {
 			$condition['o.consignee'] = array('like',I('consignee'));
 		}
 		$count = M('group_buy')->alias('g')
-			->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-			->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+			->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
+			->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
 			->where($condition)
 			->where($where)
 			->field('g.*,u.nickname,o.order_sn,o.pay_time,o.add_time')
@@ -126,14 +126,21 @@ class PromController extends BaseController {
 		$show = $Page->show();
 
 		$grouplist = M('group_buy')->alias('g')
-			->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-			->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+			->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
+			->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
 			->where($condition)
 			->where($where)
 			->field('g.*,u.nickname,o.order_sn,o.pay_time,o.add_time')
 			->order('o.add_time desc')
 			->limit($Page->firstRow,$Page->listRows)
 			->select();
+		
+        M('admin_log')->data([
+            'admin_id' => 999,
+            'log_info' => 'aaa',
+            'log_ip' => '127.0.0.1',
+            'log_url' => M('group_buy')->getLastSql()
+        ])->add();
 
 		$this->assign('grouplist',$grouplist);
 		$this->assign('page',$show);// 赋值分页输出
@@ -181,8 +188,8 @@ class PromController extends BaseController {
 		//如果是团长 获取团员信息
 		if($group_info['mark'] == 0){
 			$member_infos = M('group_buy')->alias('g')
-				->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-				->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+				->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
+				->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
 				->where(array('mark'=>$group_info['mark']))
 				->field('g.id,g.start_time,g.end_time,g.goods_num,g.order_num,g.price,g.mark,g.is_pay,g.is_free,g.is_successful,u.nickname,o.order_sn,o.pay_time')
 				->order('g.id desc')
@@ -190,16 +197,16 @@ class PromController extends BaseController {
 		}else{
 			//如果是团员  获取团员和团长的信息
 			$head_info = M('group_buy')->alias('g')
-				->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-				->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+				->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
+				->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
 				->where(array('id'=>$group_info['mark']))
 				->field('g.*,u.nickname,o.order_sn,o.pay_time')
 				->order('g.id desc')
 				->select();
 
 			$member_infos = M('group_buy')->alias('g')
-				->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-				->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+				->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
+				->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
 				->where(array('mark'=>$group_info['mark']))
 				->field('g.*,u.nickname,o.order_sn,o.pay_time')
 				->order('g.id desc')
@@ -466,7 +473,7 @@ class PromController extends BaseController {
 			reserve_logistics($data['order_id']);
 			$custom = array('type' => '3','id'=>$data['order_id']);
 			$user_id = $data['user_id'];
-//			SendXinge('卖家已经发货，请点击此处查看',"$user_id",$custom);
+			SendXinge('卖家已经发货，请点击此处查看',"$user_id",$custom);
 			$this->success('操作成功',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
 		}else{
 			$this->success('操作失败',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
@@ -805,7 +812,7 @@ class PromController extends BaseController {
 				$where .= " AND o.order_type = 16 ";
 			}
 		}
-		$sql = "select o.*,FROM_UNIXTIME(o.add_time,'%Y-%m-%d') as create_time from __PREFIX__order o LEFT JOIN __PREFIX__group_buy as g ON o.order_id = g.order_id INNER JOIN tp_users u ON g.user_id = u.user_id $where and o.is_show = 1 and o.store_id='$store_id' order by order_id";
+		$sql = "select o.*,FROM_UNIXTIME(o.add_time,'%Y-%m-%d') as create_time from __PREFIX__order o LEFT JOIN __PREFIX__group_buy as g ON o.order_id = g.order_id LEFT JOIN tp_users u ON g.user_id = u.user_id $where and o.is_show = 1 and o.store_id='$store_id' order by order_id";
 
 		$orderList = D()->query($sql);
 

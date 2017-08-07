@@ -91,6 +91,7 @@ class PurchaseController extends  BaseController
 
         //　非为我点赞商品，收货地址不能为空，为我点赞商品除外
         $is_special = M('goods')->where('goods_id='.$goods_id)->getField('is_special');
+
         $address = M('user_address')->where("`address_id` = $address_id")->find();//获取地址信息
         if (empty($address) && $is_special != 8) {
             $json = array('status' => -1, 'msg' => '请选择收货地址！^_^');

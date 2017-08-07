@@ -215,7 +215,7 @@ class GroupController extends BaseController {
     }
 
     public function account_edit(){
-        M('admin_log')->add(array('log_ip'=>'111','admin_id'=>1,'log_url'=>'444'));
+
         $order_id = I('order_id');
         $order = M('order')->where('`order_id`='.$order_id)->find();
         $Order_Logic = new OrderLogic();
@@ -224,7 +224,7 @@ class GroupController extends BaseController {
             echo json_encode(array('status'=>2,'msg'=>'已退款'));
             die;
         }
-        M('admin_log')->add(array('log_ip'=>'111','admin_id'=>1,'log_url'=>'555'));
+
         if($order['pay_code']=='weixin')
         {
             if ($order['is_jsapi']==1){
@@ -232,8 +232,8 @@ class GroupController extends BaseController {
             }else{
                 $res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
             }
-        }elseif($order['pay_code']=='alipay'){
-            M('admin_log')->add(array('log_ip'=>'111','admin_id'=>1,'log_url'=>'666'));
+        }elseif($order['pay_code']=='alipay' || $order['pay_code']=='alipay_wap'){
+
             $res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
         }elseif($order['pay_code'] == 'qpay'){
             $qqPay = new QQPayController();
@@ -259,7 +259,7 @@ class GroupController extends BaseController {
             M('order')->where('`order_id`='.$order_id)->data($data)->save();
             echo json_encode(array('status'=>1,'msg'=>'退款成功'));
         }else{
-            M('admin_log')->add(array('log_ip'=>'111','admin_id'=>1,'log_url'=>'8888'));
+            
             echo json_encode(array('status'=>0,'msg'=>'退款失败'));
         }
         die;

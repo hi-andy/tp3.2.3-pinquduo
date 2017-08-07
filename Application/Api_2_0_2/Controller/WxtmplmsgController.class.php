@@ -187,6 +187,80 @@ class WxtmplmsgController
         return $this->push($template_id,$pagepath,$data,$openid);
     }
 
+
+    /*
+     * 活动通知（抽奖）
+     * @param $openid
+     * {{first.DATA}}
+     * 订单金额：{{keyword1.DATA}}
+     * 订单信息：{{keyword2.DATA}}
+     * 订单编号：{{keyword3.DATA}}
+     * {{remark.DATA}}
+     */
+    public function award_notify($openid, $title, $order_amount, $goods_name, $order_sn, $Remark='查看中奖名单>>')
+    {
+        $template_id = "JrCc8gw4UR0sJ89EjAxkq9THIbow4A7zxq1WhWIczSQ"; // 微信模板 id, 在微信公众号后台设置添加
+        $pagepath = "special99.html";
+        $data = array(
+            'first' => array(
+                'value' => urlencode($title),
+                'color' => '#FF0000'
+            ),
+            'keyword1' => array(
+                'value' => urlencode($order_amount),
+                'color' => '#000000'
+            ),
+            'keyword2' => array(
+                'value' => urlencode($goods_name),
+                'color' => '#000000'
+            ),
+            'keyword3' => array(
+                'value' => urlencode($order_sn),
+                'color' => '#000000'
+            ),
+            'remark' => array(
+                'value' => urlencode($Remark),
+                'color' => '#FF0000'
+            )
+        );
+        return $this->push($template_id, $pagepath, $data, $openid);
+    }
+
+
+    /*
+     * 任务活动通知（点赞）
+     * @param $openid
+     * {{first.DATA}}
+     * 任务名称：{{keyword1.DATA}}
+     * 通知类型：{{keyword2.DATA}}
+     * {{remark.DATA}}
+     */
+    public function groupbuy_msg($openid, $first, $keyword1, $keyword2, $Remark='点击此处获得0元秒杀权利>>',$pagepath = "likes.html")
+    {
+        $template_id = "MIEp5c8snHEqdqu4sbm9rn2H3wi2zY9Dsp4stqxmS-o"; // 微信模板 id, 在微信公众号后台设置添加
+        $data = array(
+            'first' => array(
+                'value' => urlencode($first),
+                'color' => '#FF0000'
+            ),
+            'keyword1' => array(
+                'value' => urlencode($keyword1),
+                'color' => '#000000'
+            ),
+            'keyword2' => array(
+                'value' => urlencode($keyword2),
+                'color' => '#000000'
+            ),
+            'remark' => array(
+                'value' => urlencode($Remark),
+                'color' => '#FF0000'
+            )
+        );
+        return $this->push($template_id, $pagepath, $data, $openid);
+    }
+
+
+
     /**
      * 推送
      * @param $template_id 模板ID

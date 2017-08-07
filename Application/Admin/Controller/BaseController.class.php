@@ -167,4 +167,5 @@ class BaseController extends Controller {
 		$where = "$where and id IN $store_ids";
 		return $where;
 	}
+	
 }

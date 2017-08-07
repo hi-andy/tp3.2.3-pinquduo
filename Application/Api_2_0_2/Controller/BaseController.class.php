@@ -271,11 +271,11 @@ class BaseController extends Controller {
         }
         if (empty(redis($rdsname))) {
             //获取订单信息
-            $data['daifahuo'] = M('order')->where('(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id)->count();
-            $data['daishouhuo'] = M('order')->where('(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id)->count();
-            $data['daifukuan'] = M('order')->where('(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id)->count();
-            $data['refund'] = M('order')->where('(`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`=' . $user_id)->count();//售后
-            $data['in_prom'] = M('order')->where('(order_type = 11 or order_type = 10) and `user_id`=' . $user_id)->count();
+            $data['daifahuo'] = M('order')->where('`the_raise` = 0 and (order_type = 2 or order_type = 14) and `user_id` = ' . $user_id)->count();
+            $data['daishouhuo'] = M('order')->where('`the_raise` = 0 and (order_type = 3 or order_type = 15) and `user_id` = ' . $user_id)->count();
+            $data['daifukuan'] = M('order')->where('`the_raise` = 0 and (order_type = 1 or order_type = 10) and `user_id` = ' . $user_id)->count();
+            $data['refund'] = M('order')->where('`the_raise` = 0 and (`order_type`=6 or `order_type`=7 or `order_type`=8 or `order_type`=9 or `order_type`=12 or `order_type`=13) and `user_id`=' . $user_id)->count();//售后
+            $data['in_prom'] = M('order')->where('`the_raise` = 0 and (order_type = 11 or order_type = 10) and `user_id`=' . $user_id)->count();
             redis($rdsname, serialize($data));
         } else {
             $data = unserialize(redis($rdsname));
@@ -731,7 +731,7 @@ class BaseController extends Controller {
          * gb.order_id 订单id
          * gb.goods_name 商品名
          * gb.goods_num 团人数
-         * gb.free 免单恩叔
+         * gb.free 免单人数
          * gb.is_raise 为我点赞显示
          * gb.user_id 用户id
          * gb.auto 机器人标识
@@ -986,5 +986,4 @@ class BaseController extends Controller {
         $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
         return $res;
     }
-
 }

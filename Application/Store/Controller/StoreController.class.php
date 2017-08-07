@@ -494,7 +494,7 @@ class StoreController extends BaseController{
             $pic = $this->getReceipt($store_info);
             $receipt = C('HTTP_URL').$pic;
         }
-
+        
         $this->assign('receipt',$receipt);
         $this->display();
     }

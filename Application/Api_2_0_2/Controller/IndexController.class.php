@@ -42,6 +42,7 @@ class IndexController extends BaseController {
                 //TransformationImgurl 进行图片地址转换
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
+            $category[0]['id'] = 'http://wx.pinquduo.cn/likes.html';
             $category[0]['cat_img'] = CDN .'/Public/upload/index/freewangzhe.gif';
 	        $category[3]['cat_name'] = '趣多严选';
 	        $category[3]['cat_img'] = CDN .'/Public/upload/index/quduoyanxuan.jpg';
@@ -588,7 +589,6 @@ class IndexController extends BaseController {
     //为我点赞
     public function getThe_raise()
     {
-
         $version = I('version');
         $rdsname = "getThe_raise".$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
@@ -889,14 +889,214 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function test(){
-        $res = M('admin_log')->add(array('log_ip'=>'111','admin_id'=>1,'log_url'=>1));
-        var_dump($res);
-        var_dump(M()->getLastsql());
+    function test($goods_id='5',$goods_name='湿哒哒爱上asdasd爱上asd奥术大师大叔大婶收到',$price='8.88'){
+        $font = 'Public/images/yahei.ttf';//字体
+        // 背景图片宽度
+        $bg_w    = 600;
+        // 背景图片高度
+        $bg_h    = 700; // 背景图片高度
+        //二维码宽
+        $ewmWidth = 200;
+        //二维码高
+        $ewmHeight = 200;
+        //商品图片宽度
+        $goodWidth = 590;
+        //商品图片高度
+        $goodHeight = 368;
+        //二维码距离右边框距离
+        $ewmLeftMargin = 20;
+        //二维码距离底部框距离
+        $ewmBottomMargin = 24;
+        // 背景图片
+        $background = imagecreatetruecolor($bg_w,$bg_h);
+        // 为真彩色画布创建白色背景，再设置为透明
+        $color   = imagecolorallocate($background, 255, 255, 255);
+        //颜色填充
+        imagefill($background, 0, 0, $color);
+        //透明图片
+        imageColorTransparent($background, $color);
+
+        // 开始位置X
+        $start_x    = intval($bg_w-$ewmWidth-$ewmLeftMargin);
+        // 开始位置Y
+        $start_y    = intval($bg_h-$ewmHeight-$ewmBottomMargin);
+        // 宽度
+        $pic_w   = intval($ewmWidth);
+        // 高度
+        $pic_h   = intval($ewmHeight);
+        //创建down图片资源
+        $downresource = imagecreatefrompng('Public/images/down.png');
+        //图片合并
+        imagecopyresized($background,$downresource,480,450,0,0,18,20,imagesx($downresource),imagesy($downresource));
+        //商品图片资源
+        $goodresource = imagecreatefromjpeg('http://cdn.pinquduo.cn/15017401102.jpg');
+        //图片合并
+        imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
+        //文字颜色
+        $fontcolor = imagecolorallocate($background, 204,204,204);
+        //商品名
+        if(strlen($goods_name)>39){
+            //第一行
+            $one = msubstr($goods_name,0,13);
+            imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$one);
+            $two = msubstr($goods_name,11,13);
+            if(strlen($two)<36){
+                imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
+            }else{
+                $two = msubstr($goods_name,11,11).'...';
+                imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
+            }
+        }else{
+            imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$goods_name);
+        }
+
+        imagettftext($background,17,0,$start_x,intval($start_y-39),$fontcolor,$font,"长按二维码为我助力");
+
+        imagettftext($background,20,0,20,606,imagecolorallocate($background, 226,0,37),$font,'快来拼趣多秒购0元商品');
+
+        imagettftext($background,19,0,20,663,imagecolorallocate($background, 226,0,37),$font,'￥');
+
+        imagettftext($background,40,0,50,663,imagecolorallocate($background, 226,0,37),$font,'0');
+
+        imagettftext($background,19,0,90,663,$fontcolor,$font,"原价:".$price);
+
+        if(strlen($price)==4){
+            imageline($background, 90, 654, 197, 654, $fontcolor);
+            imageline($background, 90, 653, 197, 653, $fontcolor);
+        }elseif(strlen($price)==5){
+            imageline($background, 90, 654, 220, 654, $fontcolor);
+            imageline($background, 90, 653, 220, 653, $fontcolor);
+        }elseif (strlen($price)==6){
+            imageline($background, 90, 654, 228, 654, $fontcolor);
+            imageline($background, 90, 653, 228, 653, $fontcolor);
+        }elseif (strlen($price)==7){
+            imageline($background, 90, 654, 240, 654, $fontcolor);
+            imageline($background, 90, 653, 240, 653, $fontcolor);
+        }else{
+            imageline($background, 90, 654, 190, 654, $fontcolor);
+            imageline($background, 90, 653, 190, 653, $fontcolor);
+        }
+//        header("Content-type: image/jpg");
+        $path = "Public/upload/raise";
+        if (!file_exists($path)){
+            mkdir($path);
+        }
+
+        //拉图片传到七牛云
+        $path1 = "Public/upload/raise/goods_". $goods_id .'.jpg';
+        imagejpeg($background,$path1);
+        $path = 'http://test.pinquduo.cn/'.$path1;
+		$qiniu = new \Admin\Controller\QiniuController();
+		$qiniu_result = $qiniu->fetch($path, "imgbucket", $path1);
+
+        $url = CDN . "/" . $qiniu_result[0]["key"];
+
+        var_dump( $url);
+
+    }
+
+    /**
+     * desription 压缩图片
+     * @param sting $imgsrc 图片路径
+     * @param string $imgdst 压缩后保存路径
+     */
+    function image_png_size_add($imgdst='Public/images/'){
+        $imgsrc = 'http://wx.qlogo.cn/mmopen/zZSYtpeVianR8v7QHKm3qO6wydccndNKGMiclrcOwUjvicllW3ibc3Is4QBok0CyuGmF2tX1OEf95WO6umS1ol7dibfKoab8oEVlw/0' ;
+        list($width,$height,$type)=getimagesize($imgsrc);
+        $new_width = 50;
+        $new_height = 50;
+        switch($type){
+            case 1:
+                $giftype=check_gifcartoon($imgsrc);
+                if($giftype){
+                    header('Content-Type:image/gif');
+                    $image_wp=imagecreatetruecolor($new_width, $new_height);
+                    $image = imagecreatefromgif($imgsrc);
+                    imagecopyresampled($image_wp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+                    imagejpeg($image_wp, $imgdst,75);
+                    imagedestroy($image_wp);
+                }
+                break;
+            case 2:
+                header('Content-Type:image/jpeg');
+                $image_wp=imagecreatetruecolor($new_width, $new_height);
+                $image = imagecreatefromjpeg($imgsrc);
+                imagecopyresampled($image_wp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+                imagejpeg($image_wp);
+                imagedestroy($image_wp);
+                break;
+            case 3:
+                header('Content-Type:image/png');
+                $image_wp=imagecreatetruecolor($new_width, $new_height);
+                $image = imagecreatefrompng($imgsrc);
+                imagecopyresampled($image_wp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+                imagejpeg($image_wp, $imgdst,75);
+                imagedestroy($image_wp);
+                break;
+        }
+    }
+
+    /**
+     * desription 判断是否gif动画
+     * @param sting $image_file图片路径
+     * @return boolean t 是 f 否
+     */
+    function check_gifcartoon($image_file){
+        $fp = fopen($image_file,'rb');
+        $image_head = fread($fp,1024);
+        fclose($fp);
+        return preg_match("/".chr(0x21).chr(0xff).chr(0x0b).'NETSCAPE2.0'."/",$image_head)?false:true;
+
+
+        $ewmPath = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG98TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQzdmLTBUdHhiQS0xd1hVMzFwMXgAAgS75oFZAwSAUQEA';
+        //获取图片文件的内容
+        $pic_path    = file_get_contents($ewmPath);
+        //创建图片资源
+        $resource   = imagecreatefromstring($pic_path);
+        //获取图片资源文件的宽
+        $image_width	= imagesx($resource);
+        //获取图片资源文件的高
+        $image_height	= imagesy($resource);
+        //图片合并
+        imagecopyresized($background,$resource,390,$start_y,0,0,$pic_w,$pic_h,imagesx($resource),imagesy($resource));
+
+
+        //用户头像
+        $head_pic = 'http://wx.qlogo.cn/mmopen/zZSYtpeVianR8v7QHKm3qO6wydccndNKGMiclrcOwUjvicllW3ibc3Is4QBok0CyuGmF2tX1OEf95WO6umS1ol7dibfKoab8oEVlw/0';
+
+        //获取图片文件的内容
+        $pic_path    = file_get_contents($head_pic);
+        //创建图片资源
+        $resource   = imagecreatefromstring($pic_path);
+        //获取图片资源文件的宽
+        $image_width	= imagesx($resource);
+        //获取图片资源文件的高
+        $image_height	= imagesy($resource);
+        //图片合并
+        imagecopyresized($background,$resource,20,395,0,0,60,60,imagesx($resource),imagesy($resource));
+        //用户头像遮罩
+        $head_pic = 'Public/images/square_head@2x.png';
+        //获取图片文件的内容
+        $pic_path    = file_get_contents($head_pic);
+        //创建图片资源
+        $resource   = imagecreatefromstring($pic_path);
+        //图片合并
+        imagecopyresized($background,$resource,20,395,0,0,60,60,imagesx($resource),imagesy($resource));
+        //用户名称
+        if(strlen($user_name)>18){
+            $user_name = msubstr($user_name,0,6).'...';
+            imagettftext($background,20,0,100,440,imagecolorallocate($background, 153,153,153),$font,$user_name);
+        }else{
+            imagettftext($background,20,0,100,440,imagecolorallocate($background, 153,153,153),$font,$user_name);
+        }
     }
 
     //删除缓存
     public function redisdelall_user($user_id = ""){
         $this->order_redis_status_ref($user_id);
+    }
+
+    function  t(){
+        var_dump('');
     }
 }

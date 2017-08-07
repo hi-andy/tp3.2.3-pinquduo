@@ -247,9 +247,15 @@ class GroupController extends BaseController
             } else {
                 $res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
             }
+<<<<<<< HEAD
+        }elseif($order['pay_code']=='alipay' || $order['pay_code']=='alipay_wap'){
+            $res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
+        }elseif($order['pay_code'] == 'qpay'){
+=======
         } elseif ($order['pay_code'] == 'alipay') {
             $res = $Order_Logic->alipayBackPay($order['order_sn'], $order['order_amount']);
         } elseif ($order['pay_code'] == 'qpay') {
+>>>>>>> c793d99f6c6e8457fd2a065eda0e5b3ae9d9dfd0
             $qqPay = new QQPayController();
             $res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
         }
