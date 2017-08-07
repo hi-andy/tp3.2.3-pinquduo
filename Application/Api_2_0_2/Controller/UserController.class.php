@@ -1732,7 +1732,7 @@ class UserController extends BaseController {
         exit(json_encode($json));
     }
     //获取团的团详情
-    function get_Detaile_for_Prom()
+        function get_Detaile_for_Prom()
     {
         $prom_id = I('prom_id');
         $user_id = I('user_id');
@@ -1769,7 +1769,7 @@ class UserController extends BaseController {
                 $price = (string)($spec_price*$prom['goods_num'])/($prom['goods_num']-$prom['free']);
                 $c = getFloatLength($price);
                 if($c>=3){
-                    $price = operationPrice($price);
+                    (string)$price = operationPrice($price);
                 }
             }else{
                 (string)$price=(string)$spec_price;

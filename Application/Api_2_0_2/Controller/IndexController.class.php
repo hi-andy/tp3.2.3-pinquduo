@@ -42,7 +42,7 @@ class IndexController extends BaseController {
                 //TransformationImgurl 进行图片地址转换
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
-            $category[0]['id'] = 'http://wx.pinquduo.cn/pinquduowx-test/likes.html';
+            $category[0]['id'] = 'http://wx.pinquduo.cn/likes.html';
             $category[0]['cat_img'] = CDN .'/Public/upload/index/freewangzhe.gif';
 	        $category[3]['cat_name'] = '趣多严选';
 	        $category[3]['cat_img'] = CDN .'/Public/upload/index/quduoyanxuan.jpg';
@@ -1097,6 +1097,6 @@ class IndexController extends BaseController {
     }
 
     function  t(){
-        var_dump(substr('429006199107122418',-6));
+        var_dump('');
     }
 }
