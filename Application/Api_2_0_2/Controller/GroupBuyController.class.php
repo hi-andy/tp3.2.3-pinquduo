@@ -186,7 +186,7 @@ class GroupBuyController extends BaseController {
             $this->ajaxReturn($data,'JSON');
             exit();
         }
-        $groupbuylist = M('group_buy')->field("id,goods_id,end_time,goods_name,is_successful,goods_num")->where("is_raise=1 and mark=0 and user_id={$userid}")->order('id desc')->select();
+        $groupbuylist = M('group_buy')->field("id,goods_id,end_time,goods_name,order_id,is_successful,goods_num")->where("is_raise=1 and mark=0 and user_id={$userid}")->order('id desc')->select();
         if(count($groupbuylist)>0){
             foreach ($groupbuylist as $k => $value){
                 $buyid = (int)$value['id'];
