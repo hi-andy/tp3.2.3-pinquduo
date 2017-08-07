@@ -134,6 +134,13 @@ class PromController extends BaseController {
 			->order('o.add_time desc')
 			->limit($Page->firstRow,$Page->listRows)
 			->select();
+		
+        M('admin_log')->data([
+            'admin_id' => 999,
+            'log_info' => 'aaa',
+            'log_ip' => '127.0.0.1',
+            'log_url' => M('group_buy')->getLastSql()
+        ])->add();
 
 		$this->assign('grouplist',$grouplist);
 		$this->assign('page',$show);// 赋值分页输出
