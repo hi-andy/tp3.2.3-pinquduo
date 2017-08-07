@@ -58,7 +58,7 @@ class GroupBuyController extends BaseController {
             //处理自己参加自己的团
             if($user_id == (int)$result['user_id']){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '自己不能参加自己开的团';
+                $wxmsg = '开团成功';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
