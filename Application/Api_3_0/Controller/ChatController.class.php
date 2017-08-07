@@ -120,7 +120,7 @@ class ChatController extends Controller
             $unread = 'messages:' . $user_id . '_unread';
             $data = $this->redis->zrangebyscore($unread, '-inf', '+inf');
             // 读取完毕，删除未读消息数据
-            //$this->redis->expire($unread, 0);
+            $this->redis->expire($unread, 0);
             foreach ($data as $key=>$value) {
                 $data[$key] = unserialize($value);
             }
