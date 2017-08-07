@@ -13,13 +13,6 @@ define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 
 
 return array(
-    //　缓存配置 2017-8-1 yonghua
-    'DATA_CACHE_TIME' => 0, // 数据缓存有效期 0表示永久缓存
-    'DATA_CACHE_COMPRESS' => false, // 数据缓存是否压缩缓存
-    'DATA_CACHE_CHECK' => false, // 数据缓存是否校验缓存
-    'DATA_CACHE_PREFIX' => '', // 缓存前缀
-    'DATA_CACHE_TYPE' => 'Redis', // 数据缓存类型,支持:File|Db|Apc|Memcache|Shmop|Sqlite|Xcache|Apachenote|Eaccelerator
-
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
     /* 加载公共函数 */
@@ -294,6 +287,45 @@ return array(
 
 
     ),
+	//支付宝配置参数   2017-5-26 注释，后续删除。
+//	'alipay_config_face'=>array(
+//		'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接口后获取到的PID
+//		'sign_type'=>strtoupper('MD5'),
+//		'input_charset'=> strtolower('utf-8'),
+//		'transport'=> 'http',
+//		'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
+//		//这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
+//		'notify_url'=>'http://pinquduo.cn/Store/Index/notify_url',
+//		//这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
+//		'return_url'=>'http://pinquduo.cn/Store/Index/returnurl',
+//		//这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
+//		'seller_email'=>'2660357732@qq.com',
+//		//支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
+//		'successpage'=>'Index/index',
+//		//支付失败跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参unpay（未支付列表）
+//		'errorpage'=>'Admin/login',
+//	),
+
+//	'payment' => array(
+//		'tenpay' => array(
+//			// 加密key，开通财付通账户后给予
+//			'key' => 'e82573dc7e6136ba414f2e2affbe39fa',
+//			// 合作者ID，财付通有该配置，开通财付通账户后给予
+//			'partner' => '1900000113'
+//		),
+//		'alipay' => array(
+//			// 收款账号邮箱
+//			'email' => '2660357732@qq.com',
+//			// 加密key，开通支付宝账户后给予
+//			'key' => 'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
+//			// 合作者ID，支付宝有该配置，开通易宝账户后给予
+//			'partner' => '2088521292269473'
+//		),
+//	),
+    'SHARE_URL' => 'http://wx.pinquduo.cn',
+    'DATA_URL' => '/sites/pqd',
+    'SHARE_URL' => 'http://wx.pinquduo.cn',
+    'DATA_URL' => '/sites/pqd',
 
     'UPLOAD_FILE_QINIU'     => array (
         'maxSize'           => 20*1024*1024,//文件大小
@@ -316,23 +348,20 @@ return array(
         'times' => array('10:00', '13:00', '16:00', '19:00')
     ),
 
-	// 限时秒杀时间段，时间/日期 新增
-	'Seckill' => array(
-		'dates' => array('2017-8-1', '2017-8-2', '2017-8-3','2017-8-4', '2017-8-5'),
-		'times' => array('8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00')
-	),
-
     //　五折专享开始时间
     'DiscountTime' => '2017-07-08',
 	
 	'SHARE_URL' => 'http://wx.pinquduo.cn',
-
 
 	'TYPE_STATUS' => array(
 		array('id'=>'0','name'=>'处理中'),//延迟发货
 		array('id'=>'1','name'=>'已执行'),//虚假发货
 		array('id'=>'2','name'=>'已撤回'),//假货处理
 	),
+	'OSSKEYID' => 'LTAIKMnJ6nkDRxyb',
+	'OSSKEYSECRET' => 'bInE4qodURKwdtfuFlOLpkAfUjzfl1',
+	'OSSENDPOINT' => 'oss-cn-shenzhen.aliyuncs.com',
+	'OSSBUCKET' => 'pqd',
 
 );
 

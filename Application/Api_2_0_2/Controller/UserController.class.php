@@ -1052,17 +1052,17 @@ class UserController extends BaseController {
         }
         if(empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
-                $condition = '`order_status`=8 and `user_id`=' . $user_id;
+                $condition = '`the_raise` = 0 and `order_status`=8 and `user_id`=' . $user_id;
             } elseif ($type == 2) {//待发货
-                $condition = '`pay_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `shipping_status` != 1  and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `pay_status` = 1 and (`order_status` = 1 or `order_status` = 11) and `shipping_status` != 1  and `user_id` = ' . $user_id;
             } elseif ($type == 3) {//待收货
-                $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and (order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
             } elseif ($type == 4) {//待付款
-                $condition = '`pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `pay_status` = 0 and (`order_status` = 1 or `order_status` = 8 ) and `is_cancel`=0 and `user_id` = ' . $user_id;
             } elseif ($type == 5) {//已完成
-                $condition = '`order_status`=2 and `user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `order_status`=2 and `user_id` = ' . $user_id;
             } else {
-                $condition = '`user_id` = ' . $user_id;
+                $condition = '`the_raise` = 0 and `user_id` = ' . $user_id;
             }
             $count = M('order', '', 'DB_CONFIG2')->where($condition)->count();
             $all = M('order', '', 'DB_CONFIG2')->where($condition)->order('order_id desc')->page($page, $pagesize)->field('order_id,goods_id,order_status,shipping_status,pay_status,prom_id,order_amount,store_id,num,order_type')->select();
@@ -1708,17 +1708,17 @@ class UserController extends BaseController {
 
         if(empty(redis($rdsname))) {//判断是否有缓存
         if ($type == 1) {
-            $condition = '(order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 11 or order_type = 10) and `user_id`=' . $user_id;
         } elseif ($type == 2) {//待发货
-            $condition = '(order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 2 or order_type = 14) and `user_id` = ' . $user_id;
         } elseif ($type == 3) {//待收货
-            $condition = '(order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 3 or order_type = 15) and `user_id` = ' . $user_id;
         } elseif ($type == 4) {//待付款
-            $condition = '(order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and (order_type = 1 or order_type = 10) and `user_id` = ' . $user_id;
         } elseif ($type == 5) {//已完成
-            $condition = 'order_type = 4 and `user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and order_type = 4 and `user_id` = ' . $user_id;
         } else {
-            $condition = '`user_id` = ' . $user_id;
+            $condition = '`the_raise` = 0 and `user_id` = ' . $user_id;
         }
         $all = $this->get_OrderList($condition,$page,$pagesize);
         $json = array('status' => 1, 'msg' => '获取成功', 'result' => $all);

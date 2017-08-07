@@ -1097,6 +1097,16 @@ class IndexController extends BaseController {
     }
 
     function  t(){
-       var_dump();
+        $durl = 'http://wx.qlogo.cn/mmopen/g9RQicMD01M3VWPX3hxnAEt8rSfg34aCqM8lhXg7mO8ztAWrjNTxEhTN6OJeaGz2hIn55mzZZ20QoVckJkNg0WsAV66y7CxWib/0';
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $durl);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_USERAGENT, _USERAGENT_);
+            curl_setopt($ch, CURLOPT_REFERER,_REFERER_);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $r = curl_exec($ch);
+            curl_close($ch);
+            var_dump($r);
+        var_dump(imagecreatefromstring($r));
     }
 }

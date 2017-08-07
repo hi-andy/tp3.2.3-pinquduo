@@ -32,7 +32,7 @@ class GroupBuyController extends BaseController {
                 'is_pay' => 1,          //已支付
                 'is_successful' => 0,   //未成团
             ];
-            $result = M('group_buy')->field('goods_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
+            $result = M('group_buy')->field('user_id,goods_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
             //查不到数据记录
             if(count($result)<=0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
@@ -48,18 +48,17 @@ class GroupBuyController extends BaseController {
                 exit();
             }
             $userdata = $this->thirdLogin($useropenid,$oauth,$nickname);
-            $user_id = (int)$userdata['user_id'];
-            //处理掉用户id非法的情况-温立涛开始
-            if($user_id<=0){
+            if(count($userdata)==0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您的用户信息非法';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
-            $userdata = M('users')->field('user_id')->where(['user_id'=>$user_id])->find();
-            if(count($userdata)==0){
+            $user_id = (int)$userdata['user_id'];
+            //处理自己参加自己的团
+            if($user_id == (int)$result['user_id']){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '您的用户信息非法无记录';
+                $wxmsg = '自己不能参加自己开的团';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
@@ -158,7 +157,7 @@ class GroupBuyController extends BaseController {
             $this->ajaxReturn($data,'JSON');
             exit();
         }
-        $groupbuylist = M('group_buy')->field("id,goods_id,end_time,goods_name,is_successful,goods_num")->where("is_raise=1 and mark=0 and user_id={$userid}")->select();
+        $groupbuylist = M('group_buy')->field("id,goods_id,end_time,goods_name,is_successful,goods_num")->where("is_raise=1 and mark=0 and user_id={$userid}")->order('id desc')->select();
         if(count($groupbuylist)>0){
             foreach ($groupbuylist as $k => $value){
                 $buyid = (int)$value['id'];
