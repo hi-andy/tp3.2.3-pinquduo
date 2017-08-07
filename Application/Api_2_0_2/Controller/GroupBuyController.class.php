@@ -32,7 +32,7 @@ class GroupBuyController extends BaseController {
                 'is_pay' => 1,          //已支付
                 'is_successful' => 0,   //未成团
             ];
-            $result = M('group_buy')->field('user_id,goods_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
+            $result = M('group_buy')->field('user_id,goods_id,order_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
             //查不到数据记录
             if(count($result)<=0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
@@ -84,6 +84,10 @@ class GroupBuyController extends BaseController {
             $groupnum = M('group_buy')->where("mark={$group_buy_id}")->count();
             $groupnum = (int)$groupnum+1;
             if($groupnum>=(int)$result['goods_num']){
+                $morenum = $groupnum-(int)$result['goods_num'];
+                if($morenum>0){
+                    M('group_buy')->where("mark={$group_buy_id}")->order('id desc')->limit($morenum)->delete();
+                }
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '该团已经满员开团了，请选择别的团参加';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
@@ -115,10 +119,29 @@ class GroupBuyController extends BaseController {
 
                 if( (int)$group_buy>0 )
                 {
-                    M()->commit();//都操作成功的时候才真的把数据放入数据库
                     redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                    $wxmsg = '您参团成功';
-                    $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                    if((int)$groupnum+1==(int)$result['goods_num']){
+                        $ressave = M('group_buy')->data(['is_successful'=>1])->where("mark={$group_buy_id}")->save();
+                        $mainres = M('group_buy')->data(['is_successful'=>1])->where("id={$group_buy_id}")->save();
+                        $orderres = M('order')->where("order_id={$result['order_id']}")->data(['order_status'=>11,'order_type'=>14])->save();
+                        if($ressave && $mainres && $orderres){
+                            M()->commit();
+                            $tuanuserdata = M('users')->where("user_id={$result['user_id']}")->field("openid")->find();
+                            $wxmsg = '您参加的好友的团成功满团';
+                            $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                            $wxmsg = '您的好友已经帮您助力成功，您的团成功满团';
+                            $wxtmplmsg->groupbuy_msg($tuanuserdata['openid'],$wxmsg,$msgone,$msgtwo);
+
+                        }else{
+                            M()->rollback();//有数据库操作不成功时进行数据回滚
+                            $wxmsg = '服务器异常，请稍后重试';
+                            $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                        }
+                    }else{
+                        M()->commit();
+                        $wxmsg = '您参团成功';
+                        $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                    }
                     exit();
 
                 }else{
