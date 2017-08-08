@@ -188,8 +188,8 @@ class PromController extends BaseController {
 		//如果是团长 获取团员信息
 		if($group_info['mark'] == 0){
 			$member_infos = M('group_buy')->alias('g')
-				->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
-				->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
+				->join('inner JOIN __USERS__ u on g.user_id = u.user_id ')
+				->join('inner JOIN __ORDER__ o on o.order_id = g.order_id')
 				->where(array('mark'=>$group_info['mark']))
 				->field('g.id,g.start_time,g.end_time,g.goods_num,g.order_num,g.price,g.mark,g.is_pay,g.is_free,g.is_successful,u.nickname,o.order_sn,o.pay_time')
 				->order('g.id desc')
@@ -197,16 +197,16 @@ class PromController extends BaseController {
 		}else{
 			//如果是团员  获取团员和团长的信息
 			$head_info = M('group_buy')->alias('g')
-				->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
-				->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
+				->join('inner JOIN __USERS__ u on g.user_id = u.user_id ')
+				->join('inner JOIN __ORDER__ o on o.order_id = g.order_id')
 				->where(array('id'=>$group_info['mark']))
 				->field('g.*,u.nickname,o.order_sn,o.pay_time')
 				->order('g.id desc')
 				->select();
 
 			$member_infos = M('group_buy')->alias('g')
-				->join('LEFT JOIN __USERS__ u on g.user_id = u.user_id ')
-				->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
+				->join('inner JOIN __USERS__ u on g.user_id = u.user_id ')
+				->join('inner JOIN __ORDER__ o on o.order_id = g.order_id')
 				->where(array('mark'=>$group_info['mark']))
 				->field('g.*,u.nickname,o.order_sn,o.pay_time')
 				->order('g.id desc')
