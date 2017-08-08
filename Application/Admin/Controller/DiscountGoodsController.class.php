@@ -20,7 +20,7 @@ class DiscountGoodsController extends Controller {
         $where = 'WHERE ga.type=4';
         if($store_name = I('store_name')) {
             $this->assign('store_name', I('store_name'));
-            $store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->getField('id');
+            $store_id = M('merchant')->where("`store_name` = '".$store_name."'")->getField('id');
             $where .= ' AND g.store_id='.$store_id;
         }
 

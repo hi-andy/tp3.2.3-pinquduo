@@ -247,15 +247,9 @@ class GroupController extends BaseController
             } else {
                 $res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
             }
-<<<<<<< HEAD
         }elseif($order['pay_code']=='alipay' || $order['pay_code']=='alipay_wap'){
             $res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
         }elseif($order['pay_code'] == 'qpay'){
-=======
-        } elseif ($order['pay_code'] == 'alipay') {
-            $res = $Order_Logic->alipayBackPay($order['order_sn'], $order['order_amount']);
-        } elseif ($order['pay_code'] == 'qpay') {
->>>>>>> c793d99f6c6e8457fd2a065eda0e5b3ae9d9dfd0
             $qqPay = new QQPayController();
             $res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
         }
@@ -357,9 +351,11 @@ class GroupController extends BaseController
     {
         $id = I('id');
         $return_goods = M('return_goods')->where("id= $id")->find();
-        if ($return_goods['imgs']) {
+        if($return_goods['imgs'])
             $return_goods['imgs'] = explode(',', $return_goods['imgs']);
-        }
+
+        $num = count($return_goods['imgs']);
+        $return_goods = $this->getIMG($return_goods,$num);
 
         $user = M('users')->where("user_id = {$return_goods[user_id]}")->find();
         $goods = M('goods')->where("goods_id = {$return_goods[goods_id]}")->find();
@@ -436,22 +432,29 @@ class GroupController extends BaseController
     /*
 	 * 对退货的图片进行操作
 	 * */
-    public function getIMG($return_goods, $num)
+    public function getIMG($return_goods,$num)
     {
-        for ($i = 0; $i < $num; $i++) {
-            if (strstr($return_goods['imgs'][$i], '"width"') || strstr($return_goods['imgs'][$i], 'height')) {
+        for($i=0;$i<$num;$i++)
+        {
+            if(strstr($return_goods['imgs'][$i],'"width"')||strstr($return_goods['imgs'][$i],'height'))
+            {
                 unset($return_goods['imgs'][$i]);
-            } elseif (strstr($return_goods['imgs'][$i], '{"origin":"') || strstr($return_goods['imgs'][$i], 'small') || strstr($return_goods['imgs'][$i], '"}') || strstr($return_goods['imgs'][$i], '"}') || strstr($return_goods['imgs'][$i], ']') || strstr($return_goods['imgs'][$i], 'jpg"')) {
-                $return_goods['imgs'][$i] = str_replace(array('[{"origin":"', '"small":"', '{"origin":"', '"}', ']', '"'), "", $return_goods['imgs'][$i]);
+            }
+            elseif(strstr($return_goods['imgs'][$i],'{"origin":"')||strstr($return_goods['imgs'][$i],'small')||strstr($return_goods['imgs'][$i],'"}')||strstr($return_goods['imgs'][$i],'"}')||strstr($return_goods['imgs'][$i],']')||strstr($return_goods['imgs'][$i],'jpg"'))
+            {
+                $return_goods['imgs'][$i] = str_replace(array('[{"origin":"','"small":"','{"origin":"','"}',']','"'),"",$return_goods['imgs'][$i]);
             }
         }
         $return_goods['imgs'] = array_values($return_goods['imgs']);
-        foreach ($return_goods['imgs'] as &$v) {
-            $v = C('HTTP_URL') . $v;
+        foreach($return_goods['imgs'] as &$v)
+        {
+            $v = $v;
         }
         $nums = count($return_goods['imgs']);
-        for ($j = 0; $j < $nums; $j++) {
-            if ($j % 2 == 0) {
+        for($j=0;$j<$nums;$j++)
+        {
+            if($j%2==0)
+            {
                 unset($return_goods['imgs'][$j]);
             }
         }
