@@ -735,7 +735,8 @@ class GoodsController extends BaseController {
 				$new = 1;
 			}
 			$res = M('user_address')->where("`user_id` = $user_id and `address_id` = $address_id")->delete();
-			if($res && $new)
+            //修改如下的条件语句 2017-08-09  温立涛
+            if($res && $new!==false)
 			{
 				M()->commit();
 				$json = array('status'=>1,'msg'=>'删除成功');
