@@ -12,11 +12,11 @@
                     商品名称
                 </td>
                 <td class="text-center">
-                   商品价格
+                   订单号
                 </td>
-                <td class="text-center">众筹价格</td>
+                <td class="text-center">收件人</td>
                 <td class="text-center">
-                    发起者/参加者
+                   店铺名称
                 </td>
                 <td class="text-center">
                     用户
@@ -42,9 +42,9 @@
                     <td class="text-center">{$list.id}</td>
                     <td class="text-center">{$list.goods_id}</td>
                     <td class="text-center">{$list.goods_name}</td>
-                    <td class="text-center">{$list.goods_price}</td>
-                    <td class="text-center">{$list.price}</td>
-                    <td class="text-center"><if condition="$list.mark eq 0"> 发起者</if> <if condition="$list.mark neq 0"> 参加者</if> </td>
+                    <td class="text-center">{$list.order_sn}</td>
+                    <td class="text-center">{$list.consignee}</td>
+                    <td class="text-center">{$list.store_name}</td>
                     <td class="text-center">{$list.nickname}</td>
                     <td class="text-center">{$list.goods_num}</td>
                     <td class="text-center">{$list.order_num}</td>

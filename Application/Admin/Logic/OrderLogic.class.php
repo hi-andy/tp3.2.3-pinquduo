@@ -43,8 +43,8 @@ class OrderLogic extends RelationModel
 		$total_fee = " (order_amount + shipping_price - discount - coupon_price) AS total_fee ";
 		$sql = "SELECT *, " . $total_fee . " FROM __PREFIX__order WHERE order_id = '$order_id'";
 		$res = $this->query($sql);
-		$res[0]['address2'] = $this->getAddressName($res[0]['province'],$res[0]['city'],$res[0]['district']);
-		$res[0]['address2'] = $res[0]['address2'].$res[0]['address'];
+//		$res[0]['address2'] = $this->getAddressName($res[0]['province'],$res[0]['city'],$res[0]['district']);
+//		$res[0]['address2'] = $res[0]['address2'].$res[0]['address'];
 		return $res[0];
     }
 

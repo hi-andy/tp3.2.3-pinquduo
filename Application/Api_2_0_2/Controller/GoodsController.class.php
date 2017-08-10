@@ -853,9 +853,9 @@ class GoodsController extends BaseController {
 		if($logistics['logistics_name']=='安能' && $order['shipping_code']=='annengwuliu'){
 
 			$code = 'PQD';  //客户id=APPKey
-			$secretKey = 'b1fc3d0cc7e721574dbe8217099b1f8a';//安能快递秘钥
-			$url = 'http://101.95.139.62:40144/aneop/services/logisticsQuery/query';
-			$ewbNo = $order['shipping_order'];//
+			$secretKey = '701c9be35667ff5de2daa486ccc163e9';//安能快递秘钥
+			$url = 'http://opc.ane56.com/aneop/services/logisticsQuery/query';
+			$ewbNo = $order['shipping_order'];//86767745153514
 			$digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
 			list($t1, $t2) = explode(' ', microtime());
 			$timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
@@ -869,10 +869,10 @@ class GoodsController extends BaseController {
 			$result=curl_exec($ch);
 			curl_close($ch);
 			$datas = object_to_array(json_decode($result));
-			$arr['resultInfo'] = object_to_array(json_decode($datas['resultInfo']));
-			$arr['resultInfo'] = $datas['resultInfo']['tracesList'][0];
+			$datas['resultInfo'] = object_to_array(json_decode($datas['resultInfo']));
+			$datas['resultInfo'] = $datas['resultInfo']['tracesList'][0];
 			$new_arr = array();
-			foreach ($arr['resultInfo']['traces'] as $k=>$v){
+			foreach ($datas['resultInfo']['traces'] as $k=>$v){
 				$new_arr[$k]['ftime'] = $new_arr[$k]['time'] = $v['time'];
 				$new_arr[$k]['context'] = $v['desc'];
 			}
