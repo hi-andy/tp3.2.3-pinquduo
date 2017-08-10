@@ -849,11 +849,13 @@ class GoodsController extends BaseController {
 		}
 
 		$logistics = M('logistics')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
+		$logistics['shipping_order']=$order['shipping_order'];
 		if($logistics['logistics_name']=='安能' && $order['shipping_code']=='annengwuliu'){
+
 			$code = 'PQD';  //客户id=APPKey
-			$secretKey = 'b1fc3d0cc7e721574dbe8217099b1f8a';//安能快递秘钥
-			$url = 'http://101.95.139.62:40144/aneop/services/logisticsQuery/query';
-			$ewbNo = 29506100000198;//$order['shipping_order']
+			$secretKey = '701c9be35667ff5de2daa486ccc163e9';//安能快递秘钥
+			$url = 'http://opc.ane56.com/aneop/services/logisticsQuery/query';
+			$ewbNo = $order['shipping_order'];//86767745153514
 			$digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
 			list($t1, $t2) = explode(' ', microtime());
 			$timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
@@ -866,10 +868,16 @@ class GoodsController extends BaseController {
 			curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
 			$result=curl_exec($ch);
 			curl_close($ch);
-			$datas = json_decode($result,TRUE);
-
+			$datas = object_to_array(json_decode($result));
+			$datas['resultInfo'] = object_to_array(json_decode($datas['resultInfo']));
+			$datas['resultInfo'] = $datas['resultInfo']['tracesList'][0];
+			$new_arr = array();
+			foreach ($datas['resultInfo']['traces'] as $k=>$v){
+				$new_arr[$k]['ftime'] = $new_arr[$k]['time'] = $v['time'];
+				$new_arr[$k]['context'] = $v['desc'];
+			}
+			$json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$new_arr));
 		}else{
-			$logistics['shipping_order']=$order['shipping_order'];
 			//参数设置
 			$post_data = array();
 			$post_data["customer"] = 'A1638F91623252C0207C481E2B112F52';
@@ -897,11 +905,9 @@ class GoodsController extends BaseController {
 			$result=curl_exec($ch);
 			curl_close($ch);
 			$data = json_decode($result,TRUE);
+			$json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$data['data']));
 		}
-
-
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$data['data']));
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));

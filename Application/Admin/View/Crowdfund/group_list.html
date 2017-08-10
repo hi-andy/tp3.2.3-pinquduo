@@ -16,9 +16,9 @@
                     <div class="navbar navbar-default">
                         <form action="{:U('Admin/order/export_order')}" id="search-form2" class="navbar-form form-inline" method="post">
                             <div class="form-group">
-                                <label class="control-label" for="input-order-id">众筹人</label>
+                                <label class="control-label" for="input-order-id">收件人</label>
                                 <div class="input-group">
-                                    <input type="text" name="consignee" placeholder="众筹人" id="input-member-id" class="input-sm" style="width:100px;">
+                                    <input type="text" name="consignee" placeholder="收件人" id="input-member-id" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -41,6 +41,22 @@
                                 <div class="input-group">
                                     <input type="text" name="store_name" id="store_name" value="{$store_name}" placeholder="商户名"  class="form-control">
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="input-order-id">订单编号</label>
+                                <div class="input-group">
+                                    <input type="text" name="order_sn" placeholder="订单编号" id="input-order-id" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <select name="order_type" class="input-sm" style="width:130px;">
+                                    <option value="">订单状态</option>
+                                    <volist name="order_type" id="v" key="k">
+                                        <option value="{$k}">{$v}</option>
+                                    </volist>
+                                </select>
+                                <input type="hidden" name="order_by" value="order_id">
+                                <input type="hidden" name="sort" value="desc">
                             </div>
                             <div class="form-group">
                                 <a href="javascript:void(0)" onclick="ajax_get_table('search-form2',1)" id="button-filter search-order" class="btn btn-primary"><i class="fa fa-search"></i> 筛选</a>

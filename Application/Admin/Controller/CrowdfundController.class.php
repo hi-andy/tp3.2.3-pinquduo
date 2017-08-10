@@ -81,6 +81,7 @@ class CrowdfundController extends BaseController {
     public function group_list(){
         $begin = date('Y/m/d',(time()-30*60*60*24));//30天前
         $end = date('Y/m/d',strtotime('+1 days'));
+        $this->assign('order_type',C('GROUP_BUY'));
         $this->assign('timegap',$begin.'-'.$end);
         $this->display();
     }
@@ -90,7 +91,7 @@ class CrowdfundController extends BaseController {
      */
     public function ajax_group_list(){
 
-        $timegap = I('timegap');
+        $timegap = I('start_time');
         if($timegap){
             $gap = explode('-', $timegap);
             $begin = strtotime($gap[0]);
@@ -100,11 +101,32 @@ class CrowdfundController extends BaseController {
         $condition = array();
         $condition['g.is_raise'] = 1;
         $condition['g.mark'] = 0;
-        if($begin && $end){
-            $condition['g.start_time'] = array('GT',$begin);
-            $condition['g.end_time'] = array('LT',$end);
+        if ($begin && $end) {
+            $condition['g.start_time'] = array('GT', $begin);
+            $condition['g.start_time'] = array('LT', $end);
         }
-
+        if (!empty(I('order_type'))) {
+            $t = I('order_type');
+            if ($t == 1) {
+                $condition['o.order_type'] = array('eq', 4);
+            } elseif ($t == 2) {
+                $condition['o.order_type'] = array('eq', 5);
+            } elseif ($t == 3) {
+                $condition['o.order_type'] = array('eq', 10);
+            } elseif ($t == 4) {
+                $condition['o.order_type'] = array('eq', 11);
+            } elseif ($t == 5) {
+                $condition['o.order_type'] = array('eq', 12);
+            } elseif ($t == 6) {
+                $condition['o.order_type'] = array('eq', 13);
+            } elseif ($t == 7) {
+                $condition['o.order_type'] = array('eq', 14);
+            } elseif ($t == 8) {
+                $condition['o.order_type'] = array('eq', 15);
+            } else {
+                $condition['o.order_type'] = array('eq', 16);
+            }
+        }
         if(I('Open_group')){
             if(I('Open_group')==1){
                 $condition['is_successful'] = 1;
@@ -112,17 +134,25 @@ class CrowdfundController extends BaseController {
                 $condition['is_successful'] = 0;
             }
         }
-        if(!empty(I('store_name')))
-        {
+        if (I('order_sn')) {
+            $condition['o.order_sn'] = array('eq', I('order_sn'));
+        }
+        if (!empty(I('store_name'))) {
             $this->assign('store_name', I('store_name'));
-            $store_id = M('merchant')->where("store_name like '%".I('store_name')."%' and state=1")->getField('id');
-            $condition['g.store_id'] = array('eq',$store_id);
+            $store_id = M('merchant')->where("store_name = '".I('store_name')."'")->getField('id');
+            if(empty($store_id)){
+                $store_id = M('merchant')->where("store_name like '%".I('store_name')."%'")->getField('id');
+            }
+            $condition['o.store_id'] = array('eq',$store_id);
         }
         if(I('consignee')){
-            $condition['u.nickname'] =array('LIKE',"%".I('consignee')."%");
+            $condition['o.consignee'] =array('eq',I('consignee'));
         }
+
         $count = M('group_buy')->alias('g')
                  ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
+                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+                 ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
                  ->where($condition)
                  ->count();
 
@@ -136,8 +166,9 @@ class CrowdfundController extends BaseController {
         $grouplist = M('group_buy')->alias('g')
                      ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                      ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+                     ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
                      ->where($condition)
-                     ->field('g.*,u.nickname,o.order_sn,o.pay_time')
+                     ->field('g.*,u.nickname,o.order_sn,o.pay_time,m.store_name,o.consignee')
                      ->limit($Page->firstRow,$Page->listRows)
                      ->order('g.id desc')
                      ->select();

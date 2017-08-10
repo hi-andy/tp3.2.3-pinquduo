@@ -548,13 +548,6 @@ class BaseController extends Controller {
                 $goods[$k]['spec_key'] = M('spec_goods_price')->where('goods_id = '.$goods[$k]['goods_id'])->getField('key');
             }
         }
-        
-//        for($i=0;$i<count($goods);$i++){
-//            $type = M('promote_icon')->where('goods_id = '.$goods[$i]['goods_id'])->getField('src');
-//            if(!empty($type)){
-//                $goods[$i]['icon_src'] = $type;
-//            }
-//        }
 
         $result = $this->listPageData($count, $goods,$pagesize);
         foreach ($result['items'] as &$v) {
