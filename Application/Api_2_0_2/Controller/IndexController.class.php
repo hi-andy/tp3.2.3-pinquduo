@@ -573,7 +573,7 @@ class IndexController extends BaseController {
         $pagesize = I('pagesize',10);
         $rdsname = "getRankingList".$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $where = '`show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ';
+            $where = '`is_special` != 8 and `show_type`=0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,' sales desc ');
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -1036,67 +1036,35 @@ class IndexController extends BaseController {
         }
     }
 
-    /**
-     * desription 判断是否gif动画
-     * @param sting $image_file图片路径
-     * @return boolean t 是 f 否
-     */
-    function check_gifcartoon($image_file){
-        $fp = fopen($image_file,'rb');
-        $image_head = fread($fp,1024);
-        fclose($fp);
-        return preg_match("/".chr(0x21).chr(0xff).chr(0x0b).'NETSCAPE2.0'."/",$image_head)?false:true;
-
-
-        $ewmPath = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG98TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQzdmLTBUdHhiQS0xd1hVMzFwMXgAAgS75oFZAwSAUQEA';
-        //获取图片文件的内容
-        $pic_path    = file_get_contents($ewmPath);
-        //创建图片资源
-        $resource   = imagecreatefromstring($pic_path);
-        //获取图片资源文件的宽
-        $image_width	= imagesx($resource);
-        //获取图片资源文件的高
-        $image_height	= imagesy($resource);
-        //图片合并
-        imagecopyresized($background,$resource,390,$start_y,0,0,$pic_w,$pic_h,imagesx($resource),imagesy($resource));
-
-
-        //用户头像
-        $head_pic = 'http://wx.qlogo.cn/mmopen/zZSYtpeVianR8v7QHKm3qO6wydccndNKGMiclrcOwUjvicllW3ibc3Is4QBok0CyuGmF2tX1OEf95WO6umS1ol7dibfKoab8oEVlw/0';
-
-        //获取图片文件的内容
-        $pic_path    = file_get_contents($head_pic);
-        //创建图片资源
-        $resource   = imagecreatefromstring($pic_path);
-        //获取图片资源文件的宽
-        $image_width	= imagesx($resource);
-        //获取图片资源文件的高
-        $image_height	= imagesy($resource);
-        //图片合并
-        imagecopyresized($background,$resource,20,395,0,0,60,60,imagesx($resource),imagesy($resource));
-        //用户头像遮罩
-        $head_pic = 'Public/images/square_head@2x.png';
-        //获取图片文件的内容
-        $pic_path    = file_get_contents($head_pic);
-        //创建图片资源
-        $resource   = imagecreatefromstring($pic_path);
-        //图片合并
-        imagecopyresized($background,$resource,20,395,0,0,60,60,imagesx($resource),imagesy($resource));
-        //用户名称
-        if(strlen($user_name)>18){
-            $user_name = msubstr($user_name,0,6).'...';
-            imagettftext($background,20,0,100,440,imagecolorallocate($background, 153,153,153),$font,$user_name);
-        }else{
-            imagettftext($background,20,0,100,440,imagecolorallocate($background, 153,153,153),$font,$user_name);
-        }
-    }
-
     //删除缓存
     public function redisdelall_user($user_id = ""){
         $this->order_redis_status_ref($user_id);
     }
 
     function  t(){
-        var_dump('');
+
+        $code = 'PQD';  //客户id=APPKey
+        $secretKey = 'b1fc3d0cc7e721574dbe8217099b1f8a';//安能快递秘钥
+        $url = 'http://101.95.139.62:40144/aneop/services/logisticsQuery/query';
+        $ewbNo = 29506100000198;//$order['shipping_order']
+        $digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
+        list($t1, $t2) = explode(' ', microtime());
+        $timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
+        $data = '{"timestamp":"'.$timestamp.'","digest":"'.$digest.'","params":"{\"ewbNo\":\"'.$ewbNo.'\"}","code":"'.$code.'"}';
+        $ch = curl_init();
+        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch,CURLOPT_HEADER,0);
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+        $result=curl_exec($ch);
+        curl_close($ch);
+        $t = stripslashes($result);
+        print_r($t);die;
+//        $datas = json_decode($t,TRUE);
+        $json = array('status'=>1,'msg'=>'获取成功','result'=>$t);
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
     }
 }

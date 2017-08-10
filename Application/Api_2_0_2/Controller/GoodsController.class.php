@@ -763,7 +763,8 @@ class GoodsController extends BaseController {
 				$new = 1;
 			}
 			$res = M('user_address')->where("`user_id` = $user_id and `address_id` = $address_id")->delete();
-			if($res && $new)
+            //修改如下的条件语句 2017-08-09  温立涛
+			if($res && $new!==false)
 			{
 				M()->commit();
 				$json = array('status'=>1,'msg'=>'删除成功');
@@ -848,34 +849,56 @@ class GoodsController extends BaseController {
 		}
 
 		$logistics = M('logistics')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
-		$logistics['shipping_order']=$order['shipping_order'];
-		//参数设置
-		$post_data = array();
-		$post_data["customer"] = 'A1638F91623252C0207C481E2B112F52';
-		$key= 'DLTlUmMA8292' ;
-		$post_data["param"] = '{"com":"'.$order['shipping_code'].'","num":"'.$order['shipping_order'].'"}';
+		if($logistics['logistics_name']=='安能' && $order['shipping_code']=='annengwuliu'){
+			$code = 'PQD';  //客户id=APPKey
+			$secretKey = 'b1fc3d0cc7e721574dbe8217099b1f8a';//安能快递秘钥
+			$url = 'http://101.95.139.62:40144/aneop/services/logisticsQuery/query';
+			$ewbNo = 29506100000198;//$order['shipping_order']
+			$digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
+			list($t1, $t2) = explode(' ', microtime());
+			$timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
+			$data = '{"timestamp":"'.$timestamp.'","digest":"'.$digest.'","params":"{\"ewbNo\":\"'.$ewbNo.'\"}","code":"'.$code.'"}';
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_POST,1);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+			curl_setopt($ch,CURLOPT_HEADER,0);
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+			$result=curl_exec($ch);
+			curl_close($ch);
+			$datas = json_decode($result,TRUE);
 
-		$url='http://poll.kuaidi100.com/poll/query.do';
+		}else{
+			$logistics['shipping_order']=$order['shipping_order'];
+			//参数设置
+			$post_data = array();
+			$post_data["customer"] = 'A1638F91623252C0207C481E2B112F52';
+			$key= 'DLTlUmMA8292' ;
+			$post_data["param"] = '{"com":"'.$order['shipping_code'].'","num":"'.$order['shipping_order'].'"}';
 
-		$post_data["sign"] = md5($post_data["param"].$key.$post_data["customer"]);
-		$post_data["sign"] = strtoupper($post_data["sign"]);
+			$url='http://poll.kuaidi100.com/poll/query.do';
 
-		$o = "";
+			$post_data["sign"] = md5($post_data["param"].$key.$post_data["customer"]);
+			$post_data["sign"] = strtoupper($post_data["sign"]);
 
-		foreach ($post_data as $k=>$v)
-		{
-			$o.= "$k=".urlencode($v)."&";		//默认UTF-8编码格式
+			$o = "";
+
+			foreach ($post_data as $k=>$v)
+			{
+				$o.= "$k=".urlencode($v)."&";		//默认UTF-8编码格式
+			}
+			$post_data=substr($o,0,-1);
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_POST,1);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+			curl_setopt($ch,CURLOPT_HEADER,0);
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_POSTFIELDS,$post_data);
+			$result=curl_exec($ch);
+			curl_close($ch);
+			$data = json_decode($result,TRUE);
 		}
-		$post_data=substr($o,0,-1);
-		$ch = curl_init();
-		curl_setopt($ch,CURLOPT_POST,1);
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch,CURLOPT_HEADER,0);
-		curl_setopt($ch,CURLOPT_URL,$url);
-		curl_setopt($ch,CURLOPT_POSTFIELDS,$post_data);
-		$result=curl_exec($ch);
-		curl_close($ch);
-		$data = json_decode($result,TRUE);
+
 
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$data['data']));

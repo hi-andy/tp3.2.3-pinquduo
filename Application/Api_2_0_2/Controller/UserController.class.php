@@ -1153,6 +1153,7 @@ class UserController extends BaseController {
             $goods_array = M('goods_collect', '', 'DB_CONFIG2')->where('`user_id` = ' . $user_id)->order('collect_id desc')->select();
             $counts = count($goods_array);
             if(!empty($goods_array)){
+                $ids['g.is_special'] = array('neq',8);
                 $ids['g.goods_id'] = array('IN', array_column($goods_array, 'goods_id'));
                 $goods = M('goods', '', 'DB_CONFIG2')
                     ->alias('g')
@@ -1238,13 +1239,13 @@ class UserController extends BaseController {
         }
         if (empty(redis($rdsname))) {//判断是否有缓存
             if ($type == 1) {
-                $condition = '`order_status`=8 and `user_id`=' . $user_id;
+                $condition = '`the_raise` = 0 and `order_status`=8 and `user_id`=' . $user_id;
             } elseif ($type == 2) {
-                $condition = '`order_status`=11 and `user_id`=' . $user_id;
+                $condition = '`the_raise` = 0 and `order_status`=11 and `user_id`=' . $user_id;
             } elseif ($type == 3) {
-                $condition = '`pay_status`=1 and (`order_status`=9 or `order_status`=10) and `user_id`=' . $user_id;
+                $condition = '`the_raise` = 0 and `pay_status`=1 and (`order_status`=9 or `order_status`=10) and `user_id`=' . $user_id;
             } elseif ($type == 0) {
-                $condition = '`prom_id`>0 and `user_id`=' . $user_id;
+                $condition = '`the_raise` = 0 and `prom_id`>0 and `user_id`=' . $user_id;
             } else {
                 exit(json_encode(array('status' => -1, 'msg' => '参数错误')));
             }
@@ -1385,9 +1386,9 @@ class UserController extends BaseController {
         if(empty(redis($rdsname))) {//
             if (empty($user_id)) {
                 //开团十分钟以内的团
-                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('auto=0 and `mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,20')->select();
+                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`is_raise` = 0 and `auto`=0 and `mark`=0 and `is_pay`=1 and `is_successful`=0 and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,20')->select();
             } else {
-                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,10')->select();
+                $new_prom = M('group_buy', '', 'DB_CONFIG2')->where('`is_raise` = 0 and `mark`=0 and `is_pay`=1 and `is_successful`=0 and `user_id`!=' . $user_id . ' and ' . (time() - 60000) . '<=`start_time`')->order('start_time desc')->field("id as prom_id,user_id")->limit('0,10')->select();
             }
             for ($i = 0; $i < count($new_prom); $i++) {
                 $new_prom[$i]['userInfo'] = M('users')->where('`user_id`=' . $new_prom[$i]['user_id'])->field('mobile,nickname,oauth,head_pic')->find();
