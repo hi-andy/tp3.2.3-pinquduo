@@ -1,6 +1,11 @@
 <?php
+/**
+ * 抽奖订单管理控制器
+ * Author: Hua
+ */
 namespace Admin\Controller;
 
+use Api\Controller\QQPayController;
 use Think\Controller;
 use Api_2_0_1\Controller\WxtmplmsgController;
 use Admin\Logic\OrderLogic;
@@ -40,26 +45,19 @@ class AwardOrderController extends Controller {
 
             //　时间范围
             if($begin && $end){
-                //$condition['o.add_time'] = array('GT', $begin);
-                //$condition['o.add_time'] = array('LT', $end);
                 $where .= ' and o.add_time>' . $begin . ' and o.add_time<' . $end;
             }
         }
-
-        //$condition['g.goods_id'] = array('eq', $goods_id);
         //订单号搜索
         if($order_sn) {
             $where .= ' and o.order_sn=' . $order_sn;
         }
 
-
         // 成团/未成团
         if(I('Open_group')){
             if(I('Open_group')==1){
-                //$condition['_string'] = " g.goods_num = g.order_num ";
                 $where .= ' and g.goods_num = g.order_num';
             }elseif(I('Open_group')==2){
-                //$condition['_string'] = " g.goods_num != g.order_num ";
                 $where .= ' and g.goods_num != g.order_num';
             }
         }
@@ -71,11 +69,6 @@ class AwardOrderController extends Controller {
             ->count();
         $Page  = new Page($count,15);
 
-
-        //  搜索条件下 分页赋值
-//        foreach($condition as $key=>$val) {
-//            $Page->parameter[$key]   =  urlencode($val);
-//        }
         $show = bootstrap_page_style($Page->show());
         //echo M('group_buy')->fetchSql('true')->alias('g')
         $orderList = M('group_buy')->alias('g')
@@ -92,51 +85,6 @@ class AwardOrderController extends Controller {
         $this->assign('timeRange', $timeRange);
         $this->display();
     }
-
-    /**
-     * 显示详情
-     */
-    public function detail(){
-
-        $groupid = $_REQUEST['group_id'];
-
-        //众筹信息
-        $group_info =M('group_buy')->where(array('id'=>$groupid))->find();
-        //用户信息
-        $user_info = M('users')->where(array('user_id'=>$group_info['user_id']))->find();
-
-        $orderLogic = new OrderLogic();
-        $order_id = $group_info['order_id'];
-        $order = $orderLogic->getOrderInfo($order_id);
-        $orderGoods = $orderLogic->getOrderGoods($order_id);
-
-        // 获取操作记录
-        $action_log = M('order_action')->where(array('order_id'=>$order_id))->order('log_time desc')->select();
-
-        $this->assign('order',$order);
-        $this->assign('action_log',$action_log);
-        $this->assign('orderGoods',$orderGoods);
-        $split = count($orderGoods) > 1 ? 1 : 0;
-        foreach ($orderGoods as $val){
-            if($val['goods_num']>1){
-                $split = 1;
-            }
-        }
-
-        $ordertype = $this->getPromStatus($order,$group_info,$group_info['order_num']);
-
-        $order['order_type'] = $ordertype['annotation'];
-        $order['order_type_id'] = $ordertype['order_type'];
-        $button = $orderLogic->getOrderButton_group($order);
-
-        $this->assign('ordertype',$ordertype['annotation']);
-        $this->assign('split',$split);
-        $this->assign('button',$button);
-        $this->assign('group_info',$group_info);
-        $this->assign('user_info',$user_info);
-        $this->show();
-    }
-
 
     /*
      * 设指定订单为中奖，并推送中奖消息。
@@ -158,7 +106,7 @@ class AwardOrderController extends Controller {
     }
 
     /**
-     * 未中奖的订单，批量推送消息
+     * 未中奖的订单处理，批量推送消息
      */
     public function noAwardOrderPush()
     {
@@ -174,14 +122,34 @@ class AwardOrderController extends Controller {
         // 商品名称
         $goods_name = M('goods')->where('goods_id='.$goods_id)->getField('goods_name');
         // 所有未中奖的订单信息
-        $orderInfo = M('order')->field('order_id,user_id,total_amount,order_sn')->where('goods_id='.$goods_id.' and add_time>'.$begin.' and add_time<'.$end.' and is_award=0')->select();
+        $orderInfo = M('order')->field('order_id,user_id,order_amount,order_sn,is_jsapi,pay_code')->where('goods_id='.$goods_id.' and add_time>'.$begin.' and add_time<'.$end.' and is_award=0')->select();
+        $orderLogic = new OrderLogic();
         foreach($orderInfo as $value) {
-            // 订单设为未中奖
-            M('order')->where('order_id='.$value['order_id'])->setField('is_award', -1);
+            // 未中奖订单执行退款  Hua 2017-8-10
+            $result = '';
+            if ($value['pay_code'] == 'weixin') {
+                if ($value['is_jsapi'] == 1) {
+                    $result = $orderLogic->weixinJsBackPay($value['order_sn'], $value['order_amount']);
+                } else {
+                    $result = $orderLogic->weixinBackPay($value['order_sn'], $value['order_amount']);
+                }
+            } elseif ($value['pay_code'] == 'alipay') {
+                $result = $orderLogic->alipayBackPay($value['order_sn'], $value['order_amount']);
+            } elseif ($value['pay_code'] == 'qpay') {
+                $qqPay = new QQPayController();
+                $result = $qqPay->doRefund($value['order_sn'], $value['order_amount']);
+            }
+            if ($result['status'] == 1) {
+                $data['order_status'] = 10;
+                $data['order_type'] = 13;
+                $data['is_award'] = -1; // 未中奖订单状态
+                M('order')->where('`order_id`=' . $value['order_id'])->data($data)->save();
+            }
+
             // 微信推送消息
             $openid = M('users')->where('user_id='.$value['user_id'])->getField('openid');
             $wxPush = new WxtmplmsgController();
-            $wxPush->award_notify($openid,'很遗憾！您参与的活动未中奖！！！', $value['total_amount'], $goods_name, $value['order_sn']);
+            $wxPush->award_notify($openid,'很遗憾！您参与的活动未中奖！已退款到您的原支付方式，谢谢参与！', $value['order_amount'], $goods_name, $value['order_sn']);
         }
         $this->ajaxReturn('操作成功！');
     }
