@@ -153,8 +153,11 @@ class AutomationController extends BaseController
         $user = new UserController();
         $where = null;
         $conditon = null;
-        $time = time() - 30;
-        $prom_order = M('group_buy')->where('auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)
+
+        // sql 查询优化，缩小查询范围。　Hua 2017-8-9 15:21
+        $eTime = time() - 30;
+        $sTime = time() - 3600 * 24;
+        $prom_order = M('group_buy')->where('`start_time`>=' . $sTime .' and end_time <= '.$eTime.' and auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 ')
             ->field('id,is_raise,order_id')
             ->limit(0, 10)
             ->select();

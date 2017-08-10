@@ -114,8 +114,6 @@ class PromController extends BaseController {
 			->join('LEFT JOIN __ORDER__ o on o.order_id = g.order_id')
 			->where($condition)
 			->where($where)
-			->field('g.*,u.nickname,o.order_sn,o.pay_time,o.add_time')
-			->order('o.add_time desc')
 			->count();
 
 		$Page  = new AjaxPage($count,20);
