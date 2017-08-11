@@ -130,6 +130,10 @@ class GroupBuyController extends BaseController {
                         $ressave = M('group_buy')->data(['is_successful'=>1])->where("mark={$group_buy_id}")->save();
                         $mainres = M('group_buy')->data(['is_successful'=>1])->where("id={$group_buy_id}")->save();
                         $orderres = M('order')->where("order_id={$result['order_id']}")->data(['order_status'=>11,'order_type'=>14])->save();
+                        $spec_name = M('order_goods')->where('`order_id`='.$result['order_id'])->field('spec_key')->find();
+                        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
+                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);//库存自减
+                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);//销量自加
                         if($ressave && $mainres && $orderres){
                             M()->commit();
                             $tuanuserdata = M('users')->where("user_id={$result['user_id']}")->field("openid")->find();
