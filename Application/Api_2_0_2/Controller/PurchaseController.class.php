@@ -29,7 +29,6 @@ class PurchaseController extends  BaseController
     {
         header("Access-Control-Allow-Origin:*");
         $user_id = (int)I('user_id');
-
         //处理掉用户id非法的情况-温立涛开始
         if($user_id<=0){
             $json = array('status' => -1, 'msg' => '用户id非法');

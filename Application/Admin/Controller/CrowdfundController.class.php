@@ -172,7 +172,10 @@ class CrowdfundController extends BaseController {
                      ->limit($Page->firstRow,$Page->listRows)
                      ->order('g.id desc')
                      ->select();
-
+        foreach ($grouplist as $k=>$v){
+            $count = M('group_buy')->where("mark = {$v['id']}")->count();
+            $grouplist[$k]['order_num'] = $count+1;
+        }
         $this->assign('grouplist',$grouplist);
         $this->assign('page',$show);// 赋值分页输出
         $this->display();

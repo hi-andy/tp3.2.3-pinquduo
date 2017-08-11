@@ -153,7 +153,6 @@ class GroupBuyController extends BaseController {
                         $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                     }
                     exit();
-
                 }else{
                     M()->rollback();//有数据库操作不成功时进行数据回滚
                     redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
