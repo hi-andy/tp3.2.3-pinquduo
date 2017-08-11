@@ -62,6 +62,7 @@ class StoreController extends BaseController {
         $store_data['is_show'] = 0;
         $store_data['store_from'] = 0;
         $store_data['store_type'] = 0;
+
         $res = M('merchant')->add($store_data);
 
         if(!$data['is_haitao'])
@@ -103,7 +104,6 @@ class StoreController extends BaseController {
      */
     public function post_store_info(){
         $data = $_POST;
-
         $first_data = $data['first_data'];
         $first_data= $first_data[0];
 
@@ -117,7 +117,7 @@ class StoreController extends BaseController {
         }
 
         if(!$store_id){
-            echo json_encode(array('status'=>0,'msg'=>'店铺ID不存在'));
+            echo json_encode(array('status'=>0,'msg'=>'信息提交失败！'));
             die;
         }
 

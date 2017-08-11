@@ -158,6 +158,7 @@ class CrowdfundController extends BaseController {
 
         $Page  = new AjaxPage($count,20);
         //  搜索条件下 分页赋值
+        print_r($condition);
         foreach($condition as $key=>$val) {
             $Page->parameter[$key]   =  urlencode($val);
         }

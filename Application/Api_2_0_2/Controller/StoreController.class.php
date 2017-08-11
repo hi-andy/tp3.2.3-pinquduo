@@ -41,13 +41,13 @@ class StoreController extends BaseController{
 			 * introduce 简介
 			 * */
 
-			$store = M('merchant', '', 'DB_CONFIG2')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce')->find();
+			$store = M('merchant')->where('`id` = ' . $store_id)->field('store_name,mobile,store_logo,sales,introduce')->find();
 			$store['store_share_url'] = C('SHARE_URL').'/shop_detail.html?store_id=' . $store_id;//商户分享URL
 			$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75%7Cwatermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0%7Cimageslim/dissolve/100/gravity/South/dx/0/dy/0";//分享logo
 			$store['store_logo'] = TransformationImgurl($store['store_logo']);
 			//获取店铺优惠卷store_logo_compression
 			//获取商户有的优惠券
-			$coupon = M('coupon', '', 'DB_CONFIG2')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+			$coupon = M('coupon')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
 			if (empty($coupon)) {
 				$coupon = null;
 			}
@@ -109,14 +109,14 @@ class StoreController extends BaseController{
 		}
 		if (!empty($order_sn)){
 			$where = "$where and o.order_sn = $order_sn";
-			$order_info = M('order', '', 'DB_CONFIG2')->alias('o')
+			$order_info = M('order')->alias('o')
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
 				->where($where)
 				->field('o.order_id,o.order_sn,o.address,o.address_base,o.goods_id,o.order_amount,o.consignee,o.user_id,o.mobile,m.store_name,g.original_img,o.add_time')
 				->select();
 		}else{
-			$order_info = M('order', '', 'DB_CONFIG2')->alias('o')
+			$order_info = M('order')->alias('o')
 				->join('INNER JOIN tp_merchant m on o.store_id = m.id')
 				->join('INNER JOIN tp_goods g on o.goods_id = g.goods_id')
 				->where($where)
@@ -136,7 +136,7 @@ class StoreController extends BaseController{
 				$order_info[$i]['district'] = $adress_info['district'];//区
 				$order_info[$i]['street'] = $order_info[$i]['address'];
 
-				$goods_info = M('order_goods', '', 'DB_CONFIG2')->alias('og')
+				$goods_info = M('order_goods')->alias('og')
 					->join('INNER JOIN tp_order o on og.goods_id = o.goods_id')
 					->where('og.order_id = '.$order_info[$i]['order_id'])
 					->field('og.goods_name,og.goods_id,og.market_price,og.goods_price,og.goods_num,og.spec_key_name')

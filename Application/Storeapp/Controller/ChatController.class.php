@@ -122,20 +122,20 @@ class ChatController extends BaseController
     public function get_unread($user_id=''){
         if ($user_id){
             if (empty(redis('get_unread'))) {
-                $data1 = M('', '', 'DB_CONFIG2')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC ");
+                $data1 = M('')->query("SELECT froms,count(tos) as count FROM tp_chat where tos='{$user_id}' and status=0 GROUP BY froms ORDER BY timestamp DESC ");
                 $froms='';
                 foreach ($data1 as $k1 => $v1) {
                     $data[$k1] = $v1;
-                    $data[$k1]['payload'] = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v1['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
+                    $data[$k1]['payload'] = M('chat')->where(array('froms' => $v1['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
                     $froms .= "'".$v1['froms']."',";
                 }
                 $froms = substr($froms, 0, -1);
                 if (!empty($froms)) $andwhere = "and froms not in({$froms})";
-                $data2 = M('chat', '', 'DB_CONFIG2')->query("SELECT froms,0 as count FROM tp_chat where tos='{$user_id}' and status=1 {$andwhere} GROUP BY froms ORDER BY timestamp DESC");
+                $data2 = M('chat')->query("SELECT froms,0 as count FROM tp_chat where tos='{$user_id}' and status=1 {$andwhere} GROUP BY froms ORDER BY timestamp DESC");
                 $data = array();
                 foreach ($data2 as $k2 => $v2) {
                     $data[count($data1)+$k2] = $v2;
-                    $data[count($data1)+$k2]['payload'] = M('chat', '', 'DB_CONFIG2')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
+                    $data[count($data1)+$k2]['payload'] = M('chat')->where(array('froms' => $v2['froms'], 'tos' => $user_id))->order('timestamp desc')->getField('payload');
                 }
                 // 暂不使用缓存
                 //redis('get_unread', serialize($data), 8);

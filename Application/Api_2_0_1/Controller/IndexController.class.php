@@ -25,12 +25,12 @@ class IndexController extends BaseController {
         $rdsname = "home".$page.$pagesize.$version;
         if (empty(redis($rdsname))) { //判断缓存是否存在
             //获取轮播图
-            $data = M('ad', '', 'DB_CONFIG2')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
+            $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
             foreach ($data as & $v) {
                 $v['ad_code'] = TransformationImgurl($v['ad_code']);
             }
             //中间图标
-            $category = M('group_category', '', 'DB_CONFIG2')->where('`id` != 9 and `id` != 8')->select();
+            $category = M('group_category')->where('`id` != 9 and `id` != 8')->select();
             foreach ($category as &$v) {
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
@@ -90,7 +90,7 @@ class IndexController extends BaseController {
 
     function getHeader()
     {
-        $header = M('goods_category', '', 'DB_CONFIG2')->where(' `parent_id` = 0 ')->field('id,name')->limit(8)->order('sort_order asc')->select();
+        $header = M('goods_category')->where(' `parent_id` = 0 ')->field('id,name')->limit(8)->order('sort_order asc')->select();
         array_unshift($header,array('id'=>'0','name'=>'首页'));
 
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
@@ -109,18 +109,18 @@ class IndexController extends BaseController {
         $rdsname = "getHaiTao".$version.$page.$pagesize.$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
             //头部分类
-            $directory = M('haitao_style', '', 'DB_CONFIG2')->select();
+            $directory = M('haitao_style')->select();
             foreach ($directory as &$v) {
                 $v['logo'] = TransformationImgurl($v['logo']);
             }
                 //中间分类
                 $directory2 = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
-                $directory2['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0')->field('id,name,img,logo')->limit('4')->select();
+                $directory2['cat2'] = M('haitao')->where('`parent_id` = 0')->field('id,name,img,logo')->limit('4')->select();
                 foreach ($directory2['cat2'] as &$v) {
                     $v['img'] = TransformationImgurl($v['img']);
                 }
                 for ($i = 0; $i < count($directory2['cat2']); $i++) {
-                    $directory2 ['cat2'][$i]['cat3'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = ' . $directory2['cat2'][$i]['id'])->field('id,name')->select();
+                    $directory2 ['cat2'][$i]['cat3'] = M('haitao')->where('`parent_id` = ' . $directory2['cat2'][$i]['id'])->field('id,name')->select();
                     array_unshift($directory2['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
                 }
                 $where = '`show_type`=0 and is_special=1 and `is_on_sale`=1 and is_audit=1 and `is_show`=1 and haitao_cat != 65 ';
@@ -147,10 +147,10 @@ class IndexController extends BaseController {
         $version = I('version');
         $rdsname = "getJiuJiu".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $banner = M('ad', '', 'DB_CONFIG2')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
+            $banner = M('ad')->where('pid = 2 and `enabled`=1')->field(array('ad_name', 'ad_code', 'type'))->find();
             $banner['ad_code'] = TransformationImgurl($banner['ad_code']);
             //中间四个小块
-            $banner2 = M('exclusive', '', 'DB_CONFIG2')->select();
+            $banner2 = M('exclusive')->select();
 
             foreach ($banner2 as &$v) {
                 $v['img'] = TransformationImgurl($v['img']);
@@ -176,7 +176,7 @@ class IndexController extends BaseController {
         $version= I('version');
         $rdsname = "getJIuJIuCategory".$id.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存 //获取轮播图
-            $banner = M('exclusive', '', 'DB_CONFIG2')->where('id =' . $id)->field(array('banner'))->find();
+            $banner = M('exclusive')->where('id =' . $id)->field(array('banner'))->find();
             $banner['banner'] = TransformationImgurl($banner['banner']);
             $where = '`show_type`=0 and `is_special`=4  and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `exclusive_cat` = ' . $id ;
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
@@ -212,10 +212,10 @@ class IndexController extends BaseController {
         $condition['is_on_sale'] = array('eq',1);
         $condition['show_type'] = array('eq',0);
 
-        $count = M('group_buy', '', 'DB_CONFIG2')->where($condition)->count();
-        $prom = M('group_buy', '', 'DB_CONFIG2')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
+        $count = M('group_buy')->where($condition)->count();
+        $prom = M('group_buy')->where($condition)->field('id,order_id,goods_id,price,goods_num,free')->page($page,$pagesize)->select();
         foreach($prom as &$v){
-            $goods_info = M('goods', '', 'DB_CONFIG2')->where('`goods_id`='.$v['goods_id'])->field('original_img,goods_name')->find();
+            $goods_info = M('goods')->where('`goods_id`='.$v['goods_id'])->field('original_img,goods_name')->find();
             $v['goods_name'] = $goods_info['goods_name'];
             $v['original'] = TransformationImgurl($goods_info['original_img']);
             $v['original_img'] = goods_thum_images($v['goods_id'],400,400);
@@ -289,13 +289,13 @@ class IndexController extends BaseController {
         $today_zero = strtotime(date('Y-m-d', time()));
         $today_zero2 = strtotime(date('Y-m-d', (time() + 2 * 24 * 3600)));
         $sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
-        $time = M('', '', 'DB_CONFIG2')->query($sql);
+        $time = M('')->query($sql);
         if (empty($time)) {
             for ($j = 1;$j<4; $j++) {
                 $today_zero = $today_zero - $j * 24 * 3600;
                 $today_zero2 = $today_zero2 - $j * 24 * 3600;
                 $sql = "SELECT FROM_UNIXTIME(`on_time`,'%Y-%m-%d %H') as datetime from " . C('DB_PREFIX') . "goods WHERE `is_on_sale`=1 and `is_audit`=1 and `is_special` = 2 and `on_time`>=$today_zero and `on_time`<$today_zero2  GROUP BY `datetime`";
-                $time = M('', '', 'DB_CONFIG2')->query($sql);
+                $time = M('')->query($sql);
                 if (!empty($time))
                     break;
             }
@@ -329,8 +329,8 @@ class IndexController extends BaseController {
             redisdelall("get_Seconds_Kill_status");
         }
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $count = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
-            $goods = M('goods', '', 'DB_CONFIG2')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,store_count,sales')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
+            $count = M('goods')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->count();
+            $goods = M('goods')->where("`on_time` = $starttime and `is_show` = 1 and `show_type`=0 and `is_audit`=1 and`is_on_sale`=1 and `is_special` = 2 and `is_audit`=1")->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,is_special,store_count,sales')->page($page, $pagesize)->order('is_recommend desc,sort asc')->select();
             $data = $this->listPageData($count, $goods);
             foreach ($data['items'] as &$v) {
                 $v['original'] = TransformationImgurl($v['original_img']);
@@ -354,7 +354,7 @@ class IndexController extends BaseController {
     {
         $rdsname = "getexplore";
         if(empty(redis($rdsname))) {//判断是否有缓存
-            $category = M('goods_category', '', 'DB_CONFIG2');
+            $category = M('goods_category');
             $cat1 = $category->where('`parent_id` = 0 and id != 10044')->order('sort_order asc')->field('id,name,logo')->select();
             for ($i = 0; $i < count($cat1); $i++) {
                 $cat1[$i]['logo'] = TransformationImgurl($cat1[$i]['logo']);
@@ -366,12 +366,12 @@ class IndexController extends BaseController {
                 }
             }
             $haitao = array('id' => 0, 'name' => '海淘专区', 'logo' => CDN . '/Public/upload/category/img_international@3x.png');
-            $haitao['cat2'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = 0 and `id` != 64 ')->field('id,name,img')->select();
+            $haitao['cat2'] = M('haitao')->where('`parent_id` = 0 and `id` != 64 ')->field('id,name,img')->select();
             foreach ($haitao['cat2'] as &$v) {
                 $v['img'] = TransformationImgurl($v['img']);
             }
             for ($i = 0; $i < count($haitao['cat2']); $i++) {
-                $haitao['cat2'][$i]['cat3'] = M('haitao', '', 'DB_CONFIG2')->where('`parent_id` = ' . $haitao['cat2'][$i]['id'])->field('id,name')->select();
+                $haitao['cat2'][$i]['cat3'] = M('haitao')->where('`parent_id` = ' . $haitao['cat2'][$i]['id'])->field('id,name')->select();
                 array_unshift($haitao['cat2'][$i]['cat3'], array('id' => '0', 'name' => '全部'));
             }
             $json = array('status' => 1, 'msg' => '', 'result' => array('haitao' => $haitao, 'cat' => $cat1));
@@ -411,9 +411,9 @@ class IndexController extends BaseController {
     function getNextCat($id,$page,$pagesize,$version)
     {
         //找到一级菜单的下级id
-        $parent_cat = M('goods_category', '', 'DB_CONFIG2')->where('`parent_id`='.$id)->field('id')->select();
+        $parent_cat = M('goods_category')->where('`parent_id`='.$id)->field('id')->select();
         $condition['parent_id'] =array('in',array_column($parent_cat,'id'));
-        $parent_cat2 = M('goods_category', '', 'DB_CONFIG2')->where($condition)->field('id')->select();
+        $parent_cat2 = M('goods_category')->where($condition)->field('id')->select();
         $condition2['cat_id'] =array('in',array_column($parent_cat2,'id'));
         $condition2['is_on_sale']=1;
         $condition2['is_show'] = 1;
@@ -558,7 +558,7 @@ class IndexController extends BaseController {
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`show_type`=0 and `is_special`=6 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 6')->field('ad_id,ad_code,ad_link,type')->find();
+            $ad = M('ad')->where('pid = 6')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -580,7 +580,7 @@ class IndexController extends BaseController {
         if(empty(redis($rdsname))) {//判断是否有缓存
             $where = '`the_raise`=1 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
             $data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
+            $ad = M('ad')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -605,7 +605,7 @@ class IndexController extends BaseController {
         if (empty(redis($rdsname))) {
             $where = 'type=2';//type=2 省钱大法的类型
             $count = M('goods_activity')->where($where)->count();
-            $goodsList = M('goods_activity', '', 'DB_CONFIG2')->alias('ga')
+            $goodsList = M('goods_activity')->alias('ga')
                 ->join('INNER JOIN tp_goods g on g.goods_id = ga.goods_id ')
                 ->where($where)
                 ->page($page, $pagesize)
@@ -615,7 +615,7 @@ class IndexController extends BaseController {
             foreach ($data['items'] as &$v) {
                 $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
             }
-            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->find();
+            $ad = M('ad')->where('pid = 3')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
             redis($rdsname, serialize($json), REDISTIME);
         } else {
@@ -652,11 +652,11 @@ class IndexController extends BaseController {
             $condition['g.show_type'] = array('eq', 0);
             $condition['g.is_audit'] = array('eq', 1);
 
-            $count = M('group_buy', '', 'DB_CONFIG2')->alias('gb')
+            $count = M('group_buy')->alias('gb')
                 ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
                 ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
                 ->where($condition)->count();
-            $prom = M('group_buy', '', 'DB_CONFIG2')->alias('gb')
+            $prom = M('group_buy')->alias('gb')
                 ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
                 ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')
                 ->where($condition)
@@ -737,7 +737,7 @@ class IndexController extends BaseController {
 		if(empty(redis($rdsname))) {//判断是否有缓存
 			$where = '`is_special`=9 and `show_type`=0 and `is_on_sale`=1 and `is_show`=1 and `is_audit`=1 ';
 			$data = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            $ad = M('ad', '', 'DB_CONFIG2')->where('pid = 5')->field('ad_id,ad_code,ad_link,type')->find();
+            $ad = M('ad')->where('pid = 5')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'goodsList'=>$data));
 			redis($rdsname, serialize($json), REDISTIME);//写入缓存
 		}else{

@@ -27,9 +27,9 @@ class CacheController extends BaseController {
         //轮播图
         if($goods['is_special']==7){
             $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
-            $banner = M('goods_images', '', 'DB_CONFIG2')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
+            $banner = M('goods_images')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
         }else{
-            $banner = M('goods_images', '', 'DB_CONFIG2')->where("`goods_id` = $goods_id")->field('image_url')->select();
+            $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
         }
 
         foreach ($banner as &$v) {
@@ -50,7 +50,7 @@ class CacheController extends BaseController {
         }
         //商品规格
         $goodsLogic = new \Home\Logic\GoodsLogic();
-        $spec_goods_price = M('spec_goods_price', '', 'DB_CONFIG2')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
+        $spec_goods_price = M('spec_goods_price')->where("goods_id = $goods_id")->select(); // 规格 对应 价格 库存表
         $filter_spec = $goodsLogic->get_spec($goods_id,$goods['is_special']);//规格参数
         $new_spec_goods = array();
         foreach ($spec_goods_price as $spec) {
@@ -72,7 +72,7 @@ class CacheController extends BaseController {
         }
         //如果有传规格过来就改变商品名字
         if (!empty($spec_key)) {
-            $key_name = M('spec_goods_price', '', 'DB_CONFIG2')->where("`key`='$spec_key'")->field('key_name')->find();
+            $key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
             $goods['goods_spec_name'] = $goods['goods_name'] . $key_name['key_name'];
         }
         if (!empty($ajax_get)) {
