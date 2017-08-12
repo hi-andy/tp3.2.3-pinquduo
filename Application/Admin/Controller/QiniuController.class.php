@@ -81,7 +81,7 @@ class QiniuController {
             $return_data[$key]['origin'] = CDN . "/" . $info[0]["key"];
             $return_data[$key]['width'] = '100';
             $return_data[$key]['height'] = '100';
-            $return_data[$key]['small'] = CDN . "/" . $info[0]["key"];
+            $return_data[$key]['small'] = CDN . "/" . $info[1]["key"];
         }
         redis("mobile_uploadimage", serialize($return_data),REDISTIME);
         return $return_data;

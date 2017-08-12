@@ -249,11 +249,11 @@ class GoodsLogic extends RelationModel
            $goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
        }
 	   	//商品规格 价钱 库存表 找出 所有 规格项id
-       $keys =M('SpecGoodsPrice', '', 'DB_CONFIG2')->where('goods_id = '.$goods_id)->field('key')->select();
+       $keys =M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();
 
        $filter_spec = array();
        if($keys){
-           $specImage =  M('SpecImage', '', 'DB_CONFIG2')->where("goods_id = $goods_id and src != '' ")->getField("spec_image_id,src");// 规格对应的 图片表， 例如颜色
+           $specImage =  M('SpecImage')->where("goods_id = $goods_id and src != '' ")->getField("spec_image_id,src");// 规格对应的 图片表， 例如颜色
            $count = count($keys);
            $ids = null;
            for($i=0;$i<$count;$i++)
@@ -263,7 +263,7 @@ class GoodsLogic extends RelationModel
            $keys = str_replace('_',',',$ids);
            $keys = substr($keys,1);
 	   		$sql  = "SELECT a.name,a.order,b.* FROM __PREFIX__spec AS a INNER JOIN __PREFIX__spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) ORDER BY a.order";
-	   		$filter_spec2 = M('', '', 'DB_CONFIG2')->query($sql);
+	   		$filter_spec2 = M('')->query($sql);
 	   		foreach($filter_spec2 as $key => $val)
 	   		{
 	   			$filter_spec[$val['name']][] = array(

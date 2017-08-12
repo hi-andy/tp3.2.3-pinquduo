@@ -115,7 +115,6 @@ class AdminController extends BaseController {
 			$res = M('merchant')->where("store_name = '".$_POST['store_name']."'")->find();
 			$res1 = M('merchant')->where('id = '.$_SESSION['merchant_id'])->find();
 			if(empty($res)&&$res1['is_change']==0){
-
 				$res2 = M('merchant')->where('id = '.$_SESSION['merchant_id'])->save(array('store_name'=>$_POST['store_name'],'old_name'=>$res1['store_name'],'is_change'=>1));
 				if($res2){
 					M('goods')->where('store_id = '.$_SESSION['merchant_id'])->data(array('refresh'=>0))->save();

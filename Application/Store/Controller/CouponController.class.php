@@ -8,10 +8,17 @@ class CouponController extends BaseController {
      * 初始化操作
      */
 	public function _initialize() {
+		if(empty(redis('store_id_'.$_SESSION['merchant_id']))){
+			session_unset();
+			session_destroy();
+			setcookie('storeid',null);
+			$this->error("数据维护，请重新登录",U('Store/Admin/login'));
+		}
 		if(empty($_SESSION['merchant_id']))
 		{
 			session_unset();
 			session_destroy();
+			setcookie('storeid',null);
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
 		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();

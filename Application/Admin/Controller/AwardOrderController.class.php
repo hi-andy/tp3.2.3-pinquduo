@@ -34,9 +34,9 @@ class AwardOrderController extends Controller {
     {
         // 搜索条件
         $condition = array();
-        $goods_id = I('goods_id');
-        $order_sn = I('order_sn');
-        $where = ' o.goods_id=' . $goods_id;
+        $goodsId = I('goods_id');
+        $orderSn = I('order_sn');
+        $condition['o.goods_id'] = $goodsId;
 
         if($timeRange = I('timeRange')){
             list($begin, $end) = explode('-', $timeRange);
@@ -45,44 +45,53 @@ class AwardOrderController extends Controller {
 
             //　时间范围
             if($begin && $end){
-                $where .= ' and o.add_time>' . $begin . ' and o.add_time<' . $end;
+                //$where .= ' and o.add_time>' . $begin . ' and o.add_time<' . $end;
+                $condition['o.add_time'] = array('>', $begin);
+                $condition['o.add_time'] = array('<', $end);
             }
         }
         //订单号搜索
-        if($order_sn) {
-            $where .= ' and o.order_sn=' . $order_sn;
+        if($orderSn) {
+            $condition['o.order_sn'] = $orderSn;
         }
 
         // 成团/未成团
         if(I('Open_group')){
             if(I('Open_group')==1){
-                $where .= ' and g.goods_num = g.order_num';
+                $condition['g.is_successful'] = 1;
             }elseif(I('Open_group')==2){
-                $where .= ' and g.goods_num != g.order_num';
+                $condition['g.is_successful'] = 0;
             }
         }
 
         $count = M('group_buy')->alias('g')
             ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
             ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-            ->where($where)
+            ->where($condition)
             ->count();
         $Page  = new Page($count,15);
+        //  搜索条件下 分页赋值
+        print_r($condition);
+        foreach($condition as $key=>$val) {
+            $Page->parameter[$key]   =  urlencode($val);
+        }
 
         $show = bootstrap_page_style($Page->show());
         //echo M('group_buy')->fetchSql('true')->alias('g')
         $orderList = M('group_buy')->alias('g')
             ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
             ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-            ->where($where)
-            ->field('g.*,u.nickname,o.order_sn,o.order_id,o.is_award,o.pay_time')
+            ->where($condition)
+            ->field('g.id,g.start_time,g.end_time,g.goods_name,g.price,g.goods_price,g.is_successful,u.nickname,o.order_sn,o.order_id,o.is_award,o.pay_time')
             ->limit($Page->firstRow,$Page->listRows)
             ->select();
+
         $this->assign('orderList',$orderList);
         $this->assign('page',$show);// 赋值分页输出
-        $this->assign('goods_id', $goods_id);
-        $this->assign('order_sn', $order_sn);
+        $this->assign('goods_id', $goodsId);
+        $this->assign('order_sn', $orderSn);
         $this->assign('timeRange', $timeRange);
+        $this->assign('openGroup', I('Open_group'));
         $this->display();
     }
 

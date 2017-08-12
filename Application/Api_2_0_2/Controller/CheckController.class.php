@@ -33,7 +33,7 @@ class CheckController
                 ->select();
             if(count($tuanyuan)+1>=$goods_num){
                 echo $groupbuyid.'========<br>';
-                /*
+
                 $order_id = $value['order_id'];
                 M('order')->where("order_id={$order_id} and order_type=11")->save(['order_status'=>11,'order_type'=>14]);
                 M('group_buy')->where("id={$groupbuyid}")->save(['is_successful'=>1]);
@@ -44,7 +44,7 @@ class CheckController
                     M('order')->where("order_id={$order_id} and order_type=11")->save(['order_status'=>11,'order_type'=>14]);
                     M('group_buy')->where("id={$id}")->save(['is_successful'=>1]);
                 }
-                */
+
 
             }
 

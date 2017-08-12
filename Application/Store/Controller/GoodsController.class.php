@@ -20,9 +20,7 @@ class GoodsController extends BaseController {
         $this->assign('is_audit',C('IS_AUDIT'));
         $this->assign('is_on_sale',C('IS_ON_SALE'));
         $this->assign('is_special',C('IS_SPECIAL'));
-
         
-
         if(empty($_SESSION['merchant_id']))
         {
             session_unset();
@@ -444,7 +442,7 @@ class GoodsController extends BaseController {
             }
         }
 
-        $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+        $goodsInfo = D('Goods')->where('goods_id='.I('GET.id'))->find();
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
         $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
@@ -470,7 +468,7 @@ class GoodsController extends BaseController {
         $this->assign('cat_list',$cat_list);
         $this->assign('goodsType',$goodsType);
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情
-        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
+        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id'))->select();
         $this->assign('goodsImages',$goodsImages);  // 商品相册
         $this->initEditor(); // 编辑器 //
         $this->display('_goods');
