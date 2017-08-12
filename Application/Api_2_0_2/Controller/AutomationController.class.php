@@ -414,6 +414,8 @@ class AutomationController extends BaseController
         $time = time() + 16 * 60 * 60;
         $end_time = time() + 24 * 60 * 60;
 
+        //修改下查询条件，将团的结束时间控制下范围 2017-08-12 温立涛
+        $nowTime = time();
 
         $prom_order = M('group_buy')
             ->where('`auto`=0 and 
@@ -424,7 +426,8 @@ class AutomationController extends BaseController
                         `is_cancel`=0 and
                         `mark`=0 and
                         `is_return_or_exchange`=0 and
-                        `is_successful`=0 and 
+                        `is_successful`=0 and
+                        `end_time`>='.$nowTime.' and 
                         `end_time`<=' . $time)
             ->limit(0, 1)
             ->select();

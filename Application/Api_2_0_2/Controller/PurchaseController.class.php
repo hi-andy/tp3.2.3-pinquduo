@@ -126,7 +126,7 @@ class PurchaseController extends  BaseController
             if(!empty($spec_key)){
                 $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
             }else{
-                $json = array('status' => -1, 'msg' => '该规格刚售完，请重新选择');
+                $json = array('status' => -1, 'msg' => '已售罄');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if (!empty($ajax_get))
                     $this->getJsonp($json);

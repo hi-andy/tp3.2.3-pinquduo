@@ -87,14 +87,14 @@ class GroupBuyController extends BaseController {
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
-            $spec_key = M('order_goods')->where("order_id = {$result['order_id']}")->getField('spec_key');
-            $num = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-            if($num['store_count']<1){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '该规格刚售完，请重新选择 ^_^';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                exit();
-            }
+//            $spec_key = M('order_goods')->where("order_id = {$result['order_id']}")->getField('spec_key');
+//            $num = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
+//            if($num['store_count']<1){
+//                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+//                $wxmsg = '该规格刚售完，请重新选择 ^_^';
+//                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+//                exit();
+//            }
             $groupnum = M('group_buy')->where("mark={$group_buy_id}")->count();
             $groupnum = (int)$groupnum+1;
             if($groupnum>=(int)$result['goods_num']){

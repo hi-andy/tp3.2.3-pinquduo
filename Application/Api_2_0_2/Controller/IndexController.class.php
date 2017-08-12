@@ -1119,7 +1119,7 @@ class IndexController extends BaseController {
     }
 
     function test1() {
-        $arr = getAdress('四川省资阳市雁江区');
-        var_dump($arr);
+        $custom = array('type' => '6','id'=>430634);
+        var_dump(SendXinge('恭喜！您参与的免单拼团获得了免单',247,$custom));
     }
 }
