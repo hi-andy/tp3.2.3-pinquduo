@@ -399,12 +399,14 @@ class AutomationController extends BaseController
      */
     public function auto_group_buy()
     {
+        //去掉  处理成团后机器人多增加的问题  处理点赞  2017-08-12   温立涛
+        /*
         $this->moreAutomation();
         $minute = intval(date('i'));
         if($minute%10 == 0){
             $this->zan();
         }
-
+        */
 
 
         $where = null;
