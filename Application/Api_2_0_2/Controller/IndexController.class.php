@@ -618,6 +618,14 @@ class IndexController extends BaseController {
         }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
+        //返回给前端的库存  2017-08-12 温立涛 开始
+        foreach($json['result']['raisegoods'] as $k => $v){
+            $goodid = $v['goods_id'];
+            $data = M('spec_goods_price')->field('store_count')->where("goods_id={$goodid}")->find();
+            $json['result']['raisegoods'][$k]['store_count'] = $data['store_count'];
+        }
+        //返回给前端的库存  2017-08-12 温立涛 结束
+
         if(!empty($ajax_get))
             $this->getJsonp($json);
         exit(json_encode($json));
