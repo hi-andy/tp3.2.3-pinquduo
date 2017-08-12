@@ -328,10 +328,12 @@ EOF;
                 M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
 //                $log_->log_result($log_name,"【WX】:\n".$group_info."\n");
                 if($group_info['mark']>0){
-                    $nums = M('group_buy')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->count();
+                    $nums = M('group_buy')->field('id')->where('(`mark`='.$group_info['mark'].' or `id`='.$group_info['mark'].') and `is_pay`=1')->select();
+                    
                     M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums));
+
                     //修改逻辑判断-温立涛
-                    if(intval($nums)>=$group_info['goods_num'])
+                    if(count($nums)>=$group_info['goods_num'])
                     {
                         $Goods = new BaseController();
                         $Goods->getFree($group_info['mark']);

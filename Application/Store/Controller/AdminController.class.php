@@ -194,6 +194,7 @@ class AdminController extends BaseController {
 	                $data['last_ip'] = get_client_ip();
 	                $last_login =M('merchant');
 	                $last_login->where('id = '.$merchant_info['id'])->data($data)->save();
+	                redis('store_id_'.$merchant_info['id'], serialize($merchant_info['id']));
 					$url = U('Store/Index/index');
 					exit(json_encode(array('status'=>1,'url'=>$url)));
                 }else{

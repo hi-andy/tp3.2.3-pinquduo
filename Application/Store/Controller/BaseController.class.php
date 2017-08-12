@@ -29,6 +29,12 @@ class BaseController extends Controller {
      */
     public function _initialize() 
     {
+	    if(empty(redis('store_id_'.$_SESSION['merchant_id']))){
+		    session_unset();
+		    session_destroy();
+		    setcookie('storeid',null);
+		    $this->error("数据维护，请重新登录",U('Store/Admin/login'));
+	    }
         $this->assign('action',ACTION_NAME);
         //过滤不需要登陆的行为
         if(in_array(ACTION_NAME,array('login','logout','vertify')) || in_array(CONTROLLER_NAME,array('Ueditor','Uploadify'))){

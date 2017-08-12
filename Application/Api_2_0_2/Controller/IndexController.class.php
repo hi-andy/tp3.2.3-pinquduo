@@ -1118,8 +1118,8 @@ class IndexController extends BaseController {
         return $arr;
     }
 
-    function object2array(&$object) {
-        $object =  json_decode( json_encode( $object),true);
-        return  $object;
+    function test1() {
+        $arr = getAdress('四川省资阳市雁江区');
+        var_dump($arr);
     }
 }

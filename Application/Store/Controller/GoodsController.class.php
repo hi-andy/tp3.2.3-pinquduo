@@ -21,10 +21,13 @@ class GoodsController extends BaseController {
         $this->assign('is_on_sale',C('IS_ON_SALE'));
         $this->assign('is_special',C('IS_SPECIAL'));
 
+        
+
         if(empty($_SESSION['merchant_id']))
         {
             session_unset();
             session_destroy();
+            setcookie('storeid',null);
             $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
         }
         $haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();

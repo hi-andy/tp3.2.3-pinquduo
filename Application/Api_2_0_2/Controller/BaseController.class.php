@@ -790,7 +790,7 @@ class BaseController extends Controller {
             if($res && $res2){
                 M()->commit();
             }else{
-                M()->rollback();
+//                M()->rollback();
             }
         }
 
@@ -810,7 +810,7 @@ class BaseController extends Controller {
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
         if (!empty($user_ids)){
-            $user = M('users','','DB_CONFIG2')->field('mobile,nickname')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
+            $user = M('users')->field('mobile,nickname')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
             if ($user) {
                 foreach ($user as $v){
                     if($v['mobile'] != null){
@@ -947,7 +947,7 @@ class BaseController extends Controller {
      */
     public function get_robot($not_in_user_id='') {
         if (!empty($not_in_user_id)) {
-            $user = M('','','DB_CONFIG2')->query("select user_id,nickname from tp_users order by rand() LIMIT 1");
+            $user = M('')->query("select user_id,nickname from tp_users order by rand() LIMIT 1");
             return $user[0];
         }
     }
@@ -968,8 +968,8 @@ class BaseController extends Controller {
         }
         $this->order_redis_status_ref($order['user_id']);
         //微信推送消息
-        $openid = M('users','','DB_CONFIG2')->where("user_id={$order['user_id']}")->getField('openid');
-        $goods_name = M('goods','','DB_CONFIG2')->where("goods_id={$order['goods_id']}")->getField('goods_name');
+        $openid = M('users')->where("user_id={$order['user_id']}")->getField('openid');
+        $goods_name = M('goods')->where("goods_id={$order['goods_id']}")->getField('goods_name');
         $wxtmplmsg = new WxtmplmsgController();
         $wxtmplmsg->order_payment_success($openid,$order['order_amount'],$goods_name);
 

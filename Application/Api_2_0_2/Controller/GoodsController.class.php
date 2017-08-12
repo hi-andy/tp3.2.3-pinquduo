@@ -109,18 +109,18 @@ class GoodsController extends BaseController {
 					$condition2['is_audit'] =1;//是否审核
 					$condition2['show_type'] =0;//是否被删除
 					$condition2['the_raise'] =0;//为我点赞标识
-					$data = $this->getGoodsList($condition2,$page,$pagesize,'sales desc');
+					$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
 					return $data;
 				}else{
 					$where = '`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1';
-					$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+					$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
 					return $data;
 				}
 			}
 		}elseif($type==1){
 			if($id==0){//全部
 				$where = '`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0';
-				$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
+				$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
 			}else{
 				$cat = M('haitao')->where('`parent_id` = '.$id)->field('id')->select();
 				$condition['is_on_sale']=1;
@@ -133,7 +133,7 @@ class GoodsController extends BaseController {
 				}else{//array_column()将二维数组转成一维
 					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 				}
-				$data = $this->getGoodsList($condition,$page,$pagesize,'sales desc');
+				$data = $this->getGoodsList($condition,$page,$pagesize,'sort asc,sales desc');
 			}
 		}else{
 			$json = array('status'=>-1,'msg'=>'参数错误');
@@ -165,7 +165,7 @@ class GoodsController extends BaseController {
 		$condition2['is_audit'] = 1;
 		$condition2['show_type'] =0;
 		$condition2['the_raise'] =0;
-		$data = $this->getGoodsList($condition2,$page,$pagesize,'sales desc');
+		$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
 		return $data;
 	}
     /**
@@ -763,7 +763,8 @@ class GoodsController extends BaseController {
 				$new = 1;
 			}
 			$res = M('user_address')->where("`user_id` = $user_id and `address_id` = $address_id")->delete();
-			if($res && $new)
+            //修改如下的条件语句 2017-08-09  温立涛
+			if($res && $new!==false)
 			{
 				M()->commit();
 				$json = array('status'=>1,'msg'=>'删除成功');
@@ -813,7 +814,7 @@ class GoodsController extends BaseController {
             $keys = substr($keys, 0, -4);
             $keys .= ')';
             $where = $keys . " and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
-            $data = $this->getGoodsList($where, $page, $pagesize,'sales desc');
+            $data = $this->getGoodsList($where, $page, $pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
@@ -846,39 +847,67 @@ class GoodsController extends BaseController {
 				$this->getJsonp($json);
 			exit(json_encode($json));
 		}
-		
+
 		$logistics = M('logistics')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
 		$logistics['shipping_order']=$order['shipping_order'];
-		//参数设置
-		$post_data = array();
-		$post_data["customer"] = 'A1638F91623252C0207C481E2B112F52';
-		$key= 'DLTlUmMA8292' ;
-		$post_data["param"] = '{"com":"'.$order['shipping_code'].'","num":"'.$order['shipping_order'].'"}';
+		if($logistics['logistics_name']=='安能' && $order['shipping_code']=='annengwuliu'){
 
-		$url='http://poll.kuaidi100.com/poll/query.do';
+			$code = 'PQD';  //客户id=APPKey
+			$secretKey = '701c9be35667ff5de2daa486ccc163e9';//安能快递秘钥
+			$url = 'http://opc.ane56.com/aneop/services/logisticsQuery/query';
+			$ewbNo = $order['shipping_order'];//86767745153514
+			$digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
+			list($t1, $t2) = explode(' ', microtime());
+			$timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
+			$data = '{"timestamp":"'.$timestamp.'","digest":"'.$digest.'","params":"{\"ewbNo\":\"'.$ewbNo.'\"}","code":"'.$code.'"}';
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_POST,1);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+			curl_setopt($ch,CURLOPT_HEADER,0);
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+			$result=curl_exec($ch);
+			curl_close($ch);
+			$datas = object_to_array(json_decode($result));
+			$datas['resultInfo'] = object_to_array(json_decode($datas['resultInfo']));
+			$datas['resultInfo'] = $datas['resultInfo']['tracesList'][0];
+			$new_arr = array();
+			foreach ($datas['resultInfo']['traces'] as $k=>$v){
+				$new_arr[$k]['ftime'] = $new_arr[$k]['time'] = $v['time'];
+				$new_arr[$k]['context'] = $v['desc'];
+			}
+			$json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$new_arr));
+		}else{
+			//参数设置
+			$post_data = array();
+			$post_data["customer"] = 'A1638F91623252C0207C481E2B112F52';
+			$key= 'DLTlUmMA8292' ;
+			$post_data["param"] = '{"com":"'.$order['shipping_code'].'","num":"'.$order['shipping_order'].'"}';
 
-		$post_data["sign"] = md5($post_data["param"].$key.$post_data["customer"]);
-		$post_data["sign"] = strtoupper($post_data["sign"]);
+			$url='http://poll.kuaidi100.com/poll/query.do';
 
-		$o = "";
+			$post_data["sign"] = md5($post_data["param"].$key.$post_data["customer"]);
+			$post_data["sign"] = strtoupper($post_data["sign"]);
 
-		foreach ($post_data as $k=>$v)
-		{
-			$o.= "$k=".urlencode($v)."&";		//默认UTF-8编码格式
+			$o = "";
+
+			foreach ($post_data as $k=>$v)
+			{
+				$o.= "$k=".urlencode($v)."&";		//默认UTF-8编码格式
+			}
+			$post_data=substr($o,0,-1);
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_POST,1);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+			curl_setopt($ch,CURLOPT_HEADER,0);
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_POSTFIELDS,$post_data);
+			$result=curl_exec($ch);
+			curl_close($ch);
+			$data = json_decode($result,TRUE);
+			$json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$data['data']));
 		}
-		$post_data=substr($o,0,-1);
-		$ch = curl_init();
-		curl_setopt($ch,CURLOPT_POST,1);
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch,CURLOPT_HEADER,0);
-		curl_setopt($ch,CURLOPT_URL,$url);
-		curl_setopt($ch,CURLOPT_POSTFIELDS,$post_data);
-		$result=curl_exec($ch);
-		curl_close($ch);
-		$data = json_decode($result,TRUE);
-
 		I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-		$json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$data['data']));
 		if(!empty($ajax_get))
 			$this->getJsonp($json);
 		exit(json_encode($json));
