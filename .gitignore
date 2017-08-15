@@ -4,8 +4,6 @@ Application/Common/Conf/db.php
 Uploads/
 __MACOSX
 .DS_Store
-*.log
-*.txt
 Thumbs.db
 ehthumbs.db
 Desktop.ini

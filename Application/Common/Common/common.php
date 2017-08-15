@@ -48,7 +48,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
         $userInfo = unserialize($userInfo);
     } else {
         $userInfo = M('users')->where($map)->find();
-        redis($redisKey, serialize($userInfo), 86400);
+        redis($redisKey, serialize($userInfo));
     }
 
     return $userInfo;
