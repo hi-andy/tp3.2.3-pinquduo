@@ -32,17 +32,18 @@ class UserController extends BaseController {
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
-        redis('unionid',serialize($map),REDISTIME);
-        redis("get_user_info","1");
+
+        // 注册用户到环信
         $data = $this->userLogic->thirdLogin($map);
-        redis("thirdLogin", serialize($data));
         if($data['status'] ==1){
             $HXcall = new HxcallController();
             $username = $data['user_id'];
             $password = md5($username.C('SIGN_KEY'));
             $nickname = $data['nickname'];
-            $res = $HXcall->hx_register($username,$password,$nickname);
+            $HXcall->hx_register($username,$password,$nickname);
         }
+
+        //　构建返回数据
         $data['name'] = $data['nickname'];
         $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);

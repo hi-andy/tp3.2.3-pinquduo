@@ -33,13 +33,13 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     $redisKey = 'userInfo_'.$user_id_or_name;
 
     if($type == 3){
-        if (empty($unionid)) {
+        if (!empty($user_id_or_name)) {
             $map['openid'] = $user_id_or_name;
             $map['oauth'] = array("eq", $oauth);
-            $redisKey = 'userInfo_'.$oauth.$user_id_or_name;
+            $redisKey = 'userInfo_'.$oauth.$user_id_or_name; // oauth + openid = key
         } else {
             $map = "oauth='$oauth' and (unionid='$unionid' or openid='$user_id_or_name')";
-            $redisKey = 'userInfo_'.$oauth.$unionid;
+            $redisKey = 'userInfo_'.$oauth.$unionid; // oauth + unionid = key
         }
     }
 

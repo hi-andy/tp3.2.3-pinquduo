@@ -28,23 +28,26 @@ class UserController extends BaseController {
     /*
      * 第三方登录
      */
-    public function thirdLogin(){
+    public function thirdLogin()
+    {
+        //　第三方传递参数
         $map['openid'] = I('openid','');
         $map['oauth'] = I('oauth','');
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
-        redis('unionid',serialize($map),REDISTIME);
-        if(I('oauth','') == 'qq') redis('unionid',I('unionid',''),REDISTIME);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
+        // 注册用户到环信
         $data = $this->userLogic->thirdLogin($map);
         if($data['status'] ==1){
             $HXcall = new HxcallController();
             $username = $data['user_id'];
             $password = md5($username.C('SIGN_KEY'));
             $nickname = $data['nickname'];
-            $res = $HXcall->hx_register($username,$password,$nickname);
+            $HXcall->hx_register($username,$password,$nickname);
         }
+        //　构建返回数据
         $data['name'] = $data['nickname'];
         $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);

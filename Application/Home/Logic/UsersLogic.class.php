@@ -35,33 +35,23 @@ class UsersLogic extends RelationModel
     /*
      * 第三方登录
      */
-    public function thirdLogin($data=array()){
-        /*
-        $mydata = [
-            'admin_id' => 9999,
-            'log_ip' => '127.0.0.1',
-            'log_url' => json_encode($data),
-            'log_time' => time()
-        ];
-        M('admin_log')->data($mydata)->add();
-        */
+    public function thirdLogin($data=array())
+    {
+        //　第三方传递参数
         $openid = $data['openid']; //第三方返回唯一标识
         $oauth = $data['oauth']; //来源
         $unionid = $data['unionid'];
         $version = $data['version'];
+
         if(!$openid || !$oauth) {
             return array('status' => -1, 'msg' => '参数有误', 'result' => '');
         } else {
             //获取用户信息
-            redis("get_user_info","2");
             $user = get_user_info($openid, 3, $oauth, $unionid);
             if(count($user)>0){
-                redis('head_pic',$data['head_pic'],REDISTIME);
                 if (($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile']))) {
-                    //$map['head_pic'] = saveimage($data['head_pic']);
                     $map['head_pic'] = $data['head_pic'];
                     //拉取微信头像传到七牛云
-
                     $qiniu = new \Admin\Controller\QiniuController();
                     $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
 
@@ -76,7 +66,6 @@ class UsersLogic extends RelationModel
                     $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
                     $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
 
-//                    $map['head_pic'] = $data['head_pic'];
                     $map['test'] = 1;
                     if($data['head_pic']!=$user['head_pic']){
                         $row = M('users')->where('user_id=' . $user['user_id'])->save($map);
@@ -84,9 +73,7 @@ class UsersLogic extends RelationModel
                     $user['head_pic'] = $map['head_pic'];
                     $user['head_pic'] = $data['head_pic'];
                 }
-
             } else {
-                redis("get_user_info","3");
                 //账户不存在 注册一个
                 $map['password'] = '';
                 $map['openid'] = $openid;
@@ -96,7 +83,6 @@ class UsersLogic extends RelationModel
                 $map['oauth'] = $oauth;
                 $map['test'] = 1;
                 $map['version'] = $version;
-                //$map['head_pic'] = saveimage($data['head_pic']);
                 //拉去微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();
                 $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
@@ -104,18 +90,10 @@ class UsersLogic extends RelationModel
                 $row = M('users')->add($map);
                 $user = get_user_info($openid, 3, $oauth, $unionid);
                 $user['head_pic'] = $data['head_pic'];
-                /*
-                $mydata = [
-                    'admin_id' => 9999,
-                    'log_ip' => '127.0.0.1',
-                    'log_url' => 'aaa='.json_encode($user),
-                    'log_time' => time()
-                ];
-                M('admin_log')->data($mydata)->add();
-                */
 
                 $user['status'] = 1;
             }
+            // 如果第三方昵称存在，使用第三方昵称返回
             if ($user['nickname'] != $data['nickname'] && !empty($data['nickname'])){
                 $row = M('users')->where('user_id=' . $user['user_id'])->save(array('nickname'=>$data['nickname']));
                 $user['nickname'] = $data['nickname'];
