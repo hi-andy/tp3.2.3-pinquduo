@@ -1,0 +1,72 @@
+<include file="Public/min-header"/>
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <nav class="navbar navbar-default">
+                            <div class="collapse navbar-collapse">
+                                <div class="navbar-form row">
+                                    <div class="col-md-1">
+                                    </div>
+                                    <div class="col-md-9">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a href="{:U('Coupon/category_edit')}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i>新增二级优惠券名称</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </nav>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="list-table" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th valign="middle">ID</th>
+                                        <th valign="middle">二级优惠券类别名称</th>
+                                        <th valign="middle">一级优惠券类别</th>
+                                        <th valign="middle">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <foreach name="res" item="vo" key="k" >
+                                        <tr role="row" align="center" >
+                                            <td>{$vo.id}</td>
+                                            <td align="left">
+                                                <span>{$vo.name}</span>
+                                            </td>
+                                            <td align="left">
+                                                <eq name="vo.pid" value="1">平台优惠券</eq>
+                                                <eq name="vo.pid" value="2">店铺优惠券</eq>
+                                                <eq name="vo.pid" value="3">活动优惠券</eq>
+                                                <eq name="vo.pid" value="4">商品优惠券</eq>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-primary" href="{:U('Coupon/category_edit',array('id'=>$vo['id']))}"><i class="fa fa-pencil"></i></a>
+                                            </td>
+                                        </tr>
+                                    </foreach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3 text-left"></div>
+                            <div class="col-sm-9 text-right">{$page}</div>
+                        </div>
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>
