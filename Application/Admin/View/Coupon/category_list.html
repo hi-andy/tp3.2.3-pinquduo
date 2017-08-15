@@ -36,13 +36,9 @@
                                     <tbody>
                                     <foreach name="cat_list" item="vo">
                                         <tr role="row" align="center">
-                                            <td align="left" style="padding-left:1em">
+                                            <td align="left" style="padding-left:1em" colspan="3">
                                                     <span class="glyphicon glyphicon-minus btn-warning" style="padding:2px; font-size:12px;" data-id="{$vo.id}" aria-hidden="false" onclick="rowClicked(this)" ></span>&nbsp;
                                                 <span>{$vo.name}</span>
-                                            </td>
-                                            <td>
-                                            </td>
-                                            <td>
                                             </td>
                                         </tr>
                                         <foreach name="vo.child" item="v" key="k">
@@ -74,10 +70,10 @@
     function  rowClicked(obj)
     {
         if($(obj).hasClass("glyphicon-minus")){
-            $(".pid-"+obj.getAttribute("data-id")).hide("normal");
+            $(".pid-"+obj.getAttribute("data-id")).hide();
             $(obj).removeClass("glyphicon-minus btn-info").addClass("glyphicon-plus btn-warning");
         }else{
-            $(".pid-"+obj.getAttribute("data-id")).show("normal");
+            $(".pid-"+obj.getAttribute("data-id")).show();
             $(obj).removeClass("glyphicon-plus btn-warning").addClass("glyphicon-minus btn-info");
         }
     }
