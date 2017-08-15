@@ -449,7 +449,8 @@ class CouponController extends BaseController {
      * 优惠券分类列表
      */
     public function category_list(){
-        $this->assign("res",M("coupon_category")->select());
+        $res=D("CouponCategory")->getTree();
+        $this->assign("cat_list",$res);
         $this->display();
     }
 

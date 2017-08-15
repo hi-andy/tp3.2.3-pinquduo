@@ -10,8 +10,10 @@
                             <div class="collapse navbar-collapse">
                                 <div class="navbar-form row">
                                     <div class="col-md-1">
+
                                     </div>
                                     <div class="col-md-9">
+                                        <span class="warning" hidden>温馨提示：顶级分类（一级大类）设为推荐时才会在首页楼层中显示</span>
                                     </div>
                                     <div class="col-md-2">
                                         <a href="{:U('Coupon/category_edit')}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i>新增二级优惠券名称</a>
@@ -19,53 +21,66 @@
                                 </div>
                             </div>
                         </nav>
-                    </div><!-- /.box-header -->
+                    </div>
                     <div class="box-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <table id="list-table" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
+                                <table id="list-table" class="table table-bordered dataTable" role="grid" aria-describedby="example1_info">
                                     <thead>
                                     <tr role="row">
-                                        <th valign="middle">ID</th>
+                                        <th valign="middle">一级优惠券类别名称</th>
                                         <th valign="middle">二级优惠券类别名称</th>
-                                        <th valign="middle">一级优惠券类别</th>
                                         <th valign="middle">操作</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <foreach name="res" item="vo" key="k" >
-                                        <tr role="row" align="center" >
-                                            <td>{$vo.id}</td>
-                                            <td align="left">
+                                    <foreach name="cat_list" item="vo">
+                                        <tr role="row" align="center">
+                                            <td align="left" style="padding-left:1em">
+                                                    <span class="glyphicon glyphicon-minus btn-warning" style="padding:2px; font-size:12px;" data-id="{$vo.id}" aria-hidden="false" onclick="rowClicked(this)" ></span>&nbsp;
                                                 <span>{$vo.name}</span>
                                             </td>
-                                            <td align="left">
-                                                <eq name="vo.pid" value="1">平台优惠券</eq>
-                                                <eq name="vo.pid" value="2">店铺优惠券</eq>
-                                                <eq name="vo.pid" value="3">活动优惠券</eq>
-                                                <eq name="vo.pid" value="4">商品优惠券</eq>
+                                            <td>
                                             </td>
                                             <td>
-                                                <a class="btn btn-primary" href="{:U('Coupon/category_edit',array('id'=>$vo['id']))}"><i class="fa fa-pencil"></i></a>
                                             </td>
                                         </tr>
+                                        <foreach name="vo.child" item="v" key="k">
+                                            <tr role="row" align="center" class="pid-{$vo.id}">
+                                                <td align="left" style="padding-left:1em">
+                                                </td>
+                                                <td align="left" style="padding-left:1em">
+                                                    <span>{$v.name}</span>
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-primary" href="{:U('Coupon/category_edit',array('id'=>$v['id']))}"><i class="fa fa-pencil"></i></a>
+                                                </td>
+                                            </tr>
+                                        </foreach>
                                     </foreach>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-sm-3 text-left"></div>
-                            <div class="col-sm-9 text-right">{$page}</div>
-                        </div>
-                    </div><!-- /.box-body -->
-                </div><!-- /.box -->
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 </div>
 <script type="text/javascript">
+
+    // 展开收缩
+    function  rowClicked(obj)
+    {
+        if($(obj).hasClass("glyphicon-minus")){
+            $(".pid-"+obj.getAttribute("data-id")).hide("normal");
+            $(obj).removeClass("glyphicon-minus btn-info").addClass("glyphicon-plus btn-warning");
+        }else{
+            $(".pid-"+obj.getAttribute("data-id")).show("normal");
+            $(obj).removeClass("glyphicon-plus btn-warning").addClass("glyphicon-minus btn-info");
+        }
+    }
 
 </script>
 </body>
