@@ -13,8 +13,8 @@ define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 
 
 return array(
-	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
-	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
+	'SERVER_HTTP' => 'http://pinquduo.cn/',
+	'HTTP_URL'=>'http://pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
@@ -288,7 +288,7 @@ return array(
 
     ),
 	// 分享地址
-    'SHARE_URL' => 'http://wx.pinquduo.cn',
+    'SHARE_URL' => 'https://wx.pinquduo.cn',
 
     'UPLOAD_FILE_QINIU'     => array (
         'maxSize'           => 20*1024*1024,//文件大小

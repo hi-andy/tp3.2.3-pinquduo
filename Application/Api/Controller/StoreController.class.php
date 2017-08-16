@@ -23,7 +23,7 @@ class StoreController extends BaseController{
 		$count = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->count();
 		$goods = M('goods')->where('`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = '.$store_id)->page($page,$pagesize)->field('goods_id,goods_name,market_price,shop_price,original_img,prom,prom_price,prom_price,free')->order("$stor desc ")->select();
 
-		$store['store_share_url'] = 'http://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
+		$store['store_share_url'] = 'https://wx.pinquduo.cn/shop_detail.html?store_id=' . $store_id;
 		$store['logo_share_url'] = $store['store_logo']."?imageView2/1/w/80/h/80/q/75|watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9zdHJvZV9sb2dvLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0|imageslim/dissolve/100/gravity/South/dx/0/dy/0";
 		$store['store_logo'] = TransformationImgurl($store['store_logo']);
 
