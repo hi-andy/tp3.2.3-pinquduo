@@ -1,0 +1,53 @@
+<include file="Public/min-header"/>
+<!--公共js 代码 --><script src="__PUBLIC__/js/common.js" charset="utf-8" type="text/javascript"></script><!--公共js end代码 -->
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+    <section class="content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">增加规格</h3>
+                        <a href="javascript:history.go(-1)" data-toggle="tooltip" title="" class="btn btn-default pull-right" data-original-title="返回"><i class="fa fa-reply"></i></a>
+                    </div>
+                    <!-- /.box-header -->
+                    <form action="{:U('Coupon/category_edit')}" method="post" class="form-horizontal" id="category_form">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">优惠券名称</label>
+                                <div class="col-sm-6">
+                                    <input type="text" placeholder="优惠券名称" class="form-control large" name="name" value="{$info.name}" required>
+                                    <!--<span class="help-inline" style="color:#F00; display:none;" id=""></span>-->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">优惠券类别</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" name="pid" required>
+                                        <option value="">请选择</option>
+                                        <option value="1"<if condition="$info['pid'] eq 1"> selected</if>>平台优惠券</option>
+                                        <option value="2"<if condition="$info['pid'] eq 2"> selected</if>>店铺优惠券</option>
+                                        <option value="3"<if condition="$info['pid'] eq 3"> selected</if>>活动优惠券</option>
+                                        <option value="4"<if condition="$info['pid'] eq 4"> selected</if>>商品优惠券</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer text-center">
+                            <if condition="!empty($info)">
+                            <input type="hidden" name="id" value="{$info.id}">
+                            </if>
+                            <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+
+</script>
+
+</body>
+</html>

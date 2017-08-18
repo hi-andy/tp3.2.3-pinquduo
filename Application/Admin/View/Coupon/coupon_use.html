@@ -1,0 +1,146 @@
+<include file="Public/min-header"/>
+<style>
+    .row .current,.row .num,.row .next,.row .end,.row .prev,.row .first{
+        border:1px solid rgb(221, 221, 221);
+        display: inline-block;
+        padding: 6px 12px;
+    }
+</style>
+<div class="wrapper">
+    <include file="Public/breadcrumb"/>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-list"></i> 优惠券使用</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="navbar-form form-inline" action="" method="get">
+                        <input type="hidden" name="s" value="/Admin/Coupon/coupon_use">
+                        <div class="form-group">
+                            <label class="control-label" for="store_name">商户名称</label>
+                            <div class="input-group">
+                                <input type="text" name="store_name" placeholder="商户名称" id="store_name" class="input-sm" style="width:100px;" value="{$Think.get.store_name}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="order_sn">订单号</label>
+                            <div class="input-group">
+                                <input type="text" name="order_sn" placeholder="订单号" id="order_sn" class="input-sm" style="width:100px;" value="{$Think.get.order_sn}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="use_time">优惠券使用时间</label>
+                            <div class="input-group">
+                                <input type="text" name="use_time" value="{$Think.get.use_time}" placeholder="优惠券使用时间" id="use_time" class="input-sm active">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="uid">用户ID</label>
+                            <div class="input-group">
+                                <input type="text" name="uid" placeholder="用户ID" id="uid" class="input-sm" style="width:100px;" value="{$Think.get.uid}">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-default">查询</button>
+                    </form>
+                </div>
+                <div id="ajax_return">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <td class="text-center">
+                                    优惠券名称
+                                </td>
+                                <td class="text-center">
+                                    优惠券序列号
+                                </td>
+                                <td class="text-center">
+                                    优惠券类型
+                                </td>
+                                <td class="text-center">
+                                    优惠券金额
+                                </td>
+                                <td class="text-center">
+                                    使用需满金额
+                                </td>
+                                <td class="text-center">
+                                    订单号
+                                </td>
+                                <td class="text-center">
+                                    该订单号总金额
+                                </td>
+                                <td class="text-center">
+                                    使用优惠券后的该订单号总金额
+                                </td>
+                                <td class="text-center">
+                                    商品名称
+                                </td>
+                                <td class="text-center">
+                                    商户名称
+                                </td>
+                                <td class="text-center">
+                                    优惠券使用时间
+                                </td>
+                                <td class="text-center">
+                                    用户ID
+                                </td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <volist name="lists" id="v">
+                            <tr>
+                                <td class="text-center">{$v.name}</td>
+                                <td class="text-center">{$v.coupon_sn}</td>
+                                <td class="text-center">{$v.category}</td>
+                                <td class="text-center">{$v.money}</td>
+                                <td class="text-center">{$v.condition}</td>
+                                <td class="text-center">{$v.order_sn}</td>
+                                <td class="text-center">{$v.total_amount}</td>
+                                <td class="text-center">{$v['total_amount']-$v['coupon_price']}</td>
+                                <td class="text-center">{$v.goods_name}</td>
+                                <td class="text-center">{$v.store_name}</td>
+                                <td class="text-center">{$v.use_time_str}</td>
+                                <td class="text-center">{$v.uid}</td>
+                            </tr>
+                            </volist>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6 text-left"></div>
+                    <div class="col-sm-6 text-right">{$page}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+<link href="__PUBLIC__/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
+<script src="__PUBLIC__/plugins/daterangepicker/moment.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+<script>
+    $('#use_time').daterangepicker({
+        format:"YYYY.MM.DD",
+        singleDatePicker: true,
+        showDropdowns: true,
+        minDate:'2016/01/01',
+        maxDate:'2030/01/01',
+        startDate:'2016/01/01',
+        locale : {
+            applyLabel : '确定',
+            cancelLabel : '取消',
+            fromLabel : '起始时间',
+            toLabel : '结束时间',
+            customRangeLabel : '自定义',
+            daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
+            monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月','七月', '八月', '九月', '十月', '十一月', '十二月' ],
+            firstDay : 1
+        }
+    });
+</script>
+</body>
+</html>

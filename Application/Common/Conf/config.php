@@ -13,9 +13,14 @@ define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 
 
 return array(
+<<<<<<< HEAD
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
 	'PAY_URL'=>'https://pinquduo.cn/',
+=======
+	'SERVER_HTTP' => 'http://pinquduo.cn/',
+	'HTTP_URL'=>'http://pinquduo.cn/',
+>>>>>>> bed725b1545867b79e60100a77f5f5617d145d56
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
