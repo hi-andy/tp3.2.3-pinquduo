@@ -32,45 +32,24 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     }
     $redisKey = 'userInfo_'.$user_id_or_name;
 
-    /**
-     * 账号合并思路：
-     * 实现目标：微信公众号内登录用户，和 app 内第方登录使用微信登录的账号，保持一致（使用同一账号）
-     * 涉及到每个账号下都有订单的情况，不作账号合并。
-     *
-     * 大致思路：
-     * 可通过仅判断 unionid　相同，识别为同一账号。而相同 unionid 账号的 openid 不同。
-     * 前提是，数据 (unionid) 保存必须以微信公众号账号优先。因为微信公众号内用户涉及用户消息推送，需要用到其相关 openid。
-     * 需要在 oauth 来源或增加其它参数识别来源，weixin 或 weixin_app.
-     * 用户在微信公众号登录或在 app 使用微信登录时，通过传递的　unionid 条件查询数据
-     * 首先查询 redis 缓存，没有缓存再查询数据库。通过返回结果 $data 判断，只需要作如下一步处理。
-     *
-     * if ($data['oauth'] == 'weixin_app' && $['unionid'] == $unionid) {
-     *  if ($oauth == 'weixin') {
-     *      通过传递过来的用户微信的 openid 更新 openid 字段。
-     *  }
-     * }
-     *
-     * 目标是所有 unionid 相同的用户 openid　也保持相同，同为 微信 openid.
-     * 需要在第三方登录方法里作同步处理。
-     *
-     * Hua 2017-8-17
-     */
     if($type == 3){
         if (!empty($user_id_or_name)) {
-            $map['openid'] = $user_id_or_name;
-            $map['oauth'] = array("eq", $oauth);
+//            $map['openid'] = $user_id_or_name;
+//            $map['oauth'] = array("eq", $oauth);
+            $map = "oauth='$oauth' and (unionid='$unionid' or openid='$unionid')";
             $redisKey = 'userInfo_'.$oauth.$user_id_or_name; // oauth + openid = key
         } else {
-            $map = "oauth='$oauth' and (unionid='$unionid' or openid='$user_id_or_name')";
+
             $redisKey = 'userInfo_'.$oauth.$unionid; // oauth + unionid = key
         }
     }
 
     // 缓存查询用户信息　2017-8-14　Hua
-    if ($userInfo = redis($redisKey)) {
+    // 临时解决某些用户拿不到userid  2017-8-16 温立涛
+    if ($userInfo = redis($redisKey) && false) {
         $userInfo = unserialize($userInfo);
     } else {
-        $userInfo = M('users')->where($map)->find();
+        $userInfo = M('users')->where($map)->order('user_id asc')->find();
         redis($redisKey, serialize($userInfo), 86400);
     }
 

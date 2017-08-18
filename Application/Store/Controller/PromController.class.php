@@ -23,10 +23,13 @@ class PromController extends BaseController {
 		$this->pay_status = C('PAY_STATUS');
 		$this->shipping_status = C('SHIPPING_STATUS');
 
+
+
 		if(empty($_SESSION['merchant_id']))
 		{
 			session_unset();
 			session_destroy();
+			setcookie('storeid',null);
 			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 		}
 		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
@@ -133,12 +136,7 @@ class PromController extends BaseController {
 			->limit($Page->firstRow,$Page->listRows)
 			->select();
 
-        M('admin_log')->data([
-            'admin_id' => 999,
-            'log_info' => 'aaa',
-            'log_ip' => '127.0.0.1',
-            'log_url' => M()->getLastSql()
-        ])->add();
+
 
 		$this->assign('grouplist',$grouplist);
 		$this->assign('page',$show);// 赋值分页输出
@@ -451,11 +449,13 @@ class PromController extends BaseController {
 	public function deliveryHandle(){
 		$promLogic = new PromLogic();
 		$data = I('post.');
+//		var_dump(1);die;
 		if($_POST['shipping_code']=='选择物流方式' || empty($_POST['shipping_order']))
 		{
 			$this->success('物流信息不全',U('Store/Prom/delivery_info',array('order_id'=>$_POST['order_id'])));
 			exit();
 		}
+
 		$res = M('delivery_doc')->where('`order_id`='.$data['order_id'])->find();
 		$res1 = M('order')->where('order_id='.$data['order_id'])->find();
 		if(!empty($res) && !empty($res1['shipping_code']) && !empty($res1['shipping_order']) && !empty($res1['shipping_name']))
@@ -471,7 +471,7 @@ class PromController extends BaseController {
 			reserve_logistics($data['order_id']);
 			$custom = array('type' => '3','id'=>$data['order_id']);
 			$user_id = $data['user_id'];
-			SendXinge('卖家已经发货，请点击此处查看',"$user_id",$custom);
+			SendXinge('卖家已经发货，请点击此处查看',(string)"$user_id",$custom);
 			$this->success('操作成功',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
 		}else{
 			$this->success('操作失败',U('Store/Prom/delivery_info',array('order_id'=>$data['order_id'])));
@@ -578,7 +578,7 @@ class PromController extends BaseController {
 				}
 				$custom = array('type' => '3','id'=>$return_goods['order_id']);
 				$user_id = $return_goods['user_id'];
-				SendXinge('卖家已同意退款，请点击此处查看',"$user_id",$custom);
+				SendXinge('卖家已同意退款，请点击此处查看',(string)"$user_id",$custom);
 				$data['two_time'] = time();
 			}elseif($data['status']==3&&empty($return_goods['ok_time'])){
 				$order = M('order')->where('order_id='.$return_goods['order_id'])->find();

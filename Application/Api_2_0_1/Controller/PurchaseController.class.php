@@ -19,6 +19,10 @@ class PurchaseController extends  BaseController
 {
 
     public function _initialize() {
+        $json = array('status' => -1, 'msg' => '请前往下载新版本参加该活动 ^_^');
+        if (!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
         $this->encryption();
     }
 
@@ -30,6 +34,8 @@ class PurchaseController extends  BaseController
         header("Access-Control-Allow-Origin:*");
 
         $user_id = (int)I('user_id');
+
+
 
         //处理掉用户id非法的情况-温立涛开始
         if($user_id<=0){

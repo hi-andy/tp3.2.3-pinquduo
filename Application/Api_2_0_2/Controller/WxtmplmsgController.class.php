@@ -235,7 +235,7 @@ class WxtmplmsgController
      * 通知类型：{{keyword2.DATA}}
      * {{remark.DATA}}
      */
-    public function groupbuy_msg($openid, $first, $keyword1, $keyword2, $Remark='点击此处获得0元秒杀权利>>',$pagepath = "likes.html")
+    public function groupbuy_msg($openid, $first, $keyword1, $keyword2, $Remark='点击此处获得进口榴莲0元秒杀权利>>',$pagepath = "likes.html")
     {
         $template_id = "MIEp5c8snHEqdqu4sbm9rn2H3wi2zY9Dsp4stqxmS-o"; // 微信模板 id, 在微信公众号后台设置添加
         $data = array(

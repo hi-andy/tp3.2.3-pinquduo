@@ -40,7 +40,7 @@ class RaisepicController extends BaseController
             $json = array('status'=>-1,'msg'=>'该团不存在');
             $this->getJsonp($json);
         }
-
+//http://pqd.oss-cn-shenzhen.aliyuncs.com/Public/upload/raise/goods_19279.jpg
         $bigImgPath =  "http://{$bucket}.{$endpoint}". "/Public/upload/raise/goods_". $prom_info['goods_id'] .'.jpg';
         $img = imagecreatefromstring(curl_file_get_contents($bigImgPath));
 //        var_dump($img);

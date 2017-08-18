@@ -1939,7 +1939,7 @@ class UserController extends BaseController {
         $category[2]['is_red'] = '0';
 
         $category[3]['id'] = '4';
-        $category[3]['cat_name'] = '省钱大法';
+        $category[3]['cat_name'] = '省钱宝典';
         $category[3]['cat_img'] = 'http://cdn.pinquduo.cn/Public/upload/index/8-shenqian.gif';
         $category[3]['type'] = '10';
         $category[3]['is_red'] = '0';

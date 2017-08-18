@@ -2,10 +2,9 @@
 
 
 namespace Store\Logic;
-use Api\Controller\BaseController;
-use Think\Model\RelationModel;
 
-class PromLogic extends RelationModel
+
+class PromLogic
 {
     /**
      * @param array $condition  搜索条件

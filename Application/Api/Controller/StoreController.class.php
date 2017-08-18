@@ -258,7 +258,7 @@ class StoreController extends BaseController{
 	{
 		$order = M('order')->where('`order_sn` = '.$data['order_sn'])->find();
 		$custom = array('type' => '2','id'=>$order['order_id']);
-		SendXinge('卖家已经发货，请点击此处查看',$order['user_id'],$custom);
+		SendXinge('卖家已经发货，请点击此处查看',(string)$order['user_id'],$custom);
 		$datas['order_id'] = $order['order_id'];
 		$datas['order_sn'] = $order['order_sn'];
 		$datas['store_id'] = $order['store_id'];

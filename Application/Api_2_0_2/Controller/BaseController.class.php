@@ -790,7 +790,7 @@ class BaseController extends Controller {
             if($res && $res2){
                 M()->commit();
             }else{
-                M()->rollback();
+//                M()->rollback();
             }
         }
 
@@ -843,7 +843,7 @@ class BaseController extends Controller {
                         $res2 = M('group_buy')->where('`order_id`='.$order_ids[$j])->data(array('is_free'=>1))->save();
                         if($res && $res2){
                             $custom = array('type' => '6','id'=>$join_num[$j]['id']);
-                            SendXinge('恭喜！您参与的免单拼团获得了免单',$join_num[$j]['user_id'],$custom);
+                            SendXinge('恭喜！您参与的免单拼团获得了免单',(string)$join_num[$j]['user_id'],$custom);
                             $this->getWhere($order_ids[$j]);
                             M()->commit();
                         }else{
@@ -851,7 +851,7 @@ class BaseController extends Controller {
                         }
                     }else{
                         $custom = array('type' => '6','id'=>$join_num[$j]['id']);
-                        SendXinge('您的免单拼团人已满，点击查看免单买家',$join_num[$j]['user_id'],$custom);
+                        SendXinge('您的免单拼团人已满，点击查看免单买家',(string)$join_num[$j]['user_id'],$custom);
                     }
                 }
             }
@@ -860,7 +860,7 @@ class BaseController extends Controller {
             foreach($join_num as $val){
                 if($val['auto']==0){
                     $custom = array('type' => '2','id'=>$val['id']);
-                    SendXinge($message,$val['user_id'],$custom);
+                    SendXinge($message,(string)$val['user_id'],$custom);
                 }
             }
         }

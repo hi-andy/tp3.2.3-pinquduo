@@ -398,7 +398,7 @@ class AutomationtestController extends BaseController
                         $this->order_redis_status_ref($value['user_id']);
                         $custom = array('type' => '2', 'id' => $v['id']);
                         $user_id = $value['user_id'];
-                        SendXinge($message, "$user_id", $custom);
+                        SendXinge($message, (string)"$user_id", $custom);
                     }
                     redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
                 }

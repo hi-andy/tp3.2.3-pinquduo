@@ -335,9 +335,9 @@ class GoodsLogic extends RelationModel
        {
            $str .=" <td><b>{$spec[$v]}</b></td>";
        }    
-        $str .="<td><b>单买价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='price' id='remenber'> 批量填写</td>
-                <td><b>团购价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='prom_price' id='remenber'> 批量填写</td>
-               <td><b>库存</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='count' id='remenber'> 批量输入</td>
+        $str .="<td><b>单买价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='price_store' id='remenber'> 批量填写</td>
+                <td><b>团购价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='prom_price_store' id='remenber'> 批量填写</td>
+               <td><b>库存</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='count_store' id='remenber'> 批量输入</td>
              </tr>";
        // 显示第二行开始 
        foreach ($spec_arr2 as $k => $v) 

@@ -115,7 +115,6 @@ class AdminController extends BaseController {
 			$res = M('merchant')->where("store_name = '".$_POST['store_name']."'")->find();
 			$res1 = M('merchant')->where('id = '.$_SESSION['merchant_id'])->find();
 			if(empty($res)&&$res1['is_change']==0){
-
 				$res2 = M('merchant')->where('id = '.$_SESSION['merchant_id'])->save(array('store_name'=>$_POST['store_name'],'old_name'=>$res1['store_name'],'is_change'=>1));
 				if($res2){
 					M('goods')->where('store_id = '.$_SESSION['merchant_id'])->data(array('refresh'=>0))->save();
@@ -194,6 +193,7 @@ class AdminController extends BaseController {
 	                $data['last_ip'] = get_client_ip();
 	                $last_login =M('merchant');
 	                $last_login->where('id = '.$merchant_info['id'])->data($data)->save();
+	                redis('store_id_'.$merchant_info['id'], serialize($merchant_info['id']));
 					$url = U('Store/Index/index');
 					exit(json_encode(array('status'=>1,'url'=>$url)));
                 }else{

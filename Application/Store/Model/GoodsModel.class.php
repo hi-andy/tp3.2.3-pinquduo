@@ -102,7 +102,7 @@ class GoodsModel extends Model {
              $min_prom = $_POST['item'][$min_num]['prom_price'];
              $min_show = $_POST['item'][$min_num]['price'];
 
-             if($_POST['price']=='on')
+             if($_POST['price_store']=='on')
              {
                  foreach($_POST['item'] as $k=>$v)
                  {
@@ -118,7 +118,7 @@ class GoodsModel extends Model {
                  }
                  $d['shop_price'] = $min_show;
              }
-             if($_POST['prom_price']=='on')
+             if($_POST['prom_price_store']=='on')
              {
                  foreach($_POST['item'] as $k=>$v)
                  {
@@ -134,7 +134,7 @@ class GoodsModel extends Model {
                  }
                  $d['prom_price'] = $min_prom;
              }
-             if($_POST['count']=='on')
+             if($_POST['count_store']=='on')
              {
                  $count = $_POST['item'][$min_num]['store_count'];
                  foreach($_POST['item'] as $k=>$v)

@@ -23,10 +23,13 @@ class OrderController extends BaseController {
 	    $this->pay_status = C('PAY_STATUS');
 	    $this->shipping_status = C('SHIPPING_STATUS');
 
+
+
 	    if(empty($_SESSION['merchant_id']))
 	    {
 		    session_unset();
 		    session_destroy();
+		    setcookie('storeid',null);
 		    $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
 	    }
 	    $haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
@@ -411,7 +414,7 @@ class OrderController extends BaseController {
 			reserve_logistics($data['order_id']);
 			$custom = array('type' => '3','id'=>$data['order_id']);
 			$user_id = $data['user_id'];
-			SendXinge('卖家已经发货，请点击此处查看',"$user_id",$custom);
+			SendXinge('卖家已经发货，请点击此处查看',(string)"$user_id",$custom);
 			$this->success('操作成功',U('Store/Order/delivery_info',array('order_id'=>$data['order_id'])));
 		}else{
 			$this->success('操作失败',U('Store/Order/delivery_info',array('order_id'=>$data['order_id'])));
@@ -501,7 +504,7 @@ class OrderController extends BaseController {
 		        }
 		        $custom = array('type' => '3','id'=>$return_goods['order_id']);
 		        $user_id = $return_goods['user_id'];
-		        SendXinge('卖家已同意退款，请点击此处查看',"$user_id",$custom);
+		        SendXinge('卖家已同意退款，请点击此处查看',(string)"$user_id",$custom);
 		        $data['two_time'] = time();
 	        }elseif($data['status']==3&&empty($return_goods['ok_time'])){
 		        $order = M('order')->where('order_id='.$return_goods['order_id'])->find();

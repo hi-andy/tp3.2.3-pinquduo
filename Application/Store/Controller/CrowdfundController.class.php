@@ -63,9 +63,11 @@ class CrowdfundController extends BaseController {
             $condition['u.nickname'] =array('LIKE',"%".I('consignee')."%");
         }
         $count = M('group_buy')->alias('g')
-                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-                 ->where($condition)
-                 ->count();
+            ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
+            ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+            ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+            ->where($condition)
+            ->count();
 
         $Page  = new AjaxPage($count,20);
         //  搜索条件下 分页赋值
@@ -75,12 +77,17 @@ class CrowdfundController extends BaseController {
         $show = $Page->show();
 
         $grouplist = M('group_buy')->alias('g')
-                     ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-                     ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                     ->where($condition)
-                     ->field('g.*,u.nickname,o.order_sn,o.pay_time')
-                     ->limit($Page->firstRow,$Page->listRows)
-                     ->select();
+            ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
+            ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+            ->where($condition)
+            ->field('g.*,u.nickname,o.order_sn,o.pay_time,o.consignee')
+            ->limit($Page->firstRow,$Page->listRows)
+            ->order('g.id desc')
+            ->select();
+        foreach ($grouplist as $k=>$v){
+            $count = M('group_buy')->where("mark = {$v['id']}")->count();
+            $grouplist[$k]['order_num'] = $count+1;
+        }
 
         $this->assign('grouplist',$grouplist);
         $this->assign('page',$show);// 赋值分页输出
@@ -360,6 +367,22 @@ class CrowdfundController extends BaseController {
         $orderList = M('order')->where($condition)->limit($Page->firstRow.','.$Page->listRows)->order('add_time DESC')->select();
         $this->assign('orderList',$orderList);
         $this->assign('page',$show);// 赋值分页输出
+        $this->display();
+    }
+
+    public function delivery_info()
+    {
+        $order_id = I('order_id');
+        $orderLogic = new \Store\Logic\OrderLogic();
+        $order = $orderLogic->getOrderInfo($order_id);
+        $orderGoods = $orderLogic->getOrderGoods($order_id);
+        $this->assign('order', $order);
+        $this->assign('orderGoods', $orderGoods);
+        $delivery_record = M('delivery_doc')->where('order_id=' . $order_id)->select();
+        $this->assign('delivery_record', $delivery_record);//发货记录
+        $logistics = M('logistics')->select();
+        $this->assign('logistics', $logistics);
+        $this->assign('order_id', $order_id);
         $this->display();
     }
 }

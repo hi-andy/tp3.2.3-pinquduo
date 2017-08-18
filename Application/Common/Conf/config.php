@@ -13,8 +13,9 @@ define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 
 
 return array(
-	'SERVER_HTTP' => 'http://pinquduo.cn/',
-	'HTTP_URL'=>'http://pinquduo.cn/',
+	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
+	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
+	'PAY_URL'=>'https://pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
@@ -268,7 +269,7 @@ return array(
         'merchant_private_key' => "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANkVr5ECsVBjlXFWanoMTHGFRid3hYgfyqSy2gR8UiPsj2RJt2yQ7Jw3K4kwmystM3QWoPGN7Sd6qMdLxAGQWaOe8wCy9h+Zd4+06xhscKHxddJH47fqZvmOdP3DvVoxNNFvLQRfphKOXz5uXDvg7yAzwwHM09E5fNWFFosIdy8pAgMBAAECgYEAnjoINZHY29c53do20a6VKUkS0UF0ursxYMpbzlkvJbAO8/InF6KqU1KDEQO0lcvkbQDxXh8sdFIbIug+fUVRj3Cnz5YjmYJPDtPtZyfogCqqpYi+x94SWZf4FzZlipmUmABCJk/AMtIws1FZ7xMTi+yF4Cj0fjpPQo7HsyEz5GECQQD8BOAQeRyVMi5dvch8jqELJB0Omn+lkYFBGIwG2Ld04saLhNGzmJQVGFWNlV666h7vfkS4eb9CZMJuPtjTIH8TAkEA3IOKrD8akM7/1E2fZZLQpksasCb11MrhwnDQU2XaLSBB6dHAGlUUZBQTGQrGGS+recP2lGQmYS1xSy3yuo2UUwJBAKMANDvzWX1WG48d9NI7HgYqsXCElRLtbYBA9DBpcx7yniAXI9rZUM3kE1GjzsVuL9wO+zul4wJ6URclJvBHEGkCQGT2PSm8ArfGbs+PcqmY3Lsmq+N3ExsIgPD7ogZtHcWHfWZGyMPFrH5dypiunCCv+LzZgi5S5Fed7L9VHEtZw00CQHAXeT6sA+We4qOSUOsj4dqMGFTk+veE/C11ojodnzaoW/RTey8k01FfqFOW5jZmTK4x7xHj4i5c9Jg74Cao8Ts=",
 
         //异步通知地址
-        'notify_url' => "http://pinquduo.cn/alipay.trade.wap.pay-PHP-UTF-8/notify_url.php",
+        'notify_url' => "https://pinquduo.cn/alipay.trade.wap.pay-PHP-UTF-8/notify_url.php",
 
         //同步跳转
         'return_url' => "http://mitsein.com/alipay.trade.wap.pay-PHP-UTF-8/return_url.php",

@@ -20,11 +20,12 @@ class GoodsController extends BaseController {
         $this->assign('is_audit',C('IS_AUDIT'));
         $this->assign('is_on_sale',C('IS_ON_SALE'));
         $this->assign('is_special',C('IS_SPECIAL'));
-
+        
         if(empty($_SESSION['merchant_id']))
         {
             session_unset();
             session_destroy();
+            setcookie('storeid',null);
             $this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
         }
         $haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
@@ -390,6 +391,8 @@ class GoodsController extends BaseController {
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
 
+
+
                 //详情图片
 //                $Goods->goods_content = null;
 //                $goodscontent = "";
@@ -440,35 +443,36 @@ class GoodsController extends BaseController {
 
             }
         }
+        if(!empty(I('GET.id'))) {
+            $goodsInfo = D('Goods')->where('goods_id=' . I('GET.id'))->find();
+            $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
-        $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
-        $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
-        $goodsType = M("GoodsType")->where('`store_id`='.$_SESSION['merchant_id'])->select();
+
+            if (!empty($haitao)) {
+                $haitao_style = M('haitao_style')->select();
+                $this->assign('haitao', $haitao);
+                $this->assign('haitao_style', $haitao_style);
+            }
+            $level_cat = array_merge($level_cat);
+            $level_cat = array_reverse($level_cat, TRUE);
+            array_unshift($level_cat, array('id' => '0', 'name' => 'null'));
+            $this->assign('goodsContent',getImgs($goodsInfo['goods_content']));
+            $this->assign('level_cat',$level_cat);
+
+            $this->assign('goodsInfo',$goodsInfo);  // 商品详情
+            $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id'))->select();
+            $this->assign('goodsImages',$goodsImages);  // 商品相册
+        }
+        $goodsType = M("GoodsType")->where('`store_id`=' . $_SESSION['merchant_id'])->select();
         $haitao = $goodsInfo['is_special'];
-        if($haitao==1) {
+        if ($haitao == 1) {
             $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
-        }else{
+        } else {
             $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
         }
-
-        if(!empty($haitao))
-        {
-            $haitao_style = M('haitao_style')->select();
-            $this->assign('haitao',$haitao);
-            $this->assign('haitao_style',$haitao_style);
-        }
-        $level_cat = array_merge($level_cat);
-        $level_cat = array_reverse($level_cat, TRUE);
-        array_unshift($level_cat,array('id'=>'0','name'=>'null'));
-
-        $this->assign('goodsContent',getImgs($goodsInfo['goods_content']));
-        $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
         $this->assign('goodsType',$goodsType);
-        $this->assign('goodsInfo',$goodsInfo);  // 商品详情
-        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
-        $this->assign('goodsImages',$goodsImages);  // 商品相册
         $this->initEditor(); // 编辑器 //
         $this->display('_goods');
     }
@@ -846,7 +850,7 @@ class GoodsController extends BaseController {
             }
         }
 
-        $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+        $goodsInfo = D('Goods')->where('goods_id='.I('GET.id'))->find();
         $level_cat = $HaitaoLogic->find_parent_cat($goodsInfo['haitao_cat']); // 获取分类默认选中的下拉框
         $cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
         $haitao_style = M('haitao_style')->select();
@@ -860,7 +864,7 @@ class GoodsController extends BaseController {
         $this->assign('haitao_style',$haitao_style);
         $this->assign('goodsType',$goodsType);
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情
-        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
+        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id'))->select();
         $this->assign('goodsImages',$goodsImages);  // 商品相册
         $this->initEditor(); // 编辑器
         $this->display('_Haitao_goods');
