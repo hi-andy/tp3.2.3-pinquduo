@@ -14,7 +14,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="navbar navbar-default">
-                        <form action="{:U('Admin/AwardOrder/orderList')}" class="navbar-form form-inline" method="post">
+                        <form action="" id="search-form2" class="navbar-form form-inline" method="post">
                             <div class="form-group">
                                 <label class="control-label" for="input-order-id">订单编号</label>
                                 <div class="input-group">
@@ -27,14 +27,6 @@
                                     <input type="text" name="timeRange" value="{$timeRange}" placeholder="下单日期"  id="add_time" class="input-sm">
                                 </div>
                             </div>
-                            <!--<div class="form-group">-->
-                                <!--<select name="pay_code" class="input-sm" style="width:100px;">-->
-                                    <!--<option value="">支付方式</option>-->
-                                    <!--<option value="alipay">支付宝支付</option>-->
-                                    <!--<option value="weixin">微信支付</option>-->
-                                    <!--&lt;!&ndash;<option value="cod">货到付款</option>&ndash;&gt;-->
-                                <!--</select>-->
-                            <!--</div>-->
                             <div class="form-group">
                                 <select name="Open_group" class="input-sm" style="width:150px;">
                                     <option value="">全部</option>
@@ -45,99 +37,24 @@
                                 <input type="hidden" name="sort" value="desc">
                                 <input type="hidden" value="{$goods_id}" name="goods_id" id="goods_id" >
                             </div>
-                            <!--<div class="form-group">-->
-                                <!--<label class="control-label" for="input-order-id">商户名</label>-->
-                                <!--<div class="input-group">-->
-                                    <!--<input type="text" name="store_name" id="store_name" value="{$store_name}" placeholder="商户名"  class="form-control">-->
-                                <!--</div>-->
-                            <!--</div>-->
                             <div class="form-group">
-                                <input type="submit" id="button-filter search-order" class="btn btn-primary" value="筛选" >
+                                <input type="button" id="button-filter search-order" onclick="ajax_get_table('search-form2',1)" class="btn btn-primary" value="筛选" >
                             </div>
                             <button type="button" onclick="allPush();" class="btn btn-default pull-right">未中奖推送</button>
                         </form>
                     </div>
                     <div id="ajax_return">
 
-                        <form method="post" enctype="multipart/form-data" target="_blank" id="form-order">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover" style="font-size:12px;">
-                                    <thead>
-                                    <tr>
-                                        <td style="width: 1px;" class="text-center">团购ID</td>
-                                        <td class="text-center">商品名称</td>
-                                        <!--<td class="text-center">商户名称</td>-->
-                                        <td class="text-center">团购开始时间</td>
-                                        <td class="text-center">团购结束时间</td>
-                                        <!--<td class="text-center">商品参团数</td>-->
-                                        <!--<td class="text-center">已下单人数</td>-->
-                                        <td class="text-center">实际支付</td>
-                                        <td class="text-center">商品原价</td>
-                                        <td class="text-center">支付订单号</td>
-                                        <td class="text-center">开团人/参团者</td>
-                                        <td class="text-center">用户名称</td>
-                                        <td class="text-center">是否支付</td>
-                                        <td class="text-center">是否免单</td>
-                                        <td class="text-center">是否成团</td>
-                                        <td class="text-center">操作</td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <volist name="orderList" id="list">
-                                        <tr>
-                                            <td class="text-center">{$list.id}</td>
-                                            <td class="text-center">{$list.goods_name|getSubstr=0,15}</td>
-                                            <!--<td class="text-center">{$list.store_name|getSubstr=0,25}</td>-->
-                                            <td class="text-center">{$list.start_time|date='Y-m-d H:i',###}</td>
-                                            <td class="text-center">{$list.end_time|date='Y-m-d H:i',###}</td>
-                                            <!--<td class="text-center">{$list.goods_num}</td>-->
-                                            <!--<td class="text-center">{$list.order_num}</td>-->
-                                            <td class="text-center">{$list.price}</td>
-                                            <td class="text-center">{$list.goods_price}</td>
-                                            <td class="text-center">{$list.order_sn}</td>
-                                            <td class="text-center"> <if condition="$list.mark eq 0">开团人</if><if condition="$list.mark neq 0">参团人</if> </td>
-                                            <td class="text-center">{$list.nickname}</td>
-                                            <td class="text-center"> <if condition="$list.is_pay eq 0">未支付</if> <if condition="$list.is_pay eq 1">已支付</if></td>
-                                            <td class="text-center"> <if condition="$list.free eq 0">不免单</if><if condition="$list.free neq 0">免单</if> </td>
-                                            <td class="text-center"> <if condition="$list.is_successful eq 0">未成团</if><if condition="$list.is_successful eq 1">已成团</if> </td>
-                                            <td class="text-center">
-                                                <a href="{:U('Admin/AwardOrder/detail',array('group_id'=>$list['id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
-                                                <if condition="($list['is_pay'] neq 1)">
-                                                    <a href="{:U('Admin/order/delete_order',array('order_id'=>$list['order_id']))}"  data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="删除"><i class="fa fa-trash-o"></i></a>
-                                                    <else/>
-                                                    <a href="javascript:void(0)" data-toggle="tooltip" title="" class="btn btn-default disabled" data-original-title="查看"><i class="fa fa-trash-o"></i></a>
-                                                </if>
-                                                <!-- 抽奖按钮 -->
-                                                <if condition="$list['is_award'] eq 1">
-                                                    <input type="button" title="已中奖订单" class="btn btn-danger" value="已中奖">
-                                                <elseif  condition="$list['is_award'] eq -1" />
-                                                    <input type="button" title="未中奖订单" class="btn btn-default" value="未中奖">
-                                                <else/>
-                                                    <a href="###" onclick="awardSet({$list.order_id})" data-toggle="tooltip" title="" class="btn btn-default"><i class="fa">中奖</i></a>
-                                                </if>
-                                            </td>
-                                        </tr>
-                                    </volist>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </form>
-
-                        <div class="row">
-                            <div class="col-sm-6 text-left"></div>
-                            <div class="col-sm-6 text-right">{$page}</div>
-                        </div>
                     </div>
 
                 </div>
             </div>
-        </div>        <!-- /.row -->
+        </div>
     </section>
-    <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
 <script>
     $(document).ready(function(){
+        ajax_get_table('search-form2',1);
 
         $('#add_time').daterangepicker({
             format:"YYYY/MM/DD",
@@ -157,7 +74,19 @@
             }
         });
     });
-
+    // ajax 抓取页面
+    function ajax_get_table(tab,page){
+        cur_page = page; //当前页面 保存为全局变量
+        $.ajax({
+            type : "POST",
+            url:"/Admin/AwardOrder/ajaxOrderList?p="+page,//+tab,
+            data : $('#'+tab).serialize(),// 你的formid
+            success: function(data){
+                $("#ajax_return").html('');
+                $("#ajax_return").append(data);
+            }
+        });
+    }
     // 设置订单为中奖操作
     function awardSet(order_id)
     {

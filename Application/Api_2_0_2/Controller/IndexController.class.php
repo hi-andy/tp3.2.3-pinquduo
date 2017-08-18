@@ -763,20 +763,7 @@ class IndexController extends BaseController {
             $condition['g.is_on_sale'] = array('eq', 1);//是否上架
             $condition['g.show_type'] = array('eq', 0);//是否被删除
             $condition['g.is_audit'] = array('eq', 1);//是否审核
-            /*
-             * group_buy 团购订单表
-             * tp_goods 商品表
-             * tp_order_goods  订单详情记录表
-             * gb.id 团订单id
-             * gb.goods_id 商品id
-             * gb.price 订单支付价格
-             * gb.goods_num 团满人数
-             * gb.free 免单人数
-             * gb.start_time 开团时间
-             * gb.end_time 团结束时间
-             * gb.order_id 团订单关联的订单id
-             * og.spec_key 规格key
-             * */
+
             $count = M('group_buy')->alias('gb')
                 ->join('INNER JOIN tp_goods g on gb.goods_id = g.goods_id ')
                 ->join('INNER JOIN tp_order_goods og on gb.order_id = og.order_id ')

@@ -1,4 +1,3 @@
-
 <form method="post" enctype="multipart/form-data" target="_blank" id="form-order">
     <div class="table-responsive">
         <table class="table table-bordered table-hover" style="font-size:12px;">
@@ -6,15 +5,12 @@
             <tr>
                 <td style="width: 1px;" class="text-center">团购ID</td>
                 <td class="text-center">商品名称</td>
-                <td class="text-center">商户名称</td>
                 <td class="text-center">团购开始时间</td>
                 <td class="text-center">团购结束时间</td>
-                <!--<td class="text-center">商品参团数</td>-->
-                <!--<td class="text-center">已下单人数</td>-->
                 <td class="text-center">实际支付</td>
                 <td class="text-center">商品原价</td>
                 <td class="text-center">支付订单号</td>
-                <td class="text-center" width="5%">开团人/参团者</td>
+                <td class="text-center">开团人/参团者</td>
                 <td class="text-center">用户名称</td>
                 <td class="text-center">是否支付</td>
                 <td class="text-center">是否免单</td>
@@ -23,30 +19,34 @@
             </tr>
             </thead>
             <tbody>
-            <volist name="grouplist" id="list">
+            <volist name="orderList" id="list">
                 <tr>
                     <td class="text-center">{$list.id}</td>
                     <td class="text-center">{$list.goods_name|getSubstr=0,15}</td>
-                    <td class="text-center">{$list.store_name|getSubstr=0,10}</td>
                     <td class="text-center">{$list.start_time|date='Y-m-d H:i',###}</td>
                     <td class="text-center">{$list.end_time|date='Y-m-d H:i',###}</td>
-                    <!--<td class="text-center">{$list.goods_num}</td>-->
-                    <!--<td class="text-center">{$list.order_num}</td>-->
                     <td class="text-center">{$list.price}</td>
                     <td class="text-center">{$list.goods_price}</td>
                     <td class="text-center">{$list.order_sn}</td>
                     <td class="text-center"> <if condition="$list.mark eq 0">开团人</if><if condition="$list.mark neq 0">参团人</if> </td>
                     <td class="text-center">{$list.nickname}</td>
                     <td class="text-center"> <if condition="$list.is_pay eq 0">未支付</if> <if condition="$list.is_pay eq 1">已支付</if></td>
-                    <td class="text-center"> <if condition="$list.is_free eq 0">不免单</if><if condition="$list.is_free neq 0">免单</if> </td>
+                    <td class="text-center"> <if condition="$list.free eq 0">不免单</if><if condition="$list.free neq 0">免单</if> </td>
                     <td class="text-center"> <if condition="$list.is_successful eq 0">未成团</if><if condition="$list.is_successful eq 1">已成团</if> </td>
-
                     <td class="text-center">
-                        <a href="{:U('Admin/Group/detail',array('group_id'=>$list['id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
+                        <a href="{:U('Admin/AwardOrder/detail',array('group_id'=>$list['id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
                         <if condition="($list['is_pay'] neq 1)">
                             <a href="{:U('Admin/order/delete_order',array('order_id'=>$list['order_id']))}"  data-toggle="tooltip" title="" class="btn btn-danger" data-original-title="删除"><i class="fa fa-trash-o"></i></a>
                             <else/>
                             <a href="javascript:void(0)" data-toggle="tooltip" title="" class="btn btn-default disabled" data-original-title="查看"><i class="fa fa-trash-o"></i></a>
+                        </if>
+                        <!-- 抽奖按钮 -->
+                        <if condition="$list['is_award'] eq 1">
+                            <input type="button" title="已中奖订单" class="btn btn-danger" value="已中奖">
+                        <elseif  condition="$list['is_award'] eq -1" />
+                            <input type="button" title="未中奖订单" class="btn btn-default" value="未中奖">
+                        <else/>
+                            <a href="###" onclick="awardSet({$list.order_id})" data-toggle="tooltip" title="" class="btn btn-default"><i class="fa">中奖</i></a>
                         </if>
                     </td>
                 </tr>

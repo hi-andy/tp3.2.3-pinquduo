@@ -43,7 +43,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
      * 需要在 oauth 来源或增加其它参数识别来源，weixin 或 weixin_app.
      * 用户在微信公众号登录或在 app 使用微信登录时，通过传递的　unionid 条件查询数据
      * 首先查询 redis 缓存，没有缓存再查询数据库。通过返回结果 $data 判断，只需要作如下一步处理。
-     * 
+     *
      * if ($data['oauth'] == 'weixin_app' && $['unionid'] == $unionid) {
      *  if ($oauth == 'weixin') {
      *      通过传递过来的用户微信的 openid 更新 openid 字段。
@@ -52,6 +52,8 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
      *
      * 目标是所有 unionid 相同的用户 openid　也保持相同，同为 微信 openid.
      * 需要在第三方登录方法里作同步处理。
+     *
+     * Hua 2017-8-17
      */
     if($type == 3){
         if (!empty($user_id_or_name)) {
