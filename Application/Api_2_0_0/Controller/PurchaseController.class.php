@@ -19,6 +19,10 @@ class PurchaseController extends  BaseController
 {
 
     public function _initialize() {
+        $json = array('status' => -1, 'msg' => '请前往下载新版本参加该活动 ^_^');
+        if (!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
         $this->encryption();
     }
 

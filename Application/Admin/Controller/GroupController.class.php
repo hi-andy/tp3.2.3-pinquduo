@@ -209,12 +209,10 @@ class GroupController extends BaseController
         $consignee && $condition['consignee'] = array('like', $consignee);
         $order_sn && $condition['order_sn'] = array('like', $order_sn);
         $condition['prom_id'] = array('neq', 0);
-        if (empty($consignee) && empty($order_sn)) {
-            if ((I('shipping_status') == 0 || I('shipping_status') == 1)) {
-                $condition['order_type'] = array('eq', 14);
-            } else {
-                $condition['order_type'] = array('eq', 15);
-            }
+        if ((I('shipping_status') == 0 || I('shipping_status') == 1)) {
+            $condition['order_type'] = array('eq', 14);
+        } else {
+            $condition['order_type'] = array('eq', 15);
         }
         $count = M('order')->where($condition)->count();
         $Page = new AjaxPage($count, 10);

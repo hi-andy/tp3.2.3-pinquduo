@@ -42,7 +42,7 @@ class IndexController extends BaseController {
                 //TransformationImgurl 进行图片地址转换
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
-            $category[0]['id'] = 'http://wx.pinquduo.cn/likes.html';
+            $category[0]['id'] = 'https://wx.pinquduo.cn/likes.html';
             $category[0]['cat_img'] = CDN .'/Public/upload/index/freewangzhe.gif';
 	        $category[3]['cat_name'] = '趣多严选';
 	        $category[3]['cat_img'] = CDN .'/Public/upload/index/quduoyanxuan.jpg';
@@ -589,6 +589,22 @@ class IndexController extends BaseController {
     //为我点赞
     public function getThe_raise()
     {
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        $userid = I('userid',0);
+        $userid = (int)$userid;
+        if($userid>0){
+            $uerdata = M('users')->field("user_id")->where("user_id={$userid}")->find();
+            if(count($uerdata) == 0){
+                $json = [
+                    'status' => -1,
+                    'msg' => '用户id无效'
+                ];
+                if(!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
+            }
+        }
+
         $version = I('version');
         $rdsname = "getThe_raise".$version;
         if(empty(redis($rdsname))) {//判断是否有缓存
@@ -610,18 +626,41 @@ class IndexController extends BaseController {
                 }
             }
 
+//            foreach ($goods as $k=>$v){
+//                if(strstr($v['original_img'],"http") && !strstr($v['original_img'],"https")){
+//                    $cha = $goods[$k]['original_img'];
+//                    str_replace('http','https',$cha);
+//                    $cha = explode('http',$cha);
+//                    $goods[$k]['original_img'] = 'https'.$cha[1];
+//                }
+//            }
+
             $ad = M('ad')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'raisegoods'=>$goods));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {
             $json = unserialize(redis($rdsname));//读取缓存
         }
-        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
 
         //返回给前端的库存  2017-08-12 温立涛 开始
         foreach($json['result']['raisegoods'] as $k => $v){
             $goodid = $v['goods_id'];
             $data = M('spec_goods_price')->field('store_count')->where("goods_id={$goodid}")->find();
+            //获取该用户是否已经开团
+            $json['result']['raisegoods'][$k]['have_prom'] = 0;
+            $json['result']['raisegoods'][$k]['have_prom_id'] = 0;
+            if($userid>0){
+                $groupData = M('group_buy')->field('id,end_time')
+                    ->where(['user_id'=>$userid,'goods_id'=>$goodid,'mark'=>0,'is_successful'=>0,'is_return_or_exchange'=>0,'is_dissolution'=>0,'is_cancel'=>0,'is_raise'=>1,'end_time'=>['GT',time()]])
+                    ->order('id desc')
+                    ->find();
+                if(count($groupData)>0 ){
+                    $json['result']['raisegoods'][$k]['have_prom'] = 1;
+                    $json['result']['raisegoods'][$k]['have_prom_id'] = (int)$groupData['id'];
+                }
+            }
+
             $json['result']['raisegoods'][$k]['store_count'] = $data['store_count'];
         }
         //返回给前端的库存  2017-08-12 温立涛 结束
@@ -1126,8 +1165,7 @@ class IndexController extends BaseController {
         return $arr;
     }
 
-    function test1() {
-        $custom = array('type' => '6','id'=>430634);
-        var_dump(SendXinge('恭喜！您参与的免单拼团获得了免单',247,$custom));
+    function t2() {
+
     }
 }

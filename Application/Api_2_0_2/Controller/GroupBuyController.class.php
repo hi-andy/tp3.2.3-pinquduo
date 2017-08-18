@@ -15,6 +15,7 @@ class GroupBuyController extends BaseController {
         $wxtmplmsg = new WxtmplmsgController();
         $msgone = '助力享免单';
         $msgtwo = '获得0元秒杀权利';
+        M('admin_log')->data(['admin_id'=>1,'log_info'=>'22','log_ip'=>'127.0.0.1','log_url'=>get_client_ip()])->add();
         //非法的团id
         if($group_buy_id<=0){
             $wxmsg = '您参加的团id非法';
@@ -42,14 +43,14 @@ class GroupBuyController extends BaseController {
             }
             if((int)$result['is_successful'] == 1){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '该团已经满员了，请选择别的团参加';
+                $wxmsg = '该团已经满员了，您可以自己开团享受0元进口榴莲秒杀哦';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
             //判断该团是不是已经结束
             if($result['end_time']<=time()){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '您参加的团活动已经结束';
+                $wxmsg = '您参加的团活动已经结束，您可以自己开团享受0元进口榴莲秒杀哦';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
@@ -61,6 +62,7 @@ class GroupBuyController extends BaseController {
                 exit();
             }
             $user_id = (int)$userdata['user_id'];
+            M('admin_log')->data(['admin_id'=>1,'log_info'=>'22','log_ip'=>'127.0.0.1','log_url'=>json_encode($userdata)])->add();
             //处理自己参加自己的团
             if($user_id == (int)$result['user_id']){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
@@ -76,14 +78,14 @@ class GroupBuyController extends BaseController {
                 ->count();
             if ($goodsstatus >0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '该商品已经下架';
+                $wxmsg = '该商品已经下架，您可以自己选择其他商品开团哦';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
             $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
             if(!empty($raise)){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '您已经参加过活动，请选择开团 ^_^';
+                $wxmsg = '您已关注过拼趣多，无法帮助好友助力，可以自己开团享受0元秒杀哦';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
@@ -103,7 +105,7 @@ class GroupBuyController extends BaseController {
                     M('group_buy')->where("mark={$group_buy_id}")->order('id desc')->limit($morenum)->delete();
                 }
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '该团已经满员了，请选择别的团参加';
+                $wxmsg = '该团已经满员了，您可以自己选择其他商品开团哦';
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }

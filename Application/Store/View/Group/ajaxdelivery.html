@@ -47,9 +47,9 @@
                                         <td class="text-center">{$list.total_amount}</td>
                                         <td class="text-center">
                                         	<if condition="$list['shipping_status'] neq 1">
-                                            <a href="{:U('Store/Crowdfund/delivery_info',array('order_id'=>$list['order_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情">去发货</a>
+                                            <a href="{:U('Store/Group/delivery_info',array('order_id'=>$list['order_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情">去发货</a>
                                         	<else/>
-                                        	<a href="{:U('Store/Crowdfund/detail',array('group_id'=>$list['prom_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
+                                        	<a href="{:U('Store/Group/detail',array('group_id'=>$list['prom_id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
                                         	</if>
                                         </td>
                                     </tr>

@@ -102,6 +102,8 @@ class UsersLogic extends RelationModel
                 $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
                 $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                 $row = M('users')->add($map);
+                $usersql = M('users')->getLastSql();
+                M('admin_log')->data(['admin_id'=>1,'log_info'=>'22','log_ip'=>'127.0.0.1','log_url'=>$usersql])->add();
                 $user = get_user_info($openid, 3, $oauth, $unionid);
                 $user['head_pic'] = $data['head_pic'];
                 /*

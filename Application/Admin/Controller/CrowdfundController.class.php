@@ -150,29 +150,29 @@ class CrowdfundController extends BaseController {
         }
 
         $count = M('group_buy')->alias('g')
-                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                 ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
-                 ->where($condition)
-                 ->count();
+            ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
+            ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+            ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+            ->where($condition)
+            ->count();
 
         $Page  = new AjaxPage($count,20);
         //  搜索条件下 分页赋值
-        print_r($condition);
+        
         foreach($condition as $key=>$val) {
             $Page->parameter[$key]   =  urlencode($val);
         }
         $show = $Page->show();
 
         $grouplist = M('group_buy')->alias('g')
-                     ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-                     ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                     ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
-                     ->where($condition)
-                     ->field('g.*,u.nickname,o.order_sn,o.pay_time,m.store_name,o.consignee')
-                     ->limit($Page->firstRow,$Page->listRows)
-                     ->order('g.id desc')
-                     ->select();
+            ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
+            ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+            ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
+            ->where($condition)
+            ->field('g.*,u.nickname,o.order_sn,o.pay_time,m.store_name,o.consignee')
+            ->limit($Page->firstRow,$Page->listRows)
+            ->order('g.id desc')
+            ->select();
         foreach ($grouplist as $k=>$v){
             $count = M('group_buy')->where("mark = {$v['id']}")->count();
             $grouplist[$k]['order_num'] = $count+1;
@@ -363,7 +363,7 @@ class CrowdfundController extends BaseController {
             $goodsList[$i]['store_name'] = $store_name['store_name'];
         }
 
-            $show = $Page->show($arr['store_id']);//分页显示输出
+        $show = $Page->show($arr['store_id']);//分页显示输出
         $this->assign('page', $show);//赋值分页输出
         $this->assign('goodsList', $goodsList);
         $tpl = I('get.tpl', 'search_goods');
@@ -380,15 +380,15 @@ class CrowdfundController extends BaseController {
             $name = getFirstCharter($v['name']) . ' ' . $v['name']; // 前面加上拼音首字母
             //$name = getFirstCharter($v['name']) .' '. $v['name'].' '.$v['level']; // 前面加上拼音首字母
             /*
-			// 找他老爸
-			$parent_id = $v['parent_id'];
-			if($parent_id)
-				$name .= '--'.$categoryList[$parent_id]['name'];
-			// 找他 爷爷
-			$parent_id = $categoryList[$v['parent_id']]['parent_id'];
-			if($parent_id)
-				$name .= '--'.$categoryList[$parent_id]['name'];
-			*/
+            // 找他老爸
+            $parent_id = $v['parent_id'];
+            if($parent_id)
+                $name .= '--'.$categoryList[$parent_id]['name'];
+            // 找他 爷爷
+            $parent_id = $categoryList[$v['parent_id']]['parent_id'];
+            if($parent_id)
+                $name .= '--'.$categoryList[$parent_id]['name'];
+            */
             $nameList[] = $v['name'] = $name;
             $categoryList[$k] = $v;
         }

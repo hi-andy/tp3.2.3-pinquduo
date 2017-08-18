@@ -10,7 +10,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="navbar navbar-default">
-                            <form action="{:U('Crowdfund/delivery_list')}" id="search-form2" class="navbar-form form-inline" method="post" onsubmit="return false">
+                            <form action="{:U('Group/ajax_delivery_list')}" id="search-form2" class="navbar-form form-inline" method="post" onsubmit="return false">
                                 <div class="form-group">
                                     <label class="control-label" for="input-order-id">收货人</label>
                                     <div class="input-group">
@@ -59,7 +59,7 @@
         cur_page = page; //当前页面 保存为全局变量
             $.ajax({
                 type : "POST",
-                url:"/Store/Crowdfund/ajaxdelivery/p/"+page,//+tab,
+                url:"/Store/Group/ajaxdelivery/p/"+page,//+tab,
                 data : $('#'+tab).serialize(),// 你的formid
                 success: function(data){
                     $("#ajax_return").html('');

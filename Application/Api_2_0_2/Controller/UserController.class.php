@@ -21,22 +21,17 @@ class UserController extends BaseController {
         $map['nickname'] = I('nickname','');
         $map['head_pic'] = I('head_pic','');
         $map['unionid'] = I('unionid','');
-        redis('unionid',serialize($map),REDISTIME);
-        if(I('oauth','') == 'qq') redis('unionid',I('unionid',''),REDISTIME);
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+
+        // 注册用户到环信
         $data = $this->userLogic->thirdLogin($map);
         $HXcall = new HxcallController();
-        if($data['status'] ==1){
-            $username = $data['user_id'];
-            $password = md5($username.C('SIGN_KEY'));
-            $nickname = $data['nickname'];
-            $res = $HXcall->hx_register($username,$password,$nickname);
-        }else{
-            $username = $data['user_id'];
-            $password = md5($username.C('SIGN_KEY'));
-            $nickname = $data['nickname'];
-            $res = $HXcall->hx_register($username,$password,$nickname);
-        }
+        $username = $data['user_id'];
+        $password = md5($username.C('SIGN_KEY'));
+        $nickname = $data['nickname'];
+        $HXcall->hx_register($username,$password,$nickname);
+
+        //　构建返回数据
         $data['name'] = $data['nickname'];
         $data['head_pic'] = TransformationImgurl($data['head_pic']);
         unset($data['nickname']);
@@ -1944,7 +1939,7 @@ class UserController extends BaseController {
         $category[2]['is_red'] = '0';
 
         $category[3]['id'] = '4';
-        $category[3]['cat_name'] = '省钱大法';
+        $category[3]['cat_name'] = '省钱宝典';
         $category[3]['cat_img'] = 'http://cdn.pinquduo.cn/Public/upload/index/8-shenqian.gif';
         $category[3]['type'] = '10';
         $category[3]['is_red'] = '0';

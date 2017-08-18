@@ -118,16 +118,14 @@ class PurchaseController extends  BaseController
             if(!empty($res1) && $res1['is_special']==7){
                 $json =	array('status'=>-1,'msg'=>'您已购买过此宝贝T_T');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if (!empty($ajax_get)) {
-                    echo "<script> alert('" . $json['msg'] . "') </script>";
-                    exit;
-                }
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
+                exit(json_encode($json));
             }
             if(!empty($spec_key)){
                 $spec_res = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
             }else{
                 $json = array('status' => -1, 'msg' => '已售罄');
-                redisdelall("getBuy_lock_" . $goods_id);//删除锁
                 if (!empty($ajax_get))
                     $this->getJsonp($json);
                 exit(json_encode($json));
@@ -153,10 +151,8 @@ class PurchaseController extends  BaseController
                 if ($result['end_time'] < time()) {
                     $json = array('status' => -1, 'msg' => '该团已结束了，请选择别的团参加');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if (!empty($ajax_get)) {
-                        echo "<script> alert('" . $json['msg'] . "') </script>";
-                        exit;
-                    }
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
                 if ($spec_res['store_count'] <= 0 && $result['is_raise']!=1) {
@@ -172,10 +168,8 @@ class PurchaseController extends  BaseController
                     if(!empty($raise)){
                         $json = array('status' => -1, 'msg' => '您已经参加过活动，请选择开团 ^_^');
                         redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                        if (!empty($ajax_get)) {
-                            echo "<script> alert('" . $json['msg'] . "') </script>";
-                            exit;
-                        }
+                        if (!empty($ajax_get))
+                            $this->getJsonp($json);
                         exit(json_encode($json));
                     }
                 }
@@ -185,19 +179,15 @@ class PurchaseController extends  BaseController
                 if (!empty($on_buy)) {
                     $json = array('status' => -1, 'msg' => '有用户尚未支付，您可以在他取消订单后进行支付');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if (!empty($ajax_get)) {
-                        echo "<script> alert('" . $json['msg'] . "') </script>";
-                        exit;
-                    }
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
                 if ($num == $result['goods_num']) {
                     $json = array('status' => -1, 'msg' => '该团已经满员开团了，请选择别的团参加');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if (!empty($ajax_get)) {
-                        echo "<script> alert('" . $json['msg'] . "') </script>";
-                        exit;
-                    }
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
                 //判断该用户是否参团了
@@ -205,10 +195,8 @@ class PurchaseController extends  BaseController
                 if (!empty($self)) {
                     $json = array('status' => -1, 'msg' => '你已经参团了');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if (!empty($ajax_get)) {
-                        echo "<script> alert('" . $json['msg'] . "') </script>";
-                        exit;
-                    }
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
                 //判断用户是否已经生成未付款订单
@@ -216,10 +204,8 @@ class PurchaseController extends  BaseController
                 if (!empty($on_buy)) {
                     $json = array('status' => -1, 'msg' => '该团你有未付款订单，请前往支付再进行操作');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if (!empty($ajax_get)) {
-                        echo "<script> alert('" . $json['msg'] . "') </script>";
-                        exit;
-                    }
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
                 if ($result['mark'] != 0) {
@@ -251,10 +237,8 @@ class PurchaseController extends  BaseController
             }
         } else {
             $json = array('status' => -1, 'msg' => '抢购比较激烈，请再猛戳试试');
-            if (!empty($ajax_get)) {
-                echo "<script> alert('" . $json['msg'] . "') </script>";
-                exit;
-            }
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
             exit(json_encode($json));
         }
     }
@@ -432,10 +416,8 @@ class PurchaseController extends  BaseController
                 M()->rollback();//有数据库操作不成功时进行数据回滚
                 $json = array('status'=>-1,'msg'=>'参团失败');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
                 exit(json_encode($json));
             }
             //优惠卷(有就使用··不然就直接跳过)
@@ -447,13 +429,9 @@ class PurchaseController extends  BaseController
                         M()->rollback();//有数据库操作不成功时进行数据回滚
                         redisdelall("getBuy_lock_" . $goods_id);//删除锁
                         $json = array('status' => -1, 'msg' => '参团失败');
-                        if($ajax_get){
-                            $json = array('status' => -1, 'msg' => '参团失败');
-                            echo "<script> alert('" . $json['msg'] . "') </script>";
-                            exit;
-                        }else{
-                            exit(json_encode($json));
-                        }
+                        if (!empty($ajax_get))
+                            $this->getJsonp($json);
+                        exit(json_encode($json));
                     }
                 }
             }
@@ -511,10 +489,8 @@ class PurchaseController extends  BaseController
                 M()->rollback();//有数据库操作不成功时进行数据回滚
                 $json = array('status'=>-1,'msg'=>'参团失败');
                 redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                if(!empty($ajax_get)){
-                    echo "<script> alert('".$json['msg']."') </script>";
-                    exit;
-                }
+                if (!empty($ajax_get))
+                    $this->getJsonp($json);
                 exit(json_encode($json));
             }
         }
@@ -718,10 +694,8 @@ class PurchaseController extends  BaseController
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>$spec_res.'-'.$group_buy.'-'.$o_id);
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
             exit(json_encode($json));
         }
 
@@ -734,10 +708,8 @@ class PurchaseController extends  BaseController
                     M()->rollback();//有数据库操作不成功时进行数据回滚
                     $json = array('status'=>-1,'msg'=>'开团失败2');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
             }
@@ -793,10 +765,8 @@ class PurchaseController extends  BaseController
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'开团失败3');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
             exit(json_encode($json));
         }
     }
@@ -889,10 +859,8 @@ class PurchaseController extends  BaseController
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'购买失败');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
             exit(json_encode($json));
         }
         //在商品规格订单表加一条数据
@@ -920,10 +888,8 @@ class PurchaseController extends  BaseController
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'购买失败');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
             exit(json_encode($json));
         }
         //优惠卷(有就使用··不然就直接跳过)
@@ -936,10 +902,8 @@ class PurchaseController extends  BaseController
                     M()->rollback();//有数据库操作不成功时进行数据回滚
                     $json = array('status'=>-1,'msg'=>'购买失败');
                     redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                    if(!empty($ajax_get)){
-                        echo "<script> alert('".$json['msg']."') </script>";
-                        exit;
-                    }
+                    if (!empty($ajax_get))
+                        $this->getJsonp($json);
                     exit(json_encode($json));
                 }
             }
@@ -974,19 +938,16 @@ class PurchaseController extends  BaseController
             }
             $json = array('status'=>1,'msg'=>'购买成功','result'=>array('order_id'=>$o_id,'pay_detail'=>$pay_detail,'pay_status' => 1));
             $this->aftermath($user_id,$goods,$num,$o_id);
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
             exit(json_encode($json));
         }else{
             M()->rollback();//有数据库操作不成功时进行数据回滚
             $json = array('status'=>-1,'msg'=>'购买失败');
             redisdelall("getBuy_lock_" . $goods_id);//删除锁
-            if(!empty($ajax_get)){
-                echo "<script> alert('".$json['msg']."') </script>";
-                exit;
-            }
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
         }
     }
 
