@@ -3,6 +3,10 @@ namespace Api_2_0_2\Controller;
 use Think\Controller;
 
 class GroupBuyController extends BaseController {
+    //限制开团时间
+    const GROUPSTART = '2017-08-17';
+    //限制成团的最大数
+    const GROUPMAX = 5;
     /**
      * 关注点赞
      */
@@ -82,6 +86,22 @@ class GroupBuyController extends BaseController {
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
+
+            //防刷条件  2017-08-18 温立涛 开始
+            $groupStart = strtotime(self::GROUPSTART);
+            $order_id = $result['order_id'];
+            $orderInfo = M('order')->where(['order_id'=>$order_id])->find();
+            $mobile = $orderInfo['mobile'];
+            $orderCount = M('order')->where("mobile='{$mobile}' and the_raise=1 and order_type>=14 and add_time>{$groupStart}")->count();
+            if($orderCount > self::GROUPMAX){
+                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                $wxmsg = '您已关注过拼趣多，无法帮助好友助力，可以自己开团享受0元秒杀哦';
+                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                exit();
+            }
+            //防刷条件  2017-08-18 温立涛 结束
+
+
             $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
             if(!empty($raise)){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
