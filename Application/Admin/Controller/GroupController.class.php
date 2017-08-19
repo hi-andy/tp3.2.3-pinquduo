@@ -310,29 +310,43 @@ class GroupController extends BaseController
     {
         // 搜索条件
         $order_sn = trim(I('order_sn'));
-        $order_by = I('order_by') ? I('order_by') : 'id';
+//        $order_by = I('order_by') ? I('order_by') : 'gb.id';
         $sort_order = I('sort_order') ? I('sort_order') : 'desc';
         $status = I('status');
 
-        $where = "`is_prom`=1 and tp_group_buy.is_successful=1 ";
-        $order_sn && $where .= " and tp_return_goods.order_sn like '%$order_sn%' ";
-        empty($order_sn) && $where .= " and tp_return_goods.status = '$status' ";
+        $where = " rg.`is_prom`=1 and gb.is_successful=1 ";
+        $order_sn && $where .= " and rg.order_sn like '%$order_sn%' ";
+        empty($order_sn) && $where .= " and rg.`status` = '$status' ";
 
-        $count = M('return_goods')->
-        join(array(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id "))->
-        field("tp_return_goods.*,tp_group_buy.`is_successful`")->
-        where($where)->
-        count();
+        if (!empty(I('store_name'))) {
+            $this->assign('store_name', I('store_name'));
+            $store_id = M('merchant')->where("store_name = '".I('store_name')."'")->getField('id');
+            if(empty($store_id)){
+                $store_id = M('merchant')->where("store_name like '%".I('store_name')."%'")->getField('id');
+            }
+            $where = $where." and rg.store_id = $store_id ";
+        }
+
+        if (!empty(I('store_id'))) {
+            $store_id = I('store_id');
+            $where = $where." and rg.store_id = $store_id ";
+        }
+
+        $count = M('return_goods')
+            ->where($where)
+            ->count();
 
         $Page = new AjaxPage($count, 13);
         $show = $Page->show();
-        $list = M('return_goods')->where($where)->
-        join(array(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id "))->
-        field("tp_return_goods.*,tp_group_buy.`is_successful`")->
-        order("$order_by $sort_order")->
-        limit("{$Page->firstRow},{$Page->listRows}")->
-        select();
-
+        $list = M('return_goods')->alias('rg')
+            ->join(array(" LEFT JOIN tp_group_buy gb ON gb.order_id = rg.order_id "))
+            ->join("LEFT JOIN tp_merchant m ON m.id = rg.store_id ")
+            ->order("gb.id $sort_order")
+            ->where($where)
+            ->limit("{$Page->firstRow},{$Page->listRows}")
+            ->field('rg.*,m.store_name')
+            ->select();
+//        var_dump($list);die;
         $goods_id_arr = get_arr_column($list, 'goods_id');
         if (!empty($goods_id_arr))
             $goods_list = M('goods')->where("goods_id in (" . implode(',', $goods_id_arr) . ")")->getField('goods_id,goods_name');

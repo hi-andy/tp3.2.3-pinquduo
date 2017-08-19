@@ -570,13 +570,42 @@ class OrderController extends BaseController {
 	    $sort_order = I('sort_order') ? I('sort_order') : 'desc';
 	    $status =  I('status');
 
-	    $where = " 1 = 1 ";
-	    $order_sn && $where.= " and order_sn like '%$order_sn%' ";
-	    empty($order_sn) && $where.= " and status = '$status' ";
-	    $count = M('return_goods')->where($where)->count();
+	    $where = " rg.`is_prom`=0 ";
+	    $order_sn && $where.= " and rg.order_sn like '%$order_sn%' ";
+	    empty($order_sn) && $where.= " and rg.`status` = '$status' ";
+
+	    if (!empty(I('store_name'))) {
+		    $this->assign('store_name', I('store_name'));
+		    $store_id = M('merchant')->where("store_name = '".I('store_name')."'")->getField('id');
+		    if(empty($store_id)){
+			    $store_id = M('merchant')->where("store_name like '%".I('store_name')."%'")->getField('id');
+		    }
+		    $where = $where." and rg.store_id = $store_id ";
+	    }
+
+	    if (!empty(I('store_id'))) {
+		    $store_id = I('store_id');
+		    $where = $where." and rg.store_id = $store_id ";
+	    }
+	    $count = M('return_goods')
+		    ->alias('rg')
+		    ->where($where)
+		    ->count();
+
 	    $Page  = new AjaxPage($count,13);
 	    $show = $Page->show();
-	    $list = M('return_goods')->where($where)->order("$order_by $sort_order")->limit("{$Page->firstRow},{$Page->listRows}")->select();
+
+	    $list = M('return_goods')
+		    ->alias('rg')
+		    ->join(array(" LEFT JOIN tp_group_buy gb ON gb.order_id = rg.order_id "))
+		    ->join("LEFT JOIN tp_merchant m ON m.id = rg.store_id ")
+		    ->order("gb.id $sort_order")
+		    ->where($where)
+		    ->order("$order_by $sort_order")
+		    ->limit("{$Page->firstRow},{$Page->listRows}")
+		    ->field('rg.*,m.store_name')
+		    ->select();
+
 	    $goods_id_arr = get_arr_column($list, 'goods_id');
 	    if(!empty($goods_id_arr))
 		    $goods_list = M('goods')->where("goods_id in (".implode(',', $goods_id_arr).")")->getField('goods_id,goods_name');

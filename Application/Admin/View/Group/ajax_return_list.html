@@ -12,6 +12,9 @@
                                         <a href="javascript:void(0);">商品名称</a>
                                     </td>
                                     <td class="text-center">
+                                        <a href="javascript:void(0);">商户名称</a>
+                                    </td>
+                                    <td class="text-center">
                                         <a href="javascript:sort_list('type');">类型</a>
                                     </td>
                                     <td class="text-center">
@@ -26,6 +29,7 @@
                                     <tr>
                                         <td class="text-center"><a href="{:U('Admin/Group/detail',array('order_id'=>$items['order_id']))}">{$items.order_sn}</a></td>
                                         <td class="text-center">{$goods_list[$items['goods_id']]|getSubstr=0,50}</td>
+                                        <td class="text-center">{$items.store_name|getSubstr=0,50}</td>
                                         <td class="text-center">
                                         	<if condition="$items[type] eq 0">退货</if>
                                         	<if condition="$items[type] eq 1">换货</if>                                            

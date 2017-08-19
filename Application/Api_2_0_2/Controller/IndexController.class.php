@@ -626,15 +626,6 @@ class IndexController extends BaseController {
                 }
             }
 
-//            foreach ($goods as $k=>$v){
-//                if(strstr($v['original_img'],"http") && !strstr($v['original_img'],"https")){
-//                    $cha = $goods[$k]['original_img'];
-//                    str_replace('http','https',$cha);
-//                    $cha = explode('http',$cha);
-//                    $goods[$k]['original_img'] = 'https'.$cha[1];
-//                }
-//            }
-
             $ad = M('ad')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'raisegoods'=>$goods));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -1165,7 +1156,8 @@ class IndexController extends BaseController {
         return $arr;
     }
 
-    function t2() {
-
+    function object2array(&$object) {
+        $object =  json_decode( json_encode( $object),true);
+        return  $object;
     }
 }

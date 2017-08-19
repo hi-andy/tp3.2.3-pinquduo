@@ -15,11 +15,12 @@ class GroupBuyController extends BaseController {
         $useropenid = I('useropenid');
         $oauth = 'weixin';
         $nickname = I('nickname');
+        $unionid = I('unionid');
         $group_buy_id = (int)$group_buy_id;
         $wxtmplmsg = new WxtmplmsgController();
         $msgone = '助力享免单';
         $msgtwo = '获得0元秒杀权利';
-        M('admin_log')->data(['admin_id'=>1,'log_info'=>'22','log_ip'=>'127.0.0.1','log_url'=>get_client_ip()])->add();
+
         //非法的团id
         if($group_buy_id<=0){
             $wxmsg = '您参加的团id非法';
@@ -58,7 +59,9 @@ class GroupBuyController extends BaseController {
                 $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                 exit();
             }
-            $userdata = $this->thirdLogin($useropenid,$oauth,$nickname);
+
+            $userdata = $this->thirdLogin($useropenid,$oauth,$nickname,$unionid);
+
             if(count($userdata)==0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您的用户信息非法';
@@ -66,7 +69,7 @@ class GroupBuyController extends BaseController {
                 exit();
             }
             $user_id = (int)$userdata['user_id'];
-            M('admin_log')->data(['admin_id'=>1,'log_info'=>'22','log_ip'=>'127.0.0.1','log_url'=>json_encode($userdata)])->add();
+
             //处理自己参加自己的团
             if($user_id == (int)$result['user_id']){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
@@ -93,6 +96,7 @@ class GroupBuyController extends BaseController {
             $orderInfo = M('order')->where(['order_id'=>$order_id])->find();
             $mobile = $orderInfo['mobile'];
             $orderCount = M('order')->where("mobile='{$mobile}' and the_raise=1 and order_type>=14 and add_time>{$groupStart}")->count();
+            M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>$orderCount.'=='.$mobile.'=='.$user_id])->add();
             if($orderCount > self::GROUPMAX){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您已关注过拼趣多，无法帮助好友助力，可以自己开团享受0元秒杀哦';
@@ -103,6 +107,7 @@ class GroupBuyController extends BaseController {
 
 
             $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
+            M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>json_encode($raise)])->add();
             if(!empty($raise)){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您已关注过拼趣多，无法帮助好友助力，可以自己开团享受0元秒杀哦';
@@ -250,12 +255,12 @@ class GroupBuyController extends BaseController {
         /*
          * 第三方登录
          */
-    public function thirdLogin($openid,$oauth,$nickname){
+    public function thirdLogin($openid,$oauth,$nickname,$unionid){
         $map['openid'] = $openid;
         $map['oauth'] = $oauth;
         $map['nickname'] = $nickname;
         $map['head_pic'] = '';
-        $map['unionid'] = '';
+        $map['unionid'] = $unionid;
         $userLogic = new \Home\Logic\UsersLogic();
         $data = $userLogic->thirdLogin($map);
         return $data;
