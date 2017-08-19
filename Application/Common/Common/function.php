@@ -1008,11 +1008,11 @@ function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
 		//第一行
 		$one = msubstr($goods_name,0,13);
 		imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$one);
-		$two = msubstr($goods_name,11,13);
+		$two = msubstr($goods_name,13,13);
 		if(strlen($two)<36){
 			imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
 		}else{
-			$two = msubstr($goods_name,11,11).'...';
+			$two = msubstr($goods_name,13,11).'...';
 			imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
 		}
 	}else{
