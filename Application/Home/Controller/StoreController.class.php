@@ -53,7 +53,16 @@ class StoreController extends BaseController {
         M()->startTrans();
 
         $store_data['merchant_name'] = $data['show_ower_mobile'];
-        $store_data['password'] = md5(substr($data['show_ower_idcard'],-6));
+
+        /*
+         * 将身份证进行处理获取密码  吴银海
+         * */
+        $cha = $data['show_ower_idcard'];
+        $lenth = strlen($cha);
+        $chas = $cha[$lenth-6].$cha[$lenth-5].$cha[$lenth-4].$cha[$lenth-3].$cha[$lenth-2].$cha[$lenth-1];
+        $pass_word = md5($chas);
+        $store_data['password'] = $pass_word;
+
         $store_data['store_name'] = $data['show_ower_name'];
         $store_data['add_time'] = time();
         $store_data['email'] = $data['show_ower_mail'];
@@ -64,6 +73,8 @@ class StoreController extends BaseController {
         $store_data['store_type'] = 0;
 
         $res = M('merchant')->add($store_data);
+        //记录截取情况 吴银海
+        M('admin_log')->data(array('admin_id'=>$res,'log_info'=>'商户入驻密码截取','log_ip'=>$chas,'log_url'=>$pass_word))->add();
 
         if(!$data['is_haitao'])
             $data['is_haitao'] = 0;

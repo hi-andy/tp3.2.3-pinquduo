@@ -13,10 +13,6 @@ define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 
 
 return array(
-<<<<<<< HEAD
-
-=======
->>>>>>> 3a85ff7495949cd71bc25583904e189a5a96ee31
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
 	'PAY_URL'=>'https://pinquduo.cn/',

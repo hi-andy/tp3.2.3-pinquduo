@@ -8,7 +8,7 @@
  * @return bool|string
  */
 function redis($key, $value=null, $time="", $del=null){
-    /*if (REDIS_SWITCH) {
+    if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -30,7 +30,7 @@ function redis($key, $value=null, $time="", $del=null){
         return $result;
     } else {
         redisdelall("*");
-    }*/
+    }
 }
 
 /**
@@ -39,7 +39,7 @@ function redis($key, $value=null, $time="", $del=null){
  * @param null $value 值 可为空
  */
 function redislist($key, $value=null){
-    /*if (REDIS_SWITCH) {
+    if (REDIS_SWITCH) {
         $redis = new Redis();
         $redis->connect(REDISIP, PORT);
         $redis->auth(REDISPASS);
@@ -52,7 +52,7 @@ function redislist($key, $value=null){
         }
     } else {
         redisdelall("*");
-    }*/
+    }
 }
 /**
  * redis删除缓存，可以按关键字批量删除，格式“ keyname ”或“ keyname* ”
@@ -60,11 +60,11 @@ function redislist($key, $value=null){
  */
 function redisdelall($key)
 {
-    /*$redis = new Redis();
+    $redis = new Redis();
     $redis->connect(REDISIP, PORT);
     $redis->auth(REDISPASS);
     $redis->delete($redis->keys($key));
-    $redis->close();*/
+    $redis->close();
 }
 /**
  * @param $arr
@@ -1003,13 +1003,19 @@ function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
 	imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
 	//文字颜色
 	$fontcolor = imagecolorallocate($background, 204,204,204);
+
+	//左上角标志
+	$downresource = imagecreatefrompng('Public/images/jiaobiao@2x.png');
+	//图片合并
+	imagecopyresized($background,$downresource,50,4,0,0,70,80,imagesx($downresource),imagesy($downresource));
+
 	//商品名
-	if(strlen($goods_name)>39){
+	if(!empty(msubstr($goods_name,14,13))){
 		//第一行
 		$one = msubstr($goods_name,0,13);
 		imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$one);
 		$two = msubstr($goods_name,13,13);
-		if(strlen($two)<36){
+		if(empty(msubstr($goods_name,26,13))){
 			imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
 		}else{
 			$two = msubstr($goods_name,13,11).'...';
@@ -1028,23 +1034,23 @@ function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
 	imagettftext($background,40,0,50,663,imagecolorallocate($background, 226,0,37),$font,'0');
 
 	imagettftext($background,19,0,90,663,$fontcolor,$font,"原价:".$price);
-
-	if(strlen($price)==4){
-		imageline($background, 90, 654, 197, 654, $fontcolor);
-		imageline($background, 90, 653, 197, 653, $fontcolor);
-	}elseif(strlen($price)==5){
-		imageline($background, 90, 654, 220, 654, $fontcolor);
-		imageline($background, 90, 653, 220, 653, $fontcolor);
-	}elseif (strlen($price)==6){
-		imageline($background, 90, 654, 228, 654, $fontcolor);
-		imageline($background, 90, 653, 228, 653, $fontcolor);
-	}elseif (strlen($price)==7){
-		imageline($background, 90, 654, 240, 654, $fontcolor);
-		imageline($background, 90, 653, 240, 653, $fontcolor);
-	}else{
-		imageline($background, 90, 654, 190, 654, $fontcolor);
-		imageline($background, 90, 653, 190, 653, $fontcolor);
-	}
+	//价格上的灰线
+//	if(strlen($price)==4){
+//		imageline($background, 90, 654, 197, 654, $fontcolor);
+//		imageline($background, 90, 653, 197, 653, $fontcolor);
+//	}elseif(strlen($price)==5){
+//		imageline($background, 90, 654, 220, 654, $fontcolor);
+//		imageline($background, 90, 653, 220, 653, $fontcolor);
+//	}elseif (strlen($price)==6){
+//		imageline($background, 90, 654, 228, 654, $fontcolor);
+//		imageline($background, 90, 653, 228, 653, $fontcolor);
+//	}elseif (strlen($price)==7){
+//		imageline($background, 90, 654, 240, 654, $fontcolor);
+//		imageline($background, 90, 653, 240, 653, $fontcolor);
+//	}else{
+//		imageline($background, 90, 654, 190, 654, $fontcolor);
+//		imageline($background, 90, 653, 190, 653, $fontcolor);
+//	}
 
 	$path = "Public/upload/raise";
 	if (!file_exists($path)){
