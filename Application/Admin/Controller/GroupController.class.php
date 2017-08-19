@@ -52,7 +52,6 @@ class GroupController extends BaseController
      */
     public function ajax_group_list()
     {
-
         $timegap = I('timegap');
         if ($timegap) {
             $gap = explode('-', $timegap);
@@ -137,7 +136,7 @@ class GroupController extends BaseController
             ->join('INNER JOIN tp_order_goods d on d.order_id = g.order_id')
             ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
             ->where($condition)
-            ->field('g.id,g.start_time,g.end_time,g.mark,g.free,g.is_successful,g.is_pay,g.goods_name,g.is_free,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,m.store_name,d.goods_price')
+            ->field('g.id,g.start_time,g.end_time,g.mark,g.is_successful,g.is_pay,g.goods_name,g.is_free,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,m.store_name,d.goods_price')
             ->order('o.add_time desc')
             ->limit($Page->firstRow, $Page->listRows)
             ->select();

@@ -223,12 +223,8 @@ class GoodsLogic extends RelationModel
             {                
                 $old_goods_attr[$v['attr_id'].'_'.$v['attr_value']] = $v;
             }            
-        file_put_contents("c.html", print_r($old_goods_attr,true));    
-        
-        
-           $str = print_r($_POST,true);
-            file_put_contents("a.html", $str);
-            // post 提交的属性  以 attr_id _ 和值的 组合为键名    
+
+            // post 提交的属性  以 attr_id _ 和值的 组合为键名
             $post_goods_attr = array();
             foreach($_POST as $k => $v)
             {
