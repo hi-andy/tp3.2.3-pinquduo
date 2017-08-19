@@ -24,7 +24,8 @@ class GroupBuyController extends BaseController {
         //非法的团id
         if($group_buy_id<=0){
             $wxmsg = '您参加的团id非法';
-            $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+            //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+            echo json_encode(['status'=>0,'msg'=>$wxmsg]);
             exit();
         }
         //检测有没有redis数据
@@ -39,24 +40,29 @@ class GroupBuyController extends BaseController {
                 //'is_successful' => 0,   //未成团
             ];
             $result = M('group_buy')->field('user_id,goods_id,is_successful,order_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
+            $tuanuserdata = M('users')->where("user_id={$result['user_id']}")->field("openid,nickname")->find();
+            $zhangnickname = $tuanuserdata['nickname'];
             //查不到数据记录
             if(count($result)<=0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您参加的团id查不到数据记录';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
             if((int)$result['is_successful'] == 1){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '该团已经满员了，您可以自己开团享受0元进口榴莲秒杀哦';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                //wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
             //判断该团是不是已经结束
             if($result['end_time']<=time()){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您参加的团活动已经结束，您可以自己开团享受0元进口榴莲秒杀哦';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
 
@@ -65,7 +71,8 @@ class GroupBuyController extends BaseController {
             if(count($userdata)==0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '您的用户信息非法';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
             $user_id = (int)$userdata['user_id'];
@@ -73,8 +80,9 @@ class GroupBuyController extends BaseController {
             //处理自己参加自己的团
             if($user_id == (int)$result['user_id']){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '开团成功';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                $wxmsg = '自己开团成功';
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
             //处理掉用户id非法的情况-温立涛结束
@@ -86,7 +94,8 @@ class GroupBuyController extends BaseController {
             if ($goodsstatus >0){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '该商品已经下架，您可以自己选择其他商品开团哦';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
 
@@ -99,8 +108,9 @@ class GroupBuyController extends BaseController {
             M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>$orderCount.'=='.$mobile.'=='.$user_id])->add();
             if($orderCount > self::GROUPMAX){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '您已关注过拼趣多，无法帮助好友助力，可以自己开团享受0元秒杀哦';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                $wxmsg = "很抱歉，您无法帮好友@{$zhangnickname}助力哦！\n只有新用户才能帮好友助力，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
             //防刷条件  2017-08-18 温立涛 结束
@@ -110,8 +120,9 @@ class GroupBuyController extends BaseController {
             M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>json_encode($raise)])->add();
             if(!empty($raise)){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '您已关注过拼趣多，无法帮助好友助力，可以自己开团享受0元秒杀哦';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                $wxmsg = "很抱歉，您无法帮好友@{$zhangnickname}助力哦！\n只有新用户才能帮好友助力，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
 //            $spec_key = M('order_goods')->where("order_id = {$result['order_id']}")->getField('spec_key');
@@ -131,7 +142,8 @@ class GroupBuyController extends BaseController {
                 }
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = '该团已经满员了，您可以自己选择其他商品开团哦';
-                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                 exit();
             }
             if(count($result)>0)
@@ -171,28 +183,32 @@ class GroupBuyController extends BaseController {
                         M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);//销量自加
                         if($ressave && $mainres && $orderres){
                             M()->commit();
-                            $tuanuserdata = M('users')->where("user_id={$result['user_id']}")->field("openid")->find();
-                            $wxmsg = '您参加的好友的团成功满团';
-                            $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+
+                            $wxmsg = "恭喜您，已帮好友@{$zhangnickname} 助力成功哦，您好友的团满团了！\n为了表示感谢，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
+                            //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                            echo json_encode(['status'=>1,'msg'=>$wxmsg]);
                             $wxmsg = '您的好友已经帮您助力成功，您的团成功满团';
                             $wxtmplmsg->groupbuy_msg($tuanuserdata['openid'],$wxmsg,$msgone,$msgtwo);
 
                         }else{
                             M()->rollback();//有数据库操作不成功时进行数据回滚
                             $wxmsg = '服务器异常，请稍后重试';
-                            $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                            //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                            echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                         }
                     }else{
                         M()->commit();
-                        $wxmsg = '您参团成功';
-                        $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                        $wxmsg = "恭喜您，已帮好友@{$zhangnickname} 助力成功哦！\n为了表示感谢，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
+                        //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                        echo json_encode(['status'=>1,'msg'=>$wxmsg]);
                     }
                     exit();
                 }else{
                     M()->rollback();//有数据库操作不成功时进行数据回滚
                     redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                    $wxmsg = '您参团失败';
-                    $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                    $wxmsg = '服务器异常，请稍后重试';
+                    //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
+                    echo json_encode(['status'=>0,'msg'=>$wxmsg]);
                     exit();
                 }
             }
