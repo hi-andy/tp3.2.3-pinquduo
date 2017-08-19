@@ -2117,31 +2117,31 @@ class UserController extends BaseController {
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
         $category[0]['id'] = '1';
         $category[0]['cat_name'] = '免单拼';
-        $category[0]['cat_img'] = 'http://cdn.pinquduo.cn/Public/upload/index/miandan1.jpg';
+        $category[0]['cat_img'] = CDN . '/Public/upload/index/miandan1.jpg';
         $category[0]['type'] = '2';
         $category[0]['is_red'] = '0';
 
         $category[1]['id'] = '2';
         $category[1]['cat_name'] = '9.9专区';
-        $category[1]['cat_img'] = 'http://cdn.pinquduo.cn/Public/upload/index/99.jpg';
+        $category[1]['cat_img'] = CDN . '/Public/upload/index/99.jpg';
         $category[1]['type'] = '6';
         $category[1]['is_red'] = '0';
 
         $category[2]['id'] = '3';
         $category[2]['cat_name'] = '限时秒杀';
-        $category[2]['cat_img'] = 'http://cdn.pinquduo.cn/Public/upload/index/xianshi1.jpg';
+        $category[2]['cat_img'] = CDN . '/Public/upload/index/xianshi1.jpg';
         $category[2]['type'] = '7';
         $category[2]['is_red'] = '0';
 
         $category[3]['id'] = '4';
         $category[3]['cat_name'] = '省钱大法';
-        $category[3]['cat_img'] = 'http://cdn.pinquduo.cn/Public/upload/index/8-shenqian.jpg';
+        $category[3]['cat_img'] = CDN . '/Public/upload/index/8-shenqian.jpg';
         $category[3]['type'] = '10';
         $category[3]['is_red'] = '0';
 
         $category[4]['id'] = '5';
         $category[4]['cat_name'] = '趣多严选';
-        $category[4]['cat_img'] = 'http://cdn.pinquduo.cn/Public/upload/index/quduoyanxuan.jpg';
+        $category[4]['cat_img'] = CDN . '/Public/upload/index/quduoyanxuan.jpg';
         $category[4]['type'] = '4';
         $category[4]['is_red'] = '0';
 

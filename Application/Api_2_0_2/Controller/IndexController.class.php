@@ -963,7 +963,7 @@ class IndexController extends BaseController {
         //图片合并
         imagecopyresized($background,$downresource,480,450,0,0,18,20,imagesx($downresource),imagesy($downresource));
         //商品图片资源
-        $goodresource = imagecreatefromjpeg('http://cdn.pinquduo.cn/15017401102.jpg');
+        $goodresource = imagecreatefromjpeg(CDN . '/15017401102.jpg');
         //图片合并
         imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
         //文字颜色
