@@ -121,9 +121,6 @@ class QQPayController extends BaseController
      */
     public function getQQPay($order=array())
     {
-	file_put_contents("log.txt", $_SERVER['HTTP_USER_AGENT'], FILE_APPEND);
-	//echo "<script>alert('Sorry, QQ pay Currrently is not enabled!');</script>"; die();
-	//if(empty($order)){$order=array('order_sn' => date('YmdHis').mt_rand(1000,9999), 'order_amount' => 0.1);}
         $notifyUrl = C('HTTP_URL').'/Api/QQPay/notify';
         list($code, $data) = $this->unifyOrder($order['order_sn'], $order['order_amount']*100, $notifyUrl);
 

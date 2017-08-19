@@ -6,10 +6,10 @@
 namespace Admin\Controller;
 
 use Api\Controller\QQPayController;
+use Think\AjaxPage;
 use Think\Controller;
 use Api_2_0_1\Controller\WxtmplmsgController;
 use Admin\Logic\OrderLogic;
-use Think\Page;
 
 class AwardOrderController extends Controller {
 
@@ -26,11 +26,45 @@ class AwardOrderController extends Controller {
         $this->assign('pay_status',C('PAY_STATUS'));
         $this->assign('shipping_status',C('SHIPPING_STATUS'));
     }
+    // 订单列表页
+    public function orderList()
+    {
+        // 搜索条件
+        $condition = array();
+        $goodsId = I('goods_id');
+        $condition['o.goods_id'] = $goodsId;
 
+        $count = M('group_buy')->alias('g')
+            ->join('left JOIN tp_users u on g.user_id = u.user_id ')
+            ->join('left JOIN tp_order o on o.order_id = g.order_id')
+            ->where($condition)
+            ->count();
+        $Page  = new AjaxPage($count,15);
+        //  搜索条件下 分页赋值
+        foreach($condition as $key=>$val) {
+            $Page->parameter[$key]   =  urlencode($val);
+        }
+
+        $show = bootstrap_page_style($Page->show());
+        //echo M('group_buy')->fetchSql('true')->alias('g')
+        $orderList = M('group_buy')->alias('g')
+            ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
+            ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+            ->where($condition)
+            ->field('g.id,g.start_time,g.end_time,g.goods_name,g.price,g.goods_price,g.is_successful,u.nickname,o.order_sn,o.order_id,o.is_award,o.pay_time')
+            ->limit($Page->firstRow,$Page->listRows)
+            ->select();
+
+        $this->assign('orderList',$orderList);
+        $this->assign('page',$show);// 赋值分页输出
+        $this->assign('goods_id', $goodsId);
+
+        $this->display();
+    }
     /**
      * 根据活动商品，显示相关订单列表
      */
-    public function orderList()
+    public function ajaxOrderList()
     {
         // 搜索条件
         $condition = array();
@@ -45,9 +79,7 @@ class AwardOrderController extends Controller {
 
             //　时间范围
             if($begin && $end){
-                //$where .= ' and o.add_time>' . $begin . ' and o.add_time<' . $end;
-                $condition['o.add_time'] = array('>', $begin);
-                $condition['o.add_time'] = array('<', $end);
+                $condition['_string'] = "o.add_time > $begin && o.add_time < $end";
             }
         }
         //订单号搜索
@@ -65,13 +97,12 @@ class AwardOrderController extends Controller {
         }
 
         $count = M('group_buy')->alias('g')
-            ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
-            ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
+            ->join('left JOIN tp_users u on g.user_id = u.user_id ')
+            ->join('left JOIN tp_order o on o.order_id = g.order_id')
             ->where($condition)
             ->count();
-        $Page  = new Page($count,15);
+        $Page  = new AjaxPage($count,15);
         //  搜索条件下 分页赋值
-        print_r($condition);
         foreach($condition as $key=>$val) {
             $Page->parameter[$key]   =  urlencode($val);
         }
@@ -121,13 +152,12 @@ class AwardOrderController extends Controller {
     {
         if ($dataRange = I('dateRange')) {
             list($begin, $end) = explode('-', $dataRange);
-            $goods_id = I('goods_id');
             $begin = strtotime($begin);
             $end = strtotime($end);
         } else {
             $this->ajaxReturn('请选取时间范围！');
         }
-
+        $goods_id = I('goods_id');
         // 商品名称
         $goods_name = M('goods')->where('goods_id='.$goods_id)->getField('goods_name');
         // 所有未中奖的订单信息
