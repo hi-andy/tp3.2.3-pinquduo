@@ -17,6 +17,7 @@ function is_login(){
  * @param int $type  类型 0 user_id查找 1 邮箱查找 2 手机查找 3 第三方唯一标识查找
  * @param string $oauth  第三方来源
  * @return mixed
+ * 用户合并修改　2017-8－22　Hua
  */
 function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
 {
@@ -46,13 +47,8 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
 
     if ($userInfo = redis($redisKey)) {
         $userInfo = unserialize($userInfo);
-        M('admin_log')->data(array('admin_id'=>'1','log_ip'=>'127.0.0.1','log_url'=>json_encode($userInfo)))->add();
     } else {
         $userInfo = M('users')->where($map)->order('user_id asc')->find();
-
-        M('admin_log')->data(array('admin_id'=>'1','log_ip'=>'127.0.0.1','log_url'=>$aaa))->add();
-        redis($redisKey, serialize($userInfo), 86400);
-    }
         if ($userInfo) {
             /**
              * 更新用户信息
@@ -81,10 +77,10 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
                 }
             }
             M('users')->where($where)->save($data);
-
             redis($redisKey, serialize($userInfo), 86400);
         }
     }
+
 
     /**
      * 用户数据合并
