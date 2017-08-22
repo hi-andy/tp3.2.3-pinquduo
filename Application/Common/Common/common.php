@@ -33,13 +33,12 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     $redisKey = 'userInfo_'.$user_id_or_name;
 
     if($type == 3){
-        if (!empty($user_id_or_name)) {
-//            $map = "oauth='$oauth' and (unionid='$unionid' or openid='$unionid')";　部分用户获取不到 openid, 微信内无法支付。
-            $map = "oauth='$oauth' and (openid='$user_id_or_name' or unionid='$unionid')";
-            $redisKey = 'userInfo_'.$oauth.$user_id_or_name; // oauth + openid = key
+        if (!empty($unionid) && $oauth == 'wx') {
+            $map = "oauth='weixin' and unionid='$unionid'";
+            $redisKey = 'userInfo_' . $unionid;
         } else {
             $map = "oauth='$oauth' and (unionid='$unionid' or openid='$user_id_or_name')";
-            $redisKey = 'userInfo_'.$oauth.$unionid; // oauth + unionid = key
+            $redisKey = 'userInfo_' . $user_id_or_name;
         }
     }
 
@@ -49,10 +48,62 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     } else {
         $userInfo = M('users')->where($map)->order('user_id asc')->find();
         if ($userInfo) {
+            /**
+             * 更新用户信息
+             * 后面检查数据删除。
+             */
+            $where['user_id'] = array("eq", $userInfo['user_id']);
+            /**
+             * 如果使用微信公众号登录
+             * 重写 oauth 类型为 wx 以区分 app 的 weixin 标识；
+             * 并且把微信公众号登录传递过来的 openid 另存到 wx_openid 字段，以区分 app 的 openid
+             */
+            if ($oauth == 'wx') {
+                $data['oauth'] = 'wx';
+                $data['wx_openid'] = $user_id_or_name;
+                $userInfo['wx_openid'] = $user_id_or_name; // 缓存数据增加 wx_openid。
+            } else {
+                /**
+                 * 如果查到 unionid , 不管是使用微信公众号注册的，还是 app 微信注册的；
+                 * 重写 openid 字段，为 app 专用字段。
+                 * 否则通过传递的正确参数，写入 unionid 字段。
+                 */
+                if ($userInfo['unionid']) {
+                    $data['openid'] = $user_id_or_name;
+                } else {
+                    $data['unionid'] = $unionid;
+                }
+            }
+            M('users')->where($where)->save($data);
+
             redis($redisKey, serialize($userInfo), 86400);
         }
     }
-//file_put_contents('parameters.txt', print_r($_REQUEST, true), FILE_APPEND);
+
+    /**
+     * 用户数据合并
+     *
+     * 使用微信公众号登录和 App 内使用微信登录的用户，只保留最早的用户注册记录。
+     * 删除多余的用户记录，并把其余用户产生的订单等相关数据，归为用一用户。
+     */
+    if ($userInfo && !empty($unionid)) {
+        $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and unionid='$unionid'";
+        $users = M()->query($sql);
+        if (count($users) > 0) {
+            $user_id = "";
+            foreach ($users as $v) {
+                $user_id .= $v['user_id'] . ",";
+            }
+            $user_id = substr($user_id, 0, -1);
+            M('user_address')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$userInfo['user_id']));
+            M('return_goods')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$userInfo['user_id']));
+            M('order')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$userInfo['user_id']));
+            M('group_buy')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$userInfo['user_id']));
+            M('goods_collect')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$userInfo['user_id']));
+            M('delivery_doc')->where(array("user_id"=>array("in",$user_id)))->save(array("user_id"=>$userInfo['user_id']));
+            M('users')->where(array("user_id"=>array("in",$user_id)))->delete();
+        }
+    }
     return $userInfo;
 }
 
