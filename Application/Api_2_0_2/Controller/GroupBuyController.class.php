@@ -252,6 +252,11 @@ class GroupBuyController extends BaseController {
                 $goodsinfo = M('goods')->field('original_img,list_img')->where('goods_id='.$goods_id)->find();
                 $groupbuylist[$k]['list_img'] = $goodsinfo['list_img'];
                 $groupbuylist[$k]['original_img'] = $goodsinfo['original_img'];
+                if(strstr($groupbuylist[$k]['original_img'],"http://cdn") && !strstr($groupbuylist[$k]['original_img'],"https://cdn2")){
+                        $cha = $groupbuylist[$k]['original_img'];
+                        $cha = explode('http://cdn',$cha);
+                        $groupbuylist[$k]['original_img'] = 'https://cdn2'.$cha[1];
+                    }
                 $cantuannum = M('group_buy')->where('mark='.$buyid)->count();
                 $cantuannum = (int)$cantuannum + 1;
                 $groupbuylist[$k]['morenum'] = (int)$value['goods_num']-$cantuannum;

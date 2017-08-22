@@ -52,6 +52,7 @@ class GroupController extends BaseController
      */
     public function ajax_group_list()
     {
+
         $timegap = I('timegap');
         if ($timegap) {
             $gap = explode('-', $timegap);
@@ -136,7 +137,7 @@ class GroupController extends BaseController
             ->join('INNER JOIN tp_order_goods d on d.order_id = g.order_id')
             ->join('INNER JOIN tp_merchant m on o.store_id = m.id')
             ->where($condition)
-            ->field('g.id,g.start_time,g.end_time,g.mark,g.is_successful,g.is_pay,g.goods_name,g.is_free,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,m.store_name,d.goods_price')
+            ->field('g.id,g.start_time,g.end_time,g.mark,g.free,g.is_successful,g.is_pay,g.goods_name,g.is_free,g.price,u.nickname,o.order_sn,o.pay_time,o.add_time,m.store_name,d.goods_price')
             ->order('o.add_time desc')
             ->limit($Page->firstRow, $Page->listRows)
             ->select();
@@ -151,16 +152,16 @@ class GroupController extends BaseController
      */
     public function detail()
     {
-
         $group_id = $_REQUEST['group_id'];
-        $group_info = M('group_buy')->where(array('id' => $group_id))->find();
+        $group_info = M('group_buy')->where('id = '.$group_id)->find();
+
         $head_info = array();
         //如果是团长 获取团员信息
         if ($group_info['mark'] == 0) {
             $member_infos = M('group_buy')->alias('g')
                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                ->where('g.mark = ' . $group_info['mark'])
+                ->where('g.mark = ' . $group_info['id'])
                 ->field('g.id,g.start_time,g.end_time,g.goods_num,g.order_num,g.price,g.mark,g.is_pay,g.is_free,g.is_successful,u.nickname,o.order_sn,o.pay_time')
                 ->order('g.id desc')
                 ->select();
@@ -174,6 +175,7 @@ class GroupController extends BaseController
                 ->order('g.id desc')
                 ->select();
         }
+
         $order_id = $group_info['order_id'];
         $orderLogic = new OrderLogic();
         $order = $orderLogic->getOrderInfo($order_id);
@@ -309,29 +311,44 @@ class GroupController extends BaseController
     {
         // 搜索条件
         $order_sn = trim(I('order_sn'));
-        $order_by = I('order_by') ? I('order_by') : 'id';
-        $sort_order = I('sort_order') ? I('sort_order') : 'desc';
+//        $order_by = I('order_by') ? I('order_by') : 'gb.id';
+//        $sort_order = I('sort_order') ? I('sort_order') : 'desc';
         $status = I('status');
 
-        $where = "`is_prom`=1 and tp_group_buy.is_successful=1 ";
-        $order_sn && $where .= " and tp_return_goods.order_sn like '%$order_sn%' ";
-        empty($order_sn) && $where .= " and tp_return_goods.status = '$status' ";
+        $where = " rg.`is_prom`=1 and gb.is_successful=1 ";
+        $order_sn && $where .= " and rg.order_sn like '%$order_sn%' ";
+        empty($order_sn) && $where .= " and rg.`status` = '$status' ";
 
-        $count = M('return_goods')->
-        join(array(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id "))->
-        field("tp_return_goods.*,tp_group_buy.`is_successful`")->
-        where($where)->
-        count();
+        if (!empty(I('store_name'))) {
+            $this->assign('store_name', I('store_name'));
+            $store_id = M('merchant')->where("store_name = '".I('store_name')."'")->getField('id');
+            if(empty($store_id)){
+                $store_id = M('merchant')->where("store_name like '%".I('store_name')."%'")->getField('id');
+            }
+            $where = $where." and rg.store_id = $store_id ";
+        }
+
+        if (!empty(I('store_id'))) {
+            $store_id = I('store_id');
+            $where = $where." and rg.store_id = $store_id ";
+        }
+
+        $count = M('return_goods')->alias('rg')
+            ->join(array(" LEFT JOIN tp_group_buy gb ON gb.order_id = rg.order_id "))
+            ->where($where)
+            ->count();
 
         $Page = new AjaxPage($count, 13);
         $show = $Page->show();
-        $list = M('return_goods')->where($where)->
-        join(array(" LEFT JOIN tp_group_buy ON tp_group_buy.order_id = tp_return_goods.order_id "))->
-        field("tp_return_goods.*,tp_group_buy.`is_successful`")->
-        order("$order_by $sort_order")->
-        limit("{$Page->firstRow},{$Page->listRows}")->
-        select();
-
+        $list = M('return_goods')->alias('rg')
+            ->join(array(" LEFT JOIN tp_group_buy gb ON gb.order_id = rg.order_id "))
+            ->join("LEFT JOIN tp_merchant m ON m.id = rg.store_id ")
+            ->order("rg.id desc")
+            ->where($where)
+            ->limit("{$Page->firstRow},{$Page->listRows}")
+            ->field('rg.*,m.store_name,gb.id as prom_id')
+            ->select();
+//        var_dump($list);die;
         $goods_id_arr = get_arr_column($list, 'goods_id');
         if (!empty($goods_id_arr))
             $goods_list = M('goods')->where("goods_id in (" . implode(',', $goods_id_arr) . ")")->getField('goods_id,goods_name');

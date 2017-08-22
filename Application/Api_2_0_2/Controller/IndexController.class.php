@@ -626,14 +626,13 @@ class IndexController extends BaseController {
                 }
             }
 
-//            foreach ($goods as $k=>$v){
-//                if(strstr($v['original_img'],"http") && !strstr($v['original_img'],"https")){
-//                    $cha = $goods[$k]['original_img'];
-//                    str_replace('http','https',$cha);
-//                    $cha = explode('http',$cha);
-//                    $goods[$k]['original_img'] = 'https'.$cha[1];
-//                }
-//            }
+            foreach ($goods as $k=>$v){
+                if(strstr($v['original'],"http://cdn") && !strstr($v['original'],"https://cdn2")){
+                    $cha = $goods[$k]['original'];
+                    $cha = explode('http://cdn',$cha);
+                    $goods[$k]['original'] = 'https://cdn2'.$cha[1];
+                }
+            }
 
             $ad = M('ad')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'raisegoods'=>$goods));
@@ -1153,6 +1152,14 @@ class IndexController extends BaseController {
     }
 
     function t2() {
-
+        $chas = 'https://cdn.pinquduo.cn/15025918410.jpg';
+        var_dump($chas);
+        var_dump(strstr($chas,"https://cdn"));die;
+        if(strstr($chas,"http://cdn") && !strstr($chas,"https://cdn2")){
+            $cha = $chas;
+            $cha = explode('http://cdn',$cha);
+            $d = 'https://cdn2'.$cha[1];
+        }
+        var_dump($d);
     }
 }

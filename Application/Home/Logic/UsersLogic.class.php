@@ -48,6 +48,7 @@ class UsersLogic extends RelationModel
         } else {
             //获取用户信息
             $user = get_user_info($openid, 3, $oauth, $unionid);
+            M('admin_log')->data(array('admin_id'=>'1','log_ip'=>'127.0.0.1','log_url'=>json_encode($user)))->add();
             if(count($user)>0){
                 if (($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile']))) {
                     //拉取微信头像传到七牛云

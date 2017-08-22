@@ -109,18 +109,18 @@ class GoodsController extends BaseController {
 					$condition2['is_audit'] =1;//是否审核
 					$condition2['show_type'] =0;//是否被删除
 					$condition2['the_raise'] =0;//为我点赞标识
-					$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
+					$data = $this->getGoodsList($condition2,$page,$pagesize,'sales desc');
 					return $data;
 				}else{
 					$where = '`show_type`=0 and `cat_id`=' . $id . ' and is_show=1 and is_on_sale=1 and is_audit=1';
-					$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
+					$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
 					return $data;
 				}
 			}
 		}elseif($type==1){
 			if($id==0){//全部
 				$where = '`is_special` = 1 and is_show=1 and is_on_sale=1 and is_audit=1 and show_type = 0';
-				$data = $this->getGoodsList($where,$page,$pagesize,'sort asc,sales desc');
+				$data = $this->getGoodsList($where,$page,$pagesize,'sales desc');
 			}else{
 				$cat = M('haitao')->where('`parent_id` = '.$id)->field('id')->select();
 				$condition['is_on_sale']=1;
@@ -133,7 +133,7 @@ class GoodsController extends BaseController {
 				}else{//array_column()将二维数组转成一维
 					$condition['haitao_cat'] =array('in',array_column($cat,'id'));
 				}
-				$data = $this->getGoodsList($condition,$page,$pagesize,'sort asc,sales desc');
+				$data = $this->getGoodsList($condition,$page,$pagesize,'sales desc');
 			}
 		}else{
 			$json = array('status'=>-1,'msg'=>'参数错误');
@@ -165,7 +165,7 @@ class GoodsController extends BaseController {
 		$condition2['is_audit'] = 1;
 		$condition2['show_type'] =0;
 		$condition2['the_raise'] =0;
-		$data = $this->getGoodsList($condition2,$page,$pagesize,'sort asc,sales desc');
+		$data = $this->getGoodsList($condition2,$page,$pagesize,'sales desc');
 		return $data;
 	}
     /**

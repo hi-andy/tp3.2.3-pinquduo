@@ -47,7 +47,7 @@ class RaisepicController extends BaseController
 //        var_dump(empty($img));
         if(empty($img)){
             $goods_info = M('goods')->where('goods_id = '.$prom_info['goods_id'])->field('goods_name,market_price')->find();
-            $goods_image = M('goods_images')->where('goods_id = '.$prom_info['goods_id'])->field('image_url')->find();
+            $goods_image = M('goods_images')->where("goods_id = '{$prom_info['goods_id']}'")->field('image_url')->find();
             $url = get_raise_pic($prom_info['goods_id'],$goods_image['image_url'],$goods_info['goods_name'],$goods_info['market_price']);
             $img = imagecreatefromstring(curl_file_get_contents($url));
 //            var_dump(1);
@@ -58,7 +58,7 @@ class RaisepicController extends BaseController
         }
 
         $font = 'Public/images/yahei.ttf';//字体
-        $bigImg=  "http://{$bucket}.{$endpoint}/Public/upload/raise-prom/userid_". $prom_info['user_id'] .'_promid_'.$prom_id.'.jpg';
+        $bigImg=  "https://{$bucket}.{$endpoint}/Public/upload/raise-prom/userid_". $prom_info['user_id'] .'_promid_'.$prom_id.'.jpg';
 //        $getimgcontent = file_get_contents($bigImg);
         $img_t = imagecreatefromstring(curl_file_get_contents($bigImg));
 //        var_dump(2);
@@ -125,7 +125,7 @@ class RaisepicController extends BaseController
 
             try{
                 $ossClient->uploadFile($bucket,$object,$file);
-                $url =  "http://{$bucket}.{$endpoint}/".$object;
+                $url =  "https://{$bucket}.{$endpoint}/".$object;
                 $p = imagecreatefromstring(curl_file_get_contents($url));
                 if(!empty($p)){
                     unlink($path1);
@@ -137,7 +137,7 @@ class RaisepicController extends BaseController
                 print $e->getMessage();
             }
         }else{
-            $url = "http://{$bucket}.{$endpoint}/Public/upload/raise-prom/userid_". $prom_info['user_id'] .'_promid_'.$prom_id.'.jpg';
+            $url = "https://{$bucket}.{$endpoint}/Public/upload/raise-prom/userid_". $prom_info['user_id'] .'_promid_'.$prom_id.'.jpg';
         }
         $json = array('status'=>1,'msg'=>'获取成功','result'=>array('url'=>$url));
         $this->getJsonp($json);

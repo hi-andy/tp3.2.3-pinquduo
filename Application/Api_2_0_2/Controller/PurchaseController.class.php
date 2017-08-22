@@ -971,7 +971,7 @@ class PurchaseController extends  BaseController
             $code = $code.substr($string,$end,1);
         }
 
-        $test = M('order')->where('`invitation_num`='.$code)->find();
+        $test = M('order')->where("`invitation_num`='$code'")->find();
         if(!empty($test))
             $code = $this->getInvitationNum();
         return $code;

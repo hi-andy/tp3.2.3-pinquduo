@@ -290,6 +290,8 @@ class ReportController extends BaseController{
 			$condition  =  ' and a.store_id='.$store_id['id'];
 			$this->assign('store_id',$store_id);
 			$this->assign('store_name',I('store_name'));
+		}else{
+			$store_id['id'] = 0;
 		}
 
 		//统计各种参数
