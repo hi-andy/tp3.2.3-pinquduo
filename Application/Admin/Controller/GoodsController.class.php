@@ -302,6 +302,7 @@ class GoodsController extends BaseController
                         $res1 = unlink($link1);
                     }
                     $Goods->save(); // 写入数据到数据库
+
                     $Goods->afterSave($goods_id);
                     redislist("goods_refresh_id", $goods_id);
                 }
@@ -334,6 +335,7 @@ class GoodsController extends BaseController
         }
 
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+        M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$goodsInfo['store_id']))->add();
         $cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 

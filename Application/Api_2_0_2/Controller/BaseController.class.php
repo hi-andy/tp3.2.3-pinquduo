@@ -212,6 +212,7 @@ class BaseController extends Controller {
             $status['annotation'] = '拒绝受理';
             $status['order_type'] = '16';
         }else{
+            M('admin_log')->data(array('admin_id'=>1,'log_ip'=>22,'log_info'=>'异常订单问题','log_url'=>json_encode($order).'-----'.json_encode($prom)))->add();
             $status['annotation'] = '订单状态异常';
             $status['order_type'] = null;
         }

@@ -27,11 +27,8 @@ class OrderLogic extends RelationModel
      */
     public function getOrderGoods($order_id){
         //$sql = "SELECT g.*,o.*,(o.goods_num * o.member_goods_price) AS goods_total FROM __PREFIX__order_goods o ".
-        $sql = "SELECT g.*,o.*,(o.goods_num * o.goods_price) AS goods_total FROM __PREFIX__order_goods o ".
-            "LEFT JOIN __PREFIX__goods g ON o.goods_id = g.goods_id WHERE o.order_id = $order_id";
-        $res = $this->query($sql);
-
-        return $res;
+	    $res = M('order_goods')->where('`order_id`='.$order_id)->select();
+	    return $res;
     }
 
     /*
@@ -39,13 +36,9 @@ class OrderLogic extends RelationModel
      */
     public function getOrderInfo($order_id)
     {
-		//  订单总金额查询语句
-		$total_fee = " (order_amount + shipping_price - discount - coupon_price) AS total_fee ";
-		$sql = "SELECT *, " . $total_fee . " FROM __PREFIX__order WHERE order_id = '$order_id'";
-		$res = $this->query($sql);
-//		$res[0]['address2'] = $this->getAddressName($res[0]['province'],$res[0]['city'],$res[0]['district']);
-//		$res[0]['address2'] = $res[0]['address2'].$res[0]['address'];
-		return $res[0];
+	    $total = M('order')->where('`order_id`='.$order_id)->find();
+	    $total['address'] = $total['address_base'].' '.$total['address'];
+	    return $total;
     }
 
     /*

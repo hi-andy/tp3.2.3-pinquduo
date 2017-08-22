@@ -626,6 +626,14 @@ class IndexController extends BaseController {
                 }
             }
 
+            foreach ($goods as $k=>$v){
+                if(strstr($v['original'],"http://cdn") && !strstr($v['original'],"https://cdn2")){
+                    $cha = $goods[$k]['original'];
+                    $cha = explode('http://cdn',$cha);
+                    $goods[$k]['original'] = 'https://cdn2'.$cha[1];
+                }
+            }
+
             $ad = M('ad')->where('pid = 4')->field('ad_id,ad_code,ad_link,type')->find();
             $json = array('status'=>1,'msg'=>'获取成功','result'=>array('banner'=>$ad,'raisegoods'=>$goods));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
@@ -954,7 +962,7 @@ class IndexController extends BaseController {
         //图片合并
         imagecopyresized($background,$downresource,480,450,0,0,18,20,imagesx($downresource),imagesy($downresource));
         //商品图片资源
-        $goodresource = imagecreatefromjpeg('http://cdn.pinquduo.cn/15017401102.jpg');
+        $goodresource = imagecreatefromjpeg(CDN . '/15017401102.jpg');
         //图片合并
         imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
         //文字颜色
@@ -1067,9 +1075,91 @@ class IndexController extends BaseController {
     }
 
     function  t(){
-        //将抽奖商品的订单拿出来进行退款
+        $code = 'PQD';  //客户id=APPKey
+        $secretKey = 'b1fc3d0cc7e721574dbe8217099b1f8a';//安能快递秘钥
+        $url = 'http://101.95.139.62:40144/aneop/services/logisticsQuery/query';
+        $ewbNo = 29506100000198;//
+        $digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
+        list($t1, $t2) = explode(' ', microtime());
+        $timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
+        $data = '{"timestamp":"'.$timestamp.'","digest":"'.$digest.'","params":"{\"ewbNo\":\"'.$ewbNo.'\"}","code":"'.$code.'"}';
+        $ch = curl_init();
+        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch,CURLOPT_HEADER,0);
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+        $result=curl_exec($ch);
+        curl_close($ch);
 
+        $arr = object_to_array(json_decode($result));
+        $arr['resultInfo'] = object_to_array(json_decode($arr['resultInfo']));
+        $arr['resultInfo'] = $arr['resultInfo']['tracesList'][0];
+        $new_arr = array();
+        foreach ($arr['resultInfo']['traces'] as $k=>$v){
+            $new_arr[$k]['ftime'] = $new_arr[$k]['time'] = $v['time'];
+            $new_arr[$k]['context'] = $v['desc'];
+        }
+//        var_dump($new_arr);die;
+//        var_dump($datas);die;
+//        $cha = "{\"result\":true,\"reason\":\"成功\",\"resultCode\":\"1000\",\"resultInfo\":{\"tracesList\":[{\"mailNos\":\"29506100000198\",\"traces\":[{\"action\":\"ARRIVAL\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】快件已到达CF测试一级加盟网点A\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 09:27:17\",\"tz\":\"+8\"},{\"action\":\"GOT\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】安能CF测试一级加盟网点A收件员已揽件\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:17:27\",\"tz\":\"+8\"},{\"action\":\"DEPARTURE\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】CF测试一级加盟网点A已发出,下一站CF测试一级分拨中心A\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:20:46\",\"tz\":\"+8\"},{\"action\":\"ARRIVAL\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】CF测试一级加盟网点A快件已到达\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:25:49\",\"tz\":\"+8\"},{\"action\":\"SENT_SCAN\",\"city\":\"杭州市\",\"contactPhone\":\"17199750494\",\"contacter\":\"CF测试一级加盟网点员工\",\"country\":\"China\",\"desc\":\"【杭州市】CF测试一级加盟网点A派件员:CF测试一级加盟网点员工17199750494正在为您派件\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:27:17\",\"tz\":\"+8\"},{\"action\":\"SIGNED\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市已签收,签收人是自提件,感谢使用安能,期待再次为您服务\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:50:04\",\"tz\":\"+8\"}]}]}}";
+//
+//        $arr = $this->object_to_array(json_decode($cha));
 
+        $json = array('status' => 1, 'msg' => '获取成功', 'result' => $new_arr);
+        exit(json_encode($json));
     }
 
+    function object_to_array($obj) {
+        $obj = (array)$obj;
+        foreach ($obj as $k => $v) {
+            if (gettype($v) == 'resource') {
+                return;
+            }
+            if (gettype($v) == 'object' || gettype($v) == 'array') {
+                $obj[$k] = (array)$this->object_to_array($v);
+            }
+        }
+
+        return $obj;
+    }
+
+    //PHP stdClass Object转array
+    function object_array($array) {
+        if(is_object($array)) {
+            $array = (array)$array;
+        }
+        if(is_array($array)) {
+            foreach($array as $key=>$value) {
+                $array[$key] = object_array($value);
+            }
+        }
+        return $array;
+    }
+
+    function object2array_pre(&$object) {
+        if (is_object($object)) {
+            $arr = (array)($object);
+        } else {
+            $arr = &$object;
+        }
+        if (is_array($arr)) {
+            foreach($arr as $varName => $varValue){
+                $arr[$varName] = $this->object2array($varValue);
+            }
+        }
+        return $arr;
+    }
+
+    function t2() {
+        $chas = 'https://cdn.pinquduo.cn/15025918410.jpg';
+        var_dump($chas);
+        var_dump(strstr($chas,"https://cdn"));die;
+        if(strstr($chas,"http://cdn") && !strstr($chas,"https://cdn2")){
+            $cha = $chas;
+            $cha = explode('http://cdn',$cha);
+            $d = 'https://cdn2'.$cha[1];
+        }
+        var_dump($d);
+    }
 }

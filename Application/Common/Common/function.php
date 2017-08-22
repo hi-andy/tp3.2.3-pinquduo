@@ -993,10 +993,7 @@ function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
 	$pic_w   = intval($ewmWidth);
 	// 高度
 	$pic_h   = intval($ewmHeight);
-	//创建down图片资源
-	$downresource = imagecreatefrompng('Public/images/down.png');
-	//图片合并
-	imagecopyresized($background,$downresource,480,450,0,0,18,20,imagesx($downresource),imagesy($downresource));
+
 	//商品图片资源
 	$goodresource = imagecreatefromjpeg($goods_img);
 	//图片合并
@@ -1025,7 +1022,7 @@ function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
 		imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$goods_name);
 	}
 
-	imagettftext($background,17,0,$start_x,intval($start_y-39),$fontcolor,$font,"长按二维码为我助力");
+	imagettftext($background,17,0,intval($start_x+28),intval($start_y-39),$fontcolor,$font,"长按二维码查看");
 
 	imagettftext($background,20,0,20,606,imagecolorallocate($background, 226,0,37),$font,'快来拼趣多秒购0元商品');
 

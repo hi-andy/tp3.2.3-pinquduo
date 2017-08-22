@@ -111,9 +111,9 @@ class OrderLogic extends RelationModel
 //        $res[0]['address2'] = $this->getAddressName($res[0]['province'],$res[0]['city'],$res[0]['district']);
 //        $res[0]['address2'] = $res[0]['address2'].$res[0]['address'];
 //        return $res[0];
-	    $total = M('order')->where('`order_id`='.$order_id)->find();
 
 //        $res[0]['address2'] = $this->getAddressName($res[0]['province'],$res[0]['city'],$res[0]['district']);
+	    $total = M('order')->where('`order_id`='.$order_id)->find();
 	    $total['address'] = $total['address_base'].' '.$total['address'];
 	    return $total;
     }

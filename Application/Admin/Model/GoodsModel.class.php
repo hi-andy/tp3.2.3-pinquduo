@@ -60,6 +60,7 @@ class GoodsModel extends Model {
             }
         }
 
+
         // 商品规格价钱处理
         if($_POST['item'])
         {
@@ -120,8 +121,10 @@ class GoodsModel extends Model {
                 $v['price'] = trim($v['price']);
                 $v['prom_price'] = trim($v['prom_price']);
                 $v['store_count'] = trim($v['store_count']); // 记录商品总库存
-                $dataList[] = array('goods_id'=>$goods_id,'key'=>$k,'key_name'=>$v['key_name'],'price'=>$v['price'],'prom_price'=>$v['prom_price'],'store_count'=>$v['store_count']);
+                $dataList[] = array('goods_id'=>$goods_id,'key'=>$k,'key_name'=>$v['key_name'],'price'=>$v['price'],'prom_price'=>$v['prom_price'],'is_del'=>0,'store_count'=>$v['store_count']);
             }
+
+            M('admin_log')->data(array('admin_id'=>1,'log_url'=>json_encode($dataList)))->add();
             //规格名称
             $keys = array_keys($_POST['item']);
             for($i=0;$i<count($_POST['item']);$i++)
@@ -139,6 +142,7 @@ class GoodsModel extends Model {
                     $key_name = $key_name.$name[$z];
                 }
                 $dataList[$i]['key_name'] = $key_name;
+
                 $name=null;
             }
 
@@ -147,6 +151,7 @@ class GoodsModel extends Model {
         }
 
         $res = M('goods')->where('goods_id='.$goods_id)->data($d)->save();
+
         // 商品规格图片处理
         if($_POST['item_img'])
         {
