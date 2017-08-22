@@ -7,7 +7,8 @@ define("REDISIP", "r-wz9266773b1c1894.redis.rds.aliyuncs.com");
 define("PORT", 6379);
 define("REDISPASS", "Wang1314");
 define("REDISTIME", 120);
-define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
+//define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
+define("CDN", "https://cdn2.pinquduo.cn");  //七牛云CDN加速域名; 升级 https 2017-8-19　Hua
 define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
 define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 

@@ -42,8 +42,14 @@ class ReportController extends BaseController{
 			$this->error("尚未缴纳保证金，现在前往缴纳",U('Store/Index/pay_money'));
 		}
 	}
-	
+
+	// 默认进入后台首页，不显示统计信息　2017-8-19　Hua
 	public function index()
+    {
+        $this->display();
+    }
+
+	public function report()
     {
 		//拿到凌晨的时间戳和第二天的凌晨时间戳
 		$now = strtotime(date('Y-m-d'));
@@ -69,9 +75,9 @@ class ReportController extends BaseController{
 		$sql .= "where ".$where." add_time>$this->begin and add_time<($this->end+24*3600) AND pay_status=1  group by gap";
 		$res = M()->query($sql);//订单数,交易额
 
-//		//获取取消订单数
-//		$cancel = "SELECT count(*) AS cancel_num,FROM_UNIXTIME(add_time, '%Y-%m-%d') AS gap FROM __PREFIX__order WHERE store_id = ".$_SESSION['merchant_id']." AND add_time > $this->begin AND add_time < $this->end AND is_cancel = 1  GROUP BY	gap";
-//		$cancel_res = M()->query($cancel);
+		//获取取消订单数
+		$cancel = "SELECT count(*) AS cancel_num,FROM_UNIXTIME(add_time, '%Y-%m-%d') AS gap FROM __PREFIX__order WHERE store_id = ".$_SESSION['merchant_id']." AND add_time > $this->begin AND add_time < $this->end AND is_cancel = 1  GROUP BY	gap";
+		$cancel_res = M()->query($cancel);
 
 		for($i=0;$i<count($res);$i++)
 		{

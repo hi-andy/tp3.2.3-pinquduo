@@ -44,16 +44,28 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     }
 
     // 缓存查询用户信息　2017-8-14　Hua
+<<<<<<< HEAD
     if (false && $userInfo = redis($redisKey)) {
+=======
+    if ($userInfo = redis($redisKey)) {
+>>>>>>> b1082b7a2c2e72fd577d66ac454859fe17d44efd
         $userInfo = unserialize($userInfo);
         M('admin_log')->data(array('admin_id'=>'1','log_ip'=>'127.0.0.1','log_url'=>json_encode($userInfo)))->add();
     } else {
         $userInfo = M('users')->where($map)->order('user_id asc')->find();
+<<<<<<< HEAD
         $aaa = M('users')->getLastSql();
         M('admin_log')->data(array('admin_id'=>'1','log_ip'=>'127.0.0.1','log_url'=>$aaa))->add();
         redis($redisKey, serialize($userInfo), 86400);
     }
 file_put_contents('parameters.txt', print_r($_REQUEST, true), FILE_APPEND);
+=======
+        if ($userInfo) {
+            redis($redisKey, serialize($userInfo), 86400);
+        }
+    }
+//file_put_contents('parameters.txt', print_r($_REQUEST, true), FILE_APPEND);
+>>>>>>> b1082b7a2c2e72fd577d66ac454859fe17d44efd
     return $userInfo;
 }
 
