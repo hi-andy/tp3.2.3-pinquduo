@@ -34,7 +34,6 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
 
     if($type == 3){
         if (!empty($user_id_or_name)) {
-//            $map = "oauth='$oauth' and (unionid='$unionid' or openid='$unionid')";　部分用户获取不到 openid, 微信内无法支付。
             $map = "oauth='$oauth' and (openid='$user_id_or_name' or unionid='$unionid')";
             $redisKey = 'userInfo_'.$oauth.$user_id_or_name; // oauth + openid = key
         } else {
@@ -44,16 +43,13 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     }
 
     // 缓存查询用户信息　2017-8-14　Hua
-
     if ($userInfo = redis($redisKey)) {
         $userInfo = unserialize($userInfo);
-        M('admin_log')->data(array('admin_id'=>'1','log_ip'=>'127.0.0.1','log_url'=>json_encode($userInfo)))->add();
     } else {
-        $userInfo = M('users')->where($map)->order('user_id asc')->find();
-        redis($redisKey, serialize($userInfo), 86400);
-    }
-    if ($userInfo) {
-        redis($redisKey, serialize($userInfo), 86400);
+        $userInfo = M('users')->where($map)->find();
+        if ($userInfo) {
+            redis($redisKey, serialize($userInfo), 86400);
+        }
     }
     return $userInfo;
 }
