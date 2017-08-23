@@ -53,11 +53,7 @@ class UsersLogic extends RelationModel
                 if (($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile']))) {
                     //拉取微信头像传到七牛云
                     $qiniu = new \Admin\Controller\QiniuController();
-<<<<<<< HEAD
-                    $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
-=======
-                    $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
->>>>>>> ae408f08b8518ae44d0f0c4ec9e0d67721242823
+                    $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
 
                     $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                     M('users')->where('user_id=' . $user['user_id'])->save($data);
@@ -65,16 +61,11 @@ class UsersLogic extends RelationModel
                 }else{
                     //拉取微信头像传到七牛云
                     $qiniu = new \Admin\Controller\QiniuController();
-<<<<<<< HEAD
-                    $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
-                    $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-=======
-                    $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
-                    $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
->>>>>>> ae408f08b8518ae44d0f0c4ec9e0d67721242823
+                    $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
 
+                    $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                     if($parameters['head_pic'] != $user['head_pic']){
-                        $row = M('users')->where('user_id=' . $user['user_id'])->save($data);
+                        M('users')->where('user_id=' . $user['user_id'])->save($data);
                     }
                     $user['head_pic'] = $data['head_pic'];
                 }
@@ -103,20 +94,13 @@ class UsersLogic extends RelationModel
 
                 //拉去微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();
-<<<<<<< HEAD
-                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
-                $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                $row = M('users')->add($map);
-=======
-                $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
-                $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
 
+                $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                 $userId = M('users')->add($data);
 
->>>>>>> ae408f08b8518ae44d0f0c4ec9e0d67721242823
                 $usersql = M('users')->getLastSql();
                 M('admin_log')->data(['admin_id'=>1,'log_info'=>'22','log_ip'=>'127.0.0.1','log_url'=>$usersql])->add();
-
                 //$user = get_user_info($openid, 3, $oauth, $unionid);
 
                 $user['nickname'] = $parameters['nickname'];
