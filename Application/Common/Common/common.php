@@ -17,7 +17,8 @@ function is_login(){
  * @param int $type  类型 0 user_id查找 1 邮箱查找 2 手机查找 3 第三方唯一标识查找
  * @param string $oauth  第三方来源
  * @return mixed
- * 用户合并修改　2017-8－22　Hua
+ *
+ * 用户合并修改　2017-8－23　Hua
  */
 function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
 {
@@ -50,11 +51,12 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     } else {
         $userInfo = M('users')->where($map)->order('user_id asc')->find();
 
-        if ($userInfo) {
-            /**
-             * 更新用户信息
-             * 后面检查数据删除。
-             */
+        /**
+         * 更新用户信息
+         * 完成旧用户数据合并后删除。
+         */
+        $time = strtotime('2017-8-23'); //　以下代码发布日期,检查此日期之前的注册用户记录
+        if ($userInfo && $userInfo['reg_time'] < $time) {
             $where['user_id'] = array("eq", $userInfo['user_id']);
             /**
              * 如果使用微信公众号登录
@@ -69,7 +71,8 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
                 /**
                  * 如果查到 unionid , 不管是使用微信公众号注册的，还是 app 微信注册的；
                  * 重写 openid 字段，为 app 专用字段。
-                 * 否则通过传递的正确参数，写入 unionid 字段。
+                 * 否则通过传递的正确参数，写入 unionid 字段，
+                 * 因为早期注册用户有 unionid 为空的记录存在。
                  */
                 if ($userInfo['unionid']) {
                     $data['openid'] = $user_id_or_name;
@@ -88,8 +91,8 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
      * 使用微信公众号登录和 App 内使用微信登录的用户，只保留最早的用户注册记录。
      * 删除多余的用户记录，并把其余用户产生的订单等相关数据，归为用一用户。
      */
-    if ($userInfo && !empty($unionid)) {
-        $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and unionid='$unionid'";
+    if ($userInfo && ($unionid || $user_id_or_name)) {
+        $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and (unionid='$unionid' or openid='$user_id_or_name'";
         $users = M()->query($sql);
         if (count($users) > 0) {
             $user_id = "";
