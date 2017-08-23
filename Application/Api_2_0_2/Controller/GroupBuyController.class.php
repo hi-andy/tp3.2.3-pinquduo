@@ -13,7 +13,7 @@ class GroupBuyController extends BaseController {
     public function autozan(){
         $group_buy_id = I('groupbuyid');
         $useropenid = I('useropenid');
-        $oauth = 'weixin';
+        $oauth = 'wx';
         $nickname = I('nickname');
         $unionid = I('unionid');
         $group_buy_id = (int)$group_buy_id;
@@ -40,7 +40,7 @@ class GroupBuyController extends BaseController {
                 //'is_successful' => 0,   //未成团
             ];
             $result = M('group_buy')->field('user_id,goods_id,is_successful,order_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
-            $tuanuserdata = M('users')->where("user_id={$result['user_id']}")->field("openid,nickname")->find();
+            $tuanuserdata = M('users')->where("user_id={$result['user_id']}")->field("wx_openid,nickname")->find();
             $zhangnickname = $tuanuserdata['nickname'];
             //查不到数据记录
             if(count($result)<=0){
@@ -188,7 +188,7 @@ class GroupBuyController extends BaseController {
                             //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
                             echo json_encode(['status'=>1,'msg'=>$wxmsg]);
                             $wxmsg = '您的好友已经帮您助力成功，您的团成功满团';
-                            $wxtmplmsg->groupbuy_msg($tuanuserdata['openid'],$wxmsg,$msgone,$msgtwo);
+                            $wxtmplmsg->groupbuy_msg($tuanuserdata['wx_openid'],$wxmsg,$msgone,$msgtwo);
 
                         }else{
                             M()->rollback();//有数据库操作不成功时进行数据回滚

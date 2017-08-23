@@ -107,8 +107,8 @@ class WeixinpayController extends BaseController {
         //①、获取用户openid
         $tools = new \JsApiPay();
         //$openId = $tools->GetOpenid();
-        $user = M('users')->where(array("user_id"=>array("eq",$order['user_id'])))->field('openid')->find();
-        $openId = $user['openid'];
+        $user = M('users')->where(array("user_id"=>array("eq",$order['user_id'])))->field('wx_openid')->find();
+        $openId = $user['wx_openid'];
         redis("order", serialize($order), 6000);
         //②、统一下单
         $input = new \WxPayUnifiedOrder();

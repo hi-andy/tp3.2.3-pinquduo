@@ -383,7 +383,7 @@ class AutomationController extends BaseController
                     $nicknames = substr($nicknames, 0, -1);
                     // 获取拼团成功用户微信 openid ，推送拼团成功消息
                     foreach ($group_buy_mark as $v2) {
-                        $openid = M('users')->where("user_id={$v2['user_id']}")->getField('openid');
+                        $openid = M('users')->where("user_id={$v2['user_id']}")->getField('wx_openid');
                         $wxtmplmsg->spell_success($openid, $v2['goods_name'], $nicknames);
                     }
                     //　插入伪拼团用户信息，以成团

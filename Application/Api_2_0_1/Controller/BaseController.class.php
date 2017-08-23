@@ -745,7 +745,7 @@ class BaseController extends Controller {
         //微信推送消息
         $user_ids = substr($user_ids, 0, -1);
         if (!empty($user_ids)){
-            $user = M('users')->where("user_id in({$user_ids})")->field('openid,nickname')->select();
+            $user = M('users')->where("user_id in({$user_ids})")->field('wx_openid,nickname')->select();
             if ($user) {
                 $nicknames = "";
                 foreach ($user as $v){
@@ -754,7 +754,7 @@ class BaseController extends Controller {
                 $nicknames = substr($nicknames, 0, -1);
                 $wxtmplmsg = new WxtmplmsgController();
                 foreach ($user as $v){
-                    $wxtmplmsg->spell_success($v['openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
+                    $wxtmplmsg->spell_success($v['wx_openid'],$goodsname,$nicknames,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
                 }
             }
 
@@ -907,7 +907,7 @@ class BaseController extends Controller {
         }
         $this->order_redis_status_ref($order['user_id']);
         //微信推送消息
-        $openid = M('users')->where("user_id={$order['user_id']}")->getField('openid');
+        $openid = M('users')->where("user_id={$order['user_id']}")->getField('wx_openid');
         $goods_name = M('goods')->where("goods_id={$order['goods_id']}")->getField('goods_name');
         $wxtmplmsg = new WxtmplmsgController();
         $wxtmplmsg->order_payment_success($openid,$order['order_amount'],$goods_name);
