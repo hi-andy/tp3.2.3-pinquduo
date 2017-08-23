@@ -232,7 +232,7 @@ class BaseController extends Controller {
             foreach ($file['picture']['name'] as $key => $value) {
                 $suffix = substr(strrchr($value, '.'), 1);
                 $files = array(
-                    "key" => time() . rand(0, 9) . "." . $suffix,
+                    "key" => time() . rand(100000, 999999) . "." . $suffix,
                     "filePath" => $file['picture']['tmp_name'][$key],
                     "mime" => $file['picture']['type'][$key]
                 );

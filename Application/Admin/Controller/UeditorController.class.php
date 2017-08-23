@@ -301,7 +301,7 @@ class UeditorController extends BaseController
         //调用七牛云上传
         $suffix = substr(strrchr($_FILES['Filedata']['name'], '.'), 1);
         $files = array(
-            "key" => time().rand(0,9).".".$suffix,
+            "key" => time().rand(100000,999999).".".$suffix,
             "filePath" => $_FILES['Filedata']['tmp_name'],
             "mime" => $_FILES['Filedata']['type']
         );
@@ -370,7 +370,7 @@ class UeditorController extends BaseController
         //调用七牛云上传
         $suffix = substr(strrchr($_FILES['upfile']['name'], '.'), 1);
         $files = array(
-            "key" => time().rand(0,9).".".$suffix,
+            "key" => time().rand(100000,999999).".".$suffix,
             "filePath" => $_FILES['upfile']['tmp_name'],
             "mime" => $_FILES['upfile']['type']
         );
