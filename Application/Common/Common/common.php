@@ -35,12 +35,11 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     $redisKey = 'userInfo_'.$user_id_or_name;
 
     if($type == 3){
-
-        if (!empty($unionid) && $oauth == 'wx') {
-            $map = "oauth='weixin' and unionid='$unionid'";
+        if (!empty($unionid)) {
+            $map = "unionid='$unionid'";
             $redisKey = 'userInfo_' . $unionid;
         } else {
-            $map = "oauth='$oauth' and (unionid='$unionid' or openid='$user_id_or_name')";
+            $map = "openid='$user_id_or_name'";
             $redisKey = 'userInfo_' . $user_id_or_name;
         }
     }
@@ -60,27 +59,34 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
             $where['user_id'] = array("eq", $userInfo['user_id']);
             /**
              * 如果使用微信公众号登录
-             * 重写 oauth 类型为 wx 以区分 app 的 weixin 标识；
+             * 重写 oauth 类型为 wx_union 标识，统一。；
              * 并且把微信公众号登录传递过来的 openid 另存到 wx_openid 字段，以区分 app 的 openid
              */
             if ($oauth == 'wx') {
-                $data['oauth'] = 'wx';
+                $data['oauth'] = 'wx_union';
                 $data['wx_openid'] = $user_id_or_name;
                 $userInfo['wx_openid'] = $user_id_or_name; // 缓存数据增加 wx_openid。
-            } else {
-                /**
+
+                M('users')->where($where)->save($data);
+            } elseif ($oauth == 'weixin') {
+                /*
+                 * 重写 oauth 类型为 wx_union 标识，统一。
                  * 如果查到 unionid , 不管是使用微信公众号注册的，还是 app 微信注册的；
                  * 重写 openid 字段，为 app 专用字段。
                  * 否则通过传递的正确参数，写入 unionid 字段，
                  * 因为早期注册用户有 unionid 为空的记录存在。
                  */
+                $data['oauth'] = 'wx_union';
                 if ($userInfo['unionid']) {
                     $data['openid'] = $user_id_or_name;
                 } else {
                     $data['unionid'] = $unionid;
                 }
+
+                M('users')->where($where)->save($data);
             }
-            M('users')->where($where)->save($data);
+        }
+        if ($userInfo) {
             redis($redisKey, serialize($userInfo), 86400);
         }
     }
@@ -92,7 +98,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
      * 删除多余的用户记录，并把其余用户产生的订单等相关数据，归为用一用户。
      */
     if ($userInfo && ($unionid || $user_id_or_name)) {
-        $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and (unionid='$unionid' or openid='$user_id_or_name'";
+        $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and (unionid='$unionid' or openid='$user_id_or_name')";
         $users = M()->query($sql);
         if (count($users) > 0) {
             $user_id = "";

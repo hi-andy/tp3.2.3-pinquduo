@@ -56,6 +56,7 @@ class UsersLogic extends RelationModel
                     $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
 
                     $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                    $data['test'] = 1;
                     M('users')->where('user_id=' . $user['user_id'])->save($data);
                     $user['head_pic'] = $data['head_pic'];
                 }else{
