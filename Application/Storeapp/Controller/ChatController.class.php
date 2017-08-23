@@ -32,7 +32,7 @@ class ChatController extends BaseController
     public function set_chat($msg_id='', $timestamp='', $direction='', $to='', $from='', $chat_type='', $payload='', $status='')
     {
         if ($msg_id && $timestamp && $direction && $to && $from && $chat_type && $payload != '' && $status != '') {
-            $chatcount = M('chat','','DB_CONFIG2')->where(array('msg_id'=>array('eq',$msg_id)))->count();
+            $chatcount = M('chat')->where(array('msg_id'=>array('eq',$msg_id)))->count();
             if ($chatcount < 1) {
                 $msgdata = array(
                     'msg_id' => $msg_id,
@@ -95,7 +95,7 @@ class ChatController extends BaseController
 
             $in_msg_id = "0,";
             $where = "((tos = '{$to}' and froms = '{$from}') or (tos = '{$from}' and froms = '{$to}')) and chat_type = '{$chat_type}' and status <> 2";
-            $result = M('chat','','DB_CONFIG2')->where($where)->order('timestamp desc')->limit($fromPage,$pageSize)->select();
+            $result = M('chat')->where($where)->order('timestamp desc')->limit($fromPage,$pageSize)->select();
             foreach ($result as $key => $value){
                 $data[$key]['msg_id'] = $value['msg_id'];
                 $data[$key]['timestamp'] = $value['timestamp'];

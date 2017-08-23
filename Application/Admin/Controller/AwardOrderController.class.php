@@ -139,7 +139,7 @@ class AwardOrderController extends Controller {
         // 订单设为中奖
         M('order')->where($condition)->setField('is_award', 1);
         // 微信推送中奖消息
-        $openid = M('users')->where('user_id='.$orderInfo['user_id'])->getField('openid');
+        $openid = M('users')->where('user_id='.$orderInfo['user_id'])->getField('wx_openid');
         $wxPush = new WxtmplmsgController();
         $result = $wxPush->award_notify($openid,'恭喜！您参与的活动已中奖！！！',$orderInfo['total_amount'],$goods_name,$orderInfo['order_sn']);
         $this->ajaxReturn('操作成功！');
@@ -186,7 +186,7 @@ class AwardOrderController extends Controller {
             }
 
             // 微信推送消息
-            $openid = M('users')->where('user_id='.$value['user_id'])->getField('openid');
+            $openid = M('users')->where('user_id='.$value['user_id'])->getField('wx_openid');
             $wxPush = new WxtmplmsgController();
             $wxPush->award_notify($openid,'很遗憾！您参与的活动未中奖！已退款到您的原支付方式，谢谢参与！', $value['order_amount'], $goods_name, $value['order_sn']);
         }

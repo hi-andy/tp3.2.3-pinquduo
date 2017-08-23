@@ -537,7 +537,7 @@ class AutomationController extends BaseController
                     // 获取拼团成功用户微信 openid ，推送拼团成功消息
                     foreach ($group_buy_mark as $value) {
                         if($value['auto']==0){
-                            $openid = M('users')->where("user_id={$value['user_id']}")->getField('openid');
+                            $openid = M('users')->where("user_id={$value['user_id']}")->getField('wx_openid');
                             $wxtmplmsg->spell_success($openid, $value['goods_name'], $nicknames);
 
                             $ids .= $value['id'] . ",";
