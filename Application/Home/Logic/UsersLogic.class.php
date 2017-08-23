@@ -54,7 +54,7 @@ class UsersLogic extends RelationModel
                     $map['head_pic'] = $data['head_pic'];
                     //拉取微信头像传到七牛云
                     $qiniu = new \Admin\Controller\QiniuController();
-                    $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+                    $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
 
                     $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                     $map['test'] = 1;
@@ -64,7 +64,7 @@ class UsersLogic extends RelationModel
                 }else{
                     //拉取微信头像传到七牛云
                     $qiniu = new \Admin\Controller\QiniuController();
-                    $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+                    $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
                     $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
 
                     $map['test'] = 1;
@@ -86,7 +86,7 @@ class UsersLogic extends RelationModel
                 $map['version'] = $version;
                 //拉去微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();
-                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(0, 9) . ".jpg");
+                $qiniu_result = $qiniu->fetch($data['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
                 $map['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                 $row = M('users')->add($map);
                 $usersql = M('users')->getLastSql();

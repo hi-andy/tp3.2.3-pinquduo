@@ -548,7 +548,6 @@ class AutomationController extends BaseController
                             SendXinge($message, "$user_id", $custom);
                         }
                     }
-
                     redisdelall("getBuy_lock_" . $v['goods_id']);//删除锁
                 }
             }

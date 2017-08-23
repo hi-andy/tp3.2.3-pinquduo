@@ -118,7 +118,7 @@ class IndexController extends BaseController {
         $page = I('page',1);
         $pagesize = I('pagesize',20);
         $version= I('version');
-        $rdsname = "getHaiTao".$version.$page.$pagesize.$version;
+        $rdsname = "getHaiTao".$version.$page.$pagesize;
         if(empty(redis($rdsname))) {//判断是否有缓存
             //头部分类
             $directory = M('haitao_style')->select();
@@ -922,112 +922,6 @@ class IndexController extends BaseController {
 		exit(json_encode($json));
 	}
 
-    function test($goods_id='5',$goods_name='湿哒哒爱上asdasd爱上asd奥术大师大叔大婶收到',$price='8.88'){
-        $font = 'Public/images/yahei.ttf';//字体
-        // 背景图片宽度
-        $bg_w    = 600;
-        // 背景图片高度
-        $bg_h    = 700; // 背景图片高度
-        //二维码宽
-        $ewmWidth = 200;
-        //二维码高
-        $ewmHeight = 200;
-        //商品图片宽度
-        $goodWidth = 590;
-        //商品图片高度
-        $goodHeight = 368;
-        //二维码距离右边框距离
-        $ewmLeftMargin = 20;
-        //二维码距离底部框距离
-        $ewmBottomMargin = 24;
-        // 背景图片
-        $background = imagecreatetruecolor($bg_w,$bg_h);
-        // 为真彩色画布创建白色背景，再设置为透明
-        $color   = imagecolorallocate($background, 255, 255, 255);
-        //颜色填充
-        imagefill($background, 0, 0, $color);
-        //透明图片
-        imageColorTransparent($background, $color);
-
-        // 开始位置X
-        $start_x    = intval($bg_w-$ewmWidth-$ewmLeftMargin);
-        // 开始位置Y
-        $start_y    = intval($bg_h-$ewmHeight-$ewmBottomMargin);
-        // 宽度
-        $pic_w   = intval($ewmWidth);
-        // 高度
-        $pic_h   = intval($ewmHeight);
-        //创建down图片资源
-        $downresource = imagecreatefrompng('Public/images/down.png');
-        //图片合并
-        imagecopyresized($background,$downresource,480,450,0,0,18,20,imagesx($downresource),imagesy($downresource));
-        //商品图片资源
-        $goodresource = imagecreatefromjpeg(CDN . '/15017401102.jpg');
-        //图片合并
-        imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
-        //文字颜色
-        $fontcolor = imagecolorallocate($background, 204,204,204);
-        //商品名
-        if(strlen($goods_name)>39){
-            //第一行
-            $one = msubstr($goods_name,0,13);
-            imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$one);
-            $two = msubstr($goods_name,11,13);
-            if(strlen($two)<36){
-                imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
-            }else{
-                $two = msubstr($goods_name,11,11).'...';
-                imagettftext($background,20,0,20,547,imagecolorallocate($background, 0,0,0),$font,$two);
-            }
-        }else{
-            imagettftext($background,20,0,20,503,imagecolorallocate($background, 0,0,0),$font,$goods_name);
-        }
-
-        imagettftext($background,17,0,$start_x,intval($start_y-39),$fontcolor,$font,"长按二维码为我助力");
-
-        imagettftext($background,20,0,20,606,imagecolorallocate($background, 226,0,37),$font,'快来拼趣多秒购0元商品');
-
-        imagettftext($background,19,0,20,663,imagecolorallocate($background, 226,0,37),$font,'￥');
-
-        imagettftext($background,40,0,50,663,imagecolorallocate($background, 226,0,37),$font,'0');
-
-        imagettftext($background,19,0,90,663,$fontcolor,$font,"原价:".$price);
-
-        if(strlen($price)==4){
-            imageline($background, 90, 654, 197, 654, $fontcolor);
-            imageline($background, 90, 653, 197, 653, $fontcolor);
-        }elseif(strlen($price)==5){
-            imageline($background, 90, 654, 220, 654, $fontcolor);
-            imageline($background, 90, 653, 220, 653, $fontcolor);
-        }elseif (strlen($price)==6){
-            imageline($background, 90, 654, 228, 654, $fontcolor);
-            imageline($background, 90, 653, 228, 653, $fontcolor);
-        }elseif (strlen($price)==7){
-            imageline($background, 90, 654, 240, 654, $fontcolor);
-            imageline($background, 90, 653, 240, 653, $fontcolor);
-        }else{
-            imageline($background, 90, 654, 190, 654, $fontcolor);
-            imageline($background, 90, 653, 190, 653, $fontcolor);
-        }
-//        header("Content-type: image/jpg");
-        $path = "Public/upload/raise";
-        if (!file_exists($path)){
-            mkdir($path);
-        }
-
-        //拉图片传到七牛云
-        $path1 = "Public/upload/raise/goods_". $goods_id .'.jpg';
-        imagejpeg($background,$path1);
-        $path = 'http://test.pinquduo.cn/'.$path1;
-		$qiniu = new \Admin\Controller\QiniuController();
-		$qiniu_result = $qiniu->fetch($path, "imgbucket", $path1);
-
-        $url = CDN . "/" . $qiniu_result[0]["key"];
-
-        var_dump( $url);
-
-    }
-
     /**
      * desription 压缩图片
      * @param sting $imgsrc 图片路径
@@ -1073,42 +967,7 @@ class IndexController extends BaseController {
     public function redisdelall_user($user_id = ""){
         $this->order_redis_status_ref($user_id);
     }
-
-    function  t(){
-        $code = 'PQD';  //客户id=APPKey
-        $secretKey = 'b1fc3d0cc7e721574dbe8217099b1f8a';//安能快递秘钥
-        $url = 'http://101.95.139.62:40144/aneop/services/logisticsQuery/query';
-        $ewbNo = 29506100000198;//
-        $digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
-        list($t1, $t2) = explode(' ', microtime());
-        $timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
-        $data = '{"timestamp":"'.$timestamp.'","digest":"'.$digest.'","params":"{\"ewbNo\":\"'.$ewbNo.'\"}","code":"'.$code.'"}';
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_POST,1);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch,CURLOPT_HEADER,0);
-        curl_setopt($ch,CURLOPT_URL,$url);
-        curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
-        $result=curl_exec($ch);
-        curl_close($ch);
-
-        $arr = object_to_array(json_decode($result));
-        $arr['resultInfo'] = object_to_array(json_decode($arr['resultInfo']));
-        $arr['resultInfo'] = $arr['resultInfo']['tracesList'][0];
-        $new_arr = array();
-        foreach ($arr['resultInfo']['traces'] as $k=>$v){
-            $new_arr[$k]['ftime'] = $new_arr[$k]['time'] = $v['time'];
-            $new_arr[$k]['context'] = $v['desc'];
-        }
-//        var_dump($new_arr);die;
-//        var_dump($datas);die;
-//        $cha = "{\"result\":true,\"reason\":\"成功\",\"resultCode\":\"1000\",\"resultInfo\":{\"tracesList\":[{\"mailNos\":\"29506100000198\",\"traces\":[{\"action\":\"ARRIVAL\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】快件已到达CF测试一级加盟网点A\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 09:27:17\",\"tz\":\"+8\"},{\"action\":\"GOT\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】安能CF测试一级加盟网点A收件员已揽件\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:17:27\",\"tz\":\"+8\"},{\"action\":\"DEPARTURE\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】CF测试一级加盟网点A已发出,下一站CF测试一级分拨中心A\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:20:46\",\"tz\":\"+8\"},{\"action\":\"ARRIVAL\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市】CF测试一级加盟网点A快件已到达\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:25:49\",\"tz\":\"+8\"},{\"action\":\"SENT_SCAN\",\"city\":\"杭州市\",\"contactPhone\":\"17199750494\",\"contacter\":\"CF测试一级加盟网点员工\",\"country\":\"China\",\"desc\":\"【杭州市】CF测试一级加盟网点A派件员:CF测试一级加盟网点员工17199750494正在为您派件\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:27:17\",\"tz\":\"+8\"},{\"action\":\"SIGNED\",\"city\":\"杭州市\",\"country\":\"China\",\"desc\":\"【杭州市已签收,签收人是自提件,感谢使用安能,期待再次为您服务\",\"facilityName\":\"CF测试一级加盟网点A\",\"facilityNo\":\"9506002\",\"facilityType\":\"1\",\"time\":\"2017-08-07 10:50:04\",\"tz\":\"+8\"}]}]}}";
-//
-//        $arr = $this->object_to_array(json_decode($cha));
-
-        $json = array('status' => 1, 'msg' => '获取成功', 'result' => $new_arr);
-        exit(json_encode($json));
-    }
+    
 
     function object_to_array($obj) {
         $obj = (array)$obj;
