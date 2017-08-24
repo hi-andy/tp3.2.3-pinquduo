@@ -881,12 +881,6 @@ class IndexController extends BaseController {
         return $price;
     }
 
-    //删除缓存
-    public function redisdelall($rdsname = ""){
-        redisdelall($rdsname);
-        echo "删除 ".$rdsname;
-    }
-
     //趣多严选
 	public function getStrict_selection(){
 		$page = I('page',1);

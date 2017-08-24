@@ -6,8 +6,7 @@
  * Time: 21:06
  */
 
-namespace Api_2_0_2\Controller;
-
+namespace Api_3_0\Controller;
 
 use Think\Controller;
 
@@ -21,8 +20,8 @@ class RedisController extends Controller
     }
 
     //删除缓存
-    public function redisDel($key = ""){
+    public function delKey($key = ""){
         redisdelall($key);
-        echo '删除 '.$key . ' 成功！';
+        echo '删除 ' . $key . ' 缓存成功！';
     }
 }
