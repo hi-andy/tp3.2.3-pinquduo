@@ -306,11 +306,10 @@ class PurchaseController extends  BaseController
 
         //如果是众筹订单
         if($result['is_raise']==1){
-            $data['is_raise']=1;
-            $data['is_pay']=1;
-            $order['the_raise']=1;
-            $order['pay_status'] = 1;
-            $order['order_type'] = 11;
+            $json = array('status' => -1, 'msg' => '该商品已下架');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
         }else{
             $data['is_raise']=0;
             $order['the_raise']=0;

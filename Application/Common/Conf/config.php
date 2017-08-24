@@ -12,6 +12,7 @@ define("CDN", "https://cdn2.pinquduo.cn");  //七牛云CDN加速域名; 升级 h
 define("ORDER_END_TIME",150);//未支付订单过期时间 单位秒
 define("SCWS","http://39.108.12.198");//SCWS 分词服务器地址
 
+
 return array(
 	'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
 	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',

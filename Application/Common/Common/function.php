@@ -993,9 +993,24 @@ function get_raise_pic($goods_id='',$goods_img='',$goods_name='',$price=''){
 	$pic_w   = intval($ewmWidth);
 	// 高度
 	$pic_h   = intval($ewmHeight);
-
 	//商品图片资源
-	$goodresource = imagecreatefromjpeg($goods_img);
+	list($bigWidth, $bigHight, $bigType) = getimagesize($goods_img);
+	switch ($bigType) {
+		case 1: //gif
+//                header('Content-Type:image/gif');
+			$goodresource = imagecreatefromgif($goods_img);
+			break;
+		case 2: //jpg
+//                header('Content-Type:image/jpg');
+			$goodresource = imagecreatefromjpeg($goods_img);
+			break;
+		case 3: //png
+//                header('Content-Type:image/png');
+			$goodresource = imagecreatefrompng($goods_img);
+			break;
+		default:
+			# code...
+	}
 	//图片合并
 	imagecopyresized($background,$goodresource,5,5,0,0,$goodWidth,$goodHeight,imagesx($goodresource),imagesy($goodresource));
 	//文字颜色

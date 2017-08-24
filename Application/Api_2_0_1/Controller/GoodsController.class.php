@@ -651,7 +651,7 @@ class GoodsController extends BaseController {
          * 前后端都应该做好验证，给出友好提示！
          * 至此问题基本确定排除，写下以下验证代码！
          */
-        if (empty($data['consignee']) || empty($data['mobile']) || empty($data['address'])) {
+        if (empty($data['consignee']) || empty($data['mobile']) || empty($data['address']) || empty($data['address_base']) || empty($user_id)) {
             $json = array('status'=>-1,'msg'=>'请填写完整的收货人信息');
             if(!empty($ajax_get))
                 $this->getJsonp($json);

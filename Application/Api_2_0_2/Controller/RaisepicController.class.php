@@ -18,10 +18,6 @@ use Admin\Logic\OrderLogic;
  * */
 class RaisepicController extends BaseController
 {
-    function test(){
-
-    }
-
     function raise_pic(){
         $prom_id = I('prom_id');
         $Qr_code = I('Qr_code');
@@ -43,31 +39,19 @@ class RaisepicController extends BaseController
 //http://pqd.oss-cn-shenzhen.aliyuncs.com/Public/upload/raise/goods_19279.jpg
         $bigImgPath =  "http://{$bucket}.{$endpoint}". "/Public/upload/raise/goods_". $prom_info['goods_id'] .'.jpg';
         $img = imagecreatefromstring(curl_file_get_contents($bigImgPath));
-//        var_dump($img);
-//        var_dump(empty($img));
         if(empty($img)){
+            M('admin_log')->data(array('admin_id'=>1,'log_info'=>'为我助力1','log_ip'=>'123','log_url'=>1))->add();
             $goods_info = M('goods')->where('goods_id = '.$prom_info['goods_id'])->field('goods_name,market_price')->find();
             $goods_image = M('goods_images')->where("goods_id = '{$prom_info['goods_id']}'")->field('image_url')->find();
             $url = get_raise_pic($prom_info['goods_id'],$goods_image['image_url'],$goods_info['goods_name'],$goods_info['market_price']);
             $img = imagecreatefromstring(curl_file_get_contents($url));
-//            var_dump(1);
-//            echo '<br>';
-//            var_dump($img);
-//            var_dump($url);
-//            echo '<br>';
         }
 
         $font = 'Public/images/yahei.ttf';//字体
         $bigImg=  "https://{$bucket}.{$endpoint}/Public/upload/raise-prom/userid_". $prom_info['user_id'] .'_promid_'.$prom_id.'.jpg';
 //        $getimgcontent = file_get_contents($bigImg);
         $img_t = imagecreatefromstring(curl_file_get_contents($bigImg));
-//        var_dump(2);
-//        echo '<br>';
-//        var_dump($bigImg);
-//        var_dump($img_t);
-//        echo '<br>';
         if(empty($img_t)) {
-
             //获取图片文件的内容
             $pic_path = curl_file_get_contents($Qr_code);
             //创建图片资源
@@ -77,9 +61,6 @@ class RaisepicController extends BaseController
 
             //获取图片文件的内容
             $pic_path = curl_file_get_contents($user_pic['head_pic']);
-//            var_dump($pic_path);
-//            echo '<hr><hr><hr><hr><hr>';
-//            $pic_path = http_request($user_pic['head_pic']);
 
             //创建图片资源
             $resource = imagecreatefromstring($pic_path);

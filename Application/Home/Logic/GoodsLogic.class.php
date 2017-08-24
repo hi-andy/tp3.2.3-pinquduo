@@ -241,40 +241,47 @@ class GoodsLogic extends RelationModel
        return array('status'=>1,'msg'=>'收藏成功!请到个人中心查看','result'=>array()); 
    }
 
-   /**
-    * 获取商品规格
-    */
-   public function get_spec($goods_id,$is_special=''){
-       if($is_special==7){
-           $goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
-       }
-	   	//商品规格 价钱 库存表 找出 所有 规格项id
-       $keys =M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();
+    /**
+     * 获取商品规格
+     */
+    public function get_spec($goods_id,$is_special=''){
+        if($is_special==7){
+            $goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
+        }
+        //商品规格 价钱 库存表 找出 所有 规格项id
+        $keys =M('SpecGoodsPrice')->where('goods_id = '.$goods_id.' and is_del=0')->field('key,img')->select();
+        $allkey = $keys;
 
-       $filter_spec = array();
-       if($keys){
-           $specImage =  M('SpecImage')->where("goods_id = $goods_id and src != '' ")->getField("spec_image_id,src");// 规格对应的 图片表， 例如颜色
-           $count = count($keys);
-           $ids = null;
-           for($i=0;$i<$count;$i++)
-           {
-               $ids = $ids.'_'. $keys[$i]['key'];
-           }
-           $keys = str_replace('_',',',$ids);
-           $keys = substr($keys,1);
-	   		$sql  = "SELECT a.name,a.order,b.* FROM __PREFIX__spec AS a INNER JOIN __PREFIX__spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) ORDER BY a.order";
-	   		$filter_spec2 = M('')->query($sql);
-	   		foreach($filter_spec2 as $key => $val)
-	   		{
-	   			$filter_spec[$val['name']][] = array(
-	   					'item_id'=> $val['id'],
-	   					'item'=> $val['item'],
-	   					'src'=>$specImage[$val['id']],
-	   			);
-	   		}
-		}
-		return $filter_spec;
-   }
+
+        $filter_spec = array();
+        if($keys){
+            $specImage =  M('SpecImage')->where("goods_id = $goods_id and src != '' ")->getField("spec_image_id,src");// 规格对应的 图片表， 例如颜色
+            $countimg = M('SpecImage')->where("goods_id = $goods_id")->count();
+            $count = count($keys);
+            $ids = null;
+            for($i=0;$i<$count;$i++)
+            {
+                $ids = $ids.'_'. $keys[$i]['key'];
+            }
+            $keys = str_replace('_',',',$ids);
+            $keys = substr($keys,1);
+            $sql  = "SELECT a.name,a.order,b.* FROM __PREFIX__spec AS a INNER JOIN __PREFIX__spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) ORDER BY a.order";
+            if($countimg==0){
+                $sql = "SELECT a.name,b.* FROM __PREFIX__specification AS a INNER JOIN __PREFIX__spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) and b.is_del=0  ";
+            }
+
+            $filter_spec2 = M('')->query($sql);
+            foreach($filter_spec2 as $key => $val)
+            {
+                $filter_spec[$val['name']][] = array(
+                    'item_id'=> $val['id'],
+                    'item'=> $val['item'],
+                    'src'=>isset($specImage[$val['id']])?$specImage[$val['id']]:$allkey[0]['img'],
+                );
+            }
+        }
+        return $filter_spec;
+    }
    
 
    /**
