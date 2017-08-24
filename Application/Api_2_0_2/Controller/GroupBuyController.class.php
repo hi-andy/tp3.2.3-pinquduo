@@ -100,7 +100,9 @@ class GroupBuyController extends BaseController {
             }
 
             //防刷条件  2017-08-18 温立涛 开始
-            $groupStart = strtotime(self::GROUPSTART);
+            //$groupStart = strtotime(self::GROUPSTART);
+            //防刷条件  2017-08-24 温立涛 开始
+            $groupStart = time()-259200;
             $order_id = $result['order_id'];
             $orderInfo = M('order')->where(['order_id'=>$order_id])->find();
             $mobile = $orderInfo['mobile'];
