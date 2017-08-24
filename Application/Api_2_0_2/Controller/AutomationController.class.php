@@ -9,6 +9,7 @@
 namespace Api_2_0_2\Controller;
 
 use Admin\Logic\OrderLogic;
+use Think\Cache\Driver\Redis;
 
 class AutomationController extends BaseController
 {
@@ -194,49 +195,6 @@ class AutomationController extends BaseController
             }
 
 
-        }
-    }
-
-    //将时间到了团又没有成团的团解散
-    public function old_incomplete_mass_overtime()
-    {
-        $user = new UserController();
-        $where = null;
-        $conditon = null;
-        $time = time() - 30;
-        $prom_order = M('group_buy')->where('(`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 and `end_time`<=' . $time)->field('id,order_id,start_time,end_time,goods_num,user_id,goods_id')->limit(0, 50)->select();
-
-        if (count($prom_order) > 0) {
-            //将团ＩＤ一次性拿出来
-            $where = $user->getPromid($prom_order);
-            //找出这个团的团长和团员
-            $join_proms = M('group_buy')->where($where)->select();
-            redis("get_Free_Order_status", "1");
-            //统计每个团的人数
-            $prom_man = array();
-            foreach ($join_proms as $k => $v) {
-                $n = array();
-                foreach ($join_proms as $k1 => $v1) {
-                    if ($v['id'] == $v1['mark']) {
-                        $n['id'][] = "'" . $v1['id'] . "',";
-                        $n['order_id'][] = "'" . $v1['order_id'] . "',";
-                    } elseif ($v['id'] == $v1['id']) {
-                        $n['id'][] = "'" . $v['id'] . "',";
-                        $n['order_id'][] = "'" . $v['order_id'] . "',";
-                    }
-                    $this->order_redis_status_ref($v1['user_id']);
-                }
-                $prom_man[$k] = $n;
-            }
-            $wheres = $user->ReturnSQL($prom_man);
-            $i_d = $wheres['id'];
-            $res = M('group_buy')->where("`id` IN " . $i_d)->data(array('is_dissolution' => 1))->save();
-            $result1 = M('order')->where("`order_id` IN " . $wheres['order_id'])->data(array('order_status' => 9, 'order_type' => 12))->save();
-
-            if ($res && $result1) {//给未成团订单退款
-                $pay_cod = M('order')->where("`order_id` IN $wheres[order_id]")->field('order_id,user_id,order_sn,pay_code,order_amount,goods_id,store_id,num,coupon_id,coupon_list_id,is_jsapi,the_raise')->select();
-                $user->BackPay($pay_cod);
-            }
         }
     }
 
@@ -598,5 +556,45 @@ class AutomationController extends BaseController
             M('goods')->where("goods_id in({$ids})")->save(array("auto_time" => time()));
             M()->query($sql_group_buy);
         }
+    }
+
+    /**
+     * 读取 Redis 队列，更新用户信息，每分钟执行一次。
+     * 2017-8-24　Hua
+     */
+    public function updateUserInfo()
+    {
+        $redis = new Redis();
+        for ($i=0; $i<20; $i++) {
+            $data = $redis->rpop('waitingUpdate');
+            if ($data) {
+                $userInfo = unserialize($data);
+                // 如果头像有变，拉取微信头像传到七牛云；
+                if (md5_file($userInfo['source_head_pic']) != md5_file($userInfo['head_pic'])) {
+                    $qiniu = new \Admin\Controller\QiniuController();
+                    $qiniu->delete('imgbucket', $userInfo['head_pic']); // 删除旧头像
+                    $qiniu_result = $qiniu->fetch($userInfo['source_head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
+                    $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                }
+
+                // 如果昵称有变，更新用户昵称。
+                if ($userInfo['nickname'] != $userInfo['source_nickname'] && !empty($userInfo['source_nickname'])){
+                    $data['nickname'] = $userInfo['source_nickname'];
+                }
+                //　最后登录时间
+                $data['last_login'] = time();
+                M('users')->where('user_id=' . $userInfo['user_id'])->save($data);
+                // 调试信息
+                $sql = M('users')->fetchSql(true)->where('user_id=' . $userInfo['user_id'])->save($data);
+                M('admin_log')->data(array('admin_id'=>$userInfo['user_id'],'log_ip'=>'127.0.0.1','log_info'=>'userInfoUpdated','log_time'=>time(),'log_url'=>json_encode($sql)))->add();
+            }
+            unset($data);
+        }
+
+        $redis->close();
+        //　以下数据似乎没用，暂时注释看有无影响。
+        //$BASE = new BaseController();
+        //$user['userdetails'] = $BASE->getCountUserOrder($userInfo['user_id']);
+        exit;
     }
 }
