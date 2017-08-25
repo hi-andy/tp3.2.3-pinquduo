@@ -51,7 +51,7 @@ class StoreController extends BaseController{
 			if (empty($coupon)) {
 				$coupon = null;
 			}
-			$where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id;
+			$where = '`is_special` != 8 and `the_raise` = 0 and `show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_audit`=1 and `store_id` = ' . $store_id;
 			$data = $this->getGoodsList($where,$page,$pagesize,"$stor desc ");
 			$store['coupon'] = $coupon;
 			$store['goods'] = $data;

@@ -813,7 +813,7 @@ class GoodsController extends BaseController {
             }
             $keys = substr($keys, 0, -4);
             $keys .= ')';
-            $where = $keys . " and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
+            $where = $keys . " and is_special != 8 and the_raise = 0 and `is_show`=1 and `is_on_sale`=1 and `is_audit`=1 and `show_type`=0 ";
             $data = $this->getGoodsList($where, $page, $pagesize);
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => $data);
             redis($rdsname, serialize($json), REDISTIME);//写入缓存

@@ -558,8 +558,8 @@ class OrderController extends BaseController {
 
 	public function account_edit(){
 		$order_id = I('order_id');
-
-        $order = M('order')->where('`order_id`='.$order_id)->find();
+        $return_goods = M('return_goods')->where('`order_id`='.$order_id)->field('order_sn,gold,pay_code')->find();
+		$order = M('order')->where('`order_id`='.$order_id)->find();
 		if($order['order_type']==9 || $order['order_type']==7)
 		{
 			echo json_encode(array('status'=>2,'msg'=>'已退款'));
@@ -568,17 +568,17 @@ class OrderController extends BaseController {
 
 		if($order['order_type']==8){
 			$Order_Logic = new OrderLogic();
-			if($order['pay_code']=='weixin'){
+			if($return_goods['pay_code']=='weixin'){
 				if ($order['is_jsapi']==1){
-					$res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
+					$res = $Order_Logic->weixinJsBackPay($return_goods['order_sn'], $return_goods['gold']);
 				}else{
-					$res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
+					$res = $Order_Logic->weixinBackPay($return_goods['order_sn'], $return_goods['gold']);
 				}
-			}elseif($order['pay_code']=='alipay' || $order['pay_code']=='alipay_wap'){
-				$res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
-			}elseif($order['pay_code'] == 'qpay'){
+			}elseif($return_goods['pay_code']=='alipay' || $return_goods['pay_code']=='alipay_wap'){
+				$res = $Order_Logic->alipayBackPay($return_goods['order_sn'],$return_goods['gold']);
+			}elseif($return_goods['pay_code'] == 'qpay'){
 				$qqPay = new QQPayController();
-				$res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
+				$res = $qqPay->doRefund($return_goods['order_sn'], $return_goods['gold']);
 			}
 		}else{
 			$res['status'] = 1;
