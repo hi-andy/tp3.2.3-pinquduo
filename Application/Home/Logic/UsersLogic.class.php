@@ -2,6 +2,7 @@
 namespace Home\Logic;
 
 use Api\Controller\BaseController;
+use Think\Cache\Driver\Redis;
 use Think\Model\RelationModel;
 use Think\Page;
 
@@ -43,76 +44,52 @@ class UsersLogic extends RelationModel
         $unionid = $parameters['unionid'];
         $version = $parameters['version'];
 
-        if(!$openid || !$oauth) {
-            return array('status' => -1, 'msg' => '参数有误', 'result' => '');
-        } else {
+        if($oauth || $openid) {
             //获取用户信息
             $user = get_user_info($openid, 3, $oauth, $unionid);
-            M('admin_log')->data(array('admin_id'=>'1','log_ip'=>'127.0.0.1','log_url'=>json_encode($user)))->add();
-            if(count($user)>0){
-                if (($user['test'] == 0 && !empty($user['user_id']) && empty($user['mobile']))) {
-                    //拉取微信头像传到七牛云
-                    $qiniu = new \Admin\Controller\QiniuController();
-                    $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
-
-                    $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                    $data['test'] = 1;
-                    M('users')->where('user_id=' . $user['user_id'])->save($data);
-                    $user['head_pic'] = $data['head_pic'];
-                }else{
-                    //拉取微信头像传到七牛云
-                    $qiniu = new \Admin\Controller\QiniuController();
-                    $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
-
-                    $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                    if($parameters['head_pic'] != $user['head_pic']){
-                        M('users')->where('user_id=' . $user['user_id'])->save($data);
-                    }
-                    $user['head_pic'] = $data['head_pic'];
-                }
-
-                // 更新用户昵称
-                if ($user['nickname'] != $parameters['nickname'] && !empty($parameters['nickname'])){
-                    M('users')->where('user_id=' . $user['user_id'])->save(array('nickname'=>$parameters['nickname']));
-                    $user['nickname'] = $parameters['nickname'];
-                }
-
+            //　调试信息
+            // M('admin_log')->data(array('admin_id'=>$user['user_id'],'log_ip'=>'127.0.0.1','log_info'=>'thirdLogin','log_time'=>time(),'log_url'=>json_encode($user)))->add();
+            if($user['user_id'] > 0){
+                $user['source_head_pic'] = $parameters['head_pic'];
+                $user['source_nickname'] = $parameters['nickname'];
+                $redis = new Redis();
+                $redis->lpush('waitingUpdate', serialize($user));
+                return $user;
             } else {
                 //账户不存在 注册一个
 
                 // 分别保存 openid， 区分微信公众号登录和 App 使用微登录。 2017-8-22 Hua
                 if ($oauth == 'wx') {
-                    $data['wx_openid'] = $openid;
+                    $userData['wx_openid'] = $openid;
                 } else {
-                    $data['openid'] = $openid;
+                    $userData['openid'] = $openid;
                 }
-                $data['password'] = '';
-                $data['unionid'] = $unionid;
-                $data['nickname'] = $parameters['nickname'];
-                $data['reg_time'] = time();
-                $data['oauth'] = $oauth;
-                $data['version'] = $version;
+                // 微信公众号和微信 App 登录统一使用相同 oauth 类型识别
+                if ($oauth == 'wx' || $oauth == 'weixin') {
+                    $userData['oauth'] = 'wx_union';
+                } else {
+                    $userData['oauth'] = $oauth;
+                }
+
+                $userData['password'] = '';
+                $userData['unionid'] = $unionid;
+                $userData['nickname'] = $parameters['nickname'];
+                $userData['reg_time'] = time();
+                $userData['version'] = $version;
 
                 //拉去微信头像传到七牛云
                 $qiniu = new \Admin\Controller\QiniuController();
                 $qiniu_result = $qiniu->fetch($parameters['head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
 
-                $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                $userId = M('users')->add($data);
+                $userData['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                $userData['status'] = 1;
+                $userId = M('users')->add($userData);
+                $userData['user_id'] = $userId;
 
-                $usersql = M('users')->getLastSql();
-                M('admin_log')->data(['admin_id'=>1,'log_info'=>'22','log_ip'=>'127.0.0.1','log_url'=>$usersql])->add();
-                //$user = get_user_info($openid, 3, $oauth, $unionid);
-
-                $user['nickname'] = $parameters['nickname'];
-                $user['head_pic'] = $data['head_pic'];
-                $user['user_id'] = $userId;
-                $user['status'] = 1;
+                return $userData;
             }
-
-            $BASE = new BaseController();
-            $user['userdetails'] = $BASE->getCountUserOrder($user['user_id']);
-            return $user;
+        } else {
+            return array('status' => -1, 'msg' => '参数有误', 'result' => '');
         }
     }
 

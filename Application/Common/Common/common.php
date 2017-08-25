@@ -47,6 +47,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     // 缓存查询用户信息　2017-8-14　Hua
     if ($userInfo = redis($redisKey)) {
         $userInfo = unserialize($userInfo);
+        return $userInfo;
     } else {
         $userInfo = M('users')->where($map)->order('user_id asc')->find();
 
@@ -68,6 +69,9 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
                 $userInfo['wx_openid'] = $user_id_or_name; // 缓存数据增加 wx_openid。
 
                 M('users')->where($where)->save($data);
+                // 调试信息
+                //$sql = M('users')->fetchSql(true)->where($where)->save($data);
+                //M('admin_log')->data(array('admin_id'=>$userInfo['user_id'],'log_ip'=>'127.0.0.1','log_info'=>'getUserInfoUpdated','log_time'=>time(),'log_url'=>json_encode($sql)))->add();
             } elseif ($oauth == 'weixin') {
                 /*
                  * 重写 oauth 类型为 wx_union 标识，统一。
@@ -97,7 +101,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
      * 使用微信公众号登录和 App 内使用微信登录的用户，只保留最早的用户注册记录。
      * 删除多余的用户记录，并把其余用户产生的订单等相关数据，归为用一用户。
      */
-    if ($userInfo && ($unionid || $user_id_or_name)) {
+    if ($userInfo && $userInfo['reg_time'] < $time && ($oauth == 'wx' || $oauth == 'weixin') && ($unionid || $user_id_or_name)) {
         $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and (unionid='$unionid' or openid='$user_id_or_name')";
         $users = M()->query($sql);
         if (count($users) > 0) {
