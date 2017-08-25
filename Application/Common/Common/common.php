@@ -45,7 +45,9 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
     }
 
     // 缓存查询用户信息　2017-8-14　Hua
+    M('admin_log')->data(array('admin_id'=>1,'log_info'=>'用户信息','log_ip'=>'1','log_url'=>$redisKey))->add();
     if ($userInfo = redis($redisKey)) {
+
         $userInfo = unserialize($userInfo);
         return $userInfo;
     } else {

@@ -1127,6 +1127,7 @@ class OrderController extends BaseController {
 	        }
 	        if(!empty(I('shipping_code')) && $data['shipping_code']!='选择物流方式' && I('shipping_code')!=$order['shipping_code']){
 		        $data['shipping_code'] = I('shipping_code'); //  物流公司
+		        $data['shipping_name'] = M('logistics')->where("`logistics_code` = '{$data['shipping_code']}'")->getField('logistics_name');
 	        }
 
 	        $delivery = M('delivery_doc')->where('order_id='.$order_id)->count();
@@ -1144,7 +1145,7 @@ class OrderController extends BaseController {
             }else{
                 $this->success('修改失败',U('Store/Order/detail',array('order_id'=>$order_id)));
             }
-            exit;
+            die;
         }
 
         $logistics = M('logistics')->select();

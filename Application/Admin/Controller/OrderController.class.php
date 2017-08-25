@@ -997,35 +997,38 @@ class OrderController extends BaseController {
      * 退款按钮操作
      */
     public function account_edit(){
-        $order_id = I('order_id');
-        $order = M('order')->where('`order_id`='.$order_id)->find();
+	    $order_id = I('order_id');
+	    $return_goods = M('return_goods')->where('`order_id`='.$order_id)->field('order_sn,gold,pay_code')->find();
+	    $order = M('order')->where('`order_id`='.$order_id)->find();
 	    if($order['order_type']==9 || $order['order_type']==7)
 	    {
 		    echo json_encode(array('status'=>2,'msg'=>'已退款'));
 		    die;
 	    }
-        $Order_Logic = new OrderLogic();
 
-        if($order['pay_code']=='weixin')
-        {
-	        if ($order['is_jsapi']==1){
-		        $res = $Order_Logic->weixinJsBackPay($order['order_sn'], $order['order_amount']);
-	        }else{
-		        $res = $Order_Logic->weixinBackPay($order['order_sn'], $order['order_amount']);
-	        }
-        }elseif($order['pay_code']=='alipay' || $order['pay_code']=='alipay_wap'){
-            $res = $Order_Logic->alipayBackPay($order['order_sn'],$order['order_amount']);
-        }elseif($order['pay_code'] == 'qpay'){
-	        // Begin code by lcy
-	        $qqPay = new QQPayController();
-	        $res = $qqPay->doRefund($order['order_sn'], $order['order_amount']);
-	        // End code by lcy
-        }
+	    if($order['order_type']==8){
+		    $Order_Logic = new OrderLogic();
+		    if($return_goods['pay_code']=='weixin'){
+			    if ($order['is_jsapi']==1){
+				    $res = $Order_Logic->weixinJsBackPay($return_goods['order_sn'], $return_goods['gold']);
+			    }else{
+				    $res = $Order_Logic->weixinBackPay($return_goods['order_sn'], $return_goods['gold']);
+			    }
+		    }elseif($return_goods['pay_code']=='alipay' || $return_goods['pay_code']=='alipay_wap'){
+			    $res = $Order_Logic->alipayBackPay($return_goods['order_sn'],$return_goods['gold']);
+		    }elseif($return_goods['pay_code'] == 'qpay'){
+			    $qqPay = new QQPayController();
+			    $res = $qqPay->doRefund($return_goods['order_sn'], $return_goods['gold']);
+		    }
+	    }else{
+		    $res['status'] = 1;
+	    }
+
+	    //找到退款的类型
 	    $result = M('return_goods')->where('order_id='.$order_id)->field('type')->find();
 	    if($res['status'] == 1){
 		    if($result['type']==0)
-		    {
-			    //退货
+		    {//退货
 			    $data['order_status'] = 7;
 			    $data['order_type'] = 9;
 			    $this->fallback($order);
@@ -1040,9 +1043,10 @@ class OrderController extends BaseController {
 		    M('order')->where('`order_id`='.$order_id)->data($data)->save();
 		    echo json_encode(array('status'=>1,'msg'=>'退款成功'));
 	    }else{
-            echo json_encode(array('status'=>0,'msg'=>'退款失败'));
-        }
-        die;
+
+		    echo json_encode(array('status'=>0,'msg'=>'退款失败'));
+	    }
+	    die;
     }
 
 	public function fallback($orders)

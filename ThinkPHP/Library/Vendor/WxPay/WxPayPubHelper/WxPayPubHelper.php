@@ -179,7 +179,7 @@ class Common_util_pub
 		else 
 		{ 
 			$error = curl_errno($ch);
-			echo "curl出错，错误码:$error"."<br>";
+			echo "curl出错--Vendor，错误码:$error"."<br>";
 			echo "<a href='http://curl.haxx.se/libcurl/c/libcurl-errors.html'>错误原因查询</a></br>";
 			curl_close($ch);
 			return false;
@@ -192,6 +192,7 @@ class Common_util_pub
 	function postXmlSSLCurl($xml,$url,$second=30)
 	{
 		$ch = curl_init();
+
 		//超时时间
 		curl_setopt($ch,CURLOPT_TIMEOUT,$second);
 		//这里设置代理，如果有的话
@@ -222,8 +223,10 @@ class Common_util_pub
 			return $data;
 		}
 		else {
+            echo WxPayConf_pub::SSLCERT_PATH; exit;
 			$error = curl_errno($ch);
-			echo "curl出错，错误码:$error"."<br>";
+			M('admin_log')->data(array('admin_id'=>$error,'log_info'=>'退款','log_ip'=>'1','log_url'=>$error))->add();
+			echo "curl出错-Vendor-226line，错误码:$error"."<br>";
 			echo "<a href='http://curl.haxx.se/libcurl/c/libcurl-errors.html'>错误原因查询</a></br>";
 			curl_close($ch);
 			return false;

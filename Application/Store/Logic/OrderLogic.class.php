@@ -310,9 +310,10 @@ class OrderLogic extends RelationModel
 		//使用退款接口
 		$refund = new \Refund_pub();
 		//设置必填参数
+		$order_amount = M('order')->where("order_sn = {$out_trade_no}")->getField('order_amount');
 		$refund->setParameter("out_trade_no","$out_trade_no");    //商户订单号
 		$refund->setParameter("out_refund_no","$out_refund_no");  //商户退款单号
-		$refund->setParameter("total_fee",$refund_fee*100);        //总金额
+		$refund->setParameter("total_fee",$order_amount*100);        //总金额
 		$refund->setParameter("refund_fee",$refund_fee*100);       //退款金额
 		$refund->setParameter("op_user_id",\WxPayConf_pub::MCHID);//操作员
 
@@ -539,9 +540,9 @@ class OrderLogic extends RelationModel
 
 		//商户退款单号，商户自定义，此处仅作举例
 		$out_refund_no = "$out_trade_no".time();
-		$order_info = M('order')->where(array('order_sn'=>$out_trade_no))->find();
+		$order_amount = M('order')->where("order_sn = {$out_trade_no}")->getField('order_amount');
 		//总金额需与订单号out_trade_no对应，demo中的所有订单的总金额为1分
-		$total_fee =  	$refund_fee * 100;
+		$total_fee =  	$order_amount * 100;
 		$refund_fee = $refund_fee * 100;
 		//使用退款接口
 		$refund = new \WxPayRefund();

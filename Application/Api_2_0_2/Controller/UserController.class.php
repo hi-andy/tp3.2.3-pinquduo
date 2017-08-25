@@ -802,7 +802,7 @@ class UserController extends BaseController {
             exit(json_encode(array('status'=>-1,'msg'=>'已经提交过退货申请!')));
         }
 
-        $order_sn = M('order')->where('`order_id`='.$order_id.' and `user_id`='.$user_id)->field('order_sn,goods_id,prom_id,pay_code,store_id,num,store_id')->find();
+        $order_sn = M('order')->where('`order_id`='.$order_id.' and `user_id`='.$user_id)->field('order_sn,goods_id,prom_id,pay_code,store_id,num,store_id,order_amount')->find();
         $data['order_id'] = $order_id;
         $data['order_sn'] = $order_sn['order_sn'];
         $data['goods_id'] = $order_sn['goods_id'];
@@ -836,6 +836,9 @@ class UserController extends BaseController {
                 //退货
                 $return['order_status'] = 6;
                 $return['order_type'] = 8;
+                if($gold!=$order_sn['order_amount']){
+                    $return['not_all'] = 1;
+                }
             }elseif($type==1){
                 //换货
                 $return['order_status'] = 4;
