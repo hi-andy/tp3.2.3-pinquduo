@@ -31,6 +31,7 @@ class Redis extends Cache {
             'port'          => C('REDIS_PORT') ? : 6379,
             'timeout'       => C('DATA_CACHE_TIMEOUT') ? : false,
             'persistent'    => false,
+            'auth'            => C('REDIS_PASSWORD') ? C('REDIS_PASSWORD') : null, // auth认证的密码 2017-8-26 Hua
         ),$options);
 
         $this->options =  $options;
@@ -42,6 +43,11 @@ class Redis extends Cache {
         $options['timeout'] === false ?
             $this->handler->$func($options['host'], $options['port']) :
             $this->handler->$func($options['host'], $options['port'], $options['timeout']);
+
+        if($this->options['auth']!=null)
+        {
+            $this->handler->auth($this->options['auth']); // 说明有配置redis的认证配置密码 需要认证一下 2017-8-26 Hua
+        }
     }
 
     /**

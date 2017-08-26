@@ -44,7 +44,7 @@ class UsersLogic extends RelationModel
         $unionid = $parameters['unionid'];
         $version = $parameters['version'];
 
-        if($oauth || $openid) {
+        if($oauth && ($unionid || $openid)) {
             //获取用户信息
             $user = get_user_info($openid, 3, $oauth, $unionid);
             //　调试信息
@@ -52,6 +52,7 @@ class UsersLogic extends RelationModel
             if($user['user_id'] > 0){
                 $user['source_head_pic'] = $parameters['head_pic'];
                 $user['source_nickname'] = $parameters['nickname'];
+                $user['last_login'] = time();
                 $redis = new Redis();
                 $redis->lpush('waitingUpdate', serialize($user));
                 return $user;

@@ -9,6 +9,7 @@
 namespace Api_3_0\Controller;
 
 use Think\Controller;
+use Think\Cache\Driver\Redis;
 
 class RedisController extends Controller
 {
@@ -32,9 +33,13 @@ class RedisController extends Controller
     }
 
     // 查看队列
-    public function rpopKey($key)
+    public function lRange($key, $start, $end)
     {
-        $data = $this->redis->rpop($key);
-        print_r($data);
+        $data = $this->redis->lrange($key, $start, $end);
+        $returnData = array();
+        foreach ($data as $value){
+            $returnData[] = unserialize($value);
+        }
+        print_r($returnData);
     }
 }
