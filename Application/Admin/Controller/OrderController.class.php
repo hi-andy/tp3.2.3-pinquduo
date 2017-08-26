@@ -15,6 +15,7 @@ class OrderController extends BaseController {
 	 */
 	public function _initialize()
 	{
+	    parent::_initialize();
 		C('TOKEN_ON', false); // 关闭表单令牌验证
 		// 订单 支付 发货状态
 		$this->assign('order_type', C('SINGLE_BUY'));
