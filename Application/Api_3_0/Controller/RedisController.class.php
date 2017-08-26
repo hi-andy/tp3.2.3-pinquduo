@@ -9,6 +9,7 @@
 namespace Api_3_0\Controller;
 
 use Think\Controller;
+use Think\Cache\Driver\Redis;
 
 class RedisController extends Controller
 {
@@ -34,7 +35,7 @@ class RedisController extends Controller
     // 查看队列
     public function rpopKey($key)
     {
-        $data = $this->redis->rpop($key);
+        $data = unserialize($this->redis->rpop($key));
         print_r($data);
     }
 }
