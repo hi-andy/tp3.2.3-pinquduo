@@ -568,33 +568,29 @@ class AutomationController extends BaseController
         for ($i=0; $i<10; $i++) {
             $updateData = $redis->rpop('waitingUpdate');
             $userInfo = unserialize($updateData);
-            if ($userInfo['user_id'] > 0) {
-                // 如果头像有变，拉取微信头像传到七牛云；
-                if (!empty($userInfo['source_head_pic'])) {
-                    if (md5_file($userInfo['source_head_pic']) != md5_file($userInfo['head_pic'])) {
-                        $qiniu = new \Admin\Controller\QiniuController();
-                        $qiniu->delete('imgbucket', $userInfo['head_pic']); // 删除旧头像
-                        $qiniu_result = $qiniu->fetch($userInfo['source_head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
-                        $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                    }
+            // 如果头像有变，拉取微信头像传到七牛云；
+            if (!empty($userInfo['source_head_pic'])) {
+                if (md5_file($userInfo['source_head_pic']) != md5_file($userInfo['head_pic'])) {
+                    $qiniu = new \Admin\Controller\QiniuController();
+                    $qiniu->delete('imgbucket', $userInfo['head_pic']); // 删除旧头像
+                    $qiniu_result = $qiniu->fetch($userInfo['source_head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
+                    $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
                 }
-
-                if (!empty($userInfo['source_nickname'])) {
-                    // 如果昵称有变，更新用户昵称。
-                    if ($userInfo['nickname'] != $userInfo['source_nickname']){
-                        $data['nickname'] = $userInfo['source_nickname'];
-                    }
-                }
-
-                //　最后登录时间
-                $data['last_login'] = $userInfo['last_login'];
-                M('users')->where('user_id=' . $userInfo['user_id'])->save($data);
-                // 调试信息
-                //$sql = M('users')->fetchSql(true)->where('user_id=' . $userInfo['user_id'])->save($data);
-                //M('admin_log')->data(array('admin_id'=>$userInfo['user_id'],'log_ip'=>'127.0.0.1','log_info'=>'userInfoUpdated','log_time'=>time(),'log_url'=>json_encode($sql)))->add();
-            } else {
-                continue;
             }
+
+            if (!empty($userInfo['source_nickname'])) {
+                // 如果昵称有变，更新用户昵称。
+                if ($userInfo['nickname'] != $userInfo['source_nickname']){
+                    $data['nickname'] = $userInfo['source_nickname'];
+                }
+            }
+
+            //　最后登录时间
+            $data['last_login'] = $userInfo['last_login'];
+            M('users')->where('user_id=' . $userInfo['user_id'])->save($data);
+            // 调试信息
+            //$sql = M('users')->fetchSql(true)->where('user_id=' . $userInfo['user_id'])->save($data);
+            //M('admin_log')->data(array('admin_id'=>$userInfo['user_id'],'log_ip'=>'127.0.0.1','log_info'=>'userInfoUpdated','log_time'=>time(),'log_url'=>json_encode($sql)))->add();
             unset($updateData);
             unset($userInfo);
         }
