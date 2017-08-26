@@ -300,7 +300,7 @@ return array(
 
     ),
 	// 分享地址
-    'SHARE_URL' => 'https://wx.pinquduo.cn',
+    'SHARE_URL' => 'http://wx.pinquduo.cn',
 
     'UPLOAD_FILE_QINIU'     => array (
         'maxSize'           => 20*1024*1024,//文件大小
