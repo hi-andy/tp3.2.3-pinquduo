@@ -42,7 +42,7 @@ class IndexController extends BaseController {
                 //TransformationImgurl 进行图片地址转换
                 $v['cat_img'] = TransformationImgurl($v['cat_img']);
             }
-            $category[0]['id'] = 'https://wx.pinquduo.cn/likes.html';
+            $category[0]['id'] = 'http://wx.pinquduo.cn/likes.html';
             $category[0]['cat_img'] = CDN .'/Public/upload/index/freewangzhe.gif';
 	        $category[3]['cat_name'] = '趣多严选';
 	        $category[3]['cat_img'] = CDN .'/Public/upload/index/quduoyanxuan.jpg';
@@ -1005,8 +1005,14 @@ class IndexController extends BaseController {
     }
 
     function t2() {
-        $return_goods = M('return_goods')->where('`order_id`='. 67560)->field('order_sn,gold,pay_code')->find();
-        var_dump(M()->getLastSql());
-        var_dump($return_goods);
+        $chas = 'https://cdn.pinquduo.cn/15025918410.jpg';
+        var_dump($chas);
+        var_dump(strstr($chas,"https://cdn"));die;
+        if(strstr($chas,"http://cdn") && !strstr($chas,"https://cdn2")){
+            $cha = $chas;
+            $cha = explode('http://cdn',$cha);
+            $d = 'https://cdn2'.$cha[1];
+        }
+        var_dump($d);
     }
 }
