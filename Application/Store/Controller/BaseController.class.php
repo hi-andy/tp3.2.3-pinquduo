@@ -127,6 +127,25 @@ class BaseController extends Controller {
 	            (float)$reflect = (float)$reflect+$v['order_amount'];
             }
         }
+		/*
+		 * 处理不是全额提款的订单 吴银海  8.26 15.27
+		 * */
+		$not_all = M('order')->alias('o')
+			->join('tp_return_goods rg on rg.order_id = o.order_id')
+			->where("o.not_all = 1 and o.order_type in (8,9) and o.store_id = '{$store_id}'")
+			->field('o.order_amount,o.confirm_time,rg.gold')
+			->select();
+		if(!empty($not_all)){
+			(float)$reflect1 = null;
+			foreach($not_all as $v){
+				$temp = 2*3600*24;
+				$cha = time()-$v['confirm_time'];
+				if($cha>=$temp){
+					(float)$reflect1 = (float)$reflect1+($v['order_amount']-$v['gold']);
+				}
+			}
+			$reflect = $reflect+$reflect1;
+		}
         //获取以前的提取记录
 		(float)$total = 0;
         $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id.' and (status=1 or status=0 )')->field('withdrawal_money')->select();

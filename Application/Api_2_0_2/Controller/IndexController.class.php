@@ -1005,14 +1005,25 @@ class IndexController extends BaseController {
     }
 
     function t2() {
-        $chas = 'https://cdn.pinquduo.cn/15025918410.jpg';
-        var_dump($chas);
-        var_dump(strstr($chas,"https://cdn"));die;
-        if(strstr($chas,"http://cdn") && !strstr($chas,"https://cdn2")){
-            $cha = $chas;
-            $cha = explode('http://cdn',$cha);
-            $d = 'https://cdn2'.$cha[1];
+        $reflect = 1888.9;
+        $not_all = M('order')->alias('o')
+            ->join('tp_return_goods rg on rg.order_id = o.order_id')
+            ->where("o.`not_all` = 1 and o.`order_type` in (8,9) and o.`store_id` = 9297")
+            ->field('o.order_amount,o.confirm_time,rg.gold')
+            ->select();
+        var_dump(M()->getLastsql());
+        var_dump($not_all);
+        if(!empty($not_all)){
+            (float)$reflect1 = null;
+            foreach($not_all as $v){
+                $temp = 2*3600*24;
+                $cha = time()-$v['confirm_time'];
+                if($cha>=$temp){
+                    (float)$reflect1 = (float)$reflect1+($v['order_amount']-$v['gold']);
+                }
+            }
+            $reflect = $reflect+$reflect1;
         }
-        var_dump($d);
+        var_dump($reflect);
     }
 }
