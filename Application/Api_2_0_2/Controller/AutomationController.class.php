@@ -580,13 +580,15 @@ class AutomationController extends BaseController
                 $qiniu->delete('imgbucket', $userInfo['head_pic']); // 删除旧头像
                 $qiniu_result = $qiniu->fetch($userInfo['source_head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
                 $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
+                unset($qiniu);
+                unset($qiniu_result);
             }
 
             if (!empty($userInfo['source_nickname'])) {
                 // 如果昵称有变，更新用户昵称。
-                if ($userInfo['nickname'] != $userInfo['source_nickname']){
+                //if ($userInfo['nickname'] != $userInfo['source_nickname']){
                     $data['nickname'] = $userInfo['source_nickname'];
-                }
+                //}
             }
 
             //　最后登录时间
@@ -598,6 +600,7 @@ class AutomationController extends BaseController
             //echo $userInfo['user_id'] . '<br />';
             unset($updateData);
             unset($userInfo);
+            unset($data);
         }
 
         $redis->close();

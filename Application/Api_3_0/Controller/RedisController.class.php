@@ -28,7 +28,7 @@ class RedisController extends Controller
 
     //删除缓存
     public function delKey($key){
-        $this->redis->delete($this->redis($key));
+        $this->redis->delete($this->redis->keys($key));
         echo '删除 ' . $key . ' 缓存成功！';
     }
 
