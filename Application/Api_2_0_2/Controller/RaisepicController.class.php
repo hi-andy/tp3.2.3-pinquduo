@@ -31,7 +31,11 @@ class RaisepicController extends BaseController
         }
 
         $prom_info = M('group_buy')->where('id = '.$prom_id)->field('goods_id,user_id')->find();
-        $user_pic = M('users')->where('user_id = '.$prom_info['user_id'])->field('head_pic,nickname,mobile')->find();
+        $user_pic = M('users')->where('user_id = '.$prom_info['user_id'])->field('user_id,head_pic,nickname,mobile')->find();
+
+        //M('admin_log')->data(array('admin_id'=>$user_pic['user_id'],'log_ip'=>'127.0.0.1','log_info'=>'raiseUserInfo','log_time'=>time(),'log_url'=>json_encode($user_pic)))->add();
+
+
         if(empty($prom_info)){
             $json = array('status'=>-1,'msg'=>'该团不存在');
             $this->getJsonp($json);
@@ -40,7 +44,7 @@ class RaisepicController extends BaseController
         $bigImgPath =  "http://{$bucket}.{$endpoint}". "/Public/upload/raise/goods_". $prom_info['goods_id'] .'.jpg';
         $img = imagecreatefromstring(curl_file_get_contents($bigImgPath));
         if(empty($img)){
-            M('admin_log')->data(array('admin_id'=>1,'log_info'=>'为我助力1','log_ip'=>'123','log_url'=>1))->add();
+            //M('admin_log')->data(array('admin_id'=>1,'log_info'=>'为我助力1','log_ip'=>'123','log_url'=>1))->add();
             $goods_info = M('goods')->where('goods_id = '.$prom_info['goods_id'])->field('goods_name,market_price')->find();
             $goods_image = M('goods_images')->where("goods_id = '{$prom_info['goods_id']}'")->field('image_url')->find();
             $url = get_raise_pic($prom_info['goods_id'],$goods_image['image_url'],$goods_info['goods_name'],$goods_info['market_price']);
@@ -50,7 +54,7 @@ class RaisepicController extends BaseController
         $font = 'Public/images/yahei.ttf';//字体
         $bigImg=  "https://{$bucket}.{$endpoint}/Public/upload/raise-prom/userid_". $prom_info['user_id'] .'_promid_'.$prom_id.'.jpg';
 //        $getimgcontent = file_get_contents($bigImg);
-        $img_t = imagecreatefromstring(curl_file_get_contents($bigImg));
+        $img_t = '';//imagecreatefromstring(curl_file_get_contents($bigImg));
         if(empty($img_t)) {
             //获取图片文件的内容
             $pic_path = curl_file_get_contents($Qr_code);
@@ -69,9 +73,10 @@ class RaisepicController extends BaseController
             //用户头像遮罩
             $head_pic = 'Public/images/square_head@2x.png';
             //获取图片文件的内容
-            $pic_path = curl_file_get_contents($head_pic);
+            //$pic_path = curl_file_get_contents($head_pic);
             //创建图片资源
-            $resource = imagecreatefromstring($pic_path);
+            //$resource = imagecreatefromstring($pic_path);
+            $resource = imagecreatefrompng('Public/images/square_head@2x.png');
             //图片合并
             imagecopyresized($img, $resource, 20, 395, 0, 0, 60, 60, imagesx($resource), imagesy($resource));
             //用户名称

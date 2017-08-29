@@ -14,6 +14,7 @@ class CrowdfundController extends BaseController {
      * 初始化操作
      */
     public function _initialize() {
+        parent::_initialize();
         C('TOKEN_ON',false); // 关闭表单令牌验证
         // 订单 支付 发货状态
         $this->assign('order_status',C('ORDER_STATUS'));

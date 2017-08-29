@@ -302,7 +302,8 @@ class GoodsController extends BaseController
                         $res1 = unlink($link1);
                     }
                     $Goods->save(); // 写入数据到数据库
-
+                    $getsql = $Goods->getLastSql();
+                    M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$getsql))->add();
                     $Goods->afterSave($goods_id);
                     redislist("goods_refresh_id", $goods_id);
                 }
@@ -766,6 +767,13 @@ class GoodsController extends BaseController
     public function ajaxGetSpecSelect()
     {
         $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
+        if($goods_id){
+            $addtime=M('Goods')->where(['goods_id'=>$goods_id])->getField('addtime');
+            if($addtime>0){
+                //新商户后台上传商品规格选择框展示  2017-8-26 15:46:03  李则云
+                $this->display('ajax_spec_select_new');exit();
+            }
+        }
         $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
         foreach($specList as $k => $v){
             $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
@@ -802,7 +810,15 @@ class GoodsController extends BaseController
     {
         $GoodsLogic = new GoodsLogic();
         $goods_id = $_REQUEST['goods_id'] ? $_REQUEST['goods_id'] : 0;
-            $str = $GoodsLogic->getSpecInput($goods_id, $_POST['spec_arr']);
+        if($goods_id){
+            $addtime=M('Goods')->where(['goods_id'=>$goods_id])->getField('addtime');
+            if($addtime>0){
+                //新增新商户后台上传的商品展示
+                $str = $GoodsLogic->getSpecInputNew($goods_id, $_POST['spec_arr']);
+                exit($str);
+            }
+        }
+        $str = $GoodsLogic->getSpecInput($goods_id, $_POST['spec_arr']);
         exit($str);
     }
 

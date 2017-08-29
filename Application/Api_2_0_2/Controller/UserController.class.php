@@ -829,6 +829,8 @@ class UserController extends BaseController {
             $data['is_prom'] = 0;
         }
         $res = M('return_goods')->add($data);
+        $getsql = M('return_goods')->getLastSql();
+        M('admin_log')->data(['admin_id'=>1,'log_info'=>'err','log_url'=>'eeee'])->add();
         if($res){
             //将状态改变
             $return['is_return_or_exchange']=1;

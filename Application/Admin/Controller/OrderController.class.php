@@ -15,6 +15,7 @@ class OrderController extends BaseController {
 	 */
 	public function _initialize()
 	{
+	    parent::_initialize();
 		C('TOKEN_ON', false); // 关闭表单令牌验证
 		// 订单 支付 发货状态
 		$this->assign('order_type', C('SINGLE_BUY'));
@@ -1100,6 +1101,7 @@ class OrderController extends BaseController {
 			$data['admin_id'] = $admin['admin_id'];
 			$data['admin_name'] = $admin['user_name'];
 			$data['datetime'] = date('Y-m-d H:m:s',time());
+			$data['type']=I('type');//后台惩罚增加type保存 2017-8-28 14:59:57 李则云
 			$res = M('store_punishment')->data($data)->add();
 			$res1 = M('store_detail')->where('storeid = ' . $order['store_id'])->setDec('margin', $data['sp_penal_sum']);
 			if($res && $res1)

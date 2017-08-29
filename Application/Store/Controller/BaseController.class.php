@@ -127,6 +127,7 @@ class BaseController extends Controller {
 	            (float)$reflect = (float)$reflect+$v['order_amount'];
             }
         }
+
 		/*
 		 * 处理不是全额提款的订单 吴银海  8.26 15.27
 		 * */
@@ -146,6 +147,7 @@ class BaseController extends Controller {
 			}
 			$reflect = $reflect+$reflect1;
 		}
+
         //获取以前的提取记录
 		(float)$total = 0;
         $withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id.' and (status=1 or status=0 )')->field('withdrawal_money')->select();

@@ -1005,25 +1005,9 @@ class IndexController extends BaseController {
     }
 
     function t2() {
-        $reflect = 1888.9;
-        $not_all = M('order')->alias('o')
-            ->join('tp_return_goods rg on rg.order_id = o.order_id')
-            ->where("o.`not_all` = 1 and o.`order_type` in (8,9) and o.`store_id` = 9297")
-            ->field('o.order_amount,o.confirm_time,rg.gold')
-            ->select();
-        var_dump(M()->getLastsql());
-        var_dump($not_all);
-        if(!empty($not_all)){
-            (float)$reflect1 = null;
-            foreach($not_all as $v){
-                $temp = 2*3600*24;
-                $cha = time()-$v['confirm_time'];
-                if($cha>=$temp){
-                    (float)$reflect1 = (float)$reflect1+($v['order_amount']-$v['gold']);
-                }
-            }
-            $reflect = $reflect+$reflect1;
-        }
-        var_dump($reflect);
+        $today = strtotime(date('Y-m-d'));
+        $res = M('order')->where('the_raise = 0 and pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = 3324 ')->sum('order_amount');
+
+        var_dump(M()->getLastSql());
     }
 }
