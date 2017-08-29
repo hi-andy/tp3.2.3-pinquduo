@@ -28,14 +28,18 @@ class RedisController extends Controller
 
     //删除缓存
     public function delKey($key){
-        $this->redis->delete($this->redis($key));
+        $this->redis->delete($this->redis->keys($key));
         echo '删除 ' . $key . ' 缓存成功！';
     }
 
     // 查看队列
-    public function rpopKey($key)
+    public function lRange($key, $start, $end)
     {
-        $data = unserialize($this->redis->rpop($key));
-        print_r($data);
+        $data = $this->redis->lrange($key, $start, $end);
+        $returnData = array();
+        foreach ($data as $value){
+            $returnData[] = unserialize($value);
+        }
+        print_r($returnData);
     }
 }

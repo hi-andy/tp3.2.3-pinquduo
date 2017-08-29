@@ -13,6 +13,7 @@ class ReportController extends BaseController{
 	public $merchant_id;
 	public $order_type;
 	public function _initialize(){
+	    parent::_initialize();
 		$timegap = I('timegap');
 		$gap = I('gap',7);
 		$merchant_id = I('merchant_id');

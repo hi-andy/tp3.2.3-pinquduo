@@ -57,7 +57,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
          * 更新用户信息
          * 完成旧用户数据合并后删除。
          */
-        $time = strtotime('2017-8-23'); //　以下代码发布日期,检查此日期之前的注册用户记录
+        $time = strtotime('2017-8-27'); //　以下代码发布日期,检查此日期之前的注册用户记录
         if ($userInfo && $userInfo['reg_time'] < $time) {
             $where['user_id'] = array("eq", $userInfo['user_id']);
             /**
@@ -104,7 +104,7 @@ function get_user_info($user_id_or_name,$type = 0,$oauth='',$unionid='')
      * 删除多余的用户记录，并把其余用户产生的订单等相关数据，归为用一用户。
      */
     if ($userInfo && $userInfo['reg_time'] < $time && ($oauth == 'wx' || $oauth == 'weixin') && ($unionid || $user_id_or_name)) {
-        $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and (unionid='$unionid' or openid='$user_id_or_name')";
+        $sql = "select user_id from tp_users where user_id <> {$userInfo['user_id']} and oauth='weixin' and (unionid='$unionid' or openid='$user_id_or_name')";
         $users = M()->query($sql);
         if (count($users) > 0) {
             $user_id = "";

@@ -1825,7 +1825,7 @@ class UserController extends BaseController {
 
     //获取用户详情
     function getUserInfo($user_id,$prom_order){
-        $user = M('users')->where('user_id = '.$user_id)->find();
+        $user = M('users')->where('user_id = '.$user_id)->field('nickname,mobile,oauth,head_pic')->find();
         if(!empty($user['oauth'])){
             $info['name'] = $user['nickname'];
         }else{
