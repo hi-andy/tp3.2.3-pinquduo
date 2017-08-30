@@ -143,12 +143,17 @@
                                         <tr>
                                             <td>发放商户名:</td>
                                             <td>
-                                                <foreach name="store_name" item="v" key="k" >
+                                                <if condition="$store_name eq '全平台商家'">
+                                                              {$store_name}
+                                                </if>
+                                                <if condition="$store_name neq '全平台商家'">
+                                                    <foreach name="store_name" item="v" key="k" >
                                                     <span style="font-size: 16px;line-height:30px;font-weight: 400;margin-left:10px;">
                                                         {$v['store_name']}
                                                     </span>
-                                                    <br>
-                                                </foreach>
+                                                        <br>
+                                                    </foreach>
+                                                </if>
                                             </td>
                                         </tr>
 

@@ -401,7 +401,7 @@ class GoodsController extends BaseController {
 //                }
 //                $goodscontent = str_replace('<img src="">','',$goodscontent);
 //                $Goods->goods_content = $goodscontent;
-
+                $Goods->goodstatus = 2;
                 if ($type == 2)
                 {
                     $Goods->refresh = 0 ;
@@ -807,7 +807,7 @@ class GoodsController extends BaseController {
                 $Goods->on_time = time(); // 上架时间
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 session('goods',$_POST);
-
+                $Goods->goodstatus = 2 ;
                 if ($type == 2){
                     $Goods->refresh = 0 ;
                     $goods_id = $_POST['goods_id'];

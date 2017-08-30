@@ -3,8 +3,8 @@
 namespace Admin\Controller;
 
 use Admin\Logic\GoodsLogic;
-use Api\Controller\BaseController;
-use Api\Controller\QQPayController;
+use Api_2_0_2\Controller\BaseController;
+use Api_2_0_2\Controller\QQPayController;
 use Store\Logic\PromLogic;
 use Think\AjaxPage;
 use Admin\Logic\OrderLogic;
@@ -162,7 +162,7 @@ class GroupController extends BaseController
             $member_infos = M('group_buy')->alias('g')
                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                ->where('g.mark = ' . $group_info['id'])
+                ->where('g.mark = ' . $group_info['id'] . ' and g.is_pay = 1')
                 ->field('g.id,g.start_time,g.end_time,g.goods_num,g.order_num,g.price,g.mark,g.is_pay,g.is_free,g.is_successful,u.nickname,o.order_sn,o.pay_time')
                 ->order('g.id desc')
                 ->select();
@@ -171,7 +171,7 @@ class GroupController extends BaseController
             $head_info = M('group_buy')->alias('g')
                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                ->where(array('id' => $group_info['mark']))
+                ->where(array('id' => $group_info['mark']) . ' and g.is_pay = 1')
                 ->field('g.*,u.nickname,o.order_sn,o.pay_time')
                 ->order('g.id desc')
                 ->select();
@@ -180,7 +180,7 @@ class GroupController extends BaseController
         $order_id = $group_info['order_id'];
         $orderLogic = new OrderLogic();
         $order = $orderLogic->getOrderInfo($order_id);
-        $order['statusInfo'] = $this->getStatus($order)['annotation'];
+        $order['statusInfo'] = $this->getPromStatus($order,$group_info,count($member_infos)+1)['annotation'];
         $orderGoods = $orderLogic->getOrderGoods($order_id);
 
         $group_res = M('group_buy')->where(array('order_id' => $order_id))->count();

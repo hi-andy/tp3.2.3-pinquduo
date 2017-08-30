@@ -692,20 +692,24 @@ class StoreController extends BaseController{
 
 	function detail(){
 		$msgid = $_GET['id'];
-		$MIL = M('stand_inside_letter')
-			->where('msg_id  = '.$msgid)
-			->field('msg_id,store_id,msg_title,msg_content,type')->find();
-		//判断是否为多个商户
-		if(substr_count($MIL['store_id'],',')>1){
-
+		if(!empty($msgid)){
+			$MIL = M('stand_inside_letter')
+				->where('msg_id  = '.$msgid)
+				->field('msg_id,store_id,msg_title,msg_content,type')->find();
+			//判断是否为多个商户
 			$MIL['store_id'] = substr($MIL['store_id'],1);
 			$MIL['store_id'] = substr($MIL['store_id'],0,strlen($MIL['store_id'])-1);
-
-			$cha = explode(',',$MIL['store_id']);
-			$condition['id'] = array('in',$cha);
-			$store_name = M('merchant')->where($condition)->field('store_name')->select();
-		}else{
-			$store_name = M('merchant')->where('id = '.$MIL['store_id'])->field('store_name')->select();
+			if($MIL['store_id']!=0) {
+				if (substr_count($MIL['store_id'], ',') > 0) {
+					$cha = explode(',', $MIL['store_id']);
+					$condition['id'] = array('in', $cha);
+					$store_name = M('merchant')->where($condition)->field('store_name')->select();
+				} else {
+					$store_name = M('merchant')->where('id = ' . $MIL['store_id'])->field('store_name')->select();
+				}
+			}else{
+				$store_name = "全平台商家";
+			}
 		}
 
 		$this->assign('msg_logo',C('msg_logo'));
@@ -717,23 +721,26 @@ class StoreController extends BaseController{
 	}
 
 	function getStorename($store_id){
-		if($store_id != 0){
-			if(substr_count($store_id,',')){
+		if(!empty($store_id)){
+			$store_id = substr( $store_id, 1 );
+			$store_id = substr($store_id,0,strlen($store_id)-1);
+			if(substr_count($store_id,',')>0){
 				$cha = explode(',',$store_id);
 				$condition['id'] = array('in',$cha);
 				$store_name = M('merchant')->where($condition)->field('store_name')->select();
+				$store_names = null;
 				foreach ($store_name as $value){
-					$store_name .= ','.$value['store_name'];
+					$store_names .= ','.$value['store_name'];
 				}
-				$store_name = substr($store_name, 1);
+				$store_names = substr($store_names, 1);
 			}else{
-				$store_name = M('merchant')->where('id = '.$store_id)->getField('store_name');
+				$store_names = M('merchant')->where('id = '.$store_id)->getField('store_name');
 			}
 		}else{
-			$store_name = '全平台商家';
+			$store_names = '全平台商家';
 		}
 
-		return $store_name;
+		return $store_names;
 	}
 
 	function delMSG(){

@@ -32,7 +32,7 @@ class IndexController extends BaseController {
              * ad_code=>图片地址
              * type=>跳转类型
              */
-            $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
+                $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
             foreach ($data as & $v) {
                 $v['ad_code'] = TransformationImgurl($v['ad_code']);
             }

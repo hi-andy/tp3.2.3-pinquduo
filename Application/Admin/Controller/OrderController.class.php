@@ -2,7 +2,7 @@
 namespace Admin\Controller;
 use Admin\Logic\OrderLogic;
 use Admin\Logic\GoodsLogic;
-use Api\Controller\QQPayController;
+use Api_2_0_2\Controller\QQPayController;
 use Think\AjaxPage;
 
 class OrderController extends BaseController {
