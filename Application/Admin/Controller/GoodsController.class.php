@@ -1049,10 +1049,13 @@ class GoodsController extends BaseController
         $this->display();
     }
 
+    /**
+     * 驳回 增加审核时间edittime 2017-8-31 11:30:10 李则云
+     */
     public function no_audit()
     {
         $id = I('id');
-        $res = M('goods')->where('goods_id='.$id)->save(array('is_audit'=>2));
+        $res = M('goods')->where('goods_id='.$id)->save(array('is_audit'=>2,'edittime'=>time()));
         if ($res) {
             $return_arr = array('status' => 1, 'msg' => '已驳回该商品审核', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
             $this->ajaxReturn(json_encode($return_arr));
