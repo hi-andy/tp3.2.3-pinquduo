@@ -407,7 +407,7 @@ class OrderLogic extends RelationModel
     public function deliveryHandle($data){
 		$order = M('order')->where('`order_id`='.$data['order_id'])->find();;
 		$orderGoods = $this->getOrderGoods($data['order_id']);
-//		$selectgoods = $data['goods'];
+
 		$data['order_sn'] = $order['order_sn'];
 		$data['zipcode'] = $order['zipcode'];
 		$data['user_id'] = $order['user_id'];
@@ -438,6 +438,7 @@ class OrderLogic extends RelationModel
 	    M('order_action')->add($action);
 
 	    $updata['shipping_status'] = 1;
+	    $updata['delivery_time'] = time();
 		$updata['shipping_code'] = $data['shipping_code'];
 		$updata['shipping_name'] = $data['shipping_name'];
 		$updata['shipping_order'] = $data['shipping_order'];

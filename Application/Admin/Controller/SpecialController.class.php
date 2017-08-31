@@ -94,8 +94,23 @@ class SpecialController extends BaseController
      * 动态获取商品规格选择框 根据不同的数据返回不同的选择框
      */
     public function ajaxGetSpecSelect(){
-        $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
-        $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
+        $goods_id = $_GET['goods_id'] ? (int)$_GET['goods_id'] : 0;
+        if($goods_id>0){
+            $goodinfo = M('goods')->field('addtime')->where("goods_id={$goods_id}")->find();
+            $addtime = $goodinfo['addtime'];
+            if($addtime == 0){
+                $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
+            }else{
+                $specList = D('spec_item')->field('distinct spec_id as id')->where(['goodid'=>$goods_id,'is_del'=>0])->select();
+                foreach($specList as $key=>$value){
+                    $allId[] = $value['id'];
+                }
+                $where['id'] = ['in',implode(',',$allId)];
+                $specList = D('specification')->field('id,name')->where($where)->select();
+            }
+        }else{
+            $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
+        }
         foreach($specList as $k => $v){
             $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
         }
@@ -121,6 +136,7 @@ class SpecialController extends BaseController
 
         $this->assign('items_ids',$items_ids);
         $this->assign('specList',$specList);
+
         $this->display('ajax_spec_select');
     }
 
