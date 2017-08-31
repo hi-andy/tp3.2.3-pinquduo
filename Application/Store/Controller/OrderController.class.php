@@ -1,6 +1,6 @@
 <?php
 namespace Store\Controller;
-use Api\Controller\QQPayController;
+use Api_2_0_2\Controller\QQPayController;
 use Store\Logic\OrderLogic;
 use Store\Logic\PromLogic;
 use Think\AjaxPage;

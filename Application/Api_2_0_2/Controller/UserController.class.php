@@ -829,6 +829,8 @@ class UserController extends BaseController {
             $data['is_prom'] = 0;
         }
         $res = M('return_goods')->add($data);
+        $getsql = M('return_goods')->getLastSql();
+        M('admin_log')->data(['admin_id'=>1,'log_info'=>'err','log_url'=>'eeee'])->add();
         if($res){
             //将状态改变
             $return['is_return_or_exchange']=1;
@@ -1823,7 +1825,7 @@ class UserController extends BaseController {
 
     //获取用户详情
     function getUserInfo($user_id,$prom_order){
-        $user = M('users')->where('user_id = '.$user_id)->find();
+        $user = M('users')->where('user_id = '.$user_id)->field('nickname,mobile,oauth,head_pic')->find();
         if(!empty($user['oauth'])){
             $info['name'] = $user['nickname'];
         }else{

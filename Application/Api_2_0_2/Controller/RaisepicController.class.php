@@ -73,9 +73,10 @@ class RaisepicController extends BaseController
             //用户头像遮罩
             $head_pic = 'Public/images/square_head@2x.png';
             //获取图片文件的内容
-            $pic_path = curl_file_get_contents($head_pic);
+            //$pic_path = curl_file_get_contents($head_pic);
             //创建图片资源
-            $resource = imagecreatefromstring($pic_path);
+            //$resource = imagecreatefromstring($pic_path);
+            $resource = imagecreatefrompng('Public/images/square_head@2x.png');
             //图片合并
             imagecopyresized($img, $resource, 20, 395, 0, 0, 60, 60, imagesx($resource), imagesy($resource));
             //用户名称

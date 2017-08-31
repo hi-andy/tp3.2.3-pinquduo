@@ -308,24 +308,59 @@ class ReportController extends BaseController{
 		$data['ti']>0 && $data['ti']=$this->operationPrice($data['ti']);
 
         //拿到总共能体现的资金
-		$one = M('order')->where('order_type in (4,16,6,7) and confirm_time is not null and store_id='.$store_id['id'])->select();
-		$reflect = null;
-		foreach($one as $v)
-		{
+		$one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$store_id['id'])->field('order_id,confirm_time,order_amount')->select();
+		(float)$reflect = null;
+		foreach($one as $v){
 			$temp = 2*3600*24;
 			$cha = time()-$v['confirm_time'];
-			if($cha>=$temp)
-			{
-				$reflect = $reflect+$v['order_amount'];
+			if($cha>=$temp){
+				(float)$reflect = (float)$reflect+$v['order_amount'];
 			}
 		}
-		//获取以前的提取记录
-		$total = 0;
-		$withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id['id'].' and status in (1,0)')->field('withdrawal_money')->select();
 
+		/*
+		 * 处理不是全额提款的订单 吴银海  8.26 15.27
+		 * */
+		$not_all = M('order')->alias('o')
+			->join('tp_return_goods rg on rg.order_id = o.order_id')
+			->where("o.not_all = 1 and o.order_type in (8,9) and o.store_id = '{$store_id['id']}'")
+			->field('o.order_amount,o.confirm_time,rg.gold')
+			->select();
+		if(!empty($not_all)){
+			(float)$reflect1 = null;
+			foreach($not_all as $v){
+				$temp = 2*3600*24;
+				$cha = time()-$v['confirm_time'];
+				if($cha>=$temp){
+					(float)$reflect1 = (float)$reflect1+($v['order_amount']-$v['gold']);
+				}
+			}
+			$reflect = $reflect+$reflect1;
+		}
+
+		//获取以前的提取记录
+		(float)$total = 0;
+		$withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id['id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
+
+		$suoding = M('store_withdrawal')->where('store_id='.$store_id['id'].' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
+		if(!empty($suoding))
+		{
+			$this->assign('suoding',$suoding);
+		}
 		foreach($withdrawal_total as $v)
 		{
-			$total = $total+$v['withdrawal_money'];
+			(float)$total = (float)$total+$v['withdrawal_money'];
+		}
+		(float)$reflects = $reflect;
+		(float)$reflect = $reflect-$total;
+
+		if(empty($reflect)||((string)$reflects==(string)$total)){
+			$reflect = 0;
+		}
+
+		$c = getFloatLength($reflect);
+		if($c>=3){
+			$reflect = operationPrice($reflect);
 		}
 		$data['reflect'] = $reflect-$total;
 		if(empty($data['reflect']))

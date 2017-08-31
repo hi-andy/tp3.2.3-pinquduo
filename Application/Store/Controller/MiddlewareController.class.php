@@ -1,7 +1,7 @@
 <?php
 namespace Store\Controller;
 
-use Api\Controller\QQPayController;
+use Api_2_0_2\Controller\QQPayController;
 use Store\Logic\OrderLogic;
 /*
  * 团购订单管理
@@ -60,7 +60,16 @@ class MiddlewareController  {
     }
 
 
-
+    public function fallback($orders)
+    {
+        //商品销量减去订单中的数量
+        M('goods')->where('`goods_id`='.$orders['goods_id'])->setDec('sales',$orders['num']);
+        //门店总销量减去订单中的数量
+        M('merchant')->where('`id`='.$orders['store_id'])->setDec('sales',$orders['num']);
+        //规格库存回复到原来的样子
+        $spec_name = M('order_goods')->where('`order_id`='.$orders['order_id'])->field('spec_key')->find();
+        M('spec_goods_price')->where('`goods_id`='.$orders['goods_id']." and `key`='".$spec_name['spec_key']."'")->setInc('store_count',$orders['num']);
+    }
 
 
 

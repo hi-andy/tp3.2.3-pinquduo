@@ -58,10 +58,10 @@
                                 </div>
                             </div>
                             <div class="item mt10 clearfix">
-                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>法人邮箱</span>
+                                <span class="title mt10 mr20 w9em tr"><em class="red">*</em>联系QQ号</span>
                                 <div class="item-body">
 									<span class="input-box block" style="width:310px;">
-										<input type="text" placeholder="请输入店主邮箱" name="show_ower_mail">
+										<input type="text" placeholder="联系QQ号" name="show_ower_mail">
 									</span>
                                     <div class="hint" style="display:none;">
                                         <p class="red">填写错误提示！！！！</p>
@@ -576,15 +576,8 @@
             is_true = false;
         }
         if(!show_ower_mail){
-            msg += "请输入法人邮箱<br>";
+            msg += "请输入联系QQ号<br>";
             is_ture = false;
-        } else {
-            var email_reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
-
-            if(!email_reg.test(show_ower_mail)){
-                msg += "邮箱格式不正确<br>";
-                is_ture = false;
-            }
         }
 
         if(!show_ower_mobile){

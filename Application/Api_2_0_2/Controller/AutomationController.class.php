@@ -580,8 +580,6 @@ class AutomationController extends BaseController
                 $qiniu->delete('imgbucket', $userInfo['head_pic']); // 删除旧头像
                 $qiniu_result = $qiniu->fetch($userInfo['source_head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
                 $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                unset($qiniu);
-                unset($qiniu_result);
             }
 
             if (!empty($userInfo['source_nickname'])) {
@@ -601,6 +599,8 @@ class AutomationController extends BaseController
             unset($updateData);
             unset($userInfo);
             unset($data);
+            unset($qiniu);
+            unset($qiniu_result);
         }
 
         $redis->close();

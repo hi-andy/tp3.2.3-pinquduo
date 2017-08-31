@@ -160,7 +160,7 @@ class GoodsController extends BaseController
      */
     public function ajaxGoodsList()
     {
-        $where = 'show_type=0 and `the_raise`=0 '; // 搜索条件
+        $where = 'show_type=0 and `the_raise`=0 and `goodstatus`=2 '; // 搜索条件
         I('intro') && $where = "$where and ".I('intro')." = 1" ;
         I('is_on_sale') != null && $where = "$where and `is_on_sale`= ".I('is_on_sale') ;
         (I('merchant_id') !=0) && $where = "$where and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';
@@ -302,7 +302,8 @@ class GoodsController extends BaseController
                         $res1 = unlink($link1);
                     }
                     $Goods->save(); // 写入数据到数据库
-
+                    $getsql = $Goods->getLastSql();
+                    M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$getsql))->add();
                     $Goods->afterSave($goods_id);
                     redislist("goods_refresh_id", $goods_id);
                 }

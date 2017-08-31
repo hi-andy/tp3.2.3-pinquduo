@@ -75,10 +75,10 @@
                                 <tr>
                                     <td>{$order.order_id}</td>
                                     <td>{$order.order_sn}</td>
-                                    <td><{$order.consignee}</td>
+                                    <td>{$order.consignee}</td>
                                     <td>{$order.mobile}</td>
                                     <td>{$order.total_fee}</td>
-                                    <td id="order-status"> {$pay_status[$order[pay_status]]}<if condition="$order['pay_code'] eq 'cod'"><span style="color: red">(货到付款)</span></if> / {$shipping_status[$order[shipping_status]]}</td>
+                                    <td id="order-status">{$order.statusInfo}/ {$pay_status[$order[pay_status]]}<if condition="$order['pay_code'] eq 'cod'"><span style="color: red">(货到付款)</span></if> / {$shipping_status[$order[shipping_status]]}</td>
                                     <td>{$order.add_time|date='Y-m-d H:i',###}</td>
                                     <td><if condition="$order.pay_time neq 0">
                                         {$order.pay_time|date='Y-m-d H:i',###}
