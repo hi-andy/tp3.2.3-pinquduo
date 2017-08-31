@@ -112,7 +112,7 @@ class SpecialController extends BaseController
             $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
         }
         foreach($specList as $k => $v){
-            $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
+            $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
         }
 
         $items_id = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();
@@ -123,8 +123,7 @@ class SpecialController extends BaseController
             $ids = $ids.'_'. $items_id[$i]['key'];
         }
         $items_ids = explode('_', $ids);
-        if(empty($items_ids[0]))
-        {
+        if(empty($items_ids[0])){
             array_shift($items_ids);
         }
         // 获取商品规格图片

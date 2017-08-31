@@ -391,8 +391,6 @@ class GoodsController extends BaseController {
                 $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
                 $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
 
-
-
                 //详情图片
 //                $Goods->goods_content = null;
 //                $goodscontent = "";
@@ -401,10 +399,10 @@ class GoodsController extends BaseController {
 //                }
 //                $goodscontent = str_replace('<img src="">','',$goodscontent);
 //                $Goods->goods_content = $goodscontent;
-                $Goods->goodstatus = 2;
                 if ($type == 2)
                 {
                     $Goods->refresh = 0 ;
+                    $Goods->goodstatus = 2;
                     $goods_id = $_POST['goods_id'];
                     $goods = M('goods')->where("goods_id = $goods_id")->find();
                     // 如果上传新图，删除旧图
@@ -425,6 +423,7 @@ class GoodsController extends BaseController {
                     $Goods->save(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                 }else{
+                    $Goods->goodstatus = 2;
                     $Goods->is_on_sale = 0 ;    // 默认
                     $Goods->is_show = 0 ;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
@@ -810,6 +809,7 @@ class GoodsController extends BaseController {
                 $Goods->goodstatus = 2 ;
                 if ($type == 2){
                     $Goods->refresh = 0 ;
+                    $Goods->goodstatus = 2;
                     $goods_id = $_POST['goods_id'];
                     M('spec_goods_price')->where('`goods_id`='.$goods_id)->delete();
                     M('spec_image')->where('`goods_id`='.$goods_id)->delete();
@@ -834,6 +834,8 @@ class GoodsController extends BaseController {
                     redisdelall("getDetaile_".$goods_id);
                 }else{
                     $Goods->is_on_sale = 0 ;
+                    $Goods->is_show = 0;
+                    $Goods->goodstatus = 2;
                     $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
                     $Goods->afterSave($goods_id);
                 }
