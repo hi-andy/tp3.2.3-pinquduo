@@ -340,8 +340,6 @@ class GoodsController extends BaseController
         $cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
 
-//        $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
-
         $merchantList = $GoodsLogic->getSortMerchant();
         $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
         if(empty($goodsType))
