@@ -215,25 +215,31 @@
                                     <input type="hidden" name="store_id" value="<?php echo $_SESSION['merchant_id'];?>">
                                     </tbody>
                                 </table>
-                                <!-- 商品规格-->
-                                <div class="tab-pane" id="tab_goods_spec">
-                                    <table class="table table-bordered" id="goods_spec_table">
-                                        <tr>
-                                            <td>商品类型:</td>
-                                            <td>
-                                                <select name="spec_type" id="spec_type" class="form-control" style="display:inline;width:250px;">
-                                                    <option value="0">选择商品类型</option>
-                                                    <foreach name="goodsType" item="vo" key="k" >
-                                                        <option value="{$vo.id}"<if condition="$goodsInfo[spec_type] eq $vo[id]"> selected="selected" </if> >{$vo.name}</option>
-                                                    </foreach>
-                                                </select>
-                                                &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 如果相关商品有类型，此项则必填</span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <div id="ajax_spec_data"><!-- ajax 返回规格--></div>
-                                </div>
-                                <!-- 商品规格-->
+                                <if condition="$gist neq 1">
+                                    <!-- 商品规格-->
+                                    <div class="tab-pane" id="tab_goods_spec">
+                                        <table class="table table-bordered" id="goods_spec_table">
+                                            <tr>
+                                                <td>商品类型:</td>
+                                                <td>
+                                                    <select name="spec_type" id="spec_type" class="form-control" style="display:inline;width:250px;">
+                                                        <option value="0">选择商品类型</option>
+                                                        <foreach name="goodsType" item="vo" key="k" >
+                                                            <option value="{$vo.id}"<if condition="$goodsInfo[spec_type] eq $vo[id]"> selected="selected" </if> >{$vo.name}</option>
+                                                        </foreach>
+                                                    </select>
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">* 如果相关商品有类型，此项则必填</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div id="ajax_spec_data"><!-- ajax 返回规格--></div>
+                                    </div>
+                                    <!-- 商品规格-->
+                                </if>
+                                <if condition="$gist eq 1">
+                                    <input type="hidden" name="gist" value="{$gist}" >
+                                </if>
+
                             </div>
                             <!--其他信息-->
 

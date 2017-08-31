@@ -160,7 +160,7 @@ class GoodsController extends BaseController
      */
     public function ajaxGoodsList()
     {
-        $where = 'show_type=0 and `the_raise`=0 '; // 搜索条件
+        $where = 'show_type=0 and `the_raise`=0 and `goodstatus`=2 '; // 搜索条件
         I('intro') && $where = "$where and ".I('intro')." = 1" ;
         I('is_on_sale') != null && $where = "$where and `is_on_sale`= ".I('is_on_sale') ;
         (I('merchant_id') !=0) && $where = "$where and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';
@@ -269,6 +269,26 @@ class GoodsController extends BaseController
         //ajax提交验证
         if(($_GET['is_ajax'] == 1) && IS_POST)
         {
+            /*
+             * gist 标志为新后台单品  吴银海  8月31号
+             * */
+            if($_POST['gist']==1 && $type == 2){
+                if(!empty($_POST['reason'])){
+                    $res_reason = M('goods')->where("goods_id = {$_POST['goods_id']}")->data(array('reason'=>$_POST['reason']))->save();
+                    if($res_reason){
+                        $return_arr = array(
+                            'status' => 1,
+                            'msg'   => '操作成功'
+                        );
+                    }else{
+                        $return_arr = array(
+                            'status' => 1,
+                            'msg'   => '操作失败'
+                        );
+                    }
+                    $this->ajaxReturn(json_encode($return_arr));
+                }
+            }
             C('TOKEN_ON',false);
             if(!$Goods->create(NULL,$type))// 根据表单提交的POST数据创建数据对象
             {
@@ -302,7 +322,8 @@ class GoodsController extends BaseController
                         $res1 = unlink($link1);
                     }
                     $Goods->save(); // 写入数据到数据库
-
+                    $getsql = $Goods->getLastSql();
+                    M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$getsql))->add();
                     $Goods->afterSave($goods_id);
                     redislist("goods_refresh_id", $goods_id);
                 }
@@ -319,13 +340,12 @@ class GoodsController extends BaseController
                     $return_arr = array(
                         'status' => 1,
                         'msg'   => '操作成功',
-                        'data'  => array('url'=>U('Admin/Crowdfund/goods_list')),
+                        'data'  => array('url'=>U('Admin/goods/goods_list')),
                     );
-                }else
-                {
+                }else{
                     $return_arr = array(
                         'status' => 1,
-                        'msg'   => '操作成功',
+                        'msg'   => '操作失败',
                         'data'  => array('url'=>U('Admin/Goods/goodsList')),
                     );
                 }
@@ -335,11 +355,12 @@ class GoodsController extends BaseController
         }
 
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+        if($goodsInfo['specone']==0 && $goodsInfo['spectwo']==0 && $goodsInfo['addtime'] != 0){
+            $this->assign('gist', 1);
+        }
         M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$goodsInfo['store_id']))->add();
         $cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
         $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
-
-//        $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
 
         $merchantList = $GoodsLogic->getSortMerchant();
         $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
@@ -766,9 +787,25 @@ class GoodsController extends BaseController
     public function ajaxGetSpecSelect()
     {
         $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
-        $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
+        if($goods_id>0){
+            $goodinfo = M('goods')->field('addtime')->where("goods_id={$goods_id}")->find();
+            $addtime = $goodinfo['addtime'];
+            if($addtime == 0){
+                $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
+            }else{
+                $specList = D('spec_item')->field('distinct spec_id as id')->where(['goodid'=>$goods_id,'is_del'=>0])->select();
+                foreach($specList as $key=>$value){
+                    $allId[] = $value['id'];
+                }
+                $where['id'] = ['in',implode(',',$allId)];
+                $specList = D('specification')->field('id,name')->where($where)->select();
+            }
+        }else{
+            $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
+        }
+
         foreach($specList as $k => $v){
-            $specList[$k]['spec_item'] = D('SpecItem')->where("is_show = 1 and spec_id = ".$v['id'])->getField('id,item'); // 获取规格项
+            $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
         }
 
         $items_id = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();
@@ -1048,10 +1085,13 @@ class GoodsController extends BaseController
         $this->display();
     }
 
+    /**
+     * 驳回 增加审核时间edittime 2017-8-31 11:30:10 李则云
+     */
     public function no_audit()
     {
         $id = I('id');
-        $res = M('goods')->where('goods_id='.$id)->save(array('is_audit'=>2));
+        $res = M('goods')->where('goods_id='.$id)->save(array('is_audit'=>2,'edittime'=>time()));
         if ($res) {
             $return_arr = array('status' => 1, 'msg' => '已驳回该商品审核', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
             $this->ajaxReturn(json_encode($return_arr));

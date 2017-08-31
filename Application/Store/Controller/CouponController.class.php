@@ -85,8 +85,8 @@ class CouponController extends BaseController {
 				$this->error('编辑优惠券失败');
 			}
 			$goods_ids = M('goods')->where('store_id = '.$data['store_id'])->field('goods_id')->select();
-			for ($i=0;$i<count($goods_ids);$i++){
-				redisdelall('getDetaile_'.$goods_ids);
+			foreach ($goods_ids as $k=>$v){
+				redisdelall('getDetaile_'.$v['goods_id']);
 			}
 			$this->success('编辑优惠券成功',U('Store/Coupon/index'));
 			exit;

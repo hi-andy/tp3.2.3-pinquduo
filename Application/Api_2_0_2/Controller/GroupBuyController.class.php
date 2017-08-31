@@ -4,9 +4,9 @@ use Think\Controller;
 
 class GroupBuyController extends BaseController {
     //限制开团时间
-    const GROUPSTART = '2017-08-17';
+    const GROUPSTART = '2017-08-21';
     //限制成团的最大数
-    const GROUPMAX = 5;
+    const GROUPMAX = 3;
     /**
      * 关注点赞
      */
@@ -102,13 +102,31 @@ class GroupBuyController extends BaseController {
             //防刷条件  2017-08-18 温立涛 开始
             //$groupStart = strtotime(self::GROUPSTART);
             //防刷条件  2017-08-24 温立涛 开始
-            $groupStart = time()-259200;
+            $groupStart = strtotime(self::GROUPSTART);
             $order_id = $result['order_id'];
             $orderInfo = M('order')->where(['order_id'=>$order_id])->find();
             $mobile = $orderInfo['mobile'];
-            $orderCount = M('order')->where("mobile='{$mobile}' and the_raise=1 and order_type>=14 and add_time>{$groupStart}")->count();
+            $address = $orderInfo['address'];
+            $orderCount = M('order')->where("mobile='{$mobile}' and address='{$address}' and the_raise=1 and order_type in(4,14,15) and add_time>{$groupStart}")->count();
             M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>$orderCount.'=='.$mobile.'=='.$user_id])->add();
-            if($orderCount > self::GROUPMAX){
+            //成团一个之前 20分之19
+            if($orderCount<=1){
+                $randNum = range(96,100);
+            }
+            //成团2个或者3个 20分之16
+            if($orderCount == 2 || $orderCount == 3){
+                $randNum = range(81,100);
+            }
+            //成团3个以上 20分之12
+            if($orderCount >3 && $orderCount <5){
+                $randNum = range(61,100);
+            }
+            //成团5个以上 20分之10
+            if($orderCount > 5){
+                $randNum = range(51,100);
+            }
+            $getrand = mt_rand(1,100);
+            if(in_array($getrand,$randNum)){
                 redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
                 $wxmsg = "很抱歉，您无法帮好友@{$zhangnickname}助力哦！\n只有新用户才能帮好友助力，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
                 //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
@@ -116,6 +134,7 @@ class GroupBuyController extends BaseController {
                 exit();
             }
             //防刷条件  2017-08-18 温立涛 结束
+
             $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
             M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>json_encode($raise)])->add();
             if(!empty($raise)){

@@ -27,8 +27,6 @@ class ReportController extends BaseController{
 		$this->begin = strtotime($begin);
 		$this->end = strtotime($end);
 
-		
-
 		if(empty($_SESSION['merchant_id']))
 		{
 			session_unset();
@@ -55,7 +53,7 @@ class ReportController extends BaseController{
 		$now = strtotime(date('Y-m-d'));
 		$tomorrow = $now+24*3600;
 		$where = " store_id = ".$_SESSION['merchant_id'] ." and ";
-		$today['today_amount'] = M('order')->where($where."add_time>$now and add_time<$tomorrow AND pay_status=1")->sum('order_amount');//今日销售总额
+		$today['today_amount'] = M('order')->where($where."add_time>$now and add_time<$tomorrow AND pay_status=1 and order_type not in(9,11,13)")->sum('order_amount');//今日销售总额
 
 		//计算今日订单数
 		$today['today_order']= $single = M('order')->where($where."add_time>$now and add_time<$tomorrow and pay_status=1")->count();

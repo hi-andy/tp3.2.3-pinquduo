@@ -259,6 +259,7 @@ class PromLogic
 	    M('order_action')->add($action);
 
 	    $updata['shipping_status'] = 1;
+	    $updata['delivery_time'] = time();
 	    $updata['shipping_code'] = $data['shipping_code'];
 	    $updata['shipping_name'] = $data['shipping_name'];
 	    $updata['shipping_order'] = $data['shipping_order'];

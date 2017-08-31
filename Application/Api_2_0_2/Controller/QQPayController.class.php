@@ -10,7 +10,8 @@ class QQPayController extends BaseController
     private $md5Key     = "u6rAIksPMZVm4V6wc5Xh8STxvxJ3Vym1";
     private $logPath    ="./";
 
-    const CERT_DIR = '/sites/pqd/Application/Common/QQpay/Cacert/';
+    //const CERT_DIR = '/sites/pqd/Application/Common/QQpay/Cacert/';
+    const CERT_DIR = '/data/wwwroot/default/Application/Common/QQpay/Cacert/';
     private $certFile   = 'apiclient_cert.pem';
     private $keyFile    = 'apiclient_key.pem';
     private $cacertFile = 'rootca.pem';
@@ -121,6 +122,9 @@ class QQPayController extends BaseController
      */
     public function getQQPay($order=array())
     {
+	file_put_contents("log.txt", $_SERVER['HTTP_USER_AGENT'], FILE_APPEND);
+	//echo "<script>alert('Sorry, QQ pay Currrently is not enabled!');</script>"; die();
+	//if(empty($order)){$order=array('order_sn' => date('YmdHis').mt_rand(1000,9999), 'order_amount' => 0.1);}
         $notifyUrl = C('HTTP_URL').'/Api_2_0_2/QQPay/notify';
         list($code, $data) = $this->unifyOrder($order['order_sn'], $order['order_amount']*100, $notifyUrl);
 
@@ -491,9 +495,9 @@ class QQPayController extends BaseController
     private static function curlHttps($url, $data, $certPemFile, $keyPemFile, $cacertPemFile, $header = array(), $timeout=30)
     {
         //未用到传入参数，发现会找不到文件。在此重新定义。
-        $certPemFile = '/sites/pqd/Application/Common/QQpay/Cacert/apiclient_cert.pem';
-        $keyPemFile = '/sites/pqd/Application/Common/QQpay/Cacert/apiclient_key.pem';
-        $cacertPemFile = '/sites/pqd/Application/Common/QQpay/Cacert/rootca.pem';
+        $certPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/apiclient_cert.pem';
+        $keyPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/apiclient_key.pem';
+        $cacertPemFile = '/data/wwwroot/default/Application/Common/QQpay/Cacert/rootca.pem';
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

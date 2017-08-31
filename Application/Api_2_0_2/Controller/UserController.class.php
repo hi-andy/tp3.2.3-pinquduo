@@ -830,10 +830,10 @@ class UserController extends BaseController {
         }
         $res = M('return_goods')->add($data);
         if($res){
-            //将状态改变
-            $return['is_return_or_exchange']=1;
             if($type==0){
                 //退货
+                //将状态改变
+                $return['is_return_or_exchange']=1;
                 $return['order_status'] = 6;
                 $return['order_type'] = 8;
                 if($gold!=$order_sn['order_amount']){
@@ -841,6 +841,8 @@ class UserController extends BaseController {
                 }
             }elseif($type==1){
                 //换货
+                //将状态改变
+                $return['is_return_or_exchange']=2;
                 $return['order_status'] = 4;
                 $return['order_type'] = 6;
                 M('goods')->where('`goods_id`='.$order_sn['goods_id'])->setInc('store_count',$order_sn['num']);
@@ -1823,7 +1825,7 @@ class UserController extends BaseController {
 
     //获取用户详情
     function getUserInfo($user_id,$prom_order){
-        $user = M('users')->where('user_id = '.$user_id)->field('nickname,mobile,oauth,head_pic')->find();
+        $user = M('users')->where('user_id = '.$user_id)->find();
         if(!empty($user['oauth'])){
             $info['name'] = $user['nickname'];
         }else{
