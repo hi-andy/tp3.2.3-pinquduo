@@ -135,8 +135,6 @@ class GroupBuyController extends BaseController {
             }
             //防刷条件  2017-08-18 温立涛 结束
 
-
-
             $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
             M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>json_encode($raise)])->add();
             if(!empty($raise)){

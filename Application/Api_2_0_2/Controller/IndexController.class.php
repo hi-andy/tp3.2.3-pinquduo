@@ -1005,9 +1005,7 @@ class IndexController extends BaseController {
     }
 
     function t2() {
-        $today = strtotime(date('Y-m-d'));
-        $res = M('order')->where('the_raise = 0 and pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = 3324 ')->sum('order_amount');
-
-        var_dump(M()->getLastSql());
+        $cha = getAdress('新疆维吾尔自治区伊犁州霍城县');
+        var_dump($cha);
     }
 }

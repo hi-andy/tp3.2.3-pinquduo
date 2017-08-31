@@ -171,16 +171,20 @@ class GroupController extends BaseController
             $head_info = M('group_buy')->alias('g')
                 ->join('INNER JOIN __USERS__ u on g.user_id = u.user_id ')
                 ->join('INNER JOIN __ORDER__ o on o.order_id = g.order_id')
-                ->where(array('id' => $group_info['mark']) . ' and g.is_pay = 1')
+                ->where('mark = ' .$group_info['mark'] . ' and g.is_pay = 1')
                 ->field('g.*,u.nickname,o.order_sn,o.pay_time')
                 ->order('g.id desc')
                 ->select();
         }
-
         $order_id = $group_info['order_id'];
+        if(!empty($member_infos)){
+            $num = count($member_infos);
+        }else{
+            $num = count($head_info);
+        }
         $orderLogic = new OrderLogic();
         $order = $orderLogic->getOrderInfo($order_id);
-        $order['statusInfo'] = $this->getPromStatus($order,$group_info,count($member_infos)+1)['annotation'];
+        $order['statusInfo'] = $this->getPromStatus($order,$group_info,$num)['annotation'];
         $orderGoods = $orderLogic->getOrderGoods($order_id);
 
         $group_res = M('group_buy')->where(array('order_id' => $order_id))->count();
@@ -189,7 +193,7 @@ class GroupController extends BaseController
         } else {
             $button = $orderLogic->getOrderButton($order);
         }
-//        var_dump($button);die;
+
         $this->assign('button', $button);
         $this->assign('order', $order);
         $this->assign('orderGoods', $orderGoods);
