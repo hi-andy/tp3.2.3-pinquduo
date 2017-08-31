@@ -189,12 +189,13 @@ class IndexController {
 		}
 		$Order = M('order');
 		//今日销售额  今日订单数 待成团 待付款 未处理售后 退款中
+        //商家APP首页数据统计规则变更 2017-8-31 09:18:06 李则云
 		$today = strtotime(date('Y-m-d'));
 		$info[0]['key'] = '今日销售额';
-		$info[0]['value'] = $Order->where('the_raise = 0 and pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = '.$store_id)->sum('order_amount');
+		$info[0]['value'] = $Order->where('the_raise = 0 and pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = '.$store_id.' and order_type not in(9,11,13)')->sum('order_amount');
 		empty($info[0]['value']) &&  $info[0]['value']=0;
 		$info[1]['key'] = '今日订单数';
-		$info[1]['value'] = $Order->where('pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = '.$store_id)->count();
+		$info[1]['value'] = $Order->where('pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = '.$store_id.' and order_type not in(9,11,13)')->count();
 		empty($info[1]['value']) &&  $info[1]['value']=0;
 		$info[2]['key'] = '待成团';
 		$info[2]['value'] = M('group_buy')->where('is_pay = 1 and mark = 0 and is_cancel = 0 and is_successful = 0 and end_time > '.time().' and store_id = '.$store_id)->count();
