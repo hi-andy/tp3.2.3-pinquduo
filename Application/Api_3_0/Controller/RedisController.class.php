@@ -22,7 +22,7 @@ class RedisController extends Controller
     // 查看缓存是否有效
     public function getKey($key)
     {
-        $data = unserialize($this->redis($key));
+        $data = unserialize($this->keys($key));
         print_r($data);
     }
 
