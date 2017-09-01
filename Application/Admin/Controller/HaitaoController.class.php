@@ -181,6 +181,28 @@ class HaitaoController extends BaseController{
 		$type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
 		//ajax提交验证
 		if(($_GET['is_ajax'] == 1) && IS_POST){
+
+			/*
+             * gist 标志为新后台单品  吴银海  8月31号
+             * */
+			if($_POST['gist']==1 && $type == 2){
+				if(!empty($_POST['reason'])){
+					$res_reason = M('goods')->where("goods_id = {$_POST['goods_id']}")->data(array('reason'=>$_POST['reason']))->save();
+					if($res_reason){
+						$return_arr = array(
+							'status' => 1,
+							'msg'   => '操作成功',
+						);
+					}else{
+						$return_arr = array(
+							'status' => 1,
+							'msg'   => '操作失败',
+						);
+					}
+					$this->ajaxReturn(json_encode($return_arr));
+				}
+			}
+
 			C('TOKEN_ON',false);
 			if(!$Goods->create(NULL,$type)){// 根据表单提交的POST数据创建数据对象
 				//  编辑
@@ -226,6 +248,9 @@ class HaitaoController extends BaseController{
 		}
 
 		$goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+		if($goodsInfo['specone']==0 && $goodsInfo['spectwo']==0 && $goodsInfo['addtime'] != 0){
+			$this->assign('gist', 1);
+		}
 		$level_cat = $HaitaoLogic->find_parent_cat($goodsInfo['haitao_cat']); // 获取分类默认选中的下拉框
 		$cat_list = M('haitao')->where("parent_id = 0")->select(); // 已经改成联动菜单
 		$haitao_style = M('haitao_style')->select();
