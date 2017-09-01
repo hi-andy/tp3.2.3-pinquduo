@@ -247,7 +247,7 @@ class IndexController {
         $info[4]['value'] = M('return_goods')->where("status = 0 and store_id = $store_id")->count();
 
         $info[5]['key'] = '待签收订单';
-        $info[5]['value'] = M('return_goods')->where("(order_type = 3 or order_type = 15) and store_id = $store_id")->count();
+        $info[5]['value'] = $Order->where("(order_type = 3 or order_type = 15) and store_id = $store_id")->count();
 
         exit(json_encode(array('status'=>1,'msg'=>'获取成功 ^_^','result'=>$info)));
     }
