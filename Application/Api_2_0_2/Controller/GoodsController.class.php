@@ -991,9 +991,13 @@ class GoodsController extends BaseController {
 	            //轮播图
 	            if($goods['is_special']==7){
 		            $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
-		            $banner = M('goods_images')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
+//		            $banner = M('goods_images')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
+                    //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云
+                    $banner=M('goods_images')->where(['goods_id'=>$f_goods_id,'is_del'=>0])->field('image_url')->select();
 	            }else{
-		            $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
+//		            $banner = M('goods_images')->where("`goods_id` = $goods_id")->field('image_url')->select();
+                    //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云
+                    $banner=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0])->field('image_url')->select();
 	            }
 
 	            foreach ($banner as &$v) {
