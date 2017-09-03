@@ -326,18 +326,22 @@ class GoodsLogic extends RelationModel
                        
          $spec = M('Spec')->getField('id,name'); // 规格表
          $specItem = M('SpecItem')->where('is_show = 1')->getField('id,item,spec_id');//规格项
-         $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code,prom_price');//规格项
-          $goods_type = M('goods')->where('goods_id = '.$goods_id)->field('is_special,is_recommend')->find();
+         $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code,prom_price,img');//规格项
+          $goods_type = M('goods')->where('goods_id = '.$goods_id)->field('addtime')->find();
        $str = "<table class='table table-bordered' id='spec_input_tab'>";
        $str .="<tr ><td colspan='4'><a style='color: red;font-size: 15px'>单列价格一致的，可以填入第一行的数值之后勾选中批量填写后点击保存即可</a></td>";$str .="<tr>";
        // 显示第一行的数据
        foreach ($clo_name as $k => $v) 
        {
            $str .=" <td><b>{$spec[$v]}</b></td>";
-       }    
-        $str .="<td><b>单买价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='price_store' id='remenber'> 批量填写</td>
-                <td><b>团购价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='prom_price_store' id='remenber'> 批量填写</td>
-               <td><b>库存</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='count_store' id='remenber'> 批量输入</td>
+       }
+
+       $skuImg = ($goods_type['addtime']>0)?"<td><b>SKU图</b>&nbsp;&nbsp;&nbsp;&nbsp;</td>":"";
+
+        $str .="<td><b>单买价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='price_store' id='price_store'> 批量填写</td>
+                <td><b>团购价格</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='prom_price_store' id='prom_price_store'> 批量填写</td>
+               <td><b>库存</b>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='count_store' id='count_store'> 批量输入</td>
+               {$skuImg}
              </tr>";
        // 显示第二行开始 
        foreach ($spec_arr2 as $k => $v) 
@@ -357,16 +361,12 @@ class GoodsLogic extends RelationModel
            $keySpecGoodsPrice[$item_key][prom_price] ? false : $keySpecGoodsPrice[$item_key][prom_price] = 0; // 团购价格默认为0
 			$keySpecGoodsPrice[$item_key][store_count] ? false : $keySpecGoodsPrice[$item_key][store_count] = 0; //库存默认为0
 
-           $people = array('1','0');
-//            if(($goods_type['is_recommend'] == 1 || !(in_array($goods_type['is_special'],$people))) && $goods_id != 0 ){
-//                $str .="<td><input name='item[$item_key][price]' value='{$keySpecGoodsPrice[$item_key][price]}' disabled='disabled' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
-//                $str .="<td><input name='item[$item_key][prom_price]' value='{$keySpecGoodsPrice[$item_key][prom_price]}' disabled='disabled' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
-//                $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' disabled='disabled' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";
-//            }else{
                 $str .="<td><input name='item[$item_key][price]' value='{$keySpecGoodsPrice[$item_key][price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
                 $str .="<td><input name='item[$item_key][prom_price]' value='{$keySpecGoodsPrice[$item_key][prom_price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
                 $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";
-            //}
+           if($goods_type['addtime']>0){
+           $str .="<td><a href='{$keySpecGoodsPrice[$item_key][img]}' target='_blank'><img width='40' height='40' src='{$keySpecGoodsPrice[$item_key][img]}' alt=''/></a></td>";
+             }
 
             $str .="</tr>";           
        }

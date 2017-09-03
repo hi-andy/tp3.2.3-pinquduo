@@ -272,7 +272,8 @@ class GoodsController extends BaseController
             /*
              * gist 标志为新后台单品  吴银海  8月31号
              * */
-            if($_POST['gist']==1 && $type == 2){
+            $goodsInfo = D('Goods')->where('goods_id='.$_POST['goods_id'])->find();
+            if($type == 2 && $goodsInfo['addtime'] > 0){
                 if(!empty($_POST['reason'])){
                     $res_reason = M('goods')->where("goods_id = {$_POST['goods_id']}")->data(array('reason'=>$_POST['reason']))->save();
                     if($res_reason){
@@ -287,7 +288,14 @@ class GoodsController extends BaseController
                         );
                     }
                     $this->ajaxReturn(json_encode($return_arr));
+                }else{
+                    $return_arr = array(
+                        'status' => 1,
+                        'msg'   => '操作成功'
+                    );
+                    $this->ajaxReturn(json_encode($return_arr));
                 }
+                die;
             }
             C('TOKEN_ON',false);
             if(!$Goods->create(NULL,$type))// 根据表单提交的POST数据创建数据对象
@@ -340,13 +348,13 @@ class GoodsController extends BaseController
                     $return_arr = array(
                         'status' => 1,
                         'msg'   => '操作成功',
-                        'data'  => array('url'=>U('Admin/goods/goods_list')),
+                        'data'  => array('url'=>U('Admin/Crowdfund/goods_list')),
                     );
                 }else{
                     $return_arr = array(
                         'status' => 1,
-                        'msg'   => '操作失败',
-                        'data'  => array('url'=>U('Admin/Goods/goodsList')),
+                        'msg'   => '操作成功',
+                        'data'  => array('url'=>U('Admin/goods/goodsList')),
                     );
                 }
 
@@ -355,6 +363,17 @@ class GoodsController extends BaseController
         }
 
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+		
+		if((int)$goodsInfo['addtime'] == 0){
+			$imgArray = getimagesize($goodsInfo['original_img']);
+			if((int)$imgArray[0] == (int)$imgArray[1]){
+				$temp = $goodsInfo['list_img'];
+				$goodsInfo['list_img'] = $goodsInfo['original_img'];
+				$goodsInfo['original_img'] = $temp;					
+			}
+
+		}				
+		
         if($goodsInfo['specone']==0 && $goodsInfo['spectwo']==0 && $goodsInfo['addtime'] != 0){
             $this->assign('gist', 1);
         }
@@ -787,6 +806,7 @@ class GoodsController extends BaseController
     public function ajaxGetSpecSelect()
     {
         $goods_id = $_GET['goods_id'] ? $_GET['goods_id'] : 0;
+        $addtime = 0;
         if($goods_id>0){
             $goodinfo = M('goods')->field('addtime')->where("goods_id={$goods_id}")->find();
             $addtime = $goodinfo['addtime'];
@@ -804,8 +824,14 @@ class GoodsController extends BaseController
             $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
         }
 
+
         foreach($specList as $k => $v){
-            $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
+            if($addtime>0){
+                $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and goodid=$goods_id and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
+            }else{
+                $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
+            }
+
         }
 
         $items_id = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();

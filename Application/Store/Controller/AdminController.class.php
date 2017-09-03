@@ -152,7 +152,7 @@ class AdminController extends BaseController {
 	    }
 
         if(IS_POST){
-//	        exit(json_encode(array('status'=>0,'msg'=>'正在和微信商城做对接调试，请您稍等')));
+	        exit(json_encode(array('status'=>0,'msg'=>'请前往新商户后台登录<a href="http://store.pinquduo.cn/login.html">请点击链接前往新后台</a>')));
             $verify = new Verify();
             if (!$verify->check(I('post.vertify'), "Store/Login")) {
             	exit(json_encode(array('status'=>0,'msg'=>'验证码错误')));

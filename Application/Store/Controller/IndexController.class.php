@@ -148,13 +148,12 @@ class IndexController extends BaseController {
 		vendor('Alipay.Submit');
 		vendor('Alipay.AlipaySubmit');
 
-		if(empty($_SESSION['merchant_id']))
-		{
+
 			session_unset();
 			session_destroy();
 			setcookie('storeid',null);
-			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
-		}
+			$this->error("请前往新商户后台登录",U('Store/Admin/login'));
+
 	}
 
 	function pay_money()

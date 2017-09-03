@@ -532,7 +532,7 @@ class BaseController extends Controller {
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc')
     {
         $count = M('goods')->where($where)->count();
-        $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
+        $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,addtime,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
         foreach ($goods as $k=>$v){
             $type = M('promote_icon')->where('goods_id = '.$goods[$k]['goods_id'])->getField('src');
@@ -546,6 +546,11 @@ class BaseController extends Controller {
 
         $result = $this->listPageData($count, $goods,$pagesize);
         foreach ($result['items'] as &$v) {
+			if((int)$v['addtime'] > 0){
+				$temp = $v['original'];
+				$v['original'] = $v['original_img'];  //正方形
+				$v['original_img'] = $temp; 	      //长方形
+			}			
             $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
         }
         return $result;

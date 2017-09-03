@@ -32,7 +32,7 @@ class IndexController extends BaseController {
              * ad_code=>图片地址
              * type=>跳转类型
              */
-                $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
+            $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
             foreach ($data as & $v) {
                 $v['ad_code'] = TransformationImgurl($v['ad_code']);
             }
@@ -620,6 +620,15 @@ class IndexController extends BaseController {
             $goods = M('goods')->where($where)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
             foreach ($goods as $k=>$v) {
+				
+				$imgArray = getimagesize($v['original_img']);
+				if((int)$imgArray[0] == (int)$imgArray[1]){
+					$temp = $v['original'];
+					$goods[$k]['original'] = $v['original_img'];  //正方形
+					$goods[$k]['original_img'] = $temp; 	      //长方形
+				}
+				
+				
                 $goods[$k]['original_img'] = empty($goods[$k]['original_img'])?$goods[$k]['original']:$goods[$k]['original_img'];
                 if($goods[$k]['is_special']==8){
                     $goods[$k]['spec_key'] = M('spec_goods_price')->where('goods_id = '.$goods[$k]['goods_id'])->getField('key');
@@ -1005,7 +1014,14 @@ class IndexController extends BaseController {
     }
 
     function t2() {
-        $cha = getAdress('新疆维吾尔自治区伊犁州霍城县');
-        var_dump($cha);
+        $chas = 'https://cdn.pinquduo.cn/15025918410.jpg';
+        var_dump($chas);
+        var_dump(strstr($chas,"https://cdn"));die;
+        if(strstr($chas,"http://cdn") && !strstr($chas,"https://cdn2")){
+            $cha = $chas;
+            $cha = explode('http://cdn',$cha);
+            $d = 'https://cdn2'.$cha[1];
+        }
+        var_dump($d);
     }
 }

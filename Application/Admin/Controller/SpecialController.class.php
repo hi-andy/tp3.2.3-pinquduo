@@ -112,7 +112,11 @@ class SpecialController extends BaseController
             $specList = D('Spec')->field('id,name,type_id')->where("type_id = ".$_GET['spec_type']." AND is_show = 1")->order('`order` desc')->select();
         }
         foreach($specList as $k => $v){
-            $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
+            if($addtime>0){
+                $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and goodid=$goods_id and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
+            }else{
+                $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
+            }
         }
 
         $items_id = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();

@@ -385,7 +385,8 @@ class GoodsLogic extends RelationModel
                        
          $spec = M('Spec')->where('is_show = 1 and store_id ='.$info['store_id'])->getField('id,name'); // 规格表
          $specItem = M('SpecItem')->where('is_show = 1')->getField('id,item,spec_id');//规格项
-         $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code,prom_price');//规格项
+         $goods_type = M('goods')->where('goods_id = '.$goods_id)->field('addtime')->find();
+         $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code,prom_price,img');//规格项
                           
        $str = "<table class='table table-bordered' id='spec_input_tab'>";
        $str .="<tr>";       
@@ -393,10 +394,12 @@ class GoodsLogic extends RelationModel
        foreach ($clo_name as $k => $v) 
        {
            $str .=" <td><b>{$spec[$v]}</b></td>";
-       }    
+       }
+        $skuImg = ($goods_type['addtime']>0)?"<td><b>SKU图</b></td>":"";
         $str .="<td><b>单买价格</b></td>
                 <td><b>团购价格</b></td>
                <td><b>库存</b></td>
+               {$skuImg}
              </tr>";
        // 显示第二行开始 
        foreach ($spec_arr2 as $k => $v) 
@@ -418,10 +421,10 @@ class GoodsLogic extends RelationModel
 
             $str .="<td><input name='item[$item_key][price]' value='{$keySpecGoodsPrice[$item_key][price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
            $str .="<td><input name='item[$item_key][prom_price]' value='{$keySpecGoodsPrice[$item_key][prom_price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
-            $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";            
-//            $str .="<td><input name='item[$item_key][bar_code]' value='{$keySpecGoodsPrice[$item_key][bar_code]}' />
-//                <input type='hidden' name='item[$item_key][key_name]' value='$item_name' /></td>";
-            $str .="</tr>";           
+            $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";
+           if($goods_type['addtime']>0){
+               $str .="<td><a href='{$keySpecGoodsPrice[$item_key][img]}' target='_blank'><img width='40' height='40' src='{$keySpecGoodsPrice[$item_key][img]}' alt=''/></a></td>";
+           }
        }
         $str .= "</table>";
        return $str;   
