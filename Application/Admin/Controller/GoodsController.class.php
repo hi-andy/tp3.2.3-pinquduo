@@ -394,7 +394,9 @@ class GoodsController extends BaseController
         $this->assign('merchantList',$merchantList);
         $this->assign('goodsType',$goodsType);
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情
-        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
+//        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
+        //被删除的商品相册不能显示到前端   2017-9-3 09:52:24  李则云
+        $goodsImages=M('GoodsImages')->where(['goods_id'=>I('GET.id',0),'is_del'=>0])->select();
         $this->assign('goodsImages',$goodsImages);  // 商品相册
         $this->initEditor(); // 编辑器
         $this->display('_goods');
