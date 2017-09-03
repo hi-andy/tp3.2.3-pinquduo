@@ -176,6 +176,34 @@ class IndexController {
 //	}
 
 	/*
+<<<<<<< HEAD
+* nature：工作台
+* author：吴银海
+* time：17/07/19
+* $store_id 用户账号
+*/
+	function workbench(){
+		$data = $_REQUEST;
+		$store_id = $data['store_id'];
+		if(empty($store_id)){
+			exit(json_encode(array('status'=>-1,'msg'=>'商户id不能为空 ^_^')));
+		}
+		$Order = M('order');
+		//今日销售额  今日订单数 待成团 待付款 未处理售后 退款中
+		//商家APP首页数据统计规则变更 2017-8-31 09:18:06 李则云
+		$today = strtotime(date('Y-m-d'));
+		$info[0]['key'] = '今日销售额';
+		$info[0]['value'] = $Order->where('the_raise = 0 and pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = '.$store_id.' and order_type not in(9,11,13)')->sum('order_amount');
+		empty($info[0]['value']) &&  $info[0]['value']=0;
+		$info[1]['key'] = '今日订单数';
+		$info[1]['value'] = $Order->where('pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = '.$store_id.' and order_type not in(9,11,13)')->count();
+		empty($info[1]['value']) &&  $info[1]['value']=0;
+		$info[2]['key'] = '待成团订单';
+		$info[2]['value'] = M('group_buy')->where('is_pay = 1 and mark = 0 and is_cancel = 0 and is_successful = 0 and end_time > '.time().' and store_id = '.$store_id)->count();
+
+		$info[3]['key'] = '待发货订单';
+		$info[3]['value'] = $Order->where('(order_type = 2 or order_type = 14) and store_id = '.$store_id)->count();
+=======
 	 * nature：工作台
 	 * author：吴银海
 	 * time：17/07/19
@@ -239,10 +267,21 @@ class IndexController {
 
         $info[3]['key'] = '待发货订单';
         $info[3]['value'] = $Order->where('(order_type = 2 or order_type = 14) and store_id = '.$store_id)->count();
+>>>>>>> 8655ae9ad97143d839cadef2129ad93f1680b108
 
 //        $info[3]['key'] = '待付款';
 //        $info[3]['value'] = $Order->where('pay_status = 0 and order_type != 5 and store_id = '.$store_id)->count();
 
+<<<<<<< HEAD
+		$info[4]['key'] = '待处理售后';
+		$info[4]['value'] = $Order->where("is_return_or_exchange > 0 and order_type in(6,8) and store_id = $store_id")->count();
+		
+		$info[5]['key'] = '待签收订单';
+		$info[5]['value'] = $Order->where("(order_type = 3 or order_type = 15) and store_id = $store_id")->count();
+
+		exit(json_encode(array('status'=>1,'msg'=>'获取成功 ^_^','result'=>$info)));
+	}
+=======
         $info[4]['key'] = '待处理售后';
         $info[4]['value'] = $Order->where("is_return_or_exchange > 0 and order_type in(6,8) and store_id = $store_id")->count();
 
@@ -251,6 +290,8 @@ class IndexController {
 
         exit(json_encode(array('status'=>1,'msg'=>'获取成功 ^_^','result'=>$info)));
     }
+>>>>>>> 8655ae9ad97143d839cadef2129ad93f1680b108
+
 
 	function test2($store_name){
 		redisdelall($store_name.'_name');

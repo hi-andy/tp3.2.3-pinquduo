@@ -48,20 +48,28 @@ class ReportController extends BaseController{
 		$today = strtotime(date('Y-m-d'));
 //		$month = strtotime(date('Y-m-01'));
 //		$nextmonth = strtotime(date('Y-m-01',strtotime('+1 month')));
-		$data['ri'] = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600).' and pay_status=1')->sum('order_amount');//日销售总额
+		$data['ri'] = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600).' and pay_status=1 and the_raise != 1')->sum('order_amount');//日销售总额
 		$data['zong'] = M('order')->where('pay_status=1')->sum('order_amount');//总销售额
 
+//.' and  pay_status=1 and the_raise != 1'
+		$data['ding'] = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600))->count();//日订单数
+		$data['cancel'] = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600).' and  is_cancel=1 and the_raise != 1')->count();//日取消订单数
 
-		$data['ding'] = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600).' and  pay_status=1')->count();//日订单数
-		$data['cancel'] = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600).' and  is_cancel=1')->count();//日取消订单数
-//		$data['month'] = M('order')->where(' add_time>'.$month.' and add_time<'.$nextmonth.' and  order_type=4')->sum('order_amount');//月销售额
 		$data['ti'] = M('store_withdrawal')->where('status=1')->sum('withdrawal_money');//提现金额
-		$data['ti'] = $this->operationPrice($data['ti']);
-		$keti = M('order')->where(' add_time>'.$today.' and add_time<'.($today+24*3600).' and (order_type=4 or order_type = 16)')->sum('order_amount');
-		$data['keti'] = $keti-$data['ti'];
-		$data['keti'] = $this->operationPrice($data['keti']);
-		$data['tuikuan'] = M('order')->where("order_type IN ('8','9','12','13')")->sum('order_amount');
+		if(getFloatLength($data['ti'])>2){
+			$data['ti'] = operationPrice($data['ti']);
+		}
 
+		$data['keti'] = M('order')->where('order_type=4 and the_raise != 1')->sum('order_amount')-$data['ti'] ;//可提现金额
+		$data['jujue'] = M('order')->where('order_type=16 and the_raise != 1')->sum('order_amount');//拒绝退款
+		$weifahuo = M('order')->where('order_type in (2,14) and the_raise != 1')->sum('order_amount');//未发货
+		$weishouhuo = M('order')->where('order_type in (3,15) and the_raise != 1')->sum('order_amount');//未收货
+		$data['caozuo'] = $weifahuo+$weishouhuo;
+
+		/*
+		 *
+		 * */
+		$data['tuikuan'] = M('order')->where("order_type IN ('8','9','12','13') and the_raise != 1")->sum('order_amount');
 		$this->assign('data',$data);
 
 		$sql = "SELECT COUNT(*) as tnum,sum(order_amount) as amount, FROM_UNIXTIME(add_time,'%Y-%m-%d') as gap from  __PREFIX__order ";

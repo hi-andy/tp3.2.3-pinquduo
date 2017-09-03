@@ -23,15 +23,10 @@ class PromController extends BaseController {
 		$this->pay_status = C('PAY_STATUS');
 		$this->shipping_status = C('SHIPPING_STATUS');
 
-		
-
-		if(empty($_SESSION['merchant_id']))
-		{
-			session_unset();
-			session_destroy();
-			setcookie('storeid',null);
-			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
-		}
+		session_unset();
+		session_destroy();
+		setcookie('storeid',null);
+		$this->error("请前往新商户后台登录",U('Store/Admin/login'));
 		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
 		if($haitao['is_pay']==0)
 		{

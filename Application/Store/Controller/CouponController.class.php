@@ -8,19 +8,11 @@ class CouponController extends BaseController {
      * 初始化操作
      */
 	public function _initialize() {
-		if(empty(redis('store_id_'.$_SESSION['merchant_id']))){
-			session_unset();
-			session_destroy();
-			setcookie('storeid',null);
-			$this->error("数据维护，请重新登录",U('Store/Admin/login'));
-		}
-		if(empty($_SESSION['merchant_id']))
-		{
-			session_unset();
-			session_destroy();
-			setcookie('storeid',null);
-			$this->error("登录超时或未登录，请登录",U('Store/Admin/login'));
-		}
+
+		session_unset();
+		session_destroy();
+		setcookie('storeid',null);
+		$this->error("请前往新商户后台登录",U('Store/Admin/login'));
 		$haitao = M('store_detail')->where('storeid='.$_SESSION['merchant_id'])->find();
 		if($haitao['is_pay']==0) {
 			$this->error("尚未缴纳保证金，现在前往缴纳", U('Store/Index/pay_money'));
@@ -93,8 +85,6 @@ class CouponController extends BaseController {
 		}
 
 		$cid = I('get.id');
-//		$store = M('merchant')->where('state=1')->field('id,store_name')->select();
-
 		if($cid){
 			$coupon = M('coupon')->where(array('id'=>$cid))->find();
 			$this->assign('coupon',$coupon);

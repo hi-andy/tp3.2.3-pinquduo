@@ -177,21 +177,6 @@
                                     <tr>
                                         <td>商品列表主图:</td>
                                         <td>
-                                            <input type="button" value="上传图片"  onclick="GetUploadify(1,'','goods','list_uploaded');"/>
-                                            <input type="text" class="input-sm"  name="list_img" id="list_img" value="{$goodsInfo.list_img}"/>
-                                            <if condition="$goodsInfo['list_img'] neq null">
-                                                &nbsp;&nbsp;
-                                                <a target="_blank" href="{$goodsInfo.list_img}" id="list_img_upload">
-                                                    <img width="80" src="{$goodsInfo.list_img}">
-                                                </a>
-                                            </if>
-                                            <span id="err_list_img" style="color:#F00; display:none;"></span>
-                                            <span  style="color:red; ">首页展示主图：640*300px， 必须为白底无文字 （非首页商品可选填）</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>商品列表副图:</td>
-                                        <td>
                                             <input type="button" value="上传图片"  onclick="GetUploadify(1,'','goods','call_back');"/>
                                             <input type="text" class="input-sm"  name="original_img" id="original_img" value="{$goodsInfo.original_img}"/>
                                             <if condition="$goodsInfo['original_img'] neq null">
@@ -201,6 +186,23 @@
                                                 </a>
                                             </if>
                                             <span id="err_original_img" style="color:#F00; display:none;"></span>
+                                            <span  style="color:red; ">首页展示主图：640*300px， 必须为白底无文字 （非首页商品可选填）</span>
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td>商品列表副图:</td>
+                                        <td>
+                                            <input type="button" value="上传图片"  onclick="GetUploadify(1,'','goods','list_uploaded');"/>
+                                            <input type="text" class="input-sm"  name="list_img" id="list_img" value="{$goodsInfo.list_img}"/>
+                                            <if condition="$goodsInfo['list_img'] neq null">
+                                                &nbsp;&nbsp;
+                                                <a target="_blank" href="{$goodsInfo.list_img}" id="list_img_upload">
+                                                    <img width="80" src="{$goodsInfo.list_img}">
+                                                </a>
+                                            </if>
+                                            <span id="err_list_img" style="color:#F00; display:none;"></span>
                                             <span  style="color:red; ">APP类目主图：400*400px 纯白底无Logo/无文字（服饰箱包除外）</span>
                                         </td>
                                     </tr>

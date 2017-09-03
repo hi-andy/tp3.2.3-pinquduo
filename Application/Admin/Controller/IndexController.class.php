@@ -37,8 +37,8 @@ class IndexController extends BaseController {
 
     public function set_sales($in_goods_id="",$sales=""){
         if ($in_goods_id && $sales) {
-            $in_goods_id = str_replace(",", ",", $in_goods_id);
-            $in_goods_id = str_replace(",", ",", $in_goods_id);
+            $in_goods_id = str_replace("，", ",", $in_goods_id);
+            $in_goods_id = str_replace(" ，", ",", $in_goods_id);
             M('goods')->where(array('goods_id' => array('in', $in_goods_id)))->save(array('sales'=>intval($sales),'refresh'=>0));
             $store_id = M('goods')->where(array('goods_id' => array('in', $in_goods_id)))->field('store_id')->select();
             foreach ($store_id as $value) {
@@ -159,6 +159,8 @@ class IndexController extends BaseController {
 		    if(I('field') == 'is_audit'){
                 $res =  M($table)->where("$id_name = $id_value")->save(array($field=>$value,'is_on_sale'=>1,'is_show'=>1));
                 redislist("goods_refresh_id", $id_value);
+				
+				redisdelall("getDetaile_".$id_value);
 		    }else{
 			    M($table)->where("$id_name = $id_value")->save(array($field=>$value)); // 根据条件保存修改的数据
 		    }

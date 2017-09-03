@@ -12,7 +12,15 @@
     <link href="__PUBLIC__/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
     <!-- iCheck -->
     <link href="__PUBLIC__/plugins/iCheck/square/blue.css" rel="stylesheet" type="text/css" />
-    <style>#imgVerify{width: 120px;margin: 0 auto; text-align: center;display: block;}	</style>
+    <style>
+	    *{margin: 0;
+		    padding: 0;
+	        list-style: none;}
+	    #imgVerify{width: 120px;margin: 0 auto; text-align: center;display: block;}
+	    ul li{margin-bottom: 8px;}
+	    .btm {text-align: right;}
+	    .btm a{margin-top: 20px;margin-right: 20px;color: #F0475A;}
+    </style>
     <script>
     function detectBrowser()
     {
@@ -95,6 +103,28 @@
     <script>
 
       $(function () {
+		var html = '<div style="width: 600px;margin: auto;background: #f0f0f0;padding: 20px;">';
+			html +=	'<p style="text-align: center;font-size: 20px;margin-bottom: 14px;">老版本后台商家转移新后台通知</p>';
+			html += '<ul>';
+			html += '<li>经过拼趣多工作人员努力的开发，新版本后台终于出来啦，相信很多功能和操作方法会与以前的版本不同，不过相对来说肯定是比以前的操作方便很多的，另外告诉大家几点比较重要的信息。</li>';
+	        html += '<li>1、用户在进行购买交易时，微信和支付宝（支付方）那边收取了千分之6的手续费，望广大商家知悉。新后台之后是从订单里直接扣取手续费和老后台显示方式不一样，之前劳后台已经有提现余额的，这次做一次扣除，以后再新后台提现不再扣除。<br>例如：老后台的提现金额有1000元，那么扣除之后到新后台，可提现金额显示994元。</li>';
+	        html += '<li>2、目前老后台的商品后期我们会给大家换成新页面，请耐心等待。</li>';
+	        html += '<li>3、一切显示数据以新后台为主！如有问题，可邮件放送到邮箱pqd258258@pinquduo.cn进行处理。</li>';
+	        html += '<li>4、老后台的数据显示或许和新后台有出入，但是没有任何错误，请放心使用。</li>'
+	        html += '<li>5、新后台访问链接地址：http://store.pinquduo.cn </li>';
+	        html += '</ul>';
+	        html += '<div class="btm">';
+	        html += '<a style="color: #007CD9;" href="http://store.pinquduo.cn/login.html">点击跳转</a>';
+	        html += '</div>';
+	        html += '</div>';
+        layer.open({
+	      title: '商家通知消息',
+	      type: 1,
+	      skin: 'layui-layer-rim', //加上边框
+	      area: ['650px', '450px'], //宽高
+	      content: html
+        });
+
         $('input').iCheck({
           checkboxClass: 'icheckbox_square-blue',
           radioClass: 'iradio_square-blue',

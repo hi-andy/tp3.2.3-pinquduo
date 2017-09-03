@@ -185,7 +185,8 @@ class HaitaoController extends BaseController{
 			/*
              * gist 标志为新后台单品  吴银海  8月31号
              * */
-			if($_POST['gist']==1 && $type == 2){
+			$goodsInfo = D('Goods')->where('goods_id='.$_POST['goods_id'])->find();
+			if($type == 2 && $goodsInfo['addtime'] > 0){
 				if(!empty($_POST['reason'])){
 					$res_reason = M('goods')->where("goods_id = {$_POST['goods_id']}")->data(array('reason'=>$_POST['reason']))->save();
 					if($res_reason){
@@ -200,7 +201,14 @@ class HaitaoController extends BaseController{
 						);
 					}
 					$this->ajaxReturn(json_encode($return_arr));
+				}else{
+					$return_arr = array(
+						'status' => 1,
+						'msg'   => '操作成功'
+					);
+					$this->ajaxReturn(json_encode($return_arr));
 				}
+				die;
 			}
 
 			C('TOKEN_ON',false);

@@ -163,7 +163,7 @@ class GoodsController extends BaseController {
      */
     public function ajaxGoodsList(){
 
-        $where = ' g.show_type = 0 '. ' and g.store_id = '.$_SESSION['merchant_id'] ; // 搜索条件
+        $where = ' g.goodstatus = 2 and g.show_type = 0 '. ' and g.store_id = '.$_SESSION['merchant_id'] ; // 搜索条件
         if ($intro = I('intro')){
             $where .= " and g.intro like %$intro%'";
         }
@@ -171,7 +171,6 @@ class GoodsController extends BaseController {
         (I('merchant_id') !=0) && $where .= " and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';
 
         if($_REQUEST['is_audit']!=''){
-
             $where .= " and g.is_audit = ".$_REQUEST['is_audit'];
         }
         if(!empty(I('store_name')))
