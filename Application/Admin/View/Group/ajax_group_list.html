@@ -14,7 +14,7 @@
                 <td class="text-center">实际支付</td>
                 <td class="text-center">商品原价</td>
                 <td class="text-center">支付订单号</td>
-                <td class="text-center" width="5%">开团人/参团者</td>
+                <td class="text-center">开团人/参团者</td>
                 <td class="text-center">用户名称</td>
                 <td class="text-center">是否支付</td>
                 <td class="text-center">是否免单</td>
@@ -26,8 +26,8 @@
             <volist name="grouplist" id="list">
                 <tr>
                     <td class="text-center">{$list.id}</td>
-                    <td class="text-center">{$list.goods_name|getSubstr=0,15}</td>
-                    <td class="text-center">{$list.store_name|getSubstr=0,10}</td>
+                    <td class="text-center">{$list.goods_name|getSubstr=0,25}</td>
+                    <td class="text-center">{$list.store_name|getSubstr=0,25}</td>
                     <td class="text-center">{$list.start_time|date='Y-m-d H:i',###}</td>
                     <td class="text-center">{$list.end_time|date='Y-m-d H:i',###}</td>
                     <!--<td class="text-center">{$list.goods_num}</td>-->
@@ -40,7 +40,7 @@
                     <td class="text-center"> <if condition="$list.is_pay eq 0">未支付</if> <if condition="$list.is_pay eq 1">已支付</if></td>
                     <td class="text-center"> <if condition="$list.is_free eq 0">不免单</if><if condition="$list.is_free neq 0">免单</if> </td>
                     <td class="text-center"> <if condition="$list.is_successful eq 0">未成团</if><if condition="$list.is_successful eq 1">已成团</if> </td>
-
+                    
                     <td class="text-center">
                         <a href="{:U('Admin/Group/detail',array('group_id'=>$list['id']))}" data-toggle="tooltip" title="" class="btn btn-info" data-original-title="查看详情"><i class="fa fa-eye"></i></a>
                         <if condition="($list['is_pay'] neq 1)">

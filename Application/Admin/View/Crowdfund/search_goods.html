@@ -6,12 +6,36 @@
         <div class="panel-body">
           <div class="navbar navbar-default">
               <form action="{:U('Crowdfund/search_goods')}" id="search-form2" class="navbar-form form-inline" method="post">
+                <!--<div class="form-group">-->
+                  <!--<select name="cat_id" id="cat_id" class="form-control">-->
+                    <!--<option value="">所有分类</option>-->
+                        <!--<foreach name="categoryList" item="v" key="k" >-->
+                           <!--<option value="{$v['id']}" <if condition="$v[id] eq $cat_id">selected</if> >{$v['name']}</option>-->
+			 			<!--</foreach>-->
+                  <!--</select>-->
+                <!--</div>-->
 	              <div class="form-group">
 		              <label class="control-label" for="input-order-id">商户名</label>
 		              <div class="input-group">
 			              <input type="text" name="store_name" id="store_name" value="{$store_name}" placeholder="商户名"  class="form-control">
 		              </div>
 	              </div>
+                <!--<div class="form-group">-->
+                  <!--<select name="brand_id" id="brand_id" class="form-control">-->
+                    <!--<option value="">所有品牌</option>-->
+                        <!--<foreach name="brandList" item="v" key="k" >-->
+                           <!--<option value="{$v['id']}" <if condition="$v[id] eq $brand_id">selected</if>>{$v['name']}</option>-->
+						<!--</foreach>-->
+                  <!--</select>-->
+                <!--</div>                         -->
+                <!--<div class="form-group">-->
+                    <!--<select name="intro" class="form-control">-->
+                        <!--<option value="0">全部</option>-->
+                        <!--<option value="is_new">新品</option>-->
+                        <!--<option value="is_recommend">推荐</option>-->
+                    <!--</select>                -->
+                <!--</div>                  -->
+
                 <div class="form-group">
                   <label class="control-label" for="input-order-id">关键词</label>
                   <div class="input-group">

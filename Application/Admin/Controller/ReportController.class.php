@@ -317,6 +317,7 @@ class ReportController extends BaseController{
 
         //拿到总共能体现的资金
 		$one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$store_id['id'])->field('order_id,confirm_time,order_amount')->select();
+
 		(float)$reflect = null;
 		foreach($one as $v){
 			$temp = 2*3600*24;
@@ -360,7 +361,7 @@ class ReportController extends BaseController{
 			(float)$total = (float)$total+$v['withdrawal_money'];
 		}
 		(float)$reflects = $reflect;
-		(float)$reflect = $reflect-$total;
+		(float)$data['reflect'] = $reflect-$total;
 
 		if(empty($reflect)||((string)$reflects==(string)$total)){
 			$reflect = 0;
@@ -370,7 +371,7 @@ class ReportController extends BaseController{
 		if($c>=3){
 			$reflect = operationPrice($reflect);
 		}
-		$data['reflect'] = $reflect-$total;
+
 		if(empty($data['reflect']))
 			$data['reflect'] = 0;
         $data['reflect'] = sprintf('%.2f', $data['reflect']);

@@ -270,7 +270,7 @@ class PromLogic
 	    }else{
 		    $updata['automatic_time'] = time()+15*24*60*60;
 	    }
-
+	    
 		M('order')->where("order_id=".$data['order_id'])->save($updata);//改变订单状态
 		$s = $this->orderActionLog($order['order_id'],'delivery',$data['note']);//操作日志
         $base = new \Api_2_0_2\Controller\BaseController();

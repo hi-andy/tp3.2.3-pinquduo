@@ -3,7 +3,7 @@
 
 namespace Admin\Logic;
 use Think\Model\RelationModel;
-use Api_2_0_2\Controller\QQPayController;
+use Api\Controller\QQPayController;
 
 class OrderLogic extends RelationModel
 {

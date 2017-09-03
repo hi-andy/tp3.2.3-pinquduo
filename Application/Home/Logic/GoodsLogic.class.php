@@ -252,6 +252,14 @@ class GoodsLogic extends RelationModel
         $keys =M('SpecGoodsPrice')->where('goods_id = '.$goods_id.' and is_del=0')->field('key,img')->select();
         $allkey = $keys;
 
+		// 注释解决新旧规格兼容 温立涛 2017-09-03
+		/*
+		$flag = (strpos($allkey[0]['key'],'_') !== false) ? true:false;
+		foreach($keys as $newkey => $newvalue){
+			$imgArr[$newvalue['key']] = $newvalue['img'];
+		}
+		*/
+
         $goodInfo = M('goods')->where("goods_id={$goods_id}")->getField('addtime');
         $filter_spec = array();
         if($keys){
@@ -277,7 +285,9 @@ class GoodsLogic extends RelationModel
                 $filter_spec[$val['name']][] = array(
                     'item_id'=> $val['id'],
                     'item'=> $val['item'],
-                    'src'=>isset($specImage[$val['id']])?$specImage[$val['id']]:$allkey[0]['img'],
+                    // 注释解决新旧规格兼容 温立涛 2017-09-03
+					//'src'=>isset($specImage[$val['id']])?$specImage[$val['id']]:($flag)?$allkey[0]['img']:$imgArr[$val['id']],
+					'src' => isset($specImage[$val['id']])?$specImage[$val['id']]:'', 
                 );
             }
         }

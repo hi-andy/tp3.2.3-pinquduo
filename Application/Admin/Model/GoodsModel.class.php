@@ -121,7 +121,7 @@ class GoodsModel extends Model {
                 $v['price'] = trim($v['price']);
                 $v['prom_price'] = trim($v['prom_price']);
                 $v['store_count'] = trim($v['store_count']); // 记录商品总库存
-                $dataList[] = array('goods_id'=>$goods_id,'key'=>$k,'key_name'=>$v['key_name'],'price'=>$v['price'],'prom_price'=>$v['prom_price'],'is_del'=>0,'store_count'=>$v['store_count']);
+                $dataList[] = array('goods_id'=>$goods_id, 'img'=>isset($v['img'])?$v['img']:'', 'key'=>$k,'key_name'=>$v['key_name'],'price'=>$v['price'],'prom_price'=>$v['prom_price'],'is_del'=>0,'store_count'=>$v['store_count']);
             }
 
             M('admin_log')->data(array('admin_id'=>1,'log_url'=>json_encode($dataList)))->add();
