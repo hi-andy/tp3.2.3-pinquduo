@@ -33,9 +33,7 @@ class IndexController extends BaseController {
              * type=>跳转类型
              */
             $data = M('ad')->where('pid = 1 and `enabled`=1')->field(array('ad_link', 'ad_name', 'ad_code', 'type'))->select();
-            foreach ($data as & $v) {
-                $v['ad_code'] = TransformationImgurl($v['ad_code']);
-            }
+            
             //中间图标 group_category APP首页展示的icon图标 不显示 8,9
             $category = M('group_category')->where('`id` != 9 and `id` != 8')->select();
             foreach ($category as &$v) {

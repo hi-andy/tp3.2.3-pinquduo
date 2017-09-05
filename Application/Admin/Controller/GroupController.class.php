@@ -331,7 +331,7 @@ class GroupController extends BaseController
         $status = I('status');
 
         $where = " rg.`is_prom`=1 and gb.is_successful=1 ";
-        $order_sn && $where .= " and rg.order_sn like '%$order_sn%' ";
+        $order_sn && $where .= " and rg.order_sn = '$order_sn' ";
         empty($order_sn) && $where .= " and rg.`status` = '$status' ";
 
         if (!empty(I('store_name'))) {

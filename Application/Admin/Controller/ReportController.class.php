@@ -317,6 +317,7 @@ class ReportController extends BaseController{
 
         //拿到总共能体现的资金
 		$one = M('order')->where('(order_type =4 or order_type = 16 or order_type = 7 or order_type=6) and confirm_time is not null and store_id='.$store_id['id'])->field('order_id,confirm_time,order_amount')->select();
+
 		(float)$reflect = null;
 		foreach($one as $v){
 			$temp = 2*3600*24;
@@ -348,19 +349,10 @@ class ReportController extends BaseController{
 
 		//获取以前的提取记录
 		(float)$total = 0;
-		$withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id['id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
+		$withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id['id'].' and (status=1 or status=0 )')->sum('withdrawal_money');
 
-		$suoding = M('store_withdrawal')->where('store_id='.$store_id['id'].' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
-		if(!empty($suoding))
-		{
-			$this->assign('suoding',$suoding);
-		}
-		foreach($withdrawal_total as $v)
-		{
-			(float)$total = (float)$total+$v['withdrawal_money'];
-		}
 		(float)$reflects = $reflect;
-		(float)$reflect = $reflect-$total;
+		(float)$data['reflect'] = $reflect-$withdrawal_total;
 
 		if(empty($reflect)||((string)$reflects==(string)$total)){
 			$reflect = 0;
@@ -370,7 +362,7 @@ class ReportController extends BaseController{
 		if($c>=3){
 			$reflect = operationPrice($reflect);
 		}
-		$data['reflect'] = $reflect-$total;
+
 		if(empty($data['reflect']))
 			$data['reflect'] = 0;
         $data['reflect'] = sprintf('%.2f', $data['reflect']);

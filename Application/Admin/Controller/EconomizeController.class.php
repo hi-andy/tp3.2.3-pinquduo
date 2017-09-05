@@ -122,6 +122,7 @@ class EconomizeController extends Controller {
         {
             // 删除此商品
             M("Goods_activity")->where('id =' . $_GET['id'])->delete();
+            $res = M('goods')->where('goods_id='.$goods_count['goods_id'])->save(array('is_special'=>0));
             $return_arr = array('status' => 1, 'msg' => '操作成功', 'data' => '',);   //$return_arr = array('status' => -1,'msg' => '删除失败','data'  =>'',);
             $this->ajaxReturn(json_encode($return_arr));
         }

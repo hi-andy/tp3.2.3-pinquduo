@@ -154,4 +154,25 @@ class ChatController extends Controller
             $this->ajaxReturn(array('status' => 1, 'msg' => '缺少参数', 'result' => ''));
         }
     }
+
+    /*
+     * 获取商家的环形账号密码
+     * @param string $store_id 商户id
+     * */
+    public function getStoreInfo()
+    {
+        header("Access-Control-Allow-Origin:*");
+        $store_id = I('store_id');
+        if(empty($store_id)){
+            exit(json_encode(array('status'=>-1,'msg'=>'商户id不能为空')));
+        }
+        $store_info = M('merchant')->where("id = {$store_id}")->find();
+        if(empty($store_info)){
+            exit(json_encode(array('status'=>-1,'msg'=>'商户不存在')));
+        }else{
+            $username = 'store'.$store_info['id'];
+            $password = md5($username);
+            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('store_name'=>$store_info['store_name'],'store_password'=>$password))));
+        }
+    }
 }
