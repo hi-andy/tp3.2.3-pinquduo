@@ -1964,6 +1964,16 @@ class GoodsController extends BaseController {
 					$count = M('goods')->where($condition2)->count();
 					$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
 					foreach ($goods as &$v) {
+
+                        // 修改商品列表的商品主图和商品列表图，主要是兼容新旧商家后台版本造成的图片问题
+                        // 这个是2_0_1的老接口，后面要调用新的接口  温立涛  2017-09-05 16:20
+                        $imgArray = getimagesize($v['original_img']);
+                        if((int)$imgArray[0] == (int)$imgArray[1]){
+                            $temp = $v['original'];
+                            $v['original'] = $v['original_img'];  //正方形
+                            $v['original_img'] = $temp; 	      //长方形
+                        }
+
 						$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 					}
 					$data = $this->listPageData($count,$goods);
@@ -1972,6 +1982,16 @@ class GoodsController extends BaseController {
 					$count = M('goods')->where('`show_type`=0 and `cat_id`='.$id.' and is_show=1 and is_on_sale=1 and is_audit=1')->count();
 					$goods = M('goods')->where('`show_type`=0 and `cat_id`='.$id.' and is_show=1 and is_on_sale=1 and is_audit=1')->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->order('sales desc')->page($page,$pagesize)->select();
 					foreach ($goods as &$v) {
+
+                        // 修改商品列表的商品主图和商品列表图，主要是兼容新旧商家后台版本造成的图片问题
+                        // 这个是2_0_1的老接口，后面要调用新的接口  温立涛  2017-09-05 16:20
+                        $imgArray = getimagesize($v['original_img']);
+                        if((int)$imgArray[0] == (int)$imgArray[1]){
+                            $temp = $v['original'];
+                            $v['original'] = $v['original_img'];  //正方形
+                            $v['original_img'] = $temp; 	      //长方形
+                        }
+
 						$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 					}
 					$data = $this->listPageData($count,$goods);
@@ -2015,6 +2035,15 @@ class GoodsController extends BaseController {
 		}
 
 		foreach ($goods as &$v) {
+
+            // 修改商品列表的商品主图和商品列表图，主要是兼容新旧商家后台版本造成的图片问题
+            // 这个是2_0_1的老接口，后面要调用新的接口  温立涛  2017-09-05 16:20
+            $imgArray = getimagesize($v['original_img']);
+            if((int)$imgArray[0] == (int)$imgArray[1]){
+                $temp = $v['original'];
+                $v['original'] = $v['original_img'];  //正方形
+                $v['original_img'] = $temp; 	      //长方形
+            }
 			$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 		}
 		$data = $this->listPageData($count,$goods);
@@ -2040,6 +2069,16 @@ class GoodsController extends BaseController {
 		$goods = M('goods')->where($condition2)->field('goods_id,goods_name,market_price,shop_price,list_img as original_img,original_img as original,prom,prom_price,free')->page($page,$pagesize)->order('sales desc')->select();
 
 		foreach ($goods as &$v) {
+
+            // 修改商品列表的商品主图和商品列表图，主要是兼容新旧商家后台版本造成的图片问题
+            // 这个是2_0_1的老接口，后面要调用新的接口  温立涛  2017-09-05 16:20
+            $imgArray = getimagesize($v['original_img']);
+            if((int)$imgArray[0] == (int)$imgArray[1]){
+                $temp = $v['original'];
+                $v['original'] = $v['original_img'];  //正方形
+                $v['original_img'] = $temp; 	      //长方形
+            }
+
 			$v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
 		}
 		$data = $this->listPageData($count,$goods);

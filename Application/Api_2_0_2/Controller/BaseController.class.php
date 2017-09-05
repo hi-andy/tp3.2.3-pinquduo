@@ -461,6 +461,16 @@ class BaseController extends Controller {
             $store = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
             $store['store_logo'] = TransformationImgurl($store['store_logo']);
             $goods['store'] = $store;
+
+            // 修改商品列表的商品主图和商品列表图，主要是兼容新旧商家后台版本造成的图片问题
+            // 这个是2_0_1的老接口，后面要调用新的接口  温立涛  2017-09-05 16:20
+            $imgArray = getimagesize($goods['original_img']);
+            if((int)$imgArray[0] == (int)$imgArray[1]){
+                $temp = $goods['original'];
+                $goods['original'] = $goods['original_img'];  //正方形
+                $goods['original_img'] = $temp; 	      //长方形
+            }
+
             if(empty($goods['original_img'])){
                 $goods['original_img'] =TransformationImgurl($goods['original']);
             }else{
