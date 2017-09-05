@@ -526,7 +526,7 @@ class BaseController extends Controller {
      * is_support_buy 是否支持单买
      * is_special 商品type
      * original_img 内页展示图
-     * list_img 列表图
+     * list_img 列表图  
      *
      */
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc')

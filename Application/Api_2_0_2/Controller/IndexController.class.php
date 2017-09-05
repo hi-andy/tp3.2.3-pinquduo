@@ -625,8 +625,7 @@ class IndexController extends BaseController {
 					$goods[$k]['original'] = $v['original_img'];  //正方形
 					$goods[$k]['original_img'] = $temp; 	      //长方形
 				}
-				
-				
+
                 $goods[$k]['original_img'] = empty($goods[$k]['original_img'])?$goods[$k]['original']:$goods[$k]['original_img'];
                 if($goods[$k]['is_special']==8){
                     $goods[$k]['spec_key'] = M('spec_goods_price')->where('goods_id = '.$goods[$k]['goods_id'])->getField('key');
