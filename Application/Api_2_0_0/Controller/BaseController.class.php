@@ -589,6 +589,15 @@ class BaseController extends Controller {
         $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
         $result = $this->listPageData($count, $goods,$pagesize);
         foreach ($result['items'] as &$v) {
+
+            // 修改商品列表的商品主图和商品列表图，主要是兼容新旧商家后台版本造成的图片问题
+            // 这个是2_0_1的老接口，后面要调用新的接口  温立涛  2017-09-05 16:20
+            $imgArray = getimagesize($v['original_img']);
+            if((int)$imgArray[0] == (int)$imgArray[1]){
+                $temp = $v['original'];
+                $v['original'] = $v['original_img'];  //正方形
+                $v['original_img'] = $temp; 	      //长方形
+            }
             $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
         }
         return $result;
