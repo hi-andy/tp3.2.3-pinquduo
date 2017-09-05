@@ -131,10 +131,12 @@ class BaseController extends Controller {
 		$store_id = M('merchant')->where("`store_name` like '%".$store_name."%'")->select();
 		$store_ids =null;
 		$num = count($store_id);
-		for($i=0;$i<$num;$i++){
+		for($i=0;$i<$num;$i++)
+		{
 			if($num==1){
 				$store_ids = $store_ids."('".$store_id[$i]['id']."')";
-			}elseif($i==$num-1){
+			}elseif($i==$num-1)
+			{
 				$store_ids = $store_ids."'".$store_id[$i]['id']."')";
 			}elseif($i==0){
 				$store_ids = $store_ids."('".$store_id[$i]['id']."',";
@@ -167,5 +169,4 @@ class BaseController extends Controller {
 		$where = "$where and id IN $store_ids";
 		return $where;
 	}
-	
 }

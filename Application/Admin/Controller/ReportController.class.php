@@ -349,10 +349,19 @@ class ReportController extends BaseController{
 
 		//获取以前的提取记录
 		(float)$total = 0;
-		$withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id['id'].' and (status=1 or status=0 )')->sum('withdrawal_money');
+		$withdrawal_total = M('store_withdrawal')->where('store_id='.$store_id['id'].' and (status=1 or status=0 )')->field('withdrawal_money')->select();
 
+		$suoding = M('store_withdrawal')->where('store_id='.$store_id['id'].' and status=1')->field('withdrawal_money,withdrawal_code')->order('sw_id desc')->find();
+		if(!empty($suoding))
+		{
+			$this->assign('suoding',$suoding);
+		}
+		foreach($withdrawal_total as $v)
+		{
+			(float)$total = (float)$total+$v['withdrawal_money'];
+		}
 		(float)$reflects = $reflect;
-		(float)$data['reflect'] = $reflect-$withdrawal_total;
+		(float)$data['reflect'] = $reflect-$total;
 
 		if(empty($reflect)||((string)$reflects==(string)$total)){
 			$reflect = 0;

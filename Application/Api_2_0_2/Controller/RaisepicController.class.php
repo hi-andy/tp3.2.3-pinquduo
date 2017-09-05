@@ -54,7 +54,16 @@ class RaisepicController extends BaseController
         $font = 'Public/images/yahei.ttf';//字体
         $bigImg=  "https://{$bucket}.{$endpoint}/Public/upload/raise-prom/userid_". $prom_info['user_id'] .'_promid_'.$prom_id.'.jpg';
 //        $getimgcontent = file_get_contents($bigImg);
-        $img_t = '';//imagecreatefromstring(curl_file_get_contents($bigImg));
+        //$img_t = imagecreatefromstring(curl_file_get_contents($bigImg));
+		$img_t = "";
+		M('admin_log')->data(['admin_id'=>22,'log_url'=>$Qr_code])->add();
+		
+		$codeUrl ="http://wx.pinquduo.cn/wechat/qrcode.php?user_id={$prom_info['user_id']}&groupbuyid={$prom_id}";
+		
+		$getContent = curl_file_get_contents($codeUrl);
+		$obj = json_decode($getContent);
+		$Qr_code = $obj->address;
+
         if(empty($img_t)) {
             //获取图片文件的内容
             $pic_path = curl_file_get_contents($Qr_code);

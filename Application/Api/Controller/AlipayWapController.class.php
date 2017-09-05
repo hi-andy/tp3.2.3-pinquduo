@@ -73,7 +73,7 @@ class AlipayWapController extends BaseController
             $rdsname = "TuiSong*";
             redisdelall($rdsname);//删除推送缓存
             //跨区同步订单、推送、详情缓存
-            $url = array("http://pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
+            $url = array("http://api.hn.pinquduo.cn/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
             async_get_url($url);
             $url = array("http://139.196.255.40/api/index/index/getGoodsDetails/1/user_id/$user_id/goods_id/$goods_id");
             async_get_url($url);

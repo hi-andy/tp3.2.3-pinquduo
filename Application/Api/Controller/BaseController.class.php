@@ -139,26 +139,43 @@ class BaseController extends Controller {
 
     function getStatus($order)//订单表详情
     {
-        if ($order['order_type']==1) {
+        if ($order['pay_status']==0 && ($order['order_status']==1 || $order['order_status']==8)) {
+            //待支付
             $status['annotation'] = '待付款';
-        } elseif ($order['order_type']==2) {
+            $status['order_type'] = '1';
+        } elseif ($order['pay_status']==1 && $order['order_status']==1 && $order['shipping_status']!=1) {
+            //待发货
             $status['annotation'] = '待发货';
-        } elseif ($order['order_type']==3) {
+            $status['order_type'] = '2';
+        } elseif ($order['shipping_status']==1 && $order['order_status']==1 && $order['pay_status']==1) {
+            //待收货
             $status['annotation'] = '待收货';
-        } elseif ($order['order_type']==4) {
+            $status['order_type'] = '3';
+        } elseif ($order['order_status']==2 && $order['pay_status']==1 && $order['shipping_status']==1) {
+            //'已完成'
             $status['annotation'] = '已完成';
-        } elseif ($order['order_type']==5) {
+            $status['order_type'] = '4';
+        } elseif ($order['order_status']==3) {
+            //'已取消'
             $status['annotation'] = '已取消';
-        } elseif ($order['order_type']==6) {
+            $status['order_type'] = '5';
+        } elseif ($order['order_status']==4 && $order['pay_status']==1) {
+            //'已完成'
             $status['annotation'] = '待换货';
-        } elseif ($order['order_type']==7) {
+            $status['order_type'] = '6';
+        } elseif ($order['order_status']==5 && $order['pay_status']==1) {
+            //'已完成'
             $status['annotation'] = '已换货';
-        }elseif($order['order_type']==8) {
+            $status['order_type'] = '7';
+        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==6) {
             $status['annotation'] = '待退货';
-        }elseif($order['order_type']==9) {
+            $status['order_type'] = '8';
+        }elseif($order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==7) {
             $status['annotation'] = '已退货';
-        }elseif($order['order_type']==16){
+            $status['order_type'] = '9';
+        }elseif($order['order_type']==16 || $order['order_status']==15){
             $status['annotation'] = '拒绝受理';
+            $status['order_type'] = '16';
         }else{
             $status['annotation'] = '订单状态异常';
             $status['order_type'] = null;
@@ -171,22 +188,24 @@ class BaseController extends Controller {
         if(($num+1)<$prom['goods_num'] && ($prom['end_time']>time()) && $order['pay_status']==0 && $order['order_status']==8){
             $status['annotation'] = '拼团中,未付款';
             $status['order_type'] = '10';
-        }elseif($order['order_type']==11){
+        }
+        elseif($order['order_type']==11){
             $status['annotation'] = '拼团中,已付款';
             $status['order_type'] = '11';
-        }elseif ($order['order_type']==11 && $prom['end_time']<time()){
-            $status['annotation'] = '未成团,待退款';
-            $status['order_type'] = '11';
-        }elseif(($num+1)<$prom['goods_num'] && $prom['end_time'] && $order['order_status']==9){//< time() && $order['pay_status']==1 && $order['order_status']==9
+        }
+        elseif(($num+1)<$prom['goods_num'] && $prom['end_time'] && $order['order_status']==9){//< time() && 
             $status['annotation'] = '未成团,待退款';
             $status['order_type'] = '12';
-        }elseif(($num+1)<$prom['goods_num']  && $order['pay_status']==1 && $order['order_status']==10){
+        }
+        elseif(($num+1)<$prom['goods_num']  && $order['pay_status']==1 && $order['order_status']==10){
             $status['annotation'] = '未成团,已退款';
             $status['order_type'] = '13';
-        }elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==0 && $order['order_status']==11){
+        }
+        elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==0 && $order['order_status']==11){
             $status['annotation'] = '已成团,待发货';
             $status['order_type'] = '14';
-        }elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==11){
+        }
+        elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==11){
             $status['annotation'] = '已成团,待收货';
             $status['order_type'] = '15';
         }elseif(($num+1)==$prom['goods_num'] && $order['pay_status']==1 && $order['shipping_status']==1 && $order['order_status']==2) {
@@ -214,7 +233,6 @@ class BaseController extends Controller {
             $status['annotation'] = '拒绝受理';
             $status['order_type'] = '16';
         }else{
-            M('admin_log')->data(array('admin_id'=>1,'log_ip'=>22,'log_info'=>'异常订单问题','log_url'=>json_encode($order).'-----'.json_encode($prom)))->add();
             $status['annotation'] = '订单状态异常';
             $status['order_type'] = null;
         }

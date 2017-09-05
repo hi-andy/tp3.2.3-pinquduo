@@ -171,6 +171,7 @@ class GoodsController extends BaseController {
         (I('merchant_id') !=0) && $where .= " and FIND_IN_SET(".I('merchant_id').',tp_merchant.id)';
 
         if($_REQUEST['is_audit']!=''){
+
             $where .= " and g.is_audit = ".$_REQUEST['is_audit'];
         }
         if(!empty(I('store_name')))

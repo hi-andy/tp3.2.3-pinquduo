@@ -423,7 +423,8 @@ class GoodsLogic extends RelationModel
            $str .="<td><input name='item[$item_key][prom_price]' value='{$keySpecGoodsPrice[$item_key][prom_price]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")' /></td>";
             $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";
            if($goods_type['addtime']>0){
-               $str .="<td><a href='{$keySpecGoodsPrice[$item_key][img]}' target='_blank'><img width='40' height='40' src='{$keySpecGoodsPrice[$item_key][img]}' alt=''/></a></td>";
+			   
+               $str .="<td><input type='hidden' name='item[$item_key][img]' value='{$keySpecGoodsPrice[$item_key][img]}' /> <a href='{$keySpecGoodsPrice[$item_key][img]}' target='_blank'><img width='40' height='40' src='{$keySpecGoodsPrice[$item_key][img]}' alt=''/></a></td>";
            }
        }
         $str .= "</table>";

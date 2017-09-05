@@ -168,11 +168,13 @@ class HaitaoController extends BaseController{
 			$res = M('goods')->where('goods_id = '.$_POST['goods_id'])->save(array('reason'=>$_POST['reason']));
 			if($res)// 根据表单提交的POST数据创建数据对象
 			{
+				/*
 				$return_arr = array(
 					'status' => 1,
 					'msg'   => '操作成功',
 				);
 				$this->ajaxReturn(json_encode($return_arr));
+				*/
 			}
 		}
 		$HaitaoLogic = new HaitaoLogic();
@@ -276,7 +278,7 @@ class HaitaoController extends BaseController{
 		$this->assign('merchantList',$merchantList);
 		$this->assign('goodsType',$goodsType);
 		$this->assign('goodsInfo',$goodsInfo);  // 商品详情
-		$goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
+		$goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0).' and is_del=0')->select();
 		$this->assign('goodsImages',$goodsImages);  // 商品相册
 		$this->initEditor(); // 编辑器
 		$this->display('_goods');

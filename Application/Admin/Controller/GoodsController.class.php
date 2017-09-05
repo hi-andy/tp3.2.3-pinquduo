@@ -257,10 +257,128 @@ class GoodsController extends BaseController
     }
 
 
+	
+	
+    /**
+     * 添加修改商品 温立涛 0903
+     */
+    public function addEditGoods()
+    {
+        $GoodsLogic = new GoodsLogic();
+        $Goods = D('Goods'); //
+        session('goodstype',$_POST['goods_type']);
+        $type = $_POST['goods_id'] > 0 ? 2 : 1; // 标识自动验证时的 场景 1 表示插入 2 表示更新
+        //ajax提交验证
+        if(($_GET['is_ajax'] == 1) && IS_POST)
+        {
+            C('TOKEN_ON',false);
+            if(!$Goods->create(NULL,$type))// 根据表单提交的POST数据创建数据对象
+            {
+                //  编辑
+                $return_arr = array(
+                    'status' => -1,
+                    'msg'   => '操作失败',
+                    'data'  => $Goods->getError(),
+                );
+                $this->ajaxReturn(json_encode($return_arr));
+            }else {
+                //  form表单提交
+                // C('TOKEN_ON',true);
+                $Goods->on_time = time(); // 上架时间
+                //$Goods->cat_id = $_POST['cat_id_1'];
+                $_POST['cat_id_2'] && ($Goods->cat_id = $_POST['cat_id_2']);
+                $_POST['cat_id_3'] && ($Goods->cat_id = $_POST['cat_id_3']);
+                session('goods',$_POST);
+
+                if ($type == 2)
+                {
+                    $Goods->refresh = 0 ;
+                    $goods_id = $_POST['goods_id'];
+                    redislist("goods_refresh_id", $goods_id);
+                    $goods = M('goods')->where("goods_id = $goods_id")->find();
+                    if($_POST['original_img']!=$goods['original_img'])
+                    {
+                        $link =  C('DATA_URL').goods_thum_images($_POST['goods_id'],400,400);
+                        $res = unlink($link);
+                        $link1 = C('DATA_URL').$goods['original_img'];
+                        $res1 = unlink($link1);
+                    }
+                    $Goods->save(); // 写入数据到数据库
+                    $getsql = $Goods->getLastSql();
+                    M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$getsql))->add();
+                    $Goods->afterSave($goods_id);
+                    redislist("goods_refresh_id", $goods_id);
+                }
+                else
+                {
+                    $goods_id = $insert_id = $Goods->add(); // 写入数据到数据库
+                    M('goods')->where('goods_id='.$goods_id)->save(array('goods_type'=>$_SESSION['goodstype']));
+                    $Goods->afterSave($goods_id);
+                }
+                redisdelall("getDetaile_".$goods_id);
+                
+                $GoodsLogic->saveGoodsAttr($goods_id, $_POST['goods_type']); // 处理商品 属性
+                if($_POST['the_raise'] ==1){
+                    $return_arr = array(
+                        'status' => 1,
+                        'msg'   => '操作成功',
+                        'data'  => array('url'=>U('Admin/Crowdfund/goods_list')),
+                    );
+                }else
+                {
+                    $return_arr = array(
+                        'status' => 1,
+                        'msg'   => '操作成功',
+                        'data'  => array('url'=>U('Admin/Goods/goodsList')),
+                    );
+                }
+
+                $this->ajaxReturn(json_encode($return_arr));
+            }
+        }
+
+        $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
+		
+		if((int)$goodsInfo['addtime'] == 0){
+			$imgArray = getimagesize($goodsInfo['original_img']);
+			if((int)$imgArray[0] == (int)$imgArray[1]){
+				$temp = $goodsInfo['list_img'];
+				$goodsInfo['list_img'] = $goodsInfo['original_img'];
+				$goodsInfo['original_img'] = $temp;					
+			}
+
+		}						
+		
+        M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$goodsInfo['store_id']))->add();
+        $cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
+        $level_cat = $GoodsLogic->find_parent_cat($goodsInfo['cat_id']); // 获取分类默认选中的下拉框
+
+//        $cat_list = M('goods_category')->where("parent_id = 0")->select(); // 已经改成联动菜单
+
+        $merchantList = $GoodsLogic->getSortMerchant();
+        $goodsType = M("GoodsType")->where('`store_id`='.$goodsInfo['store_id'])->select();
+        if(empty($goodsType))
+            $goodsType = M("GoodsType")->select();
+
+        $level_cat = array_merge($level_cat);
+        $level_cat = array_reverse($level_cat, TRUE);
+        array_unshift($level_cat,array('id'=>'0','name'=>'null'));
+        $this->assign('level_cat',$level_cat);
+        $this->assign('cat_list',$cat_list);
+        $this->assign('merchantList',$merchantList);
+        $this->assign('goodsType',$goodsType);
+        $this->assign('goodsInfo',$goodsInfo);  // 商品详情
+        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0).' and is_del=0')->select();
+        $this->assign('goodsImages',$goodsImages);  // 商品相册
+        $this->initEditor(); // 编辑器
+        $this->display('_goods');
+    }	
+	
+	
     /**
      * 添加修改商品
      */
-    public function addEditGoods()
+    public function addEditGoodsTemp()
     {
         $GoodsLogic = new GoodsLogic();
         $Goods = D('Goods'); //
@@ -273,10 +391,14 @@ class GoodsController extends BaseController
              * gist 标志为新后台单品  吴银海  8月31号
              * */
             $goodsInfo = D('Goods')->where('goods_id='.$_POST['goods_id'])->find();
-            if($type == 2 && $goodsInfo['addtime'] > 0){
+            // 修改保存逻辑 温立涛  9月3号
+			//if($type == 2 && $goodsInfo['addtime'] > 0){
+			if($type == 2){	
                 if(!empty($_POST['reason'])){
                     $res_reason = M('goods')->where("goods_id = {$_POST['goods_id']}")->data(array('reason'=>$_POST['reason']))->save();
-                    if($res_reason){
+                    // 修改保存逻辑 温立涛  9月3号
+					/*
+					if($res_reason){
                         $return_arr = array(
                             'status' => 1,
                             'msg'   => '操作成功'
@@ -288,14 +410,9 @@ class GoodsController extends BaseController
                         );
                     }
                     $this->ajaxReturn(json_encode($return_arr));
-                }else{
-                    $return_arr = array(
-                        'status' => 1,
-                        'msg'   => '操作成功'
-                    );
-                    $this->ajaxReturn(json_encode($return_arr));
+					*/
+					
                 }
-                die;
             }
             C('TOKEN_ON',false);
             if(!$Goods->create(NULL,$type))// 根据表单提交的POST数据创建数据对象
@@ -394,9 +511,7 @@ class GoodsController extends BaseController
         $this->assign('merchantList',$merchantList);
         $this->assign('goodsType',$goodsType);
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情
-//        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
-        //被删除的商品相册不能显示到前端   2017-9-3 09:52:24  李则云
-        $goodsImages=M('GoodsImages')->where(['goods_id'=>I('GET.id',0),'is_del'=>0])->select();
+        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0))->select();
         $this->assign('goodsImages',$goodsImages);  // 商品相册
         $this->initEditor(); // 编辑器
         $this->display('_goods');

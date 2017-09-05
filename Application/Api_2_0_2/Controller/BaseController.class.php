@@ -546,7 +546,8 @@ class BaseController extends Controller {
 
         $result = $this->listPageData($count, $goods,$pagesize);
         foreach ($result['items'] as &$v) {
-			if((int)$v['addtime'] > 0){
+			$imgArray = getimagesize($v['original_img']);
+			if((int)$imgArray[0] == (int)$imgArray[1]){
 				$temp = $v['original'];
 				$v['original'] = $v['original_img'];  //正方形
 				$v['original_img'] = $temp; 	      //长方形

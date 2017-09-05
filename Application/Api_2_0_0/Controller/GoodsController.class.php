@@ -407,7 +407,7 @@ class GoodsController extends BaseController {
 						$res2 = M('group_buy')->where('`order_id`='.$order_id)->data(array('is_free'=>1))->save();
 						if($res && $res2){
 							$custom = array('type' => '2','id'=>$join_num[$j]['id']);
-							SendXinge('恭喜！您参与的免单拼团获得了免单',(string)$join_num[$j]['user_id'],$custom);
+							SendXinge('恭喜！您参与的免单拼团获得了免单',$join_num[$j]['user_id'],$custom);
 							$this->getWhere($order_id);
 							M()->commit();
 						}else{
@@ -415,7 +415,7 @@ class GoodsController extends BaseController {
 						}
 					}else{
 						$custom = array('type' => '2','id'=>$join_num[$j]['id']);
-						SendXinge('您的免单拼团人已满，点击查看免单买家',(string)$join_num[$j]['user_id'],$custom);
+						SendXinge('您的免单拼团人已满，点击查看免单买家',$join_num[$j]['user_id'],$custom);
 					}
 				}
 			}
@@ -424,7 +424,7 @@ class GoodsController extends BaseController {
 			foreach($join_num as $val){
 				if($val['auto']==0){
 					$custom = array('type' => '1','id'=>$val['id']);
-					SendXinge($message,(string)$val['user_id'],$custom);
+					SendXinge($message,$val['user_id'],$custom);
 				}
 			}
 		}
@@ -1491,6 +1491,6 @@ class GoodsController extends BaseController {
 		$type = I('type');
 		$user_id = I('user_id');
 		$custom = array('type' => "$type",'id'=>$id);
-		var_dump(SendXinge('卖家已同意退款，请点击此处查看',(string)"$user_id",$custom));
+		var_dump(SendXinge('卖家已同意退款，请点击此处查看',"$user_id",$custom));
 	}
 }

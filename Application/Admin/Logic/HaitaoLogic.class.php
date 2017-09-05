@@ -382,6 +382,7 @@ class HaitaoLogic extends RelationModel
                        
          $spec = M('Spec')->getField('id,name'); // 规格表
          $specItem = M('SpecItem')->getField('id,item,spec_id');//规格项
+		 $goods_type = M('goods')->where('goods_id = '.$goods_id)->field('addtime')->find();
          $keySpecGoodsPrice = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->getField('key,key_name,price,store_count,bar_code');//规格项
                           
        $str = "<table class='table table-bordered' id='spec_input_tab'>";
@@ -390,10 +391,12 @@ class HaitaoLogic extends RelationModel
        foreach ($clo_name as $k => $v) 
        {
            $str .=" <td><b>{$spec[$v]}</b></td>";
-       }    
+       }   
+		$skuImg = ($goods_type['addtime']>0)?"<td><b>SKU图</b></td>":"";	   
         $str .="<td><b>价格</b></td>
                <td><b>库存</b></td>
                <td><b>条码</b></td>
+			   {$skuImg}
              </tr>";
        // 显示第二行开始 
        foreach ($spec_arr2 as $k => $v) 
@@ -415,6 +418,11 @@ class HaitaoLogic extends RelationModel
             $str .="<td><input name='item[$item_key][store_count]' value='{$keySpecGoodsPrice[$item_key][store_count]}' onkeyup='this.value=this.value.replace(/[^\d.]/g,\"\")' onpaste='this.value=this.value.replace(/[^\d.]/g,\"\")'/></td>";            
             $str .="<td><input name='item[$item_key][bar_code]' value='{$keySpecGoodsPrice[$item_key][bar_code]}' />
                 <input type='hidden' name='item[$item_key][key_name]' value='$item_name' /></td>";
+
+			if($goods_type['addtime']>0){
+			   
+               $str .="<td><input type='hidden' name='item[$item_key][img]' value='{$keySpecGoodsPrice[$item_key][img]}' /> <a href='{$keySpecGoodsPrice[$item_key][img]}' target='_blank'><img width='40' height='40' src='{$keySpecGoodsPrice[$item_key][img]}' alt=''/></a></td>";
+			}				
             $str .="</tr>";           
        }
         $str .= "</table>";

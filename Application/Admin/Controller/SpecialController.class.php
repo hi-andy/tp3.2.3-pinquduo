@@ -117,6 +117,7 @@ class SpecialController extends BaseController
             }else{
                 $specList[$k]['spec_item'] = D('SpecItem')->where("spec_id ={$v['id']} and is_del=0 and is_show = 1")->getField('id,item'); // 获取规格项
             }
+
         }
 
         $items_id = M('SpecGoodsPrice')->where('goods_id = '.$goods_id)->field('key')->select();
