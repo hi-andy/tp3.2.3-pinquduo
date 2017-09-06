@@ -796,10 +796,19 @@ function getImgSize($arr)
 	$num = count($arr);
 	$res = array();
 	for($i=0;$i<$num;$i++){
-		$size = getimagesize($arr[$i]);
-		$res[$i]['origin'] = $arr[$i];
-		$res[$i]['width']=$size[0];
-		$res[$i]['height']=$size[1];
+	    //判断是否在缓存中,否则读取远程图片的宽高
+        if(!empty(S($arr[$i]))){
+            $tmp=unserialize(S($arr[$i]));
+            $res[$i]['origin'] = $arr[$i];
+            $res[$i]['width']=$tmp['width'];
+            $res[$i]['height']=$tmp['height'];
+        }else{
+            $size = getimagesize($arr[$i]);
+            $res[$i]['origin'] = $arr[$i];
+            $res[$i]['width']=$size[0];
+            $res[$i]['height']=$size[1];
+            S($arr[$i],serialize(['width'=>$size[0],'height'=>$size[1]]),3600*24*60);//记录到S缓存中 保存60天    2017-9-6 15:43:14 李则云
+        }
 	}
 	return $res;
 }

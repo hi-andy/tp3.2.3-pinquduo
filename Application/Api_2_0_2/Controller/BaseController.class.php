@@ -450,7 +450,7 @@ class BaseController extends Controller {
      * list_img 列表图
      *
      */
-    function  getGoodsInfo($goods_id,$type='')
+    function getGoodsInfo($goods_id,$type='')
     {
         $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
         if(!empty($goods)){

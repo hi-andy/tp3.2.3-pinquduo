@@ -3,9 +3,9 @@
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", true); //true、false
-define("REDISIP", "r-wz9266773b1c1894.redis.rds.aliyuncs.com");
+define("REDISIP", "localhost");
 define("PORT", 6379);
-define("REDISPASS", "Wang1314");
+//define("REDISPASS", "Wang1314");
 define("REDISTIME", 120);
 //define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 define("CDN", "https://cdn2.pinquduo.cn");  //七牛云CDN加速域名; 升级 https 2017-8-19　Hua
