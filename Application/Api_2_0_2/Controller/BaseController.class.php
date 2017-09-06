@@ -464,12 +464,20 @@ class BaseController extends Controller {
 
             // 修改商品列表的商品主图和商品列表图，主要是兼容新旧商家后台版本造成的图片问题
             // 这个是2_0_1的老接口，后面要调用新的接口  温立涛  2017-09-05 16:20
+            /* 注释掉这个商品图片处理 温立涛  2017-09-06 18:57
             $imgArray = getimagesize($goods['original_img']);
             if((int)$imgArray[0] == (int)$imgArray[1]){
                 $temp = $goods['original'];
                 $goods['original'] = $goods['original_img'];  //正方形
                 $goods['original_img'] = $temp; 	      //长方形
             }
+            */
+            // 按照正确的商品图片显示 list_img 正方形  original_img 长方形  温立涛  2017-09-06 18:57
+            $temp = $goods['original'];
+            $goods['original'] = $goods['original_img'];  //正方形
+            $goods['original_img'] = $temp; 	      //长方形
+            // 处理结束
+
 
             if(empty($goods['original_img'])){
                 $goods['original_img'] =TransformationImgurl($goods['original']);
@@ -556,12 +564,20 @@ class BaseController extends Controller {
 
         $result = $this->listPageData($count, $goods,$pagesize);
         foreach ($result['items'] as &$v) {
+            // 注释掉下面的代码  温立涛 2017-09-06 19:02
+            /*
 			$imgArray = getimagesize($v['original_img']);
 			if((int)$imgArray[0] == (int)$imgArray[1]){
 				$temp = $v['original'];
 				$v['original'] = $v['original_img'];  //正方形
 				$v['original_img'] = $temp; 	      //长方形
-			}			
+			}
+            */
+            // 按照正确的商品图片显示 list_img 正方形  original_img 长方形  温立涛  2017-09-06 18:57
+            $temp = $v['original'];
+            $v['original'] = $v['original_img'];  //正方形
+            $v['original_img'] = $temp; 	      //长方形
+            // 处理结束
             $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
         }
         return $result;
