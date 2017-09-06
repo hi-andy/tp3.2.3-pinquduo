@@ -159,8 +159,9 @@ class IndexController extends BaseController {
 			redisdelall("getDetaile_".$id_value);
 		    if(I('field') == 'is_audit'){
                 $res =  M($table)->where("$id_name = $id_value")->save(array($field=>$value,'is_on_sale'=>1,'is_show'=>1));
-                redislist("goods_refresh_id", $id_value);
-				
+                // 注释掉重新刷新商品缓存的代码 温立涛 2017-09-06
+                //redislist("goods_refresh_id", $id_value);
+
 				
 		    }else{
 			    M($table)->where("$id_name = $id_value")->save(array($field=>$value)); // 根据条件保存修改的数据
