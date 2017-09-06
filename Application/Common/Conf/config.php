@@ -3,9 +3,9 @@
 header("Content-type:text/html;charset=utf-8");
 //redis 开关、服务器IP、密码、失效时间 20170411 simon
 define("REDIS_SWITCH", true); //true、false
-define("REDISIP", "localhost");
+define("REDISIP", "r-wz9266773b1c1894.redis.rds.aliyuncs.com");
 define("PORT", 6379);
-//define("REDISPASS", "Wang1314");
+define("REDISPASS", "Wang1314");
 define("REDISTIME", 120);
 //define("CDN", "http://cdn.pinquduo.cn"); //七牛云CDN加速域名
 define("CDN", "https://cdn2.pinquduo.cn");  //七牛云CDN加速域名; 升级 https 2017-8-19　Hua
@@ -25,8 +25,8 @@ return array(
     'REDIS_PASSWORD' => 'Wang1314',
 
     'SERVER_HTTP' => 'http://api.hn.pinquduo.cn/',
-	'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
-	'PAY_URL'=>'https://pinquduo.cn/',
+    'HTTP_URL'=>'http://api.hn.pinquduo.cn/',
+    'PAY_URL'=>'https://pinquduo.cn/',
     /* 加载公共函数 */
     'LOAD_EXT_FILE' =>'common',
     'AUTH_CODE' => "TPSHOP", //安装完毕之后不要改变，否则所有密码都会出错
@@ -82,100 +82,100 @@ return array(
     'SHIPPING_STATUS' => array(
         0 => '未发货',
         1 => '已发货',
-    	2 => '部分发货'	        
+        2 => '部分发货'
     ),
     'PAY_STATUS' => array(
         0 => '未支付',
         1 => '已支付',
     ),
-	'IS_SHOW' => array(
-		0 => '显示',
-		1 => '未显示',
-	),
-	'IS_AUDIT' => array(
-		0 => '未审核',
-		1 => '已审核',
-		2 => '已驳回',
-	),
-	'IS_ON_SALE' => array(
-	    0 => '下架',
-		1 => '上架',
-	),
-	'IS_HAITAO' => array(
-		0 => '非海淘',
-		1 => '海淘店',
-	),
-	'ORDER_TYPE' => array(
-		1 => '未付款',
-		2 => '待发货',
-		3 => '待收货',
-		4 => '已完成',
-		5 => '已取消',
-		6 => '待退货',
-		7 => '已退货',
-		8 => '待退货',
-		9 => '已退货',
-		10 => '拼团中,待付款',
-		11 => '拼团中，已付款',
-		12 => '未成团,待退款',
-		13 => '未成团，已退款',
-		14 => '已成团，待发货',
-		15 => '已成团，待收货',
-		16 => '拒绝受理'
-	),
-	'IS_SPECIAL' => array(
-		0 => '普通商品',
-		1 => '海淘商品',
-		2 => '限时秒杀',
-		4 => '9.9专场',
-		5 => '多人拼',
-		6 => '免单拼',
-		7 => '0.1秒杀',
-		8 => '为我拼',
-		9 => '趣多严选'
-	),
+    'IS_SHOW' => array(
+        0 => '显示',
+        1 => '未显示',
+    ),
+    'IS_AUDIT' => array(
+        0 => '未审核',
+        1 => '已审核',
+        2 => '已驳回',
+    ),
+    'IS_ON_SALE' => array(
+        0 => '下架',
+        1 => '上架',
+    ),
+    'IS_HAITAO' => array(
+        0 => '非海淘',
+        1 => '海淘店',
+    ),
+    'ORDER_TYPE' => array(
+        1 => '未付款',
+        2 => '待发货',
+        3 => '待收货',
+        4 => '已完成',
+        5 => '已取消',
+        6 => '待退货',
+        7 => '已退货',
+        8 => '待退货',
+        9 => '已退货',
+        10 => '拼团中,待付款',
+        11 => '拼团中，已付款',
+        12 => '未成团,待退款',
+        13 => '未成团，已退款',
+        14 => '已成团，待发货',
+        15 => '已成团，待收货',
+        16 => '拒绝受理'
+    ),
+    'IS_SPECIAL' => array(
+        0 => '普通商品',
+        1 => '海淘商品',
+        2 => '限时秒杀',
+        4 => '9.9专场',
+        5 => '多人拼',
+        6 => '免单拼',
+        7 => '0.1秒杀',
+        8 => '为我拼',
+        9 => '趣多严选'
+    ),
 
-	'SINGLE_BUY' => array(
-		1 => '未付款',
-		2 => '待发货',
-		3 => '待收货',
-		4 => '已完成',
-		5 => '已取消',
-		6 => '待退货',
-		7 => '已退货',
-		8 => '待退货',
-		9 => '已退货',
-		16 => '拒绝受理'
-	),
-	'GROUP_BUY' => array(
-		4 => '已完成',
-		5 => '已取消',
-		10 => '拼团中-待付款',
-		11 => '拼团中-已付款',
-		12 => '未成团-待退款',
-		13 => '未成团-已退款',
-		14 => '已成团-待发货',
-		15 => '已成团-待收货',
-		16 => '拒绝受理'
-	),
+    'SINGLE_BUY' => array(
+        1 => '未付款',
+        2 => '待发货',
+        3 => '待收货',
+        4 => '已完成',
+        5 => '已取消',
+        6 => '待退货',
+        7 => '已退货',
+        8 => '待退货',
+        9 => '已退货',
+        16 => '拒绝受理'
+    ),
+    'GROUP_BUY' => array(
+        4 => '已完成',
+        5 => '已取消',
+        10 => '拼团中-待付款',
+        11 => '拼团中-已付款',
+        12 => '未成团-待退款',
+        13 => '未成团-已退款',
+        14 => '已成团-待发货',
+        15 => '已成团-待收货',
+        16 => '拒绝受理'
+    ),
     'SEX' => array(
         0 => '保密',
         1 => '男',
         2 => '女'
     ),
     'COUPON_TYPE' => array(
-    	0 => '面额模板',
-        1 => '按用户发放',   		
+        0 => '面额模板',
+        1 => '按用户发放',
         2 => '注册发放',
         3 => '邀请发放',
-    	4 => '线下发放'	
+        4 => '线下发放'
     ),
-	'PROM_TYPE' => array(
-		0 => '默认',
-		1 => '抢购',
-		2 => '团购',
-		3 => '优惠'			
-	),
+    'PROM_TYPE' => array(
+        0 => '默认',
+        1 => '抢购',
+        2 => '团购',
+        3 => '优惠'
+    ),
 
     // 订单用户端显示状态
     'WAITPAY'=>' AND pay_status = 0 AND order_status = 0 AND pay_code !="cod" ', //订单查询状态 待支付
@@ -184,7 +184,7 @@ return array(
     'WAITCCOMMENT'=> ' AND order_status=2 ', // 待评价 确认收货     //'FINISHED'=>'  AND order_status=1 ', //订单查询状态 已完成 
     'FINISH'=> ' AND order_status = 4 ', // 已完成
     'CANCEL'=> ' AND order_status = 3 ', // 已取消
-    
+
     'ORDER_STATUS_DESC' => array(
         'WAITPAY' => '待支付',
         'WAITSEND'=>'待发货',
@@ -195,23 +195,23 @@ return array(
     ),
     /**
      *  订单用户端显示按钮
-        去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
-        取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0
-        确认收货  AND shipping_status=1 AND order_status=0
-        评价      AND order_status=1
-        查看物流  if(!empty(物流单号))
-=======
-    
+    去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
+    取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0
+    确认收货  AND shipping_status=1 AND order_status=0
+    评价      AND order_status=1
+    查看物流  if(!empty(物流单号))
+    =======
+
     /**
-     *  订单用户端显示按钮     
-        去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
-        取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0 
-        确认收货  AND shipping_status=1 AND order_status=0 
-        评价      AND order_status=1 
-        查看物流  if(!empty(物流单号))
-        退货按钮（联系客服）  所有退换货操作， 都需要人工介入   不支持在线退换货
+     *  订单用户端显示按钮
+    去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
+    取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0
+    确认收货  AND shipping_status=1 AND order_status=0
+    评价      AND order_status=1
+    查看物流  if(!empty(物流单号))
+    退货按钮（联系客服）  所有退换货操作， 都需要人工介入   不支持在线退换货
      */
-    
+
     // 'site_url'=>'http://www.tp-shop.cn', // tpshop 网站域名 已经改写入数据库
     'MODULE_ALLOW_LIST' => array('Home','Admin','Store','Api','Chat','Api_2_0_0','Api_2_0_1','Api_2_0_2','Api_3_0','Storeapp'),
 
@@ -219,60 +219,60 @@ return array(
     //'DEFAULT_MODULE'        =>  'Index',  // 默认模块
     'DEFAULT_CONTROLLER'    =>  'Index', // 默认控制器名称
     'DEFAULT_ACTION'        =>  'index', // 默认操作名称    
-    
+
     'APP_SUB_DOMAIN_DEPLOY'   =>    0, // 开启子域名或者IP配置
-    'APP_SUB_DOMAIN_RULES'    =>    array( 
-         'm.tpshop.com'   => 'Mobile/',  // 手机访问网站
-    ),    
-        
+    'APP_SUB_DOMAIN_RULES'    =>    array(
+        'm.tpshop.com'   => 'Mobile/',  // 手机访问网站
+    ),
+
     'DEFAULT_FILTER'        => 'trim',   // 系统默认的变量过滤机制\
 
-	//信鸽推送
-	'Xinge' => array(
-		'AD_ACCESSID' =>'2100231415',     //用户端
-		'AD_SECRETKEY' => 'c1909e4753e1b23bd75e9ec0c9b43d63',//用户端
-		'IOS_ACCESSID' =>'2200231416',    //用户端
-		'IOS_SECRETKEY' => 'dec2efb82a46bfe7c8a83cf1dc3ecd9d'//用户端
-	),
+    //信鸽推送
+    'Xinge' => array(
+        'AD_ACCESSID' =>'2100231415',     //用户端
+        'AD_SECRETKEY' => 'c1909e4753e1b23bd75e9ec0c9b43d63',//用户端
+        'IOS_ACCESSID' =>'2200231416',    //用户端
+        'IOS_SECRETKEY' => 'dec2efb82a46bfe7c8a83cf1dc3ecd9d'//用户端
+    ),
 
-	//兑吧
-	'Duiba' => array(
-		'AppKey'=>'3vkLv2J1UNYbXaL3TzximCeymvLd',
-		'AppSecret'=>'uxpcaPdUTNV8o1nCWmKNSgGBxkd'
-	),
-	//上传图片
-	//
-	'UPLOADPATH' =>'Uploads/return/',
+    //兑吧
+    'Duiba' => array(
+        'AppKey'=>'3vkLv2J1UNYbXaL3TzximCeymvLd',
+        'AppSecret'=>'uxpcaPdUTNV8o1nCWmKNSgGBxkd'
+    ),
+    //上传图片
+    //
+    'UPLOADPATH' =>'Uploads/return/',
 
-	'STORE_FROM' => array('0'=>'个人','1'=>'企业'),
-	'STORE_TYPE' => array('0'=>'个人','1'=>'旗舰店','2'=>'专卖店','3'=>'专营店','4'=>'普通店'),
-	'STORE_SHOW' => array('0'=>'营业中','1'=>'停业'),
-	'STORE_STATUS' => array('1'=>'营业中','0'=>'停业'),
-	'Check_STATUS' => array('0'=>'未审核','1'=>'审核通过','2'=>'审核未通过'),
+    'STORE_FROM' => array('0'=>'个人','1'=>'企业'),
+    'STORE_TYPE' => array('0'=>'个人','1'=>'旗舰店','2'=>'专卖店','3'=>'专营店','4'=>'普通店'),
+    'STORE_SHOW' => array('0'=>'营业中','1'=>'停业'),
+    'STORE_STATUS' => array('1'=>'营业中','0'=>'停业'),
+    'Check_STATUS' => array('0'=>'未审核','1'=>'审核通过','2'=>'审核未通过'),
 
-	//支付宝配置参数
-	'alipay_config'=>array(
-		'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接口后获取到的PID
+    //支付宝配置参数
+    'alipay_config'=>array(
+        'partner' =>'2088521292269473',     //这里是你在成功申请支付宝接口后获取到的PID
         'private_key_path'  => getcwd().'/Application/Common/Conf/alipaykey/rsa_private_key.pem', //商户的私钥（后缀是.pen）文件相对路径
         'ali_public_key_path'=> getcwd().'/Application/Common/Conf/alipaykey/rsa_public_key.pem', //支付宝公钥（后缀是.pen）文件相对路径
         'sign_type'=>strtoupper('RSA'),
         'input_charset'=> strtolower('utf-8'),
         'cacert'=> getcwd().'\\cacert.pem',
         'transport'=> 'http',
-		'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
-		//这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
-		'notify_url'=>'http://pinquduo.cn/Store/Alipayapi/notify_url',
-		//这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
-		'return_url'=>'http://pinquduo.cn/Store/Alipayapi/returnurl',
-		//这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
-		'seller_email'=>'2660357732@qq.com',
-		//支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
-		'successpage'=>'Index/index',
-		//支付失败跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参unpay（未支付列表）
-		'errorpage'=>'Admin/login',
+        'key'=>'e399tx04dtzbuhx7p1v4jvkakkpcd2sd',
+        //这里是异步通知页面url，提交到项目的Pay控制器的notifyurl方法；
+        'notify_url'=>'http://pinquduo.cn/Store/Alipayapi/notify_url',
+        //这里是页面跳转通知url，提交到项目的Pay控制器的returnurl方法；
+        'return_url'=>'http://pinquduo.cn/Store/Alipayapi/returnurl',
+        //这里是卖家的支付宝账号，也就是你申请接口时注册的支付宝账号
+        'seller_email'=>'2660357732@qq.com',
+        //支付成功跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参payed（已支付列表）
+        'successpage'=>'Index/index',
+        //支付失败跳转到的页面，我这里跳转到项目的User控制器，myorder方法，并传参unpay（未支付列表）
+        'errorpage'=>'Admin/login',
     ),
-	// 支付宝手机 wap 支付配置参数
-	'alipay_wap' => array (
+    // 支付宝手机 wap 支付配置参数
+    'alipay_wap' => array (
         //应用ID,您的APPID。
         'app_id' => "2016111702900487",
 
@@ -299,7 +299,7 @@ return array(
 
 
     ),
-	// 分享地址
+    // 分享地址
     'SHARE_URL' => 'http://wx.pinquduo.cn',
 
     'UPLOAD_FILE_QINIU'     => array (
@@ -325,16 +325,16 @@ return array(
 
     //　五折专享开始时间
     'DiscountTime' => '2017-07-08',
-	
-	'TYPE_STATUS' => array(
-		array('id'=>'0','name'=>'处理中'),//延迟发货
-		array('id'=>'1','name'=>'已执行'),//虚假发货
-		array('id'=>'2','name'=>'已撤回'),//假货处理
-	),
-	'OSSKEYID' => 'LTAIKMnJ6nkDRxyb',
-	'OSSKEYSECRET' => 'bInE4qodURKwdtfuFlOLpkAfUjzfl1',
-	'OSSENDPOINT' => 'oss-cn-shenzhen.aliyuncs.com',
-	'OSSBUCKET' => 'pqd',
+
+    'TYPE_STATUS' => array(
+        array('id'=>'0','name'=>'处理中'),//延迟发货
+        array('id'=>'1','name'=>'已执行'),//虚假发货
+        array('id'=>'2','name'=>'已撤回'),//假货处理
+    ),
+    'OSSKEYID' => 'LTAIKMnJ6nkDRxyb',
+    'OSSKEYSECRET' => 'bInE4qodURKwdtfuFlOLpkAfUjzfl1',
+    'OSSENDPOINT' => 'oss-cn-shenzhen.aliyuncs.com',
+    'OSSBUCKET' => 'pqd',
 
 );
 
