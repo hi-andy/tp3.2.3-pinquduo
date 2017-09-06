@@ -889,15 +889,23 @@ function getAdress($adress)
 			$cha = explode('省',$cha);
 			$province = $cha[0].'省';
 		}
-		if(strstr($cha[1],'自治州'))
-		{
-			$cha = explode('自治州',$cha[1]);
-			$city = $cha[0].'自治州';
-			$area = $cha[1];
-		}elseif(strstr($cha[1],'地区')){
-			$cha = explode('地区',$cha[1]);
-			$city = $cha[0].'地区';
-			$area = $cha[1];
+        if(strstr($cha[1],'自治州'))
+        {
+            $cha = explode('自治州',$cha[1]);
+            $city = $cha[0].'自治州';
+            $area = $cha[1];
+        }
+        // 处理地址问题 规避广州市 惠州市等 处理恩施州  温立涛 20170906
+        elseif(strstr($cha[1],'州') && strpos($cha[1],'州') >= 6 ){
+            $cha = explode('州',$cha[1]);
+            $city = $cha[0].'州';
+            $area = $cha[1];
+        }
+        // 处理地址问题结束
+        elseif(strstr($cha[1],'地区')){
+            $cha = explode('地区',$cha[1]);
+            $city = $cha[0].'地区';
+            $area = $cha[1];
 		}elseif(strstr($cha[1],'自治区')){
 			$cha = explode('自治区',$cha[1]);
 			$city = $cha[0].'自治区';
