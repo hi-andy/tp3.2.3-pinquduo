@@ -992,11 +992,11 @@ class GoodsController extends BaseController {
 	            if($goods['is_special']==7){
 		            $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
 //		            $banner = M('goods_images')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
-		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云
-		            $banner=M('goods_images')->where(['goods_id'=>$f_goods_id,'is_del'=>0])->field('image_url')->select();
+		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片高度和宽度提取 2017-9-6 14:47:31
+		            $banner=M('goods_images')->where(['goods_id'=>$f_goods_id,'is_del'=>0])->field('img_id,image_url,width,height')->select();
 	            }else{
-		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云
-		            $banner=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0])->field('image_url')->select();
+		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片宽度和高度提取   2017-9-6 14:47:10
+		            $banner=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0])->field('img_id,image_url,width,height')->select();
 	            }
 
 	            foreach ($banner as &$v) {
@@ -1006,10 +1006,21 @@ class GoodsController extends BaseController {
 		            unset($v['image_url']);
 	            }
 				for($i=0;$i<count($banner);$i++){
-					$size = getimagesize($banner[$i]['small']);
-					$banner[$i]['origin'] = $banner[$i]['small'];
-					$banner[$i]['width']=$size[0];
-					$banner[$i]['height']=$size[1];
+	                if($banner[$i]['width']>0){
+                        $banner[$i]['origin'] = $banner[$i]['small'];
+                    }else{
+                        $size = getimagesize($banner[$i]['small']);
+                        $banner[$i]['origin'] = $banner[$i]['small'];
+                        $banner[$i]['width']=$size[0];
+                        $banner[$i]['height']=$size[1];
+                        M("goods_images")->where([
+                            'img_id'=>$banner[$i]['img_id']
+                        ])->save([
+                            'width'=>$size[0],
+                            'height'=>$size[1]
+                        ]);//保存以便下次使用
+                    }
+                    unset($banner[$i]['img_id']);
 				}
 	            if (empty($banner)) {
 		            $banner = null;
