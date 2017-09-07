@@ -56,7 +56,10 @@ class IndexController extends BaseController {
 
             $where = '`show_type`=0 and `is_show` = 1 and `is_on_sale` = 1 and `is_recommend`=1 and `is_special` in (0,1) and `is_audit`=1 ';
             //getGoodsList  获取商品列表
-            $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+            // 注释掉下面的代码首页的商品才交换图片的顺序 温立涛 20170907 9:53
+            //$result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
+            $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc',true);
+            // 处理结束
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
         } else {

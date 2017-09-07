@@ -547,7 +547,7 @@ class BaseController extends Controller {
      * list_img 列表图  
      *
      */
-    function getGoodsList($where,$page,$pagesize,$order='is_recommend desc')
+    function getGoodsList($where,$page,$pagesize,$order='is_recommend desc',$exchange=false)
     {
         $count = M('goods')->where($where)->count();
         $goods = M('goods')->where($where)->page($page, $pagesize)->order($order)->field('goods_id,goods_name,addtime,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
@@ -574,9 +574,12 @@ class BaseController extends Controller {
 			}
             */
             // 按照正确的商品图片显示 list_img 正方形  original_img 长方形  温立涛  2017-09-06 18:57
-            $temp = $v['original'];
-            $v['original'] = $v['original_img'];  //正方形
-            $v['original_img'] = $temp; 	      //长方形
+            // 首页才需要交换 其他页面不需要  温立涛  2017-09-07 9:48
+            if($exchange){
+                $temp = $v['original'];
+                $v['original'] = $v['original_img'];  //正方形
+                $v['original_img'] = $temp; 	      //长方形
+            }
             // 处理结束
             $v['original_img'] = empty($v['original_img'])?$v['original']:$v['original_img'];
         }
