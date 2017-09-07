@@ -58,7 +58,7 @@ class IndexController extends BaseController {
             //getGoodsList  获取商品列表
             // 注释掉下面的代码首页的商品才交换图片的顺序 温立涛 20170907 9:53
             //$result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc');
-            $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc',false);
+            $result2 = $this->getGoodsList($where,$page,$pagesize,'is_recommend desc,sort asc',true);
             // 处理结束
             $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('goodsList' => $result2, 'activity' => $activity, 'ad' => $data, 'cat' => $category));
             redis($rdsname, serialize($json), REDISTIME);//写入缓存
