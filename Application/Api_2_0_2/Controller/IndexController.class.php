@@ -621,13 +621,20 @@ class IndexController extends BaseController {
             $goods = M('goods')->where($where)->order('is_recommend desc,sort asc')->field('goods_id,goods_name,market_price,shop_price,original_img as original,prom,prom_price,is_special,list_img as original_img')->select();
 
             foreach ($goods as $k=>$v) {
-				
-				$imgArray = getimagesize($v['original_img']);
+                // 注释掉下面的代码  温立涛 2017-09-7 15:02
+                /*
+                $imgArray = getimagesize($v['original_img']);
 				if((int)$imgArray[0] == (int)$imgArray[1]){
 					$temp = $v['original'];
 					$goods[$k]['original'] = $v['original_img'];  //正方形
 					$goods[$k]['original_img'] = $temp; 	      //长方形
 				}
+                */
+                $temp = $v['original'];
+                $goods[$k]['original'] = $v['original_img'];  //正方形
+                $goods[$k]['original_img'] = $temp; 	      //长方形
+                // 处理结束
+
 
                 $goods[$k]['original_img'] = empty($goods[$k]['original_img'])?$goods[$k]['original']:$goods[$k]['original_img'];
                 if($goods[$k]['is_special']==8){
