@@ -363,12 +363,20 @@ class GoodsController extends BaseController
         $level_cat = array_merge($level_cat);
         $level_cat = array_reverse($level_cat, TRUE);
         array_unshift($level_cat,array('id'=>'0','name'=>'null'));
+        //需要从GoodsImages表中提取商品详情需在迁移后执行 2017-9-8 16:45:03 李则云
+        $goodsContents = M("GoodsImages")->where('position=2 and goods_id ='.I('GET.id',0).' and is_del=0')->select();
+        $tmp='';
+        foreach ($goodsContents as $v){
+            $tmp.='<p><img src="'.$v['image_url'].'" style="float:none;" title="拼趣多商品详情图片"/></p>';
+        }
+        $goodsInfo['goods_content']=$tmp;// 重置商品详情富文本
+
         $this->assign('level_cat',$level_cat);
         $this->assign('cat_list',$cat_list);
         $this->assign('merchantList',$merchantList);
         $this->assign('goodsType',$goodsType);
         $this->assign('goodsInfo',$goodsInfo);  // 商品详情
-        $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id',0).' and is_del=0')->select();
+        $goodsImages = M("GoodsImages")->where('position=1 and goods_id ='.I('GET.id',0).' and is_del=0')->select();
         $this->assign('goodsImages',$goodsImages);  // 商品相册
         $this->initEditor(); // 编辑器
         $this->display('_goods');

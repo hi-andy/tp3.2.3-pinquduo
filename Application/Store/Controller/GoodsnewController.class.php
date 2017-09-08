@@ -466,11 +466,19 @@ class GoodsnewController extends BaseController {
             $level_cat = array_merge($level_cat);
             $level_cat = array_reverse($level_cat, TRUE);
             array_unshift($level_cat, array('id' => '0', 'name' => 'null'));
-            $this->assign('goodsContent',getImgs($goodsInfo['goods_content']));
+            //该字段已被启用,并使用最新的商品详情表GoodsImages   2017-9-8 15:44:07  李则云
+//            $this->assign('goodsContent',getImgs($goodsInfo['goods_content']));
             $this->assign('level_cat',$level_cat);
+            $goodsContent = M("GoodsImages")->where('position=2 and is_del=0 and goods_id ='.I('GET.id'))->select();
+            $tmp='';
+            foreach ($goodsContent as $v){
+                $tmp.='<p><img src="'.$v['image_url'].'" style="float:none;" title="拼趣多商品详情图片"/></p>';
+            }
+            $goodsInfo['goods_content']=$tmp;// 重置商品详情富文本
 
             $this->assign('goodsInfo',$goodsInfo);  // 商品详情
-            $goodsImages = M("GoodsImages")->where('goods_id ='.I('GET.id'))->select();
+            //轮播图增加限制条件为1
+            $goodsImages = M("GoodsImages")->where('is_del=0 and position=1 and goods_id ='.I('GET.id'))->select();
             $this->assign('goodsImages',$goodsImages);  // 商品相册
         }
         $goodsType = M("GoodsType")->where('`store_id`=' . $_SESSION['merchant_id'])->select();

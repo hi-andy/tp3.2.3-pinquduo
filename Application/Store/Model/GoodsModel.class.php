@@ -63,11 +63,26 @@ class GoodsModel extends Model {
          $goods_sn = "TP".str_pad($goods_id,7,"0",STR_PAD_LEFT);
          $this->where("goods_id = $goods_id and goods_sn = ''")->save(array("goods_sn"=>$goods_sn)); // 根据条件更新记录
 
+        //商品详情记录到 goods_images中 2017-9-8 15:06:38  李则云
+        if(!empty(I('post.goods_content'))){
+            M('GoodsImages')->where("goods_id = $goods_id and position=2")->delete(); // 删除所有position=2的图片
+            $img_arr = $this->getImgs(I('post.goods_content'));
+            //如果图片为空则不提取
+            if(!empty($img_arr)){
+                $img_arr = $this->getImgSize($img_arr,$goods_id);
+                foreach($img_arr as $k => $v)
+                {
+                    if($v == null)  continue;
+                    M("GoodsImages")->data($v)->add();; // 实例化User对象
+                }
+            }
+        }
+
          // 商品图片相册  图册
          if(count($_POST['goods_images']) > 1)
          {
-             $goodsImagesArr = M('GoodsImages')->where("goods_id = $goods_id")->getField('img_id,image_url'); // 查出所有已经存在的图片
-             
+             $goodsImagesArr = M('GoodsImages')->where("goods_id = $goods_id and position=1")->getField('img_id,image_url'); // 查出所有已经存在的图片
+
              // 删除图片
              foreach($goodsImagesArr as $key => $val)
              {
@@ -86,7 +101,8 @@ class GoodsModel extends Model {
                             'goods_id' => $goods_id,
                             'image_url' => $val,
                             'width'=>$size[0],
-                            'height'=>$size[1]
+                            'height'=>$size[1],
+                            'position'=>1
                         );
                         M("GoodsImages")->data($data)->add();; // 实例化User对象                     
                  }
@@ -191,4 +207,49 @@ class GoodsModel extends Model {
          }
          refresh_stock($goods_id); // 刷新商品库存
     }
+
+    /**
+     * 获取图片
+     *
+     * @param $content
+     * @param string $order
+     * @return array
+     */
+    private function getImgs($content,$order='ALL'){
+        $pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.png|\.bmp|\.GIF|\.JPG|\.PNG|\.BMP]))[\'|\"].*?[\/]?>/";
+        preg_match_all($pattern,$content,$match);
+        if(isset($match[1])&&!empty($match[1])){
+            if($order==='ALL'){
+                return $match[1];
+            }
+            if(is_numeric($order)&&isset($match[1][$order])){
+                return $match[1][$order];
+            }
+        }
+        return [];
+    }
+
+    /**
+     * 提取图片宽高
+     *
+     * @param $arr
+     * @return array
+     */
+    private function getImgSize(array $arr,$goods_id)
+    {
+        $num = count($arr);
+        $res = array();
+        for($i=0;$i<$num;$i++){
+            $size = @getimagesize($arr[$i]);
+            if(is_array($size)){
+                $res[$i]['goods_id']=$goods_id;
+                $res[$i]['image_url'] = $arr[$i];
+                $res[$i]['width']=$size[0];
+                $res[$i]['height']=$size[1];
+                $res[$i]['position']=2;//图片位置记录为2
+            }
+        }
+        return $res;
+    }
+
 }
