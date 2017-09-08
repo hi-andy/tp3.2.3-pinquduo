@@ -259,8 +259,10 @@ class GoodsLogic extends RelationModel
 			$imgArr[$newvalue['key']] = $newvalue['img'];
 		}
 		*/
-
-        $goodInfo = M('goods')->where("goods_id={$goods_id}")->getField('addtime');
+        // 注释下面代码  温立涛  20170908 16:43
+        //$goodInfo = M('goods')->where("goods_id={$goods_id}")->getField('addtime');
+        $addtime = M('goods')->where("goods_id={$goods_id}")->getField('addtime');
+        // 处理结束
         $filter_spec = array();
         if($keys){
             $specImage =  M('SpecImage')->where("goods_id = $goods_id and src != '' ")->getField("spec_image_id,src");// 规格对应的 图片表， 例如颜色
@@ -275,7 +277,7 @@ class GoodsLogic extends RelationModel
             $keys = substr($keys,1);
             $sql  = "SELECT a.name,a.order,b.* FROM __PREFIX__spec AS a INNER JOIN __PREFIX__spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) ORDER BY a.order";
             //新商品取出规格
-            if($goodInfo['addtime'] > 0){
+            if((int)$addtime > 0){
                 $sql = "SELECT a.name,b.* FROM __PREFIX__specification AS a INNER JOIN __PREFIX__spec_item AS b ON a.id = b.spec_id WHERE b.id IN($keys) and b.is_del=0 ";
             }
             M('admin_log')->data(['admin_id'=>3,'log_info'=>'44','log_url'=>$sql])->add();
