@@ -75,14 +75,18 @@ class GoodsModel extends Model {
                      M('GoodsImages')->where("img_id = {$key}")->delete(); // 删除所有状态为0的用户数据
              }
              // 添加图片
+             //此处记录轮播图的尺寸 2017-9-8 11:35:07 李则云
              foreach($_POST['goods_images'] as $key => $val)
              {
                  if($val == null)  continue;                                  
                  if(!in_array($val, $goodsImagesArr))
-                 {                 
+                 {
+                        $size = getimagesize($val);
                         $data = array(
                             'goods_id' => $goods_id,
                             'image_url' => $val,
+                            'width'=>$size[0],
+                            'height'=>$size[1]
                         );
                         M("GoodsImages")->data($data)->add();; // 实例化User对象                     
                  }
