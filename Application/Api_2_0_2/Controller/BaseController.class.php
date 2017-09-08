@@ -452,7 +452,8 @@ class BaseController extends Controller {
      */
     function getGoodsInfo($goods_id,$type='')
     {
-        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,goods_content,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
+        //字段删除goods_content 2017-9-8 18:52:57 李则云
+        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
         if(!empty($goods)){
             //商品详情
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
@@ -493,9 +494,10 @@ class BaseController extends Controller {
              */
             $goods['fenxiang_url'] = $goods['original'].'?watermark/1/image/aHR0cDovL2Nkbi5waW5xdWR1by5jbi9QdWJsaWMvaW1hZ2VzL2ZlbnhpYW5nX2xvZ29fNDAwLmpwZw==/dissolve/100/gravity/South/dx/0/dy/0';
             if($type!=1){
-                $goods['img_arr'] = getImgs($goods['goods_content']);
-                $goods['img_arr'] = getImgSize($goods['img_arr']);
-
+                //重写商品详情(需要迁移后使用)    2017-9-8 18:47:46 李则云
+//                $goods['img_arr'] = getImgs($goods['goods_content']);
+//                $goods['img_arr'] = getImgSize($goods['img_arr']);
+                $goods['img_arr']=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0,'position'=>2])->field('img_url as origin,width,height')->select();
                 //获取店铺优惠卷store_logo_compression
                 /*
 			 * coupon 优惠券类型表

@@ -992,11 +992,11 @@ class GoodsController extends BaseController {
 	            if($goods['is_special']==7){
 		            $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
 //		            $banner = M('goods_images')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
-		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片高度和宽度提取 2017-9-6 14:47:31
-		            $banner=M('goods_images')->where(['goods_id'=>$f_goods_id,'is_del'=>0])->field('img_id,image_url,width,height')->select();
+		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片高度和宽度提取 2017-9-6 14:47:31 //增加限制条件position=1    2017-9-8 18:45:31 李则云
+		            $banner=M('goods_images')->where(['goods_id'=>$f_goods_id,'is_del'=>0,'position'=>1])->field('img_id,image_url,width,height')->select();
 	            }else{
-		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片宽度和高度提取   2017-9-6 14:47:10
-		            $banner=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0])->field('img_id,image_url,width,height')->select();
+		            //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片宽度和高度提取   2017-9-6 14:47:10 //增加限制条件position=1   2017-9-8 18:53:40 李则云
+		            $banner=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0,'position'=>1])->field('img_id,image_url,width,height')->select();
 	            }
 
 	            foreach ($banner as &$v) {
