@@ -330,7 +330,8 @@ class CrowdfundController extends BaseController {
 
     public function search_goods(){
         $goods_id = I('goods_id');
-        $where = ' is_on_sale=1 and is_special=0 and the_raise=0 ';//搜索条件
+		//屏蔽草稿箱中的商品	2017-9-9 15:55:05
+        $where = ' is_on_sale=1 and is_special=0 and the_raise=0 and goodstatus=2 ';//搜索条件
         if (!empty($goods_id)) {
             $where .= " and goods_id not in ($goods_id) ";
         }
