@@ -497,7 +497,7 @@ class BaseController extends Controller {
                 //重写商品详情(需要迁移后使用)    2017-9-8 18:47:46 李则云
 //                $goods['img_arr'] = getImgs($goods['goods_content']);
 //                $goods['img_arr'] = getImgSize($goods['img_arr']);
-                $goods['img_arr']=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0,'position'=>2])->field('img_url as origin,width,height')->select();
+                $goods['img_arr']=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0,'position'=>2])->field('image_url as origin,width,height')->select();
                 //获取店铺优惠卷store_logo_compression
                 /*
 			 * coupon 优惠券类型表
