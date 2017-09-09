@@ -9,7 +9,7 @@
  * 不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: IT宇宙人 2015-08-10 $
- */ 
+ */
 namespace Api_2_0_2\Controller;
 use Think\Controller;
 class BaseController extends Controller {
@@ -223,19 +223,19 @@ class BaseController extends Controller {
 
         //调用七牛云上传
         $qiniu = new \Admin\Controller\QiniuController();
-            foreach ($file['picture']['name'] as $key => $value) {
-                $suffix = substr(strrchr($value, '.'), 1);
-                $files = array(
-                    "key" => time() . rand(100000, 999999) . "." . $suffix,
-                    "filePath" => $file['picture']['tmp_name'][$key],
-                    "mime" => $file['picture']['type'][$key]
-                );
-                $info = $qiniu->uploadfile("imgbucket", $files);
-                $return_data[$key]['origin'] = CDN . "/" . $info[0]["key"];
-                $return_data[$key]['width'] = '100';
-                $return_data[$key]['height'] = '100';
-                $return_data[$key]['small'] = CDN . "/" . $info[0]["key"];
-            }
+        foreach ($file['picture']['name'] as $key => $value) {
+            $suffix = substr(strrchr($value, '.'), 1);
+            $files = array(
+                "key" => time() . rand(100000, 999999) . "." . $suffix,
+                "filePath" => $file['picture']['tmp_name'][$key],
+                "mime" => $file['picture']['type'][$key]
+            );
+            $info = $qiniu->uploadfile("imgbucket", $files);
+            $return_data[$key]['origin'] = CDN . "/" . $info[0]["key"];
+            $return_data[$key]['width'] = '100';
+            $return_data[$key]['height'] = '100';
+            $return_data[$key]['small'] = CDN . "/" . $info[0]["key"];
+        }
         redis("mobile_uploadimage", serialize($return_data),REDISTIME);
         return $return_data;
     }
@@ -453,7 +453,14 @@ class BaseController extends Controller {
     function getGoodsInfo($goods_id,$type='')
     {
         //字段删除goods_content 2017-9-8 18:52:57 李则云
-        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
+        //重写 $goods  2017-9-9 14:53:434
+        $goods = M('goods')
+            ->where(" `goods_id` = $goods_id")
+            ->field(
+                'goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,store_id,is_support_buy,is_special,original_img,list_img as original'
+            )
+            ->find();
+//        $goods = M('goods')->where(" `goods_id` = $goods_id")->field('goods_id,cat_id,goods_name,prom_price,market_price,shop_price,prom,goods_remark,sales,store_id,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
         if(!empty($goods)){
             //商品详情
             $goods['goods_content_url'] = C('HTTP_URL') . '/Api/goods/get_goods_detail?id=' . $goods_id;
@@ -474,9 +481,10 @@ class BaseController extends Controller {
             }
             */
             // 按照正确的商品图片显示 list_img 正方形  original_img 长方形  温立涛  2017-09-06 18:57
-            $temp = $goods['original'];
-            $goods['original'] = $goods['original_img'];  //正方形
-            $goods['original_img'] = $temp; 	      //长方形
+            //注释以下三行    2017-9-9 14:54:28
+//            $temp = $goods['original'];
+//            $goods['original'] = $goods['original_img'];  //正方形
+//            $goods['original_img'] = $temp; 	      //长方形
             // 处理结束
 
 
@@ -546,7 +554,7 @@ class BaseController extends Controller {
      * is_support_buy 是否支持单买
      * is_special 商品type
      * original_img 内页展示图
-     * list_img 列表图  
+     * list_img 列表图
      *
      */
     function getGoodsList($where,$page,$pagesize,$order='is_recommend desc',$exchange=true)

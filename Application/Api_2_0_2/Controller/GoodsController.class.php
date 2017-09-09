@@ -985,7 +985,7 @@ class GoodsController extends BaseController {
         if (false && $goodsstatus >0){
             $json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
         } else {
-            //暂时屏蔽商品详情缓存   2017-9-9 14:29:43 李则云
+            //此处暂时屏蔽缓存  2017-9-9 15:01:55
 //            $rdsname = 'getDetaile_' . $goods_id;
 //            if (empty(redis($rdsname))) {
                 $goods = $this->getGoodsInfo($goods_id);
