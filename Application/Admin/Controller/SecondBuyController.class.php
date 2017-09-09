@@ -127,7 +127,8 @@ class SecondBuyController extends Controller {
     // 搜索商品，以添加到秒杀
     public function search_goods()
     {
-        $where = ' store_count>0 and is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0';//搜索条件
+        //屏蔽草稿箱中的商品	2017-9-9 15:55:05  李则云
+        $where = ' store_count>0 and is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0 and goodstatus=2';//搜索条件
         if(!empty(I('store_name')))
         {
             $this->assign('store_name', I('store_name'));

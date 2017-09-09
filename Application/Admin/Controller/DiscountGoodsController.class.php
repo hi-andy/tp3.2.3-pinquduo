@@ -55,7 +55,7 @@ class DiscountGoodsController extends Controller {
     // 选择商品列表
     public function selectGoodsList()
     {
-        $where = ' store_count>0 and is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0';//搜索条件
+        $where = ' store_count>0 and is_on_sale = 1 and is_special=0 and the_raise=0 and show_type=0 and goodstatus=2';//搜索条件
         if($store_name = (I('store_name'))) {
             $this->assign('store_name', $store_name);
             $ids = $this->getStoreIds($store_name);
