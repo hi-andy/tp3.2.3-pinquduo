@@ -198,7 +198,9 @@ class IndexController {
 		$info[1]['value'] = $Order->where('pay_status=1 and add_time>'.$today.' and add_time<'.($today+24*3600).' and store_id = '.$store_id.' and order_type not in(9,11,13)')->count();
 		empty($info[1]['value']) &&  $info[1]['value']=0;
 		$info[2]['key'] = '待成团订单';
-		$info[2]['value'] = M('group_buy')->where('is_pay = 1 and mark = 0 and is_cancel = 0 and is_successful = 0 and end_time > '.time().' and store_id = '.$store_id)->count();
+		//变更统计方法    2017-9-11 09:21:04 李则云
+//		$info[2]['value'] = M('group_buy')->where('is_pay = 1 and mark = 0 and is_cancel = 0 and is_successful = 0 and end_time > '.time().' and store_id = '.$store_id)->count();
+        $info[2]['value'] = M('order')->where('order_type in(1,10,11) and store_id = '.$store_id)->count();
 
 		$info[3]['key'] = '待发货订单';
 		$info[3]['value'] = $Order->where('(order_type = 2 or order_type = 14) and store_id = '.$store_id)->count();
