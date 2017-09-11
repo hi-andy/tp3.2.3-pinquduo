@@ -223,8 +223,11 @@
                                                         <!--退货商品列表-->
                                                         <input class="btn btn-primary" type="button" onclick="selectGoods2({$order['order_id']})" value="退货申请">
                                                         <else/>
-                                                        <button class="btn btn-primary margin" onclick="ajax_submit_form('order-action','{:U('Admin/order/order_action',array('order_id'=>$order['order_id'],'type'=>$k))}');" type="button" id="confirm">
-                                                            {$vo}</button>
+                                                        <elseif condition="punishment">
+                                                            <a class="btn btn-primary margin" href="{:U('Order/punishment',array('order_id'=>$order['order_id']))}">{$vo}</a>
+                                                        </elseif>
+                                                        <!--<button class="btn btn-primary margin" onclick="ajax_submit_form('order-action','{:U('Admin/order/order_action',array('order_id'=>$order['order_id'],'type'=>$k))}');" type="button" id="confirm">-->
+                                                            <!--{$vo}</button>-->
                                                     </if>
                                                 </foreach>
                                             </div>
