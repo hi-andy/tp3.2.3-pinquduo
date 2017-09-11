@@ -53,9 +53,7 @@ class ChatController extends Controller
 		//$str = '{"timestamp":1503735237965,"host":"msync@ebs-ali-beijing-msync20","appkey":"1165160929115391#pqd","from":"88929","to":"store2","msg_id":"370099212840339488","chat_type":"chat","payload":{"bodies":[{"msg":"3","type":"txt"}],"ext":{"recevierUser":{"avatar":"http://cdn.pinquduo.cn/14993951072.jpg","userid":"store2","username":"巨树村22"},"senderUser":{"avatar":"http://wx.qlogo.cn/mmopen/waxhuHTian7KG1sluwGVgakDEQxFz76MSkDozJanYrBF2AibPVM4wJoI20ibEzJw8iaiaTvIjw5PTd56auw0gG4jyUcNtgf7Ea46U/0","userid":"88929","username":"贫道乃徐半仙"},"time":1503735239}},"callId":"1165160929115391#pqd_370099212840339488","eventType":"chat","security":"062b1a6a24b2624757ac72685e1c2018"}';
 		//$chatInfo = json_decode($str,true);
 		$chatInfo = json_decode(file_get_contents('php://input'),true);
-		if((int)$chatInfo['to'] == 246382 || (int)$chatInfo['from'] == 246382){
-			file_put_contents('user.log',file_get_contents('php://input'),FILE_APPEND);
-		}	
+
 		//检测获取到的消息的合法性
 		if(!$chatInfo || count($chatInfo)==0){
 			$data = [
@@ -69,6 +67,30 @@ class ChatController extends Controller
 			//将数据写入到缓存
 			//获取时间
 			$timestamp = $chatInfo['payload']['ext']['time'];
+			if(isset($chatInfo['payload']['ext']['autoReplyId']) && $chatInfo['payload']['ext']['autoReplyId'] > 0){
+                // 获取商家id
+                $store_id = (int)str_replace("store","",$chatInfo['to']);
+                // 获取自动回复id
+                $reply_id = (int)$chatInfo['payload']['ext']['autoReplyId'];
+                // 获取自动回复发送给用户的内容
+                $list = M('robot_reply','tp_','DB_CONFIG2')->field('reply')->where("id={$reply_id} and store_id={$store_id}")->find();
+                $content = '';
+                // 取得回复内容
+                if(count($list) > 0){
+                    $content = $list['reply'];
+                }
+                // 拼接数据data
+                $data = [
+                    'recevierUser' => $chatInfo['payload']['ext']['senderUser'],
+                    'senderUser' => $chatInfo['payload']['ext']['recevierUser'],
+                    'time' => time(),
+                    'terminal' => 's_s',
+                ];
+                $appReply = new AppreplyController();
+                $res = $appReply->sendText("store{$store_id}","users",[$chatInfo['from']],$content,$data);
+                file_put_contents('newdata.log',$res,FILE_APPEND);
+
+            }
 			$this->set_chat($chatInfo['callId'],$chatInfo['msg_id'],$timestamp,$chatInfo['to'],$chatInfo['from'],$chatInfo['payload'],0);
 		}
 		
