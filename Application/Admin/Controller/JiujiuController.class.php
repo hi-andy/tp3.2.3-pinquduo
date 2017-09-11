@@ -255,7 +255,7 @@ class JiujiuController extends BaseController{
 		$store_name = I('store_name');
 		$this->assign('store_name', $store_name);
 		$goods_id = I('goods_id');
-		$where = ' is_on_sale=1 and is_special=0 and the_raise=0';//搜索条件
+		$where = ' is_on_sale=1 and is_special=0 and the_raise=0 and goodstatus=2';//搜索条件
 		if (!empty($goods_id)) {
 			$where .= " and goods_id not in ($goods_id) ";
 		}

@@ -242,7 +242,7 @@ class FreeController extends BaseController
 
 	public function search_goods(){
 		$goods_id = I('goods_id');
-		$where = 'is_on_sale = 1 and is_special=0';//搜索条件
+		$where = 'is_on_sale = 1 and is_special=0 and goodstatus=2';//搜索条件
 		if (!empty($goods_id)) {
 			$where .= " and goods_id not in ($goods_id) ";
 		}
