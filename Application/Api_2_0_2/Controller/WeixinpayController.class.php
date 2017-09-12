@@ -228,6 +228,7 @@ EOF;
                 $notify->setReturnParameter("return_code","SUCCESS");
                 exit();
             }
+
             $res = $this->changeOrderStatus($order);
 
             if(!$res)
@@ -269,6 +270,10 @@ EOF;
             }else{
                 M()->commit();
             }
+
+            // 微信推送消息
+            $this->push_message($order);
+
 //            $log_->log_result($log_name,"【成功】");
             $notify->setReturnParameter("return_code","SUCCESS");
         }else{
@@ -304,11 +309,13 @@ EOF;
             exit();
         }
 
+        /**
+         * 修改订单状态，微信推送消息
+         */
         $res = $this->changeOrderStatus($order);
 
         if(!$res)
         {
-//            $log_->log_result($log_name,"【WX修改订单状态】:\n".$res."\n");
             M()->rollback();
             exit();
         }
@@ -340,6 +347,10 @@ EOF;
         }else{
             M()->commit();
         }
+
+        // 微信推送消息
+        $this->push_message($order);
+
 //        $log_->log_result($log_name,"【WX成功】");
         $notify->setReturnParameter("return_code","SUCCESS");
     }

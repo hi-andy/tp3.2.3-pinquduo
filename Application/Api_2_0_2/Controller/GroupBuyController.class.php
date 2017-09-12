@@ -1,16 +1,19 @@
 <?php
-namespace Api_2_0_2\Controller;
-use Think\Controller;
 
-class GroupBuyController extends BaseController {
+namespace Api_2_0_2\Controller;
+
+class GroupBuyController extends BaseController
+{
     //限制开团时间
     const GROUPSTART = '2017-08-21';
     //限制成团的最大数
     const GROUPMAX = 3;
+
     /**
      * 关注点赞
      */
-    public function autozan(){
+    public function autozan()
+    {
         $group_buy_id = I('groupbuyid');
         $useropenid = I('useropenid');
         $oauth = 'wx';
@@ -22,14 +25,14 @@ class GroupBuyController extends BaseController {
         $msgtwo = '获得0元秒杀权利';
 
         //非法的团id
-        if($group_buy_id<=0){
+        if ($group_buy_id <= 0) {
             $wxmsg = '您参加的团id非法';
             //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-            echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+            echo json_encode(['status' => 0, 'msg' => $wxmsg]);
             exit();
         }
         //检测有没有redis数据
-        if (empty(redis("GroupBuy_lock_".$group_buy_id))) {//如果无锁
+        if (empty(redis("GroupBuy_lock_" . $group_buy_id))) {//如果无锁
             redis("GroupBuy_lock_" . $group_buy_id, "1", 5);//写入锁
             //先检测这个团id是否合法
             $where = [
@@ -39,50 +42,47 @@ class GroupBuyController extends BaseController {
                 'is_pay' => 1,          //已支付
                 //'is_successful' => 0,   //未成团
             ];
+            // 获取团详情及开团用户信息
             $result = M('group_buy')->field('user_id,goods_id,is_successful,order_id,goods_num,end_time,intro,goods_price,goods_name,store_id')->where($where)->find();
             $tuanuserdata = M('users')->where("user_id={$result['user_id']}")->field("wx_openid,nickname")->find();
             $zhangnickname = $tuanuserdata['nickname'];
+
             //查不到数据记录
-            if(count($result)<=0){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+            if (count($result) <= 0) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                 $wxmsg = '您参加的团id查不到数据记录';
-                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
-            if((int)$result['is_successful'] == 1){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '该团已经满员了，您可以自己开团享受0元进口榴莲秒杀哦';
-                //wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+            if ((int)$result['is_successful'] == 1) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
+                $wxmsg = '该团已经满员了，您可以自己开团享受0元秒杀哦';
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
             //判断该团是不是已经结束
-            if($result['end_time']<=time()){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                $wxmsg = '您参加的团活动已经结束，您可以自己开团享受0元进口榴莲秒杀哦';
-                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+            if ($result['end_time'] <= time()) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
+                $wxmsg = '您参加的团活动已经结束，您可以自己开团享受0元秒杀哦';
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
 
-            $userdata = $this->thirdLogin($useropenid,$oauth,$nickname,$unionid);
+            $userdata = $this->thirdLogin($useropenid, $oauth, $nickname, $unionid);
 
-            if(count($userdata)==0){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+            if (count($userdata) == 0) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                 $wxmsg = '您的用户信息非法';
-                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
             $user_id = (int)$userdata['user_id'];
 
             //处理自己参加自己的团
-            if($user_id == (int)$result['user_id']){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+            if ($user_id == (int)$result['user_id']) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                 $wxmsg = '自己开团成功';
-                //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
             //处理掉用户id非法的情况-温立涛结束
@@ -91,11 +91,11 @@ class GroupBuyController extends BaseController {
             $goodsstatus = M('goods')
                 ->where("goods_id={$goods_id} and (show_type=1 or is_show=0 or is_on_sale=0)")
                 ->count();
-            if ($goodsstatus >0){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+            if ($goodsstatus > 0) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                 $wxmsg = '该商品已经下架，您可以自己选择其他商品开团哦';
                 //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
 
@@ -104,71 +104,62 @@ class GroupBuyController extends BaseController {
             //防刷条件  2017-08-24 温立涛 开始
             $groupStart = strtotime(self::GROUPSTART);
             $order_id = $result['order_id'];
-            $orderInfo = M('order')->where(['order_id'=>$order_id])->find();
+            $orderInfo = M('order')->where(['order_id' => $order_id])->find();
             $mobile = $orderInfo['mobile'];
             $address = $orderInfo['address'];
             $orderCount = M('order')->where("mobile='{$mobile}' and address='{$address}' and the_raise=1 and order_type in(4,14,15) and add_time>{$groupStart}")->count();
-            M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>$orderCount.'=='.$mobile.'=='.$user_id])->add();
+            M('admin_log')->data(['admin_id' => 1, 'log_ip' => '127.0.0.1', 'log_url' => $orderCount . '==' . $mobile . '==' . $user_id])->add();
             //成团一个之前 20分之19
-            if($orderCount<=1){
-                $randNum = range(96,100);
+            if ($orderCount <= 1) {
+                $randNum = range(96, 100);
             }
             //成团2个或者3个 20分之16
-            if($orderCount == 2 || $orderCount == 3){
-                $randNum = range(81,100);
+            if ($orderCount == 2 || $orderCount == 3) {
+                $randNum = range(81, 100);
             }
             //成团3个以上 20分之12
-            if($orderCount >3 && $orderCount <5){
-                $randNum = range(61,100);
+            if ($orderCount > 3 && $orderCount < 5) {
+                $randNum = range(61, 100);
             }
             //成团5个以上 20分之10
-            if($orderCount > 5){
-                $randNum = range(51,100);
+            if ($orderCount > 5) {
+                $randNum = range(51, 100);
             }
-            $getrand = mt_rand(1,100);
-            if(in_array($getrand,$randNum)){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+            $getrand = mt_rand(1, 100);
+            if (in_array($getrand, $randNum)) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                 $wxmsg = "很抱歉，您无法帮好友@{$zhangnickname}助力哦！\n只有新用户才能帮好友助力，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
                 //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
             //防刷条件  2017-08-18 温立涛 结束
 
 
-
-            $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id ='.$user_id)->find();
-            M('admin_log')->data(['admin_id'=>1,'log_ip'=>'127.0.0.1','log_url'=>json_encode($raise)])->add();
-            if(!empty($raise)){
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+            $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id =' . $user_id)->find();
+            M('admin_log')->data(['admin_id' => 1, 'log_ip' => '127.0.0.1', 'log_url' => json_encode($raise)])->add();
+            if (!empty($raise)) {
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                 $wxmsg = "很抱歉，您无法帮好友@{$zhangnickname}助力哦！\n只有新用户才能帮好友助力，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
                 //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
-//            $spec_key = M('order_goods')->where("order_id = {$result['order_id']}")->getField('spec_key');
-//            $num = M('spec_goods_price')->where('`goods_id`=' . $goods_id . " and `key`='$spec_key'")->find();
-//            if($num['store_count']<1){
-//                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-//                $wxmsg = '该规格刚售完，请重新选择 ^_^';
-//                $wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-//                exit();
-//            }
+
             $groupnum = M('group_buy')->where("mark={$group_buy_id}")->count();
-            $groupnum = (int)$groupnum+1;
-            if($groupnum>=(int)$result['goods_num']){
-                $morenum = $groupnum-(int)$result['goods_num'];
-                if($morenum>0){
+            $groupnum = (int)$groupnum + 1;
+            if ($groupnum >= (int)$result['goods_num']) {
+                $morenum = $groupnum - (int)$result['goods_num'];
+                if ($morenum > 0) {
                     M('group_buy')->where("mark={$group_buy_id}")->order('id desc')->limit($morenum)->delete();
                 }
-                redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                 $wxmsg = '该团已经满员了，您可以自己选择其他商品开团哦';
                 //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                 exit();
             }
-            if(count($result)>0)
-            {
+            if (count($result) > 0) {
                 M()->startTrans();//开启事务处理
                 //在团购表加一张单
                 $data['start_time'] = time();
@@ -180,56 +171,59 @@ class GroupBuyController extends BaseController {
                 $data['intro'] = $result['intro'];
                 $data['goods_price'] = (float)$result['goods_price'];
                 $data['goods_name'] = $result['goods_name'];
-                $data['photo'] = CDN.'/Public/upload/logo/logo.jpg';
+                $data['photo'] = CDN . '/Public/upload/logo/logo.jpg';
                 $data['mark'] = $group_buy_id;
                 $data['user_id'] = $user_id;
                 $data['store_id'] = (int)$result['store_id'];
                 $data['address_id'] = 0;
                 $data['free'] = 0;
                 $data['order_id'] = 0;
-                $data['is_raise']=1;
-                $data['is_pay']=1;
+                $data['is_raise'] = 1;
+                $data['is_pay'] = 1;
                 $group_buy = M('group_buy')->data($data)->add();
 
-                if( (int)$group_buy>0 )
-                {
-                    redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
-                    if((int)$groupnum+1==(int)$result['goods_num']){
-                        $ressave = M('group_buy')->data(['is_successful'=>1])->where("mark={$group_buy_id}")->save();
-                        $mainres = M('group_buy')->data(['is_successful'=>1])->where("id={$group_buy_id}")->save();
-                        $orderres = M('order')->where("order_id={$result['order_id']}")->data(['order_status'=>11,'order_type'=>14])->save();
-                        $spec_name = M('order_goods')->where('`order_id`='.$result['order_id'])->field('spec_key')->find();
-                        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);//库存自减
-                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);//销量自加
-                        if($ressave && $mainres && $orderres){
+                if ((int)$group_buy > 0) {
+                    redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
+                    // 参团人数大于等于成团人数，把团置为已成团。
+                    if ((int)$groupnum + 1 >= (int)$result['goods_num']) {
+                        $ressave = M('group_buy')->data(['is_successful' => 1])->where("mark={$group_buy_id}")->save();
+                        $mainres = M('group_buy')->data(['is_successful' => 1])->where("id={$group_buy_id}")->save();
+                        $orderres = M('order')->where("order_id={$result['order_id']}")->data(['order_status' => 11, 'order_type' => 14])->save();
+
+                        //　更新相关库存
+                        $spec_name = M('order_goods')->where('`order_id`=' . $result['order_id'])->field('spec_key')->find();
+                        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count', 1);
+                        M('goods')->where('`goods_id` = ' . $goods_id)->setDec('store_count', 1);//库存自减
+                        M('goods')->where('`goods_id` = ' . $goods_id)->setInc('sales', 1);//销量自加
+
+                        if ($ressave && $mainres && $orderres) {
                             M()->commit();
 
                             $wxmsg = "恭喜您，已帮好友@{$zhangnickname} 助力成功哦，您好友的团满团了！\n为了表示感谢，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
                             //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                            echo json_encode(['status'=>1,'msg'=>$wxmsg]);
+                            echo json_encode(['status' => 1, 'msg' => $wxmsg]);
                             $wxmsg = '您的好友已经帮您助力成功，您的团成功满团';
-                            $wxtmplmsg->groupbuy_msg($tuanuserdata['wx_openid'],$wxmsg,$msgone,$msgtwo);
+                            $wxtmplmsg->groupbuy_msg($tuanuserdata['wx_openid'], $wxmsg, $msgone, $msgtwo);
 
-                        }else{
+                        } else {
                             M()->rollback();//有数据库操作不成功时进行数据回滚
                             $wxmsg = '服务器异常，请稍后重试';
                             //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                            echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                            echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                         }
-                    }else{
+                    } else {
                         M()->commit();
                         $wxmsg = "恭喜您，已帮好友@{$zhangnickname} 助力成功哦！\n为了表示感谢，这里送您0元秒杀的机会，快点试一下吧！\n点击下方消息参与↓↓↓";
                         //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                        echo json_encode(['status'=>1,'msg'=>$wxmsg]);
+                        echo json_encode(['status' => 1, 'msg' => $wxmsg]);
                     }
                     exit();
-                }else{
+                } else {
                     M()->rollback();//有数据库操作不成功时进行数据回滚
-                    redisdelall("GroupBuy_lock_".$group_buy_id);//删除锁
+                    redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
                     $wxmsg = '服务器异常，请稍后重试';
                     //$wxtmplmsg->groupbuy_msg($useropenid,$wxmsg,$msgone,$msgtwo);
-                    echo json_encode(['status'=>0,'msg'=>$wxmsg]);
+                    echo json_encode(['status' => 0, 'msg' => $wxmsg]);
                     exit();
                 }
             }
@@ -241,46 +235,47 @@ class GroupBuyController extends BaseController {
     /**
      * 我的免单
      */
-    public function danList(){
-        $userid = I('userid',0);
+    public function danList()
+    {
+        $userid = I('userid', 0);
         $userid = (int)$userid;
-        if($userid<=0){
+        if ($userid <= 0) {
             $data = [
                 'status' => -1,
                 'msg' => '参数非法'
             ];
-            $this->ajaxReturn($data,'JSON');
+            $this->ajaxReturn($data, 'JSON');
             exit();
         }
         $uerdata = M('users')->field("user_id")->where("user_id={$userid}")->find();
-        if(count($uerdata) == 0){
+        if (count($uerdata) == 0) {
             $data = [
                 'status' => -1,
                 'msg' => '用户id无效'
             ];
-            $this->ajaxReturn($data,'JSON');
+            $this->ajaxReturn($data, 'JSON');
             exit();
         }
         $groupbuylist = M('group_buy')->field("id,goods_id,end_time,goods_name,order_id,is_successful,goods_num")->where("is_raise=1 and mark=0 and user_id={$userid}")->order('id desc')->select();
-        if(count($groupbuylist)>0){
-            foreach ($groupbuylist as $k => $value){
+        if (count($groupbuylist) > 0) {
+            foreach ($groupbuylist as $k => $value) {
                 $buyid = (int)$value['id'];
                 $goods_id = (int)$value['goods_id'];
                 $groupbuylist[$k]['end'] = 0;
-                if($value['end_time']<time()){
+                if ($value['end_time'] < time()) {
                     $groupbuylist[$k]['end'] = 1;
                 }
-                $goodsinfo = M('goods')->field('original_img,list_img')->where('goods_id='.$goods_id)->find();
+                $goodsinfo = M('goods')->field('original_img,list_img')->where('goods_id=' . $goods_id)->find();
                 $groupbuylist[$k]['list_img'] = $goodsinfo['list_img'];
                 $groupbuylist[$k]['original_img'] = $goodsinfo['original_img'];
-                if(strstr($groupbuylist[$k]['original_img'],"http://cdn") && !strstr($groupbuylist[$k]['original_img'],"https://cdn2")){
-                        $cha = $groupbuylist[$k]['original_img'];
-                        $cha = explode('http://cdn',$cha);
-                        $groupbuylist[$k]['original_img'] = 'https://cdn2'.$cha[1];
-                    }
-                $cantuannum = M('group_buy')->where('mark='.$buyid)->count();
+                if (strstr($groupbuylist[$k]['original_img'], "http://cdn") && !strstr($groupbuylist[$k]['original_img'], "https://cdn2")) {
+                    $cha = $groupbuylist[$k]['original_img'];
+                    $cha = explode('http://cdn', $cha);
+                    $groupbuylist[$k]['original_img'] = 'https://cdn2' . $cha[1];
+                }
+                $cantuannum = M('group_buy')->where('mark=' . $buyid)->count();
                 $cantuannum = (int)$cantuannum + 1;
-                $groupbuylist[$k]['morenum'] = (int)$value['goods_num']-$cantuannum;
+                $groupbuylist[$k]['morenum'] = (int)$value['goods_num'] - $cantuannum;
             }
         }
         $data = [
@@ -288,16 +283,17 @@ class GroupBuyController extends BaseController {
             'msg' => '获取信息成功',
             'list' => $groupbuylist
         ];
-        $this->ajaxReturn($data,'JSON');
+        $this->ajaxReturn($data, 'JSON');
         exit();
 
     }
 
 
-        /*
-         * 第三方登录
-         */
-    public function thirdLogin($openid,$oauth,$nickname,$unionid){
+    /*
+     * 第三方登录
+     */
+    public function thirdLogin($openid, $oauth, $nickname, $unionid)
+    {
         $map['openid'] = $openid;
         $map['oauth'] = $oauth;
         $map['nickname'] = $nickname;

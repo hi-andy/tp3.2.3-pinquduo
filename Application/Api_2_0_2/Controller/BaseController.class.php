@@ -1019,17 +1019,25 @@ class BaseController extends Controller {
         }else{
             $data['order_type'] = 2;
         }
+        $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
+        //销量、库存
+        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
+        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         $this->order_redis_status_ref($order['user_id']);
-        //微信推送消息
+
+        return $res;
+    }
+
+    /** 微信推送消息
+     * @param array $order
+     *
+     * 2017-9-12 Hua
+     */
+    public function push_message(Array $order)
+    {
         $openid = M('users')->where("user_id={$order['user_id']}")->getField('wx_openid');
         $goods_name = M('goods')->where("goods_id={$order['goods_id']}")->getField('goods_name');
         $wxtmplmsg = new WxtmplmsgController();
         $wxtmplmsg->order_payment_success($openid,$order['order_amount'],$goods_name);
-
-        //销量、库存
-        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
-        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
-        $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
-        return $res;
     }
 }
