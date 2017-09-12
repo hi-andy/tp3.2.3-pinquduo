@@ -1877,7 +1877,7 @@ class UserController extends BaseController {
             }
         }
         //获取商品详情
-        $goods_info = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,original_img')->find();
+        $goods_info = M('goods')->where(" `goods_id` = ".$order_info['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,store_id,sales,is_support_buy,is_special,list_img as original_img')->find();
         $goods_info['store'] = M('merchant')->where(' `id` = ' . $order_info['store_id'])->field('id,store_name,store_logo,sales,mobile')->find();
         //获取规格详情
         $spec_info = M('order_goods')->alias('og')
