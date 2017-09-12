@@ -980,8 +980,7 @@ class UserController extends BaseController {
                 exit(json_encode(array('status'=>-1,'msg'=>'您的手机号暂时无法接收短信')));
             }
             $code = rand(1000, 9999);
-            $alidayu = new AlidayuController();
-            $result = $alidayu->sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
+            $result = AlidayuController::sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
             //先将短信code值存起来
             if (!empty($result)) {
                 S('sms_'.$mobile,1,60);

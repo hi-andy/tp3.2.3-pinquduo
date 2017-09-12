@@ -978,29 +978,92 @@ class UserController extends BaseController {
     }
 
     /**
-     * 测试短信接口
+     * 获取真实IP
+     * @return array|false|string
+     */
+    private function getIP() {
+        if (getenv('HTTP_CLIENT_IP')) {
+            $ip = getenv('HTTP_CLIENT_IP');
+        }
+        elseif (getenv('HTTP_X_FORWARDED_FOR')) {
+            $ip = getenv('HTTP_X_FORWARDED_FOR');
+        }
+        elseif (getenv('HTTP_X_FORWARDED')) {
+            $ip = getenv('HTTP_X_FORWARDED');
+        }
+        elseif (getenv('HTTP_FORWARDED_FOR')) {
+            $ip = getenv('HTTP_FORWARDED_FOR');
+
+        }
+        elseif (getenv('HTTP_FORWARDED')) {
+            $ip = getenv('HTTP_FORWARDED');
+        }
+        else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
+
+    /**
+     * 发送短信接口
      */
     public function sendSMS(){
-        if (intval(time()) - intval(session("code")) > 60) {
-            session("code", time());
-            $mobile = I('mobile');
-            if (!check_mobile($mobile))
-                exit(json_encode(array('status' => -1, 'msg' => '手机号码格式有误')));
-            if ($mobile != '15019236664') {
-                $code = rand(1000, 9999);
-                $alidayu = new AlidayuController();
-                $result = $alidayu->sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
-                //$result = sendMessage($mobile,array($code,'5分钟'),'155220');
-            } else {
-                $code = 111111;
-                $result = 1;
+        $mobile = I('mobile');//手机号
+        $ip=ip2long($this->getIP());
+        $time=time();
+        $zeroTime=strtotime(date("Y-m-d"));
+        $isWhitePhone=in_array($mobile,C('mobile_white_list'));
+        $isWhiteIp=in_array($ip,C('ip_white_list'));
+        if (!check_mobile($mobile))
+            exit(json_encode(array('status' => -1, 'msg' => '手机号码格式有误')));
+        if (S('sms_'.$mobile)) {
+            exit(json_encode(array('status' => -1, 'msg' => '60秒内只允许发送一次')));
+        }else{
+            //检查是否在黑名单中
+            $mtmp=M('blacklist')->where(['mobile'=>$mobile])->find();
+            if($mtmp){
+                M('blacklist')->where(['id'=>$mtmp['id']])->setInc('num');
             }
+            $iptmp=M('blacklist')->where(['ip'=>$ip])->find();
+            if($iptmp){
+                M('blacklist')->where(['id'=>$iptmp['id']])->setInc('num');
+            }
+            if((!empty($mtmp) or !empty($iptmp)) and (!$isWhiteIp and !$isWhitePhone)){
+                exit(json_encode(array('status'=>-1,'msg'=>'您的IP或手机号暂时无法接收短信')));
+            }
+            //检查今日该IP发送是否超过5次,手机3次
+            $ipCount=M('sms_log')->where([
+                'ip'=>['eq',$ip],
+                'add_time'=>['between',[$zeroTime,$time]]
+            ])->count();
+            if($ipCount>=5 and (!$isWhiteIp and !$isWhitePhone)){
+                //计入黑名单
+                M('blacklist')->add([
+                    'ip'=>$ip,
+                    'add_time'=>$time
+                ]);
+                exit(json_encode(array('status'=>-1,'msg'=>'您的IP暂时无法发送短信')));
+            }
+            $mobileCount=M('sms_log')->where([
+                'mobile'=>['eq',$mobile],
+                'add_time'=>['between',[$zeroTime,$time]]
+            ])->count();
+            if($mobileCount>=3 and (!$isWhiteIp and !$isWhitePhone)){
+                //计入黑名单
+                M('blacklist')->add([
+                    'mobile'=>$mobile,
+                    'add_time'=>$time
+                ]);
+                exit(json_encode(array('status'=>-1,'msg'=>'您的手机号暂时无法接收短信')));
+            }
+            $code = rand(1000, 9999);
+            $result = AlidayuController::sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
             //先将短信code值存起来
             if (!empty($result)) {
-                $res = M('sms_log')->add(array('mobile' => $mobile, 'add_time' => time(), 'code' => $code));
+                S('sms_'.$mobile,1,60);
+                $res = M('sms_log')->add(array('mobile' => $mobile, 'add_time' => $time, 'code' => $code,'ip'=>$ip));
             }
         }
-
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
         if(!empty($result) && !empty($res)) {
@@ -1010,7 +1073,7 @@ class UserController extends BaseController {
                 exit(json_encode(array('status'=>1,'msg'=>'验证码已发送')));
         } else {
             if(!empty($ajax_get))
-                $this->getJsonp(array('status'=>1,'msg'=>'验证码发送失败'));
+                $this->getJsonp(array('status'=>-1,'msg'=>'验证码发送失败'));
             else
                 exit(json_encode(array('status'=>-1,'msg'=>'验证码发送失败')));
         }
