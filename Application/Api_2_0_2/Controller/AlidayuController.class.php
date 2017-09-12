@@ -27,7 +27,7 @@ class AlidayuController extends BaseController
      * @param $product 产品
      * @return mixed
      */
-    public function sms($mobile, $ctype, $content, $TemplateCode, $SmsType, $SignName, $product)
+    public static function sms($mobile, $ctype, $content, $TemplateCode, $SmsType, $SignName, $product)
     {
         $c = new \TopClient();
         $c->appkey = AlidayuController::APPKEY;
