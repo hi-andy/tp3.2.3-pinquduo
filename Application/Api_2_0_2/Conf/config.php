@@ -17,4 +17,12 @@ return array(
                 'cacert'=> getcwd().'\\cacert.pem',
                 'transport'=> 'http',
         ),
+    'mobile_white_list'=>[
+        '13138166196',
+        '13138166197',
+    ],
+    'ip_white_list'=>[
+        ip2long('127.0.0.1'),
+        ip2long('192.168.1.198'),
+    ],
 );
