@@ -154,7 +154,8 @@ class AlipayController extends BaseController
             }else{
                 M()->commit();
             }
-
+            // 微信推送消息
+            $this->push_message($order);
         }
         echo "success";        //请不要修改或删除
     }

@@ -754,30 +754,29 @@ class BaseController extends Controller {
             exit();
         }
         $wxtmplmsg = new WxtmplmsgController();
-        /*
-         * group_buy 团购表
-         * tp_users 用户表
-         * gb.id 团id
-         * gb.mark 团标识
-         * gb.is_pay 是否支付
-         * gb.goods_id 商品id
-         * gb.order_id 订单id
-         * gb.goods_name 商品名
-         * gb.goods_num 团人数
-         * gb.free 免单人数
-         * gb.is_raise 为我点赞显示
-         * gb.user_id 用户id
-         * gb.auto 机器人标识
-         * u.openid 微信openid
-         * u.nickname 用户昵称
-         * u.mobile 电话号码
-         * */
+
+        /**
+         * 获取所有参团的用户信息和团详情。
+         */
         $join_num = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_users u on u.user_id = gb.user_id')
-            ->where('(gb.id='.$prom_id.' or gb.mark='.$prom_id.' ) and gb.is_pay=1')
-            ->field("gb.id,gb.goods_id,gb.order_id,gb.goods_name,gb.goods_num,gb.free,gb.is_raise,gb.user_id,gb.auto,u.wx_openid,u.nickname,REPLACE(u.mobile, SUBSTR(u.mobile,4,4), '****') as mobile")
-            ->order('mark asc')
-            ->select();
+                                    ->join('INNER JOIN tp_users u on u.user_id = gb.user_id')
+                                    ->where('(gb.id='.$prom_id.' or gb.mark='.$prom_id.' ) and gb.is_pay=1')
+                                    ->field("
+                                            gb.id,
+                                            gb.goods_id,
+                                            gb.order_id,
+                                            gb.goods_name,
+                                            gb.goods_num,
+                                            gb.free,
+                                            gb.is_raise,
+                                            gb.user_id,
+                                            gb.auto,
+                                            u.wx_openid,
+                                            u.nickname,
+                                            u.mobile")
+                                    ->order('mark asc')
+                                    ->select();
+
         $prom_num = $join_num[0]['goods_num'];
         $free_num = $join_num[0]['free'];
         $goodsName = $join_num[0]['goods_name'];
@@ -794,34 +793,48 @@ class BaseController extends Controller {
                 // 如果团长发起的是为我点赞团
                 if(!empty($join_num[0]['is_raise'])){
                     if($i==0){
+                        // 修改 order_type=14 已成团待发货。
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
-                        //销量、库存
-                        $goods_id = $join_num[0]['goods_id'];
+                        // 获取订单规格名称
                         $spec_name = M('order_goods')->where('`order_id`='.$join_num[0]['order_id'])->field('spec_key')->find();
-                        M('spec_goods_price')->where("`goods_id`=$goods_id and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
-                        M('goods')->where('`goods_id` = '.$goods_id)->setDec('store_count',1);//库存自减
-                        M('goods')->where('`goods_id` = '.$goods_id)->setInc('sales',1);//销量自加
+                        // SKU 库存减
+                        M('spec_goods_price')->where("`goods_id`=$join_num[0]['goods_id'] and `key`='$spec_name[spec_key]'")->setDec('store_count',1);
+                        //总库存减
+                        M('goods')->where('`goods_id` = '.$join_num[0]['goods_id'])->setDec('store_count',1);
+                        //销量加
+                        M('goods')->where('`goods_id` = '.$join_num[0]['goods_id'])->setInc('sales',1);
 
+                        /**
+                         * 处理用户名
+                         */
                         if(($join_num[0]['mobile'])!=null){
                             $name = substr_replace($join_num[0]['mobile'],'*****',3,5);
                         }else{
                             $name = $join_num[0]['nickname'];
                         }
                         $name = trim($name);
+
                         //　微信推送拼团成功消息
                         $wxtmplmsg->spell_success($join_num[0]['wx_openid'],$goodsName,$name,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
+
                     } else {
                         $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>2,'shipping_status'=>1,'order_type'=>4))->save();
                     }
                 } else {
+                    /**
+                     * 处理用户名
+                     */
                     if($join_num[$i]['mobile'] != null){
                         $name = substr_replace($join_num[$i]['mobile'],'*****',3,5);
                     }else{
                         $name = $join_num[$i]['nickname'];
                     }
                     $name = trim($name);
+                    //　微信推送拼团成功消息
                     $wxtmplmsg->spell_success($join_num[$i]['wx_openid'],$goodsName,$name,'如果未按承诺时间发货，平台将对商家进行处罚。','【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
+                    // 修改 order_type=14 已成团待发货。
                     $res = M('order')->where('`prom_id`='.$join_num[$i]['id'])->data(array('order_status'=>11,'order_type'=>14))->save();
+
                 }
             }else{
                 $res = 1;
@@ -1006,17 +1019,25 @@ class BaseController extends Controller {
         }else{
             $data['order_type'] = 2;
         }
+        $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
+        //销量、库存
+        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
+        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
         $this->order_redis_status_ref($order['user_id']);
-        //微信推送消息
+
+        return $res;
+    }
+
+    /** 微信推送消息
+     * @param array $order
+     *
+     * 2017-9-12 Hua
+     */
+    public function push_message(Array $order)
+    {
         $openid = M('users')->where("user_id={$order['user_id']}")->getField('wx_openid');
         $goods_name = M('goods')->where("goods_id={$order['goods_id']}")->getField('goods_name');
         $wxtmplmsg = new WxtmplmsgController();
         $wxtmplmsg->order_payment_success($openid,$order['order_amount'],$goods_name);
-
-        //销量、库存
-        M('goods')->where('`goods_id` = '.$order['goods_id'])->setInc('sales',$order['num']);
-        M('merchant')->where('`id`='.$order['store_id'])->setInc('sales',$order['num']);
-        $res = M('order')->where('`order_id`='.$order['order_id'])->data($data)->save();
-        return $res;
     }
 }

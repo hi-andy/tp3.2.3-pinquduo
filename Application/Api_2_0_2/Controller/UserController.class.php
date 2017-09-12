@@ -1782,6 +1782,15 @@ class UserController extends BaseController {
             }
         }
         $goodsInfo = $this->getGoodsInfo($order['goods_id'],1);
+
+        /**
+         * 订单详情商品缩略图显示不正常，本应显示正方形缩略图的。
+         */
+        $temp = $goodsInfo['original'];
+        $goodsInfo['original'] = $goodsInfo['original_img'];  //正方形
+        $goodsInfo['original_img'] = $temp; 	      //长方形
+
+
         if($prom['auto']==0){
             $spec_price = M('spec_goods_price')->where('goods_id='.$order['goods_id']." and `key` = '".$order['spec_key']."'")->getField('prom_price');
             if($order['free']>0){
