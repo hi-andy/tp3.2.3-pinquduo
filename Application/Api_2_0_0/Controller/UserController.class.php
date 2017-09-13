@@ -1019,6 +1019,7 @@ class UserController extends BaseController {
         if (S('sms_'.$mobile)) {
             exit(json_encode(array('status' => -1, 'msg' => '60秒内只允许发送一次')));
         }else{
+            S('sms_'.$mobile,1,60);
             //检查是否在黑名单中
             $mtmp=M('blacklist')->where(['mobile'=>$mobile])->find();
             if($mtmp){
@@ -1057,16 +1058,14 @@ class UserController extends BaseController {
                 exit(json_encode(array('status'=>-1,'msg'=>'您的手机号暂时无法接收短信')));
             }
             $code = rand(1000, 9999);
-            $result = AlidayuController::sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
-            //先将短信code值存起来
-            if (!empty($result)) {
-                S('sms_'.$mobile,1,60);
-                $res = M('sms_log')->add(array('mobile' => $mobile, 'add_time' => $time, 'code' => $code,'ip'=>$ip));
-            }
+            $result=sendMessage($mobile,[$code,'3分钟'],'167752');
+//            $result = AlidayuController::sms($mobile, "code", $code, "SMS_62265047", "normal", "登录验证", "拼趣多");
+            //先将短信code值存起来,无论成功与否都会记录   2017-9-13 09:25:35 李则云
+            $res = M('sms_log')->add(array('mobile' => $mobile, 'add_time' => $time, 'code' => $code,'ip'=>$ip));
         }
         I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
 
-        if(!empty($result) && !empty($res)) {
+        if($result && !empty($res)) {
             if(!empty($ajax_get))
                 $this->getJsonp(array('status'=>1,'msg'=>'验证码已发送'));
             else
