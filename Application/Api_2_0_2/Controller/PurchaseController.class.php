@@ -81,7 +81,16 @@ class PurchaseController extends BaseController
                 $this->getJsonp($json);
             exit(json_encode($json));
         }
-
+        // 判断商品所属的商家是否已经停业  温立涛 2017-09-13 17:38
+        $goodsStoreId = M('goods')->field('store_id')->where('`goods_id` = ' . $goods_id)->find();
+        $storeInfo = M('merchant')->field('state')->where("id=".$goodsStoreId['store_id'])->find();
+        if((int)$storeInfo['state'] == 0){
+            $json = array('status' => -1, 'msg' => '商品状态异常');
+            if (!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+        // 处理结束
         /**
          * 除为我点赞商品外，收货地址不能为空
          */
