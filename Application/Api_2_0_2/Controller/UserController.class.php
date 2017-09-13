@@ -2049,6 +2049,12 @@ class UserController extends BaseController {
      */
     private function enCrypt(){
         $arr = empty($_GET) ? $_POST : $_GET;
+        //时间戳判定 2017-9-13 15:48:32 李则云  安卓没有time参数暂不部署
+//        if(empty($arr['time']) or abs(time()-$arr['time'])>5*60){
+//            $json_arr = array('status'=>-1,'msg'=>'no access','result'=>'');
+//            exit(json_encode($json_arr));
+//        }
+        ##################################################################
         ksort ($arr);
         $sig = $arr['sig'];
         unset($arr['sig']);
