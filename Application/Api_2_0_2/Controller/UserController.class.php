@@ -897,6 +897,7 @@ class UserController extends BaseController {
      */
     public function getCode()
     {
+        $this->enCrypt();//验签测试通过
         $this->sendSMS();
     }
 
@@ -2042,4 +2043,24 @@ class UserController extends BaseController {
             $this->getJsonp($json);
         exit(json_encode($json));
     }
+
+    /**
+     * 验签(测试版)
+     */
+    private function enCrypt(){
+        $arr = empty($_GET) ? $_POST : $_GET;
+        ksort ($arr);
+        $sig = $arr['sig'];
+        unset($arr['sig']);
+        $str = "";
+        foreach ($arr as $k => $v){
+            $str .= $k . "=" . $v . "&";
+        }
+        $str .= "sig=pinquduo_sing";
+        if (md5($str) != $sig) {
+            $json_arr = array('status'=>-1,'msg'=>'无权验证','result'=>'');
+            exit(json_encode($json_arr));
+        }
+    }
+
 }
