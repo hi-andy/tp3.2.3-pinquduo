@@ -158,32 +158,42 @@ class AutomationController extends BaseController
         // sql 查询优化，缩小查询范围。　Hua 2017-8-9 15:21
         $eTime = time() - 30;
         $sTime = time() - 3600 * 24;
-        $prom_order = M('group_buy')->where('`start_time`>=' . $sTime .' and end_time <= '.$eTime.' and auto=0 and (`is_raise`=1 or `free`>0) and `is_dissolution`=0 and `is_pay`=1 and mark=0 and `is_successful`=0 ')
-            ->field('id,is_raise,order_id')
-            ->limit(0, 10)
-            ->select();
-        echo M('group_buy')->getLastSql().'<br>';
+        /**
+         * 获取未成团的开团信息
+         */
+        $prom_order = M('group_buy')
+                            ->where(
+                                '`start_time`>=' . $sTime .
+                                ' and end_time <= '.$eTime.
+                                ' and auto=0 and (`is_raise`=1 or `free`>0) and 
+                                `is_dissolution`=0 and 
+                                `is_pay`=1 and mark=0 and 
+                                `is_successful`=0 ')
+                            ->field('id,is_raise,order_id')
+                            ->limit(0, 10)
+                            ->select();
+        /**
+         * 循环处理获取参团信息
+         */
         foreach($prom_order as $key=>$val){
             $listbuyid = [];
             $listorderid = [];
-            $buyid = $val['id'];
-            $listbuyid[] = $buyid;
+            $listbuyid[] = $val['id'];
             $listorderid[] = $val['order_id'];
-
-            echo '==============='.$buyid.'====='.$val['is_raise'].'<hr>';
 
             //获取团员
             $tuandata = M('group_buy')->field('id,order_id')
-                ->where('is_pay=1 and is_dissolution=0 and is_successful=0 and is_cancel=0 and mark='.$buyid)
-                ->select();
+                                        ->where('is_pay=1 and is_dissolution=0 and is_successful=0 and is_cancel=0 and mark='.$val['id'])
+                                        ->select();
 
             foreach($tuandata as $row){
                 $listbuyid[] = $row['id'];
                 $listorderid[] = $row['order_id'];
-
             }
+
             $getlistbuyid = implode(',',$listbuyid);
             $getlistorderid = implode(',',$listorderid);
+
             $res = M('group_buy')->where("id in({$getlistbuyid})")->data(array('is_dissolution' => 1))->save();
             $result1 = M('order')->where("order_status=8 and order_type=11 and order_id in({$getlistorderid})")->data(array('order_status' => 9, 'order_type' => 12))->save();
 
@@ -193,8 +203,6 @@ class AutomationController extends BaseController
                     ->select();
                 $user->BackPay($pay_cod);
             }
-
-
         }
     }
 
@@ -463,7 +471,6 @@ class AutomationController extends BaseController
                         $flag++;
                     }
 
-
                     //　插入伪拼团用户信息，以成团
                     $values = substr($values, 0, -1);
                     if ($values) {
@@ -527,11 +534,8 @@ class AutomationController extends BaseController
                             M('group_buy')->where("mark = {$promid} and is_pay=1 and is_cancel=0 and is_successful=1 and auto=1")->limt(1)->delete();
                         }
                     }
-
                 }
-
                 M("order")->where("order_id in({$order_ids}) and order_type<>15")->save(array("order_status" => 11, "shipping_status" => 0, "pay_status" => 1, "order_type" => 14));
-
             }
         }
     }
@@ -580,8 +584,6 @@ class AutomationController extends BaseController
                 $qiniu->delete('imgbucket', $userInfo['head_pic']); // 删除旧头像
                 $qiniu_result = $qiniu->fetch($userInfo['source_head_pic'], "imgbucket", time() . rand(100000, 999999) . ".jpg");
                 $data['head_pic'] = CDN . "/" . $qiniu_result[0]["key"];
-                unset($qiniu);
-                unset($qiniu_result);
             }
 
             if (!empty($userInfo['source_nickname'])) {
@@ -595,9 +597,7 @@ class AutomationController extends BaseController
             $data['last_login'] = $userInfo['last_login'];
             M('users')->where('user_id=' . $userInfo['user_id'])->save($data);
             // 调试信息
-            //$sql = M('users')->fetchSql(true)->where('user_id=' . $userInfo['user_id'])->save($data);
             //M('admin_log')->data(array('admin_id'=>$userInfo['user_id'],'log_ip'=>'127.0.0.1','log_info'=>'userInfoUpdated','log_time'=>time(),'log_url'=>json_encode($sql)))->add();
-            //echo $userInfo['user_id'] . '<br />';
             unset($updateData);
             unset($userInfo);
             unset($data);
