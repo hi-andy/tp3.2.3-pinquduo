@@ -306,7 +306,7 @@ class StoreorderController extends Controller
     }
 
     /**
-     * 修改用户订单物流信息
+     * 修改用户订单收货信息
      * @param string $order_id
      * @param string $consignee
      * @param string $mobile
@@ -367,6 +367,45 @@ class StoreorderController extends Controller
         $city = (int)I('city');
         // 地区id
         $district = (int)I('district');
+        // 检测数据是否合法
+        if(empty($consignee) || empty($mobile) || empty($address) || $province <= 0 || $city <= 0 || $district <= 0){
+            exit(json_encode(array('status' => -1,'msg' => '请求的数据非法')));
+        }
+        // 检测手机号
+        if(!preg_match("/^1[34578]\d{9}$/",$mobile)){
+            exit(json_encode(array('status' => -1,'msg' => '手机号格式不正确')));
+        }
+        // 将数据写入到数据中
+        $res = M('order','tp_','DB_CONFIG2')->where("order_id={$order_id}")
+            ->data([
+                'consignee' => $consignee,
+                'mobile' => $mobile,
+                'address' => $address,
+                'province' => $province,
+                'city' => $city,
+                'district' => $district,
+            ])->save();
+        // 追加商家修改用户收货信息到日志表
+        M('order_action','tp_','DB_CONFIG2')->data([
+            'order_id' => $order_id,
+            'action_user' => $store_id,
+            'store_id' => $store_id,
+            'order_status' => (int)$order_info['order_status'],
+            'shipping_status' => (int)$order_info['shipping_status'],
+            'pay_status' => (int)$order_info['pay_status'],
+            'order_type' => (int)$order_info['order_type'],
+            'action_note' => '修改订单——收货人地址',
+            'log_time' => time(),
+            'status_desc' => 'edit'
+        ])->add();
+        // 返回数据结果
+        if($res){
+            exit(json_encode(array('status' => 1,'msg' => '操作成功')));
+        }else{
+            exit(json_encode(array('status' => -1,'msg' => '操作失败')));
+        }
+
+
 
     }
 
