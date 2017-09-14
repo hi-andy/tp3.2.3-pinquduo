@@ -697,7 +697,9 @@ class BaseController extends Controller
                     $all[$i]['annotation'] = $order_status['annotation'];
                     $all[$i]['order_type'] = $order_status['order_type'];
                 }
-                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = " . $mark['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
+                // 修改商品列表图的逻辑代码，list_img为正方形 original_img为长方形    温立涛   2017-09-14 18:56
+                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = " . $mark['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img,list_img as original')->find();
+                // 处理结束
                 if (!empty($all[$i]['goodsInfo'])) {
                     $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
                     if (empty($all[$i]['goodsInfo']['original_img'])) {
@@ -710,7 +712,9 @@ class BaseController extends Controller
                 $all[$i]['type'] = 2;
                 $order_status = $this->getStatus($all[$i]);
                 $all[$i]['annotation'] = $order_status['annotation'];
-                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = " . $all[$i]['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img as original,list_img as original_img')->find();
+                // 修改商品列表图的逻辑代码，list_img为正方形 original_img为长方形    温立涛   2017-09-14 18:56
+                $all[$i]['goodsInfo'] = $goods = M('goods')->where(" `goods_id` = " . $all[$i]['goods_id'])->field('goods_id,goods_name,prom_price,shop_price,prom,store_id,sales,is_support_buy,is_special,original_img,list_img as original')->find();
+                // 处理结束
                 if (!empty($all[$i]['goodsInfo'])) {
                     $all[$i]['goodsInfo']['store'] = M('merchant')->where(' `id` = ' . $goods['store_id'])->field('id,store_name,store_logo,sales')->find();
                     if (empty($all[$i]['goodsInfo']['original_img'])) {
