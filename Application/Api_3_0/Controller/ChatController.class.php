@@ -36,7 +36,9 @@ class ChatController extends Controller
         }else{
             $username = 'store'.$store_info['id'];
             $password = md5($username);
-            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('store_name'=>$store_info['store_name'],'store_password'=>$password))));
+            // 返回给H5端商家logo 温立涛 2017-09-14 17:12
+            exit(json_encode(array('status'=>1,'msg'=>'获取成功','result'=>array('store_name'=>$store_info['store_name'],'store_logo'=>$store_info['store_logo'],'store_password'=>$password))));
+            // 处理结束
         }
     }
 	
