@@ -5,7 +5,7 @@
 namespace Api_2_0_2\Controller;
 
 use Think\Page;
-class GoodsController extends BaseController {
+class GoodstestController extends BaseController {
 
     public function _initialize() {
 	    header("Access-Control-Allow-Origin:*");
@@ -968,21 +968,8 @@ class GoodsController extends BaseController {
 	function getDetaile($refresh="")
 	{
         $goods_id = I('goods_id');
-        //自动脚本
-        if ($refresh) {
-            $goods_id = redislist("goods_refresh_id");
-            if (!$goods_id) $goods_id = M('goods')->where(array('refresh'=>array('eq',0)))->getField('goods_id');
-            if ($goods_id){
-                redisdelall("getDetaile_".$goods_id);
-                M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->save(array('refresh'=>1));
-            } else {
-                exit;
-            }
-        }
-        $goodsstatus = M('goods')
-            ->where("goods_id=$goods_id and (show_type=1 or is_show=0 or is_on_sale=0)")
-            ->count();
-        if (false && $goodsstatus >0){
+
+        if (false){
             $json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
         } else {
             //此处暂时屏蔽缓存  2017-9-9 15:01:55
@@ -1006,23 +993,7 @@ class GoodsController extends BaseController {
 		            $v['origin'] = TransformationImgurl($v['image_url']);
 		            unset($v['image_url']);
 	            }
-				for($i=0;$i<count($banner);$i++){
-	                if($banner[$i]['width']>0){
-                        $banner[$i]['origin'] = $banner[$i]['small'];
-                    }else{
-                        $size = getimagesize($banner[$i]['small']);
-                        $banner[$i]['origin'] = $banner[$i]['small'];
-                        $banner[$i]['width']=$size[0];
-                        $banner[$i]['height']=$size[1];
-                        M("goods_images")->where([
-                            'img_id'=>$banner[$i]['img_id']
-                        ])->save([
-                            'width'=>$size[0],
-                            'height'=>$size[1]
-                        ]);//保存以便下次使用
-                    }
-                    unset($banner[$i]['img_id']);
-				}
+
 	            if (empty($banner)) {
 		            $banner = null;
 	            }
@@ -1039,17 +1010,7 @@ class GoodsController extends BaseController {
                 foreach ($filter_spec as $key => $filter) {
                     $new_filter_spec[] = array('title' => $key, 'items' => $filter);
                 }
-                /*
-                for ($i = 0; $i < count($new_filter_spec); $i++) {
-                    foreach ($new_filter_spec[$i]['items'] as & $v) {
-                        if (!empty($v['src'])) {
-                            $v['src'] = $v['src'];
-                        }
-                        $keys[] = $v['item_id'];
-                    }
-                    array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
-                }
-                */
+
                 // 处理商品规格展示的顺序，解决安卓端的bug   温立涛   20170914 11:24
                 $minSort = [];
                 for ($i = 0; $i < count($new_filter_spec); $i++) {
