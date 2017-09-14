@@ -191,20 +191,6 @@ class PurchaseController extends BaseController
                         $this->getJsonp($json);
                     exit(json_encode($json));
                 }
-                /**
-                 * 为我助力，仅允许参团一次。
-                 */
-                if ($result['is_raise'] == 1) {
-                    $raise = M('group_buy')->where('mark!=0 and is_raise=1 and is_pay = 1 and user_id =' . $user_id)->find();
-                    if (!empty($raise)) {
-                        $json = array('status' => -1, 'msg' => '您已经参加过活动，请选择开团 ^_^');
-                        redisdelall("getBuy_lock_" . $goods_id);//删除锁
-                        if (!empty($ajax_get))
-                            $this->getJsonp($json);
-                        exit(json_encode($json));
-                    }
-                }
-                //每个团的最后一个人直接将订单锁住防止出现错误
 
                 // 参团已支付人数
                 $num = M('group_buy')->where('`id`=' . $result['id'] . ' or `mark`=' . $result['id'] . ' and `is_pay`=1 and `is_cancel`=0')->count();
@@ -246,11 +232,7 @@ class PurchaseController extends BaseController
                         $this->getJsonp($json);
                     exit(json_encode($json));
                 }
-                if ($result['mark'] != 0) {
-                    $num2 = M('group_buy')->where('`id`=' . $result['mark'] . ' or `mark` = ' . $result['mark'] . ' and `is_pay`=1')->count();
-                } else {
-                    $num2 = M('group_buy')->where('`id`=' . $prom_id . ' or `mark` = ' . $prom_id . ' and `is_pay`=1')->count();
-                }
+                // 执行参团
                 $this->joinGroupBuy($parameter);
             } else if ($type == 1)    //开团
             {
@@ -339,22 +321,11 @@ class PurchaseController extends BaseController
             }
         }
 
-        //如果是众筹订单
-        if ($result['is_raise'] == 1) {
-            $json = array('status' => -1, 'msg' => '该商品已下架');
-            if (!empty($ajax_get))
-                $this->getJsonp($json);
-            exit(json_encode($json));
-        } else {
-            $data['is_raise'] = 0;
-            $order['the_raise'] = 0;
-            $order['order_type'] = 10;
-        }
-
         if ($result) {
             /**
              * 处理参团数据
              */
+            $data['is_raise'] = 0;
             $data['start_time'] = time();
             $data['end_time'] = $result['end_time'];
             $data['goods_id'] = $result['goods_id'];
@@ -394,17 +365,16 @@ class PurchaseController extends BaseController
              * 处理订单数据
              */
             $address = M('user_address')->where("`address_id` = $address_id")->find();//获取地址信息
-            $invitation_num = M('order')->where('`prom_id`=' . $prom_id)->field('invitation_num')->find();
             $order['user_id'] = $user_id;
             $order['order_sn'] = C('order_sn');
-            $order['invitation_num'] = $invitation_num['invitation_num'];
             $order['goods_id'] = $result['goods_id'];
-            $order['order_status'] = 8;
             $order['consignee'] = $address['consignee'];
             $order['country'] = 1;
             $order['address_base'] = $address['address_base'];
             $order['address'] = $address['address'];
             $order['mobile'] = $address['mobile'];
+            $order['the_raise'] = 0;
+            $order['order_type'] = 10;
             /**
              * 处理支付方式
              */
@@ -496,7 +466,7 @@ class PurchaseController extends BaseController
                 }
             }
 
-            //将订单号写入团购表
+            //将订单 id 写入团购表
             $res = M('group_buy')->where("`id` = $group_buy")->data(array('order_id' => $o_id))->save();
 
             /**
@@ -537,13 +507,10 @@ class PurchaseController extends BaseController
                         $pay_detail = $qqPay->getQQPay($order);
                     }
                     $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_detail' => $pay_detail, 'pay_status' => 1));
-                } else {
-                    if ($result['goods_num'] == count($user_id_arr)) {
-                        $this->getFree($result['id'], 1);
-                    }
-                    $json = array('status' => 1, 'msg' => '参团成功', 'result' => array('order_id' => $o_id, 'group_id' => $group_buy, 'pay_status' => 0));
-                }
-                if ($result['is_raise'] != 1) {
+
+                    /**
+                     * 处理库存
+                     */
                     $this->aftermath($user_id, $goods, $num, $o_id);//修改库存
                 }
                 if (!empty($ajax_get)) {
@@ -1021,6 +988,13 @@ class PurchaseController extends BaseController
         return $code;
     }
 
+    /**
+     * 生成订单后，处理库存
+     * @param $user_id
+     * @param $goods
+     * @param $num
+     * @param $o_id
+     */
     public function aftermath($user_id, $goods, $num, $o_id)
     {
         $this->order_redis_status_ref($user_id);

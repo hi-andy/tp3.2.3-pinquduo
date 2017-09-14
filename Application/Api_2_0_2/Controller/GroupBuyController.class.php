@@ -148,6 +148,9 @@ class GroupBuyController extends BaseController
 
             $groupnum = M('group_buy')->where("mark={$group_buy_id}")->count();
             $groupnum = (int)$groupnum + 1;
+            /**
+             * 为我点赞团满
+             */
             if ($groupnum >= (int)$result['goods_num']) {
                 $morenum = $groupnum - (int)$result['goods_num'];
                 if ($morenum > 0) {
@@ -184,7 +187,7 @@ class GroupBuyController extends BaseController
 
                 if ((int)$group_buy > 0) {
                     redisdelall("GroupBuy_lock_" . $group_buy_id);//删除锁
-                    // 参团人数大于等于成团人数，把团置为已成团。
+                    // 参团人数大于等于成团人数，把团置为已成团。　2017-9-13　Hua.
                     if ((int)$groupnum + 1 >= (int)$result['goods_num']) {
                         $ressave = M('group_buy')->data(['is_successful' => 1])->where("mark={$group_buy_id}")->save();
                         $mainres = M('group_buy')->data(['is_successful' => 1])->where("id={$group_buy_id}")->save();

@@ -801,10 +801,8 @@ class BaseController extends Controller
          */
         $group_buy_ids = $ids = "";
         foreach ($group_buy_info as $value) {
-            $group_buy_ids .= $value['prom_id'] . ',';
-            $ids .= $value['id'];
+            $ids .= $value['id'] . ',';
         }
-        $group_buy_ids  = rtrim($group_buy_ids, ',');
         $ids            = rtrim($ids, ',');
 
 
@@ -812,7 +810,7 @@ class BaseController extends Controller
          * 事务处理，修改订单状态 order_type=14 已成团待发货　并修改成团状态。
          */
         M()->startTrans();
-        $res = M('order')->where('`prom_id` in (' . $group_buy_ids . ')')->data(array('order_status' => 11, 'order_type' => 14))->save();
+        $res = M('order')->where('`prom_id` in (' . $ids . ')')->data(array('order_status' => 11, 'order_type' => 14))->save();
         $res2 = M('group_buy')->where('`id` in (' . $ids . ')')->data(array('is_successful' => 1))->save();
         if ($res && $res2) {
             M()->commit();
