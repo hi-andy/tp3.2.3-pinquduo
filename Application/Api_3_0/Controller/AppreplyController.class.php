@@ -6,10 +6,13 @@
  */
 namespace Api_3_0\Controller;
 
+use Think\Cache\Driver\Redis;
 use Think\Controller;
 
 class AppreplyController extends Controller
 {
+    // 设置判断多长时间重发自动回复数据
+    const REPLYTIME = 43200;
     // 环信客户端id
     private $client_id;
     // 环信客户端密钥
@@ -20,6 +23,12 @@ class AppreplyController extends Controller
     private $app_name;
     // 环信请求地址
     private $url;
+    // redis对象
+    private $redis;
+    // 用户信息
+    private $userInfo;
+    // 商家信息
+    private $storeInfo;
 
     /**
      * 获取token 需要发起post请求
@@ -30,8 +39,13 @@ class AppreplyController extends Controller
         $this->org_name = C('orgname');
         $this->app_name = C('appname');
         $this->url = 'https://a1.easemob.com/' . $this->org_name . '/' . $this->app_name . '/';
+        $this->redis = new Redis();
     }
-
+    // 控制器初始化函数
+    public function _initialize()
+    {
+        header("Access-Control-Allow-Origin:*");
+    }
 
     /**
      * 获取自动回复列表信息
@@ -43,33 +57,12 @@ class AppreplyController extends Controller
         $user_id = (int)I('user_id',0);
         // 获取商家id
         $store_id = (int)I('store_id',0);
+        // 检测用户ID和商家ID
+        $data = $this->check($user_id,$store_id);
+
         // 满足条件
-        if($user_id > 0 && $store_id > 0){
-            // 获取自动回复启用的数据
-            $list = M('robot_reply','tp_','DB_CONFIG2')->field('id,title')->where("store_id={$store_id} and enable=1")->order('sort asc')->limit(5)->select();
-            $content = '亲，很高兴为您服务，请问您要咨 询什么问题呢！';
-            // 用户信息
-            $userInfo = M('users','tp_','DB_CONFIG2')->field('head_pic,nickname')->where("user_id={$user_id}")->find();
-            // 商家信息
-            $storeInfo = M('merchant','tp_','DB_CONFIG2')->field('store_logo,store_name')->where("id = {$store_id}")->find();
-            $data = [
-                'recevierUser' => [
-                    'avatar' => $userInfo['head_pic'],
-                    'userid' => $user_id,
-                    'username' => $userInfo['nickname'],
-                ],
-                'senderUser' => [
-                    'avatar' => $storeInfo['store_logo'],
-                    'userid' => "store{$store_id}",
-                    'username' => $storeInfo['store_name'],
-                ],
-                'time' => time(),
-                'terminal' => 's_s',
-                'autoReply' => $list,
-            ];
-            $res = $this->sendText("store{$store_id}","users",[$user_id],$content,$data);
-            file_put_contents('qq.log',json_encode($list));
-            file_put_contents('data.log',$res,FILE_APPEND);
+        if($data){
+            $this->startSend($user_id,$store_id);
         }
 
     }
@@ -82,15 +75,19 @@ class AppreplyController extends Controller
      * @param string $reply_id
      */
     public function replyInfo(){
+        // 临时注释掉下面代码 备用
+        /*
         // 获取用户id
         $user_id = (int)I('user_id',0);
         // 获取商家id
         $store_id = (int)I('store_id',0);
         // 获取回复id
         $reply_id = (int)I('reply_id',0);
+        // 检测数据是否合法
+        $data = $this->check($user_id,$store_id);
 
         // 满足条件
-        if($user_id > 0 && $store_id > 0 && $reply_id > 0){
+        if($data && $reply_id > 0){
             // 获取自动回复发送给用户的内容
             $list = M('robot_reply','tp_','DB_CONFIG2')->field('reply')->where("id={$reply_id} and store_id={$store_id}")->find();
             $content = '';
@@ -98,28 +95,121 @@ class AppreplyController extends Controller
             if(count($list) > 0){
                 $content = $list['reply'];
             }
-            // 用户信息
-            $userInfo = M('users','tp_','DB_CONFIG2')->field('head_pic,nickname')->where("user_id={$user_id}")->find();
-            // 商家信息
-            $storeInfo = M('merchant','tp_','DB_CONFIG2')->field('store_logo,store_name')->where("id = {$store_id}")->find();
             $data = [
                 'recevierUser' => [
-                    'avatar' => $userInfo['head_pic'],
+                    'avatar' => $this->userInfo['head_pic'],
                     'userid' => $user_id,
-                    'username' => $userInfo['nickname'],
+                    'username' => $this->userInfo['nickname'],
                 ],
                 'senderUser' => [
-                    'avatar' => $storeInfo['store_logo'],
+                    'avatar' => $this->storeInfo['store_logo'],
                     'userid' => "store{$store_id}",
-                    'username' => $storeInfo['store_name'],
+                    'username' => $this->storeInfo['store_name'],
                 ],
                 'time' => time(),
                 'terminal' => 's_s',
             ];
             $res = $this->sendText("store{$store_id}","users",[$user_id],$content,$data);
-            file_put_contents('newdata.log',$res,FILE_APPEND);
+
+        }
+        */
+
+    }
+
+    /**
+     * 获取自动回复列表，12小时后没有手动请求自动回复列表，将自动回复列表发送给用户
+     * @param string $user_id
+     * @param string $store_id
+     */
+    public function getReply(){
+        // 获取用户id
+        $user_id = (int)I('user_id',0);
+        // 获取商家id
+        $store_id = (int)I('store_id',0);
+        // 检测用户ID和商家ID
+        $data = $this->check($user_id,$store_id);
+        // 满足条件后
+        if($data){
+            // 生成获取自动回复的缓存key
+            $redisKey = "replyData_{$store_id}_{$user_id}";
+            // 获取自动回复的缓存设置的时间
+            $setTime = $this->redis->get($redisKey);
+            $setTime = (int)$setTime;
+            // 获取距离当前时间的时间差
+            $chaTime = time() - $setTime;
+            // 判断是否满足条件
+            if($chaTime > self::REPLYTIME){
+                // 发送自动回复数据列表给用户
+                $this->startSend($user_id,$store_id);
+            }
+
         }
 
+    }
+
+    /**
+     * 检测用户和商家是否合法
+     * @param int $store_id
+     * @param int $user_id
+     */
+    private function startSend($user_id,$store_id){
+        // 获取自动回复启用的数据
+        $list = M('robot_reply','tp_','DB_CONFIG2')->field('id,title')->where("store_id={$store_id} and enable=1")->order('sort asc')->limit(5)->select();
+        $content = '亲，很高兴为您服务，请问您要咨 询什么问题呢！';
+
+        $data = [
+            'recevierUser' => [
+                'avatar' => $this->userInfo['head_pic'],
+                'userid' => $user_id,
+                'username' => $this->userInfo['nickname'],
+            ],
+            'senderUser' => [
+                'avatar' => $this->storeInfo['store_logo'],
+                'userid' => "store{$store_id}",
+                'username' => $this->storeInfo['store_name'],
+            ],
+            'time' => time(),
+            'terminal' => 's_s',
+            'autoReply' => $list,
+        ];
+        // 生成获取自动回复的缓存时间
+        $redisKey = "replyData_{$store_id}_{$user_id}";
+        // 设置缓存
+        $this->redis->set($redisKey,time());
+        // 自动回复的信息发送给环信
+        $res = $this->sendText("store{$store_id}","users",[$user_id],$content,$data);
+
+    }
+
+    /**
+     * 检测用户和商家是否合法
+     * @param int $store_id
+     * @param int $user_id
+     */
+    private function check($user_id,$store_id){
+        // 检测商家id非法
+        if($store_id <= 0){
+            return false;
+        }
+        // 检测用户id非法
+        if($user_id <= 0){
+            return false;
+        }
+        // 查询商家信息
+        $this->storeInfo = M('merchant','tp_','DB_CONFIG2')->where("id = {$store_id}")->find();
+        // 商家信息没有数据记录
+        if(empty($this->storeInfo)){
+            return false;
+        }
+
+        // 查询用户信息
+        $this->userInfo = M('users','tp_','DB_CONFIG2')->where("user_id = {$user_id}")->find();
+        // 商家信息没有数据记录
+        if(empty($this->userInfo)){
+            return false;
+        }
+        // 商家和用户合法
+        return true;
     }
 
 

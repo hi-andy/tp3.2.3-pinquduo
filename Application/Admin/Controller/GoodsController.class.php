@@ -338,16 +338,20 @@ class GoodsController extends BaseController
         }
 
         $goodsInfo = D('Goods')->where('goods_id='.I('GET.id',0))->find();
-		
+
+        // 注释掉下面的代码，商品的图片已经进行了交换  温立涛  2017-09-13 17:14
+        /*
 		if((int)$goodsInfo['addtime'] == 0){
 			$imgArray = getimagesize($goodsInfo['original_img']);
 			if((int)$imgArray[0] == (int)$imgArray[1]){
 				$temp = $goodsInfo['list_img'];
 				$goodsInfo['list_img'] = $goodsInfo['original_img'];
-				$goodsInfo['original_img'] = $temp;					
+				$goodsInfo['original_img'] = $temp;
 			}
 
-		}						
+		}
+        */
+		// 处理结束
 		
         M('admin_log')->data(array('admin_id'=>I('GET.id',0),'log_url'=>$goodsInfo['store_id']))->add();
         $cat_list = $GoodsLogic->goods_cat_list(); // 已经改成联动菜单
