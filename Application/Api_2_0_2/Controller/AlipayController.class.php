@@ -144,6 +144,7 @@ class AlipayController extends BaseController
                             $Goods = new BaseController();
                             $Goods->getFree($group_info['mark'],$order);
                         }
+                        // 修改已下单人数：id=mark 开团人，mark=mark参团人。
                         M('group_buy')->where(array('id'=>$group_info['mark']))->setInc('order_num');
                         M('group_buy')->where(array('mark'=>$group_info['mark']))->save(array('order_num'=>$nums+1));
                     }

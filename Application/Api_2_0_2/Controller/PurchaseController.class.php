@@ -473,6 +473,7 @@ class PurchaseController extends BaseController
             //有操作失败，执行事务回滚
             if (empty($spec_res) || empty($group_buy) || empty($o_id)) {
                 M()->rollback();
+                redisdelall("getBuy_lock_" . $result['goods_id']);//删除锁
                 $json = array('status' => -1, 'msg' => '参团失败');
                 if (!empty($ajax_get))
                     $this->getJsonp($json);
@@ -485,7 +486,8 @@ class PurchaseController extends BaseController
                     $coupon_Inc = M('coupon')->where('`id`=' . $coupon_id)->setInc('use_num');
                     $this->changeCouponStatus($coupon_list_id, $o_id);
                     if (empty($coupon_Inc)) {
-                        M()->rollback();//有数据库操作不成功时进行数据回滚
+                        M()->rollback();
+                        redisdelall("getBuy_lock_" . $result['goods_id']);//删除锁
                         $json = array('status' => -1, 'msg' => '参团失败');
                         if (!empty($ajax_get))
                             $this->getJsonp($json);
@@ -524,7 +526,7 @@ class PurchaseController extends BaseController
                         } else {
                             $pay_detail = $weixinPay->addwxorder($order['order_sn']);
                         }
-                    } elseif ($order['pay_code'] == 'alipay') {//AlipayController
+                    } elseif ($order['pay_code'] == 'alipay') {
                         $AliPay = new AlipayController();
                         $pay_detail = $AliPay->addAlipayOrder($order['order_sn'], $user_id, $result['goods_id']);
                     } elseif ($order['pay_code'] == 'alipay_wap') { // 添加手机网页版支付 2017-5-25 hua
@@ -545,14 +547,13 @@ class PurchaseController extends BaseController
                     $this->aftermath($user_id, $goods, $num, $o_id);//修改库存
                 }
                 if (!empty($ajax_get)) {
-//注释掉代码  温立涛                    echo "<script> location.href='http://wx.pinquduo.cn/order_detail.html?order_id='+$o_id+'&type=2&user_id='+$user_id </script>";
                     $this->getJsonp($json);
                     exit;
                 }
                 exit(json_encode($json));
             } else {
+                M()->rollback();
                 redisdelall("getBuy_lock_" . $result['goods_id']);//删除锁
-                M()->rollback();//有数据库操作不成功时进行数据回滚
                 $json = array('status' => -1, 'msg' => '参团失败');
                 if (!empty($ajax_get))
                     $this->getJsonp($json);
