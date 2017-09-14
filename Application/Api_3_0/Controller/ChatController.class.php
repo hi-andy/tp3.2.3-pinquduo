@@ -54,6 +54,7 @@ class ChatController extends Controller
 		//$chatInfo = json_decode($str,true);
 		$chatInfo = json_decode(file_get_contents('php://input'),true);
 
+
 		//检测获取到的消息的合法性
 		if(!$chatInfo || count($chatInfo)==0){
 			$data = [
@@ -67,28 +68,40 @@ class ChatController extends Controller
 			//将数据写入到缓存
 			//获取时间
 			$timestamp = $chatInfo['payload']['ext']['time'];
+
 			if(isset($chatInfo['payload']['ext']['autoReplyId']) && $chatInfo['payload']['ext']['autoReplyId'] > 0){
-                // 获取商家id
-                $store_id = (int)str_replace("store","",$chatInfo['to']);
-                // 获取自动回复id
-                $reply_id = (int)$chatInfo['payload']['ext']['autoReplyId'];
-                // 获取自动回复发送给用户的内容
-                $list = M('robot_reply','tp_','DB_CONFIG2')->field('reply')->where("id={$reply_id} and store_id={$store_id}")->find();
-                $content = '';
-                // 取得回复内容
-                if(count($list) > 0){
-                    $content = $list['reply'];
+			    // 获取msg_id
+                $msg_id = $chatInfo['msg_id'];
+                // 检测该msg_id是否已经发送
+                $tempValue = (int)$this->redis->get('temp'.$msg_id);
+                if( $tempValue != 1 ){
+                    $this->redis->setex('temp'.$msg_id,60,'1');
+                    file_put_contents('aav.log',mt_rand(100,999).'==='.'temp'.$msg_id,FILE_APPEND);
+                    // 获取商家id
+                    $store_id = (int)str_replace("store","",$chatInfo['to']);
+                    // 获取自动回复id
+                    $reply_id = (int)$chatInfo['payload']['ext']['autoReplyId'];
+                    // 获取自动回复发送给用户的内容
+                    $list = M('robot_reply','tp_','DB_CONFIG2')->field('reply')->where("id={$reply_id} and store_id={$store_id}")->find();
+                    $content = '';
+                    // 取得回复内容
+                    if(count($list) > 0){
+                        $content = $list['reply'];
+                    }
+                    // 拼接数据data
+                    $data = [
+                        'recevierUser' => $chatInfo['payload']['ext']['senderUser'],
+                        'senderUser' => $chatInfo['payload']['ext']['recevierUser'],
+                        'time' => time(),
+                        'terminal' => 's_s',
+                    ];
+                    $appReply = new AppreplyController();
+                    $res = $appReply->sendText("store{$store_id}","users",[$chatInfo['from']],$content,$data);
+
+                    file_put_contents('newdata.log',$res,FILE_APPEND);
+
                 }
-                // 拼接数据data
-                $data = [
-                    'recevierUser' => $chatInfo['payload']['ext']['senderUser'],
-                    'senderUser' => $chatInfo['payload']['ext']['recevierUser'],
-                    'time' => time(),
-                    'terminal' => 's_s',
-                ];
-                $appReply = new AppreplyController();
-                $res = $appReply->sendText("store{$store_id}","users",[$chatInfo['from']],$content,$data);
-                file_put_contents('newdata.log',$res,FILE_APPEND);
+
 
             }
 			$this->set_chat($chatInfo['callId'],$chatInfo['msg_id'],$timestamp,$chatInfo['to'],$chatInfo['from'],$chatInfo['payload'],0);

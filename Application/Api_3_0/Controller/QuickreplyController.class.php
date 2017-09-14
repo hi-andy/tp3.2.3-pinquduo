@@ -16,6 +16,13 @@ class QuickreplyController extends Controller
     const MAX_LEN = 200;
     // 限制快捷回复的条数
     const MAX_NUM = 20;
+
+    // 控制器初始化函数
+    public function _initialize()
+    {
+        header("Access-Control-Allow-Origin:*");
+    }
+
     /**
      * 添加商家快捷回复数据
      * @param string $store_id　商家id
@@ -24,8 +31,6 @@ class QuickreplyController extends Controller
      */	
     public function addInfo()
     {
-        // 设置跨域
-        header("Access-Control-Allow-Origin:*");
         // 获取商家id
         $store_id = (int)I('store_id');
         // 商家id非法
@@ -94,8 +99,6 @@ class QuickreplyController extends Controller
      */
     public function listData()
     {
-        // 设置跨域
-        header("Access-Control-Allow-Origin:*");
         // 获取商家id
         $store_id = (int)I('store_id');
         // 商家id非法
@@ -119,8 +122,6 @@ class QuickreplyController extends Controller
      */
     public function delData()
     {
-        // 设置跨域
-        header("Access-Control-Allow-Origin:*");
         // 获取商家id
         $store_id = (int)I('store_id');
         // 商家id非法
