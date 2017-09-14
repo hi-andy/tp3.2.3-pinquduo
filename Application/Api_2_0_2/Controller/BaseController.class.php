@@ -761,120 +761,128 @@ class BaseController extends Controller
         if ($prom_id == 0) {
             exit();
         }
-        $wxtmplmsg = new WxtmplmsgController();
 
         /**
          * 获取所有参团的用户信息和团详情。
          */
-        $join_num = M('group_buy')->alias('gb')
-            ->join('INNER JOIN tp_users u on u.user_id = gb.user_id')
-            ->where('(gb.id=' . $prom_id . ' or gb.mark=' . $prom_id . ' ) and gb.is_pay=1')
-            ->field("
-                    gb.id,
-                    gb.goods_id,
-                    gb.order_id,
-                    gb.goods_name,
-                    gb.goods_num,
-                    gb.free,
-                    gb.is_raise,
-                    gb.user_id,
-                    gb.auto,
-                    u.wx_openid,
-                    u.nickname,
-                    u.mobile")
-            ->order('mark asc')
-            ->select();
+        $group_buy_info = M('group_buy')
+                        ->where('(id=' . $prom_id . ' or mark=' . $prom_id . ') and is_pay=1')
+                        ->field('id, order_id, goods_name, goods_num, free, user_id')
+                        ->order('mark asc')
+                        ->select();
 
-        $prom_num = $join_num[0]['goods_num'];
-        $free_num = $join_num[0]['free'];
-        $goodsName = $join_num[0]['goods_name'];
+        $user_ids = '';
+        foreach ($group_buy_info as $value) {
+            $user_ids .= $value['user_id'] . ',';
+        }
+        $user_ids      = rtrim($user_ids, ',');
+
+        $group_buy_user_info = M('users')->where(' user_id in (' . $user_ids . ')')
+                            ->field('user_id, wx_openid, nickname, mobile')
+                            ->select();
+        for ($i = 0; $i < count($group_buy_info); $i++) {
+            for ($j = 0; $j < count($group_buy_user_info); $j++) {
+                if ($group_buy_info[$i]['user_id'] == $group_buy_user_info[$j]['user_id']) {
+
+                    $group_buy_info[$i]['wx_openid']    = $group_buy_user_info[$j]['wx_openid'];
+                    $group_buy_info[$i]['nickname']     = $group_buy_user_info[$j]['nickname'];
+                    $group_buy_info[$i]['mobile']       = $group_buy_user_info[$j]['mobile'];
+                    break;
+                }
+            }
+        }
+
+        $prom_num = $group_buy_info[0]['goods_num'];
+        $free_num = $group_buy_info[0]['free'];
+        $goodsName = $group_buy_info[0]['goods_name'];
+
+        /**
+         * 处理拼接 id
+         */
+        $group_buy_ids = $ids = "";
+        foreach ($group_buy_info as $value) {
+            $group_buy_ids .= $value['prom_id'] . ',';
+            $ids .= $value['id'];
+        }
+        $group_buy_ids  = rtrim($group_buy_ids, ',');
+        $ids            = rtrim($ids, ',');
+
+
+        /**
+         * 事务处理，修改订单状态 order_type=14 已成团待发货　并修改成团状态。
+         */
         M()->startTrans();
-        //把所有人的状态改成发货
-        $user_ids = "";
+        $res = M('order')->where('`prom_id` in (' . $group_buy_ids . ')')->data(array('order_status' => 11, 'order_type' => 14))->save();
+        $res2 = M('group_buy')->where('`id` in (' . $ids . ')')->data(array('is_successful' => 1))->save();
+        if ($res && $res2) {
+            M()->commit();
+        }
 
-        for ($i = 0; $i < count($join_num); $i++) {
-            //　不是机器开团
-            if ($join_num[$i]['auto'] == 0) {
-                $this->order_redis_status_ref($join_num[$i]['user_id']);
-                $user_ids .= $join_num[$i]['user_id'] . ",";
-
-                /**
-                 * 处理用户名
-                 */
-                if ($join_num[$i]['mobile'] != null) {
-                    $name = substr_replace($join_num[$i]['mobile'], '*****', 3, 5);
-                } else {
-                    $name = $join_num[$i]['nickname'];
-                }
-                $name = trim($name);
-                //　微信推送拼团成功消息
-                $wxtmplmsg->spell_success($join_num[$i]['wx_openid'], $goodsName, $name, '如果未按承诺时间发货，平台将对商家进行处罚。', '【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍、COCO香水型洗衣液、20支软毛牙刷）');
-                // 修改 order_type=14 已成团待发货。
-                $res = M('order')->where('`prom_id`=' . $join_num[$i]['id'])->data(array('order_status' => 11, 'order_type' => 14))->save();
-
+        /**
+         * 微信推送消息
+         */
+        // 处理用户名
+        $nicknameArr = array();
+        foreach ($group_buy_info as $value) {
+            $this->order_redis_status_ref($value['user_id']);
+            if ($value['mobile'] != null) {
+                $nicknameArr[] = substr_replace($value['mobile'], '*****', 3, 5);
             } else {
-                $res = 1;
-            }
-            $res2 = M('group_buy')->where('`id`=' . $join_num[$i]['id'])->data(array('is_successful' => 1))->save();
-            if ($res && $res2) {
-                M()->commit();
+                $nicknameArr[] = $value['nickname'];
             }
         }
+        $nicknames = implode('、', $nicknameArr);
 
-        //微信推送消息
-        $user_ids = substr($user_ids, 0, -1);
-        if (!empty($user_ids)) {
-            $user = M('users')->field('mobile,nickname')->where("user_id in({$user_ids})")->field('wx_openid,nickname')->select();
-            if ($user) {
-                foreach ($user as $v) {
-                    if ($v['mobile'] != null) {
-                        $nicknamearr[] = substr_replace($join_num[$i]['mobile'], '*****', 3, 5);
-                    } else {
-                        $nicknamearr[] = $v['nickname'];
-                    }
-                }
-                $nicknames = implode('、', $nicknamearr);
-                foreach ($user as $v) {
-                    $wxtmplmsg->spell_success($v['wx_openid'], $goodsName, $nicknames, '如果未按承诺时间发货，平台将对商家进行处罚。', '【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍，COCO香水型洗衣液，20支软毛牙刷）');
-                }
-            }
+        //　推送消息
+        $wx_push = new WxtmplmsgController();
+        foreach ($group_buy_info as $v) {
+            $wx_push->spell_success($v['wx_openid'], $goodsName, $nicknames, '如果未按承诺时间发货，平台将对商家进行处罚。', '【VIP专享】9.9元购买（电蚊拍充电式灭蚊拍，COCO香水型洗衣液，20支软毛牙刷）');
         }
 
-        //给参团人和开团人推送信息
-        //如果有免单的处理
+        /**
+         * 存在免单的处理
+         */
         if ($free_num > 0) {
             redis("get_Free_Order_status", "1");
-            $order_ids = array_column($join_num, 'order_id');//拿到全部参团和开团的订单id
-            //随机出谁免单
-            $num = getRand($free_num, ($prom_num - 1));
-            for ($j = 0; $j < count($join_num); $j++) {
-                for ($i = 0; $i < count($num); $i++) {
-                    if ($j == $num[$i]) {
-                        $res = M('order')->where('`order_id`=' . $order_ids[$j])->data(array('is_free' => 1))->save();
-                        $res2 = M('group_buy')->where('`order_id`=' . $order_ids[$j])->data(array('is_free' => 1))->save();
-                        if ($res && $res2) {
-                            $custom = array('type' => '6', 'id' => $join_num[$j]['id']);
-                            SendXinge('恭喜！您参与的免单拼团获得了免单', (string)$join_num[$j]['user_id'], $custom);
-                            $this->getWhere($order_ids[$j]);
-                            M()->commit();
-                        } else {
-                            M()->rollback();
-                        }
-                    } else {
-                        $custom = array('type' => '6', 'id' => $join_num[$j]['id']);
-                        SendXinge('您的免单拼团人已满，点击查看免单买家', (string)$join_num[$j]['user_id'], $custom);
-                    }
+            //拿到全部参团和开团的订单id
+            $order_ids = array_column($group_buy_info, 'order_id');
+            //随机出谁免单, 并反转数组键值
+            $num = array_flip(getRand($free_num, ($prom_num - 1)));
+            // 免单　和　不免单　的订单信息
+            $free_order     = array_intersect_key($num, $order_ids);
+            $no_free_order  = array_diff_key($order_ids, $num);
+
+            /**
+             * 把订单置为免单
+             */
+            $free_order_ids = implode(',', $free_order);
+            $res = M('order')->where('`order_id` in (' . $free_order_ids . ')')->data(array('is_free' => 1))->save();
+            $res2 = M('group_buy')->where('`order_id` in (' . $free_order_ids . ')')->data(array('is_free' => 1))->save();
+
+            // 免单推送消息
+            if ($res && $res2) {
+                foreach ($free_order as $key=>$value) {
+                    $custom = array('type' => '6', 'id' => $group_buy_info[$key]['id']);
+                    SendXinge('恭喜！您参与的免单拼团获得了免单', (string)$group_buy_info[$key]['user_id'], $custom);
+                    $this->getWhere($value);
                 }
+            }
+
+            // 不免单推送消息
+            foreach ($no_free_order as $key=>$value) {
+                $custom = array('type' => '6', 'id' => $group_buy_info[$key]['id']);
+                SendXinge('您的免单拼团人已满，点击查看免单买家', (string)$group_buy_info[$key]['user_id'], $custom);
             }
         } else {
             $message = "您拼的团已满，等待商家发货中";
-            foreach ($join_num as $val) {
+            foreach ($group_buy_info as $val) {
                 if ($val['auto'] == 0) {
                     $custom = array('type' => '2', 'id' => $val['id']);
                     SendXinge($message, (string)$val['user_id'], $custom);
                 }
             }
         }
+
         if (empty($type)) {
             exit;
         } else {
