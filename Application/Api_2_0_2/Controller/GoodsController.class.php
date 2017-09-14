@@ -1039,6 +1039,7 @@ class GoodsController extends BaseController {
                 foreach ($filter_spec as $key => $filter) {
                     $new_filter_spec[] = array('title' => $key, 'items' => $filter);
                 }
+                /*
                 for ($i = 0; $i < count($new_filter_spec); $i++) {
                     foreach ($new_filter_spec[$i]['items'] as & $v) {
                         if (!empty($v['src'])) {
@@ -1048,6 +1049,25 @@ class GoodsController extends BaseController {
                     }
                     array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
                 }
+                */
+                // 处理商品规格展示的顺序，解决安卓端的bug   温立涛   20170914 11:24
+                $minSort = [];
+                for ($i = 0; $i < count($new_filter_spec); $i++) {
+                    $keys = [];
+                    foreach ($new_filter_spec[$i]['items'] as & $v) {
+                        if (!empty($v['src'])) {
+                            $v['src'] = $v['src'];
+                        }
+                        $keys[] = $v['item_id'];
+                    }
+                    array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
+                    sort($keys);
+                    $new_filter_spec[$i]['min'] = (int)$keys[0];
+                    $minSort[] = (int)$keys[0];
+                }
+                array_multisort($minSort, SORT_ASC, $new_filter_spec);
+                // 处理结束
+
                 //如果有传规格过来就改变商品名字
                 if (!empty($spec_key)) {
                     $key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
