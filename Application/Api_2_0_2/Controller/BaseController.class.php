@@ -528,7 +528,9 @@ class BaseController extends Controller
 			 * use_start_time 开始使用时间
 			 * use_end_time 最后使用时间
 			 * */
-                $coupon = M('coupon')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum > send_num')->select();
+                // 获取商铺优惠券去掉暂停的优惠券  温立涛  2017-09-15 18:23
+                $coupon = M('coupon')->where('`store_id` = ' . $goods['store_id'] . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and status=1 and createnum > send_num')->select();
+                // 处理结束
                 if (empty($coupon)) {
                     $coupon = null;
                 }

@@ -47,7 +47,9 @@ class StoreController extends BaseController{
 			$store['store_logo'] = TransformationImgurl($store['store_logo']);
 			//获取店铺优惠卷store_logo_compression
 			//获取商户有的优惠券
-			$coupon = M('coupon')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and createnum!=send_num')->select();
+            // 修改获取商户优惠券去掉暂停的优惠券 温立涛  2017-09-15 18:26
+			$coupon = M('coupon')->where('`store_id` = ' . $store_id . ' and `send_start_time` <= ' . time() . ' and `send_end_time` >= ' . time() . ' and status=1 and createnum!=send_num')->select();
+			// 处理结束
 			if (empty($coupon)) {
 				$coupon = null;
 			}
