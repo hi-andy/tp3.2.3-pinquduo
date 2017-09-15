@@ -12,25 +12,149 @@ class GoodsController extends BaseController {
         $this->encryption();
     }
 
+    /*
+     * 快递100
+     * */
+    public function getCourier()
+    {
+        $order_id = I('order_id');
+        I('ajax_get') &&  $ajax_get = I('ajax_get');
+        if(empty($order_id)) {
+            $json = array('status'=>-1,'msg'=>'参数不全');
+            if(!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
 
-	//新版本商品详情 2.0.2
-	function getDetaile($refresh="")
-	{
+        $order = M('order')->where('`order_id` = '.$order_id)->field('shipping_code,shipping_order')->find();
+        if(empty($order)){
+            $json = array('status'=>-1,'msg'=>'订单不存在');
+            if(!empty($ajax_get))
+                $this->getJsonp($json);
+            exit(json_encode($json));
+        }
+
+        $logistics = M('logistics')->where("`logistics_code`='".$order['shipping_code']."'")->field('logistics_name,logistics_mobile')->find();
+        $logistics['shipping_order']=$order['shipping_order'];
+        if($logistics['logistics_name']=='安能' && $order['shipping_code']=='annengwuliu'){
+
+            $code = 'PQD';  //客户id=APPKey
+            $secretKey = '701c9be35667ff5de2daa486ccc163e9';//安能快递秘钥
+            $url = 'http://opc.ane56.com/aneop/services/logisticsQuery/query';
+            $ewbNo = $order['shipping_order'];//86767745153514
+            $digest = base64_encode(md5("{\"ewbNo\":\"$ewbNo\"}".$code.$secretKey));
+            list($t1, $t2) = explode(' ', microtime());
+            $timestamp = (float)sprintf('%.0f',(floatval($t1)+floatval($t2))*1000);
+            $data = '{"timestamp":"'.$timestamp.'","digest":"'.$digest.'","params":"{\"ewbNo\":\"'.$ewbNo.'\"}","code":"'.$code.'"}';
+            $ch = curl_init();
+            curl_setopt($ch,CURLOPT_POST,1);
+            curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+            curl_setopt($ch,CURLOPT_HEADER,0);
+            curl_setopt($ch,CURLOPT_URL,$url);
+            curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+            $result=curl_exec($ch);
+            curl_close($ch);
+            $datas = object_to_array(json_decode($result));
+            $datas['resultInfo'] = object_to_array(json_decode($datas['resultInfo']));
+            $datas['resultInfo'] = $datas['resultInfo']['tracesList'][0];
+            $new_arr = array();
+            foreach ($datas['resultInfo']['traces'] as $k=>$v){
+                $new_arr[$k]['ftime'] = $new_arr[$k]['time'] = $v['time'];
+                $new_arr[$k]['context'] = $v['desc'];
+            }
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$new_arr));
+        }else{
+            //参数设置
+            $post_data = array();
+            $post_data["customer"] = 'A1638F91623252C0207C481E2B112F52';
+            $key= 'DLTlUmMA8292' ;
+            $post_data["param"] = '{"com":"'.$order['shipping_code'].'","num":"'.$order['shipping_order'].'"}';
+
+            $url='http://poll.kuaidi100.com/poll/query.do';
+
+            $post_data["sign"] = md5($post_data["param"].$key.$post_data["customer"]);
+            $post_data["sign"] = strtoupper($post_data["sign"]);
+
+            $o = "";
+
+            foreach ($post_data as $k=>$v)
+            {
+                $o.= "$k=".urlencode($v)."&";		//默认UTF-8编码格式
+            }
+            $post_data=substr($o,0,-1);
+            $ch = curl_init();
+            curl_setopt($ch,CURLOPT_POST,1);
+            curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+            curl_setopt($ch,CURLOPT_HEADER,0);
+            curl_setopt($ch,CURLOPT_URL,$url);
+            curl_setopt($ch,CURLOPT_POSTFIELDS,$post_data);
+            $result=curl_exec($ch);
+            curl_close($ch);
+            $data = json_decode($result,TRUE);
+            $json = array('status'=>1,'msg'=>'获取成功','result'=>array('logistics'=>$logistics,'date'=>$data['data']));
+        }
+        I('ajax_get') &&  $ajax_get = I('ajax_get');//网页端获取数据标示
+        exit(json_encode($json));
+    }
+
+    //新版本商品详情 2.0.0
+    function getDetaile($refresh="")
+    {
         $goods_id = I('goods_id');
-        if (false){
+        //自动脚本
+        if ($refresh) {
+            $goods_id = redislist("goods_refresh_id");
+            if (!$goods_id) $goods_id = M('goods')->where(array('refresh'=>array('eq',0)))->getField('goods_id');
+            if ($goods_id){
+                redisdelall("getDetaile_".$goods_id);
+                M('goods')->where(array('goods_id'=>array('eq',$goods_id)))->save(array('refresh'=>1));
+            } else {
+                exit;
+            }
+        }
+        $goodsstatus = M('goods')
+            ->where("goods_id=$goods_id and (show_type=1 or is_show=0 or is_on_sale=0)")
+            ->count();
+        if (false && $goodsstatus >0){
             $json = array('status' => -1, 'msg' => '该商品已下架', 'result' => '');
         } else {
+            //此处暂时屏蔽缓存  2017-9-9 15:01:55
+//            $rdsname = 'getDetaile_' . $goods_id;
+//            if (empty(redis($rdsname))) {
             $goods = $this->getGoodsInfo($goods_id);
+            //轮播图
             if($goods['is_special']==7){
                 $f_goods_id = M('goods_activity')->where('goods_id='.$goods_id)->getField('f_goods_id');
+//		            $banner = M('goods_images')->where("`goods_id` = $f_goods_id")->field('image_url')->select();
+                //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片高度和宽度提取 2017-9-6 14:47:31 //增加限制条件position=1    2017-9-8 18:45:31 李则云
                 $banner=M('goods_images')->where(['goods_id'=>$f_goods_id,'is_del'=>0,'position'=>1])->field('img_id,image_url,width,height')->select();
             }else{
+                //APP不再显示逻辑删除的图片   2017年9月3日10:19:00 李则云    //增加图片宽度和高度提取   2017-9-6 14:47:10 //增加限制条件position=1   2017-9-8 18:53:40 李则云
                 $banner=M('goods_images')->where(['goods_id'=>$goods_id,'is_del'=>0,'position'=>1])->field('img_id,image_url,width,height')->select();
             }
+
             foreach ($banner as &$v) {
+                //TODO 缩略图处理
                 $v['small'] = TransformationImgurl($v['image_url']);
                 $v['origin'] = TransformationImgurl($v['image_url']);
                 unset($v['image_url']);
+            }
+            for($i=0;$i<count($banner);$i++){
+                if($banner[$i]['width']>0){
+                    $banner[$i]['origin'] = $banner[$i]['small'];
+                }else{
+                    $size = getimagesize($banner[$i]['small']);
+                    $banner[$i]['origin'] = $banner[$i]['small'];
+                    $banner[$i]['width']=$size[0];
+                    $banner[$i]['height']=$size[1];
+                    M("goods_images")->where([
+                        'img_id'=>$banner[$i]['img_id']
+                    ])->save([
+                        'width'=>$size[0],
+                        'height'=>$size[1]
+                    ]);//保存以便下次使用
+                }
+                unset($banner[$i]['img_id']);
             }
             if (empty($banner)) {
                 $banner = null;
@@ -48,6 +172,7 @@ class GoodsController extends BaseController {
             foreach ($filter_spec as $key => $filter) {
                 $new_filter_spec[] = array('title' => $key, 'items' => $filter);
             }
+            /*
             for ($i = 0; $i < count($new_filter_spec); $i++) {
                 foreach ($new_filter_spec[$i]['items'] as & $v) {
                     if (!empty($v['src'])) {
@@ -57,6 +182,25 @@ class GoodsController extends BaseController {
                 }
                 array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
             }
+            */
+            // 处理商品规格展示的顺序，解决安卓端的bug   温立涛   20170914 11:24
+            $minSort = [];
+            for ($i = 0; $i < count($new_filter_spec); $i++) {
+                $keys = [];
+                foreach ($new_filter_spec[$i]['items'] as & $v) {
+                    if (!empty($v['src'])) {
+                        $v['src'] = $v['src'];
+                    }
+                    $keys[] = $v['item_id'];
+                }
+                array_multisort($keys, SORT_ASC, $new_filter_spec[$i]['items'], SORT_ASC);
+                sort($keys);
+                $new_filter_spec[$i]['min'] = (int)$keys[0];
+                $minSort[] = (int)$keys[0];
+            }
+            array_multisort($minSort, SORT_ASC, $new_filter_spec);
+            // 处理结束
+
             //如果有传规格过来就改变商品名字
             if (!empty($spec_key)) {
                 $key_name = M('spec_goods_price')->where("`key`='$spec_key'")->field('key_name')->find();
@@ -65,41 +209,27 @@ class GoodsController extends BaseController {
             if (!empty($ajax_get)) {
                 $goods['html'] = htmlspecialchars_decode($goods['goods_content']);
             }
+
             //提供保障
             if ($goods['is_special'] == 1) {
                 $security = array(array('type' => '全场包邮', 'desc' => '所有商品均无条件包邮'), array('type' => '假一赔十', 'desc' => '若收到的商品是假货，可获得加倍赔偿'));
             } else {
                 $security = array(array('type' => '全场包邮', 'desc' => '所有商品均无条件包邮'), array('type' => '7天退换', 'desc' => '商家承诺7天无理由退换货'), array('type' => '48小时发货', 'desc' => '成团后，商家将在48小时内发货'), array('type' => '假一赔十', 'desc' => '若收到的商品是假货，可获得加倍赔偿'));
             }
-            $json = array(
-                'status' => 1,
-                'msg' => '获取成功',
-                'result' => array(
-                    'banner' => $banner,
-                    'goods_id' => $goods['goods_id'],
-                    'goods_name' => $goods['goods_name'],
-                    'prom_price' => $goods['prom_price'],
-                    'market_price' => $goods['market_price'],
-                    'shop_price' => $goods['shop_price'],
-                    'prom' => $goods['prom'],
-                    'goods_remark' => $goods['goods_remark'],
-                    'store_id' => $goods['store_id'],
-                    'is_support_buy' => $goods['is_support_buy'],
-                    'is_special' => $goods['is_special'],
-                    'original_img' => $goods['original_img'],
-                    'original'=>$goods['original'],
-                    'goods_content_url' => $goods['goods_content_url'],
-                    'goods_share_url' => $goods['goods_share_url'],
-                    'fenxiang_url' => $goods['fenxiang_url'],
-                    'collect' => $goods['collect'],
-                    'original_img' => $goods['original_img'],
-                    'img_arr' => $goods['img_arr'],
-                    'security' => $security,
-                    'store' => $goods['store'], 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+
+            $json = array('status' => 1, 'msg' => '获取成功', 'result' => array('banner' => $banner, 'goods_id' => $goods['goods_id'], 'goods_name' => $goods['goods_name'], 'prom_price' => $goods['prom_price'], 'market_price' => $goods['market_price'], 'shop_price' => $goods['shop_price'], 'prom' => $goods['prom'], 'goods_remark' => $goods['goods_remark'], 'store_id' => $goods['store_id'], 'is_support_buy' => $goods['is_support_buy'], 'is_special' => $goods['is_special'], 'original_img' => $goods['original_img'],'original'=>$goods['original'],'goods_content_url' => $goods['goods_content_url'], 'goods_share_url' => $goods['goods_share_url'], 'fenxiang_url' => $goods['fenxiang_url'], 'collect' => $goods['collect'], 'original_img' => $goods['original_img'], 'img_arr' => $goods['img_arr'], 'security' => $security, 'store' => $goods['store'], 'spec_goods_price' => $new_spec_goods, 'filter_spec' => $new_filter_spec));
+//                redis($rdsname, serialize($json));//写入缓
+//            } else {
+//                $json = unserialize(redis($rdsname));
+//            }
+            // 分享地址不加入缓存，避免地址失效缓存也要全部更新。
             $json['result']['goods_share_url'] = C('SHARE_URL') . '/goods_detail.html?goods_id=' . $goods_id;
         }
-		exit(json_encode($json));
-	}
+        I('ajax_get') && $ajax_get = I('ajax_get');//网页端获取数据标示
+        if(!empty($ajax_get))
+            $this->getJsonp($json);
+        exit(json_encode($json));
+    }
 
 	//获取当前商品的拓展数据 显示用户的收藏状态，销量，支持的购买类型
 	function getDetaile_expand(){//加商户销量，
