@@ -199,6 +199,10 @@ class GroupBuyController extends BaseController
                         M('goods')->where('`goods_id` = ' . $goods_id)->setDec('store_count', 1);//库存自减
                         M('goods')->where('`goods_id` = ' . $goods_id)->setInc('sales', 1);//销量自加
 
+                        // 同时将商家的总的销量加1 温立涛  2017-09-15 11:41
+                        M('merchant')->where('`id`=' . $result['store_id'])->setInc('sales', 1);
+                        // 处理结束
+
                         if ($ressave && $mainres && $orderres) {
                             M()->commit();
 
