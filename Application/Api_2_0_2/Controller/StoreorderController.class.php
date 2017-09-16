@@ -3,7 +3,7 @@
  * 商家商品控制器
  * Time: 2017-9-11
  */
-namespace Api_3_0\Controller;
+namespace Api_2_0_2\Controller;
 
 use Think\Controller;
 
