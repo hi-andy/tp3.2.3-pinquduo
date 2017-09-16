@@ -6,7 +6,7 @@
  * Time: 21:06
  */
 
-namespace Api_3_0\Controller;
+namespace Api_2_0_2\Controller;
 
 use Think\Controller;
 use Think\Cache\Driver\Redis;
