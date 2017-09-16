@@ -803,12 +803,11 @@ class BaseController extends Controller
         /**
          * 处理拼接 id
          */
-        $group_buy_ids = $ids = "";
+        $ids = "";
         foreach ($group_buy_info as $value) {
             $ids .= $value['id'] . ',';
         }
-        $ids            = rtrim($ids, ',');
-
+        $ids = rtrim($ids, ',');
 
         /**
          * 事务处理，修改订单状态 order_type=14 已成团待发货　并修改成团状态。
